@@ -11,10 +11,18 @@
 </html>
 <img src="img/qsl1.jpg" alt="QSL 1">
 <h2>Mapa de QSOs</h2>
-<div id="map" style="height:400px;"></div>
+<!-- Contenedor único para el mapa -->
+<div id="map" style="height:500px; width:100%; border:2px solid #c9a86a;"></div>
+
+<!-- Librería Leaflet -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
 <script>
-  var map = L.map('map').setView([21.5, -77.9], 6); // Coordenadas de Cuba
+  // Crear un solo mapa centrado en Cuba
+  var map = L.map('map').setView([21.5, -77.9], 6);
+
+  // Cargar el mapa base
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '© OpenStreetMap'
   }).addTo(map);
@@ -24,6 +32,7 @@
     .bindPopup('CL7ADV – Camagüey, Cuba')
     .openPopup();
 </script>
+
 <h2>Contador de visitas</h2>
 <p id="contador">Visitas: 0</p>
 <script>
