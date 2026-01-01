@@ -6,9 +6,10 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <style>
     body {
-      font-family: Georgia, serif;
-      background: #fdfaf6;
-      color: #222;
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      margin: 0;
+      padding: 0;
       text-align: center;
     }
     header {
@@ -16,33 +17,72 @@
       color: white;
       padding: 20px;
     }
+    nav a {
+      margin: 0 10px;
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .search-box {
+      margin: 30px auto;
+    }
+    input[type="text"] {
+      padding: 10px;
+      width: 250px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    button {
+      padding: 10px 20px;
+      background: #002b5c;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
     .qsl-gallery img {
       width: 200px;
       margin: 10px;
       border: 3px solid #c9a86a;
     }
+    #map {
+      height: 500px;
+      width: 90%;
+      margin: 30px auto;
+      border: 2px solid #c9a86a;
+    }
     footer {
-      margin-top: 30px;
-      padding: 10px;
-      background: #eee;
+      background: #ddd;
+      padding: 15px;
+      margin-top: 40px;
     }
   </style>
 </head>
 <body>
   <header>
     <h1>CL7ADV – QSLs de Amistad</h1>
-    <p>Hermandad, respeto y radioafición desde Camagüey, Cuba</p>
+    <nav>
+      <a href="#">Inicio</a>
+      <a href="#">Actividades</a>
+      <a href="#">Descargar QSL</a>
+    </nav>
   </header>
 
+  <div class="search-box">
+    <h2>Buscar QSL por indicativo</h2>
+    <input type="text" placeholder="Ingresa tu indicativo">
+    <button>Buscar</button>
+  </div>
+
   <h2>Galería de QSL</h2>
-  <div class="C:\Users\alfred\Pictures\IMG">
+  <div class="qsl-gallery">
     <a href="qsl1.jpg" download><img src="qsl1.jpg" alt="QSL 1"></a>
     <a href="qsl2.jpg" download><img src="qsl2.jpg" alt="QSL 2"></a>
-    <a href="qsl3.jpg" download><img src="QSL 3"></a>
+    <a href="qsl3.jpg" download><img src="qsl3.jpg" alt="QSL 3"></a>
   </div>
 
   <h2>Mapa de QSOs</h2>
-  <div id="map" style="height:500px; width:90%; margin:auto; border:2px solid #c9a86a;"></div>
+  <div id="map"></div>
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script>
     var map = L.map('map').setView([21.5, -77.9], 6);
@@ -65,7 +105,7 @@
   </script>
 
   <footer>
-    <p>© 2026 CL7ADV – buenos dxs 73</p>
+    <p>© 2026 CL7ADV – Con hermandad y respeto</p>
   </footer>
 </body>
 </html>
