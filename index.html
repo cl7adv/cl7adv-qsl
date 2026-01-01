@@ -47,4 +47,15 @@ body {
   background: #fdfaf6 url('img/textura-vintage.png');
   color: #222;
 }
+<h2>Contador de visitas</h2>
+<p id="contador">Visitas: cargando...</p>
+
+<script>
+  // Usamos countapi.xyz con un namespace único (cl7adv-qsl)
+  fetch('https://api.countapi.xyz/hit/cl7adv/qsl')
+    .then(response => response.json())
+    .then(data => {
+      document.getElementById('contador').innerText = "Visitas: " + data.value;
+    });
+</script>
 
