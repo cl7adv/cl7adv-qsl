@@ -9,4 +9,33 @@
   <p>Este es mi espacio humilde para compartir QSL digitales y confirmar QSOs.</p>
 </body>
 </html>
+<img src="img/qsl1.jpg" alt="QSL 1">
+<h2>Mapa de QSOs</h2>
+<div id="map" style="height:400px;"></div>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script>
+  var map = L.map('map').setView([21.5, -77.9], 6); // Coordenadas de Cuba
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap'
+  }).addTo(map);
+
+  // Ejemplo de marcador
+  L.marker([21.5, -77.9]).addTo(map)
+    .bindPopup('CL7ADV – Camagüey, Cuba')
+    .openPopup();
+</script>
+<h2>Contador de visitas</h2>
+<p id="contador">Visitas: 0</p>
+<script>
+  let visitas = localStorage.getItem('visitas') || 0;
+  visitas++;
+  localStorage.setItem('visitas', visitas);
+  document.getElementById('contador').innerText = "Visitas: " + visitas;
+</script>
+<form action="https://formspree.io/f/tu_codigo" method="POST">
+body {
+  font-family: "Georgia", serif;
+  background: #fdfaf6 url('img/textura-vintage.png');
+  color: #222;
+}
 
