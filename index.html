@@ -47,7 +47,7 @@
   }
   h1 { margin-top: 20px; font-size: 26px; font-weight: bold; }
   .search { padding:20px; text-align:center; }
-  input { padding:10px; border-radius:5px; border:1px solid #003366; }
+  input, select { padding:10px; border-radius:5px; border:1px solid #003366; margin:5px; }
   button { padding:10px 15px; background:#FFD700; border:none; border-radius:5px; cursor:pointer; }
   .results { display:flex; flex-wrap:wrap; justify-content:center; gap:20px; padding:20px; transition: all 0.5s ease; }
   .card { background:#fff; padding:10px; border-radius:10px; text-align:center; box-shadow:0 0 5px #999; }
@@ -73,20 +73,23 @@
   <input id="callsign" type="text" placeholder="Ingresa indicativo (ej. CL7ADV)">
   <select id="band">
     <option value="">Banda</option>
-    <option>10m</option>
-    <option>20m</option>
-    <option>40m</option>
-    <option>80m</option>
+    <option>10m</option><option>20m</option><option>40m</option><option>80m</option>
   </select>
   <select id="mode">
     <option value="">Modo</option>
-    <option>SSB</option>
-    <option>CW</option>
-    <option>FT8</option>
-    <option>FM</option>
+    <option>SSB</option><option>CW</option><option>FT8</option><option>FM</option>
   </select>
   <button onclick="buscar()">Buscar</button>
 </div>
+
+<div id="results" class="results"></div>
+<div id="message" class="message" style="display:none;"></div>
+
+<footer>
+  Alfred CL7ADV · Cuba
+</footer>
+
+<script>
 const qslData = [
   { callsign:"CL7ADV", file:"img/CL7ADV_1.jpg", band:"20m", mode:"SSB" },
   { callsign:"CL7ADV", file:"img/CL7ADV_2.jpg", band:"40m", mode:"FT8" },
@@ -122,26 +125,6 @@ function buscar(){
   }
 }
 
-  const indicativo = document.getElementById("callsign").value.trim().toUpperCase();
-  const results = document.getElementById("results");
-  const message = document.getElementById("message");
-  results.innerHTML = "";
-  message.style.display = "none";
-
-  if(qslData[indicativo]){
-    qslData[indicativo].forEach(file=>{
-      const card = document.createElement("div");
-      card.className="card";
-      card.innerHTML = `<img src="${file}" alt="QSL ${indicativo}">
-                        <br><button onclick="descargar('${file}')">Descargar QSL</button>`;
-      results.appendChild(card);
-    });
-  } else {
-    message.innerHTML = "No hay QSLs aún, pero seguimos unidos en el aire.<br><button onclick='inicio()'>Volver al inicio</button>";
-    message.style.display = "block";
-  }
-}
-
 function descargar(file){
   const link = document.createElement("a");
   link.href = file;
@@ -154,6 +137,8 @@ function inicio(){
   document.getElementById("results").innerHTML="";
   document.getElementById("message").style.display="none";
   document.getElementById("callsign").value="";
+  document.getElementById("band").value="";
+  document.getElementById("mode").value="";
 }
 </script>
 
