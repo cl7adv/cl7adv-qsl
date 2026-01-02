@@ -87,6 +87,40 @@
   </select>
   <button onclick="buscar()">Buscar</button>
 </div>
+const qslData = [
+  { callsign:"CL7ADV", file:"img/CL7ADV_1.jpg", band:"20m", mode:"SSB" },
+  { callsign:"CL7ADV", file:"img/CL7ADV_2.jpg", band:"40m", mode:"FT8" },
+  { callsign:"CM8XYZ", file:"img/CM8XYZ.jpg", band:"20m", mode:"CW" }
+];
+
+function buscar(){
+  const indicativo = document.getElementById("callsign").value.trim().toUpperCase();
+  const band = document.getElementById("band").value;
+  const mode = document.getElementById("mode").value;
+  const results = document.getElementById("results");
+  const message = document.getElementById("message");
+  results.innerHTML = "";
+  message.style.display = "none";
+
+  const matches = qslData.filter(qsl =>
+    (!indicativo || qsl.callsign === indicativo) &&
+    (!band || qsl.band === band) &&
+    (!mode || qsl.mode === mode)
+  );
+
+  if(matches.length > 0){
+    matches.forEach(qsl=>{
+      const card = document.createElement("div");
+      card.className="card";
+      card.innerHTML = `<img src="${qsl.file}" alt="QSL ${qsl.callsign}">
+                        <br><button onclick="descargar('${qsl.file}')">Descargar QSL</button>`;
+      results.appendChild(card);
+    });
+  } else {
+    message.innerHTML = "No hay QSLs para esta búsqueda.<br><button onclick='inicio()'>Volver al inicio</button>";
+    message.style.display = "block";
+  }
+}
 
   const indicativo = document.getElementById("callsign").value.trim().toUpperCase();
   const results = document.getElementById("results");
