@@ -1,39 +1,52 @@
-<!-- Modal -->
-<div class="modal" id="modal">
-  <span onclick="cerrarModal()">&times;</span>
-  <div style="text-align:center;">
-    <img id="imagenModal" src="">
-    <br>
-    <a id="descargarModal" href="" download 
-       style="display:inline-block;margin-top:20px;padding:12px 25px;
-              background:#c9a86a;color:#002b5c;text-decoration:none;
-              border-radius:8px;font-weight:bold;">
-      Descargar esta QSL
-    </a>
-  </div>
-</div>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>CL7ADV – QSLs de Amistad</title>
+  <style>
+    body {
+      font-family: "Georgia", serif;
+      background: #fdfaf6;
+      color: #002b5c;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+    }
 
-<script>
-  function abrirModal(src) {
-    document.getElementById("imagenModal").src = src;
-    document.getElementById("descargarModal").href = src;
-    document.getElementById("modal").style.display = "flex";
-  }
-  function cerrarModal() {
-    document.getElementById("modal").style.display = "none";
-  }
-</script>
+    /* Portada elegante */
+    .portada {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #001a33, #004b8d, #c9a86a);
+      background-size: 300% 300%;
+      animation: fondo 12s ease infinite;
+      color: white;
+      text-align: center;
+      padding: 20px;
+      opacity: 1;
+      transition: opacity 1s ease;
+    }
+    @keyframes fondo {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
     .portada h1 {
       font-size: 4em;
       margin-bottom: 20px;
       text-shadow: 3px 3px 10px rgba(0,0,0,0.6);
       letter-spacing: 2px;
       color: #f5e6c8;
+      animation: fadeIn 2s ease;
     }
     .portada p {
       font-size: 1.3em;
       margin-bottom: 30px;
       color: #f8f8f8;
+      animation: fadeIn 3s ease;
     }
     .portada button {
       padding: 18px 40px;
@@ -46,11 +59,16 @@
       font-weight: bold;
       box-shadow: 0 4px 10px rgba(0,0,0,0.4);
       transition: 0.3s;
+      animation: fadeIn 4s ease;
     }
     .portada button:hover {
       background: #f5e6c8;
       color: #001a33;
       transform: scale(1.05);
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
     }
 
     /* Galería */
@@ -94,10 +112,11 @@
       background: rgba(0,0,0,0.8);
       justify-content: center;
       align-items: center;
+      flex-direction: column;
     }
     .modal img {
       max-width: 90%;
-      max-height: 90%;
+      max-height: 70%;
       border: 5px solid #c9a86a;
       border-radius: 10px;
     }
@@ -108,6 +127,19 @@
       font-size: 2em;
       color: white;
       cursor: pointer;
+    }
+    .modal a {
+      margin-top: 20px;
+      padding: 12px 25px;
+      background: #c9a86a;
+      color: #002b5c;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: bold;
+    }
+    .modal a:hover {
+      background: #f5e6c8;
+      color: #001a33;
     }
 
     #contador {
@@ -138,51 +170,3 @@
       <img src="img/EA5FM_4(1).jpg" alt="QSL EA5FM" onclick="abrirModal(this.src)">
       <img src="img/EA5JQE_5(1).jpg" alt="QSL EA5JQE" onclick="abrirModal(this.src)">
       <img src="img/EA7IM_7(1).jpg" alt="QSL EA7IM" onclick="abrirModal(this.src)">
-      <img src="img/HJ3MAO_18(1).jpg" alt="QSL HJ3MAO" onclick="abrirModal(this.src)">
-      <img src="img/HJ5RTD_20(1).jpg" alt="QSL HJ5RTD" onclick="abrirModal(this.src)">
-      <img src="img/HJ6JBV_15(1).jpg" alt="QSL HJ6JBV" onclick="abrirModal(this.src)">
-      <img src="img/HP3GNG_0(1).jpg" alt="QSL HP3GNG" onclick="abrirModal(this.src)">
-      <img src="img/LU2BR_16(1).jpg" alt="QSL LU2BR" onclick="abrirModal(this.src)">
-    </div>
-
-    <p id="contador">Visitas: cargando...</p>
-    <script>
-      fetch('https://api.countapi.xyz/hit/cl7adv/qsl')
-        .then(response => response.json())
-        .then(data => {
-          document.getElementById('contador').innerText = "Visitas: " + data.value;
-        });
-    </script>
-
-    <footer>
-      © 2026 CL7ADV – Hermandad y respeto en la radioafición
-    </footer>
-  </div>
-
-  <!-- Modal -->
-  <div class="modal" id="modal">
-    <span onclick="cerrarModal()">&times;</span>
-    <img id="imagenModal" src="">
-  </div>
-
-  <script>
-    function mostrarGaleria() {
-      document.getElementById("portada").style.opacity = "0";
-      setTimeout(() => {
-        document.getElementById("portada").style.display = "none";
-        document.getElementById("galeria").style.display = "block";
-        setTimeout(() => {
-          document.getElementById("galeria").style.opacity = "1";
-        }, 50);
-      }, 1000);
-    }
-    function abrirModal(src) {
-      document.getElementById("imagenModal").src = src;
-      document.getElementById("modal").style.display = "flex";
-    }
-    function cerrarModal() {
-      document.getElementById("modal").style.display = "none";
-    }
-  </script>
-</body>
-</html>
