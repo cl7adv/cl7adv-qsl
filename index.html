@@ -61,23 +61,14 @@
 </head>
 <body>
 
-  <!-- Portada futurista 2026 -->
+  <!-- Portada única futurista 2026 -->
   <div style="padding:40px;background:linear-gradient(135deg,#0e2431,#1a0033);
               box-shadow:0 0 20px #00ff99 inset;">
     <h1>SALUDOS DE CL7ADV · AÑO 2026</h1>
     <p>Buscar tus QSLs confirmadas y compartir la hermandad</p>
-
-    <!-- Botón general -->
-    <a href="qsl.pdf" target="_blank" rel="noopener noreferrer" class="btn">
-      DESCARGAR QSL 2026
-    </a>
-
-    <p style="margin-top:12px;font-size:14px;color:#00ff99;text-shadow:0 0 6px #00ff99;">
-      Al hacer clic se abrirá en una pestaña del navegador
-    </p>
   </div>
 
-  <!-- Sección independiente: búsqueda de indicativos -->
+  <!-- Sección de búsqueda de indicativos -->
   <div class="seccion">
     <h2>Ingresa tu indicativo para buscar tus QSLs</h2>
     <input id="callsign" type="text" placeholder="Tu indicativo"
@@ -109,7 +100,8 @@
       } else {
         resultado.innerHTML = `<p class="mensaje">
           Hermandad mundial: aún no tienes QSL registrada, pero siempre eres parte de la familia CL7ADV.
-        </p>`;
+        </p>
+        <a href="/" class="btn">Volver al inicio</a>`;
       }
     }
   </script>
