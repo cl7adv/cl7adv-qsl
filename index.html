@@ -3,58 +3,53 @@
 <head>
   <meta charset="UTF-8">
   <title>CL7ADV – QSLs de Amistad</title>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <style>
     body {
-      font-family: Georgia, serif;
+      font-family: "Georgia", serif;
       background: #fdfaf6;
-      color: #222;
+      color: #002b5c;
       text-align: center;
+      margin: 0;
+      padding: 50px;
     }
-    header {
+    h1 {
+      font-size: 3em;
+      color: #c9a86a;
+      margin-bottom: 30px;
+    }
+    a {
+      display: inline-block;
+      padding: 15px 30px;
       background: #002b5c;
       color: white;
-      padding: 20px;
+      text-decoration: none;
+      font-size: 1.2em;
+      border-radius: 8px;
+      margin-top: 20px;
     }
-    .qsl-gallery img {
-      width: 200px;
-      margin: 10px;
-      border: 3px solid #c9a86a;
+    a:hover {
+      background: #c9a86a;
+      color: #002b5c;
+    }
+    #contador {
+      margin-top: 40px;
+      font-size: 1.5em;
+      color: #444;
     }
     footer {
-      margin-top: 30px;
-      padding: 10px;
-      background: #eee;
+      margin-top: 50px;
+      font-size: 0.9em;
+      color: #666;
     }
   </style>
 </head>
 <body>
-  <header>
-    <h1>CL7ADV – QSLs de Amistad</h1>
-    <p>Hermandad, respeto y radioafición desde Camagüey, Cuba</p>
-  </header>
+  <h1>CL7ADV – QSLs de Amistad</h1>
 
-  <h2>Galería de QSL</h2>
-  <div class="qsl-gallery">
-    <a href="qsl1.jpg" download><img src="qsl1.jpg" alt="QSL 1"></a>
-    <a href="qsl2.jpg" download><img src="qsl2.jpg" alt="QSL 2"></a>
-    <a href="qsl3.jpg" download><img src="QSL 3"></a>
-  </div>
+  <!-- Botón que abre la carpeta de imágenes -->
+  <a href="https://github.com/cl7adv/cl7adv-qsl/tree/main/img" target="_blank">Abrir carpeta de QSLs</a>
 
-  <h2>Mapa de QSOs</h2>
-  <div id="map" style="height:500px; width:90%; margin:auto; border:2px solid #c9a86a;"></div>
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-  <script>
-    var map = L.map('map').setView([21.5, -77.9], 6);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap'
-    }).addTo(map);
-    L.marker([21.5, -77.9]).addTo(map)
-      .bindPopup('CL7ADV – Camagüey, Cuba')
-      .openPopup();
-  </script>
-
-  <h2>Contador de visitas</h2>
+  <!-- Contador de visitas -->
   <p id="contador">Visitas: cargando...</p>
   <script>
     fetch('https://api.countapi.xyz/hit/cl7adv/qsl')
@@ -65,7 +60,7 @@
   </script>
 
   <footer>
-    <p>© 2026 CL7ADV – Con hermandad y respeto</p>
+    © 2026 CL7ADV – Hermandad y respeto en la radioafición
   </footer>
 </body>
 </html>
