@@ -1,130 +1,56 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <title>CL7ADV QSL 2026</title>
-  <style>
-    body {
-      margin:0;
-      background:#0e2431;
-      font-family:Verdana,Arial,sans-serif;
-      color:#e6faff;
-      text-align:center;
-    }
-    h1,h2 {
-      color:#00ff99;
-      text-shadow:0 0 12px #00ff99;
-    }
-    p {
-      color:#ffffff;
-      text-shadow:0 0 8px #ff00ff;
-    }
-    .btn {
-      display:inline-block;
-      margin:10px;
-      padding:12px 24px;
-      background:#00ff99;
-      color:#0e2431;
-      text-decoration:none;
-      border-radius:8px;
-      box-shadow:0 0 12px #00ff99;
-      font-weight:bold;
-      text-transform:uppercase;
-      text-shadow:0 0 6px #00ff99;
-    }
-    .resultado img {
-      max-width:300px;
-      margin:10px;
-      border:3px solid #00ff99;
-      box-shadow:0 0 12px #00ff99;
-    }
-    .mensaje {
-      color:#00ff99;
-      text-shadow:0 0 6px #00ff99;
-      margin-top:20px;
-    }
-    .seccion {
-      padding:40px;
-      margin-top:30px;
-      background:#1a0033;
-      box-shadow:0 0 20px #ff00ff inset;
-      border-top:2px solid #00ff99;
-      display:none; /* Oculto al inicio */
-    }
-    footer {
-      margin-top:40px;
-      padding:20px;
-      color:#00ff99;
-      text-shadow:0 0 6px #00ff99;
-      font-style:italic;
-    }
-  </style>
-</head>
-<body>
+<header>
+  <h1>Saludos en el aire · 2026 · Hermandad QSL</h1>
+</header>
 
-  <!-- Portada de bienvenida -->
-  <div style="padding:40px;background:linear-gradient(135deg,#0e2431,#1a0033);
-              box-shadow:0 0 20px #00ff99 inset;">
-    <h1>🌌 BIENVENIDO AL UNIVERSO QSL · CL7ADV 2026 🌌</h1>
-    <p>En 3 segundos podrás buscar tus QSLs confirmadas y compartir la hermandad</p>
-  </div>
+<div class="search">
+  <input id="callsign" type="text" placeholder="Ingresa indicativo (ej. CL7ADV)">
+  <button onclick="buscar()">Buscar</button>
+</div>
 
-  <!-- Buscador de indicativos -->
-  <div class="seccion" id="buscador">
-    <h2>Ingresa tu indicativo para buscar tus QSLs</h2>
-    <input id="callsign" type="text" placeholder="Tu indicativo"
-           style="padding:10px;border-radius:6px;border:2px solid #00ff99;">
-    <button onclick="buscarQSL()" class="btn">Buscar</button>
-    <div id="resultado" class="resultado"></div>
-  </div>
+<div id="results"></div>
+<div id="message" style="display:none;"></div>
 
-  <!-- Firma -->
-  <footer>
-    ✍️ Diseñado con hermandad por CL7ADV · Cuba 2026
-  </footer>
+<footer>
+  Alfred CL7ADV · Cuba
+</footer>
 
-  <script>
-    // Mostrar buscador automáticamente en 3 segundos
-    setTimeout(() => {
-      document.getElementById('buscador').style.display = "block";
-    }, 3000);
+<script>
+const qslData = {
+  "CL7ADV": ["img/CL7ADV_1.jpg","img/CL7ADV_2.jpg"],
+  "CM8XYZ": ["img/CM8XYZ.jpg"]
+};
 
-    function buscarQSL() {
-      const callsign = document.getElementById('callsign').value.trim().toUpperCase();
-      const resultado = document.getElementById('resultado');
+function buscar(){
+  const indicativo = document.getElementById("callsign").value.trim().toUpperCase();
+  const results = document.getElementById("results");
+  const message = document.getElementById("message");
+  results.innerHTML = "";
+  message.style.display = "none";
 
-      // ⚠️ Ajusta las rutas según tu carpeta "img/"
-      const qslDB = {
-        "CL7ADV": ["img/cl7adv_2026.jpg","img/cl7adv_extra.jpg"],
-        "EA1ABC": ["img/ea1abc.jpg"],
-        "DL2FK": ["img/dl2fk.jpg"]
-      };
+  if(qslData[indicativo]){
+    qslData[indicativo].forEach(file=>{
+      results.innerHTML += `<div>
+        <img src="${file}" alt="QSL ${indicativo}" width="200"><br>
+        <button onclick="descargar('${file}')">Descargar QSL</button>
+      </div>`;
+    });
+  } else {
+    message.innerHTML = "No hay QSLs aún, pero seguimos unidos en el aire.<br><button onclick='inicio()'>Volver al inicio</button>";
+    message.style.display = "block";
+  }
+}
 
-      if (qslDB[callsign]) {
-        const archivos = qslDB[callsign];
-        resultado.innerHTML = "<h3>QSLs encontradas:</h3>" +
-          archivos.map(a => `
-            <div>
-              <img src="${a}" alt="QSL ${callsign}">
-              <br>
-              <a href="${a}" download class="btn">Descargar QSL</a>
-            </div>
-          `).join("");
-      } else {
-        resultado.innerHTML = `<p class="mensaje">
-          Hermandad mundial: aún no tienes QSL registrada, pero siempre eres parte de la familia CL7ADV.
-        </p>
-        <button onclick="volverInicio()" class="btn">Volver al inicio</button>`;
-      }
-    }
+function descargar(file){
+  const link = document.createElement("a");
+  link.href = file;
+  link.download = file.split("/").pop();
+  link.click();
+  setTimeout(inicio, 3000); // volver al inicio tras 3 segundos
+}
 
-    function volverInicio() {
-      // Limpia resultados y vuelve al buscador vacío
-      document.getElementById('resultado').innerHTML = "";
-      document.getElementById('callsign').value = "";
-      document.getElementById('buscador').style.display = "block";
-    }
-  </script>
-
-</body>
-</html>
+function inicio(){
+  document.getElementById("results").innerHTML="";
+  document.getElementById("message").style.display="none";
+  document.getElementById("callsign").value="";
+}
+</script>
