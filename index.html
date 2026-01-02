@@ -3,158 +3,69 @@
 <head>
   <meta charset="UTF-8">
   <title>CL7ADV – QSLs de Amistad</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <style>
     body {
-      font-family: "Georgia", serif;
+      font-family: Georgia, serif;
       background: #fdfaf6;
-      color: #002b5c;
-      margin: 0;
-      padding: 0;
+      color: #222;
       text-align: center;
     }
-
-    /* Portada sencilla y encantadora */
-    .portada {
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      background: linear-gradient(135deg, #004b8d, #c9a86a);
+    header {
+      background: #002b5c;
       color: white;
-      text-align: center;
       padding: 20px;
     }
-    .portada h1 {
-      font-size: 3em;
-      margin-bottom: 20px;
-      text-shadow: 2px 2px 6px rgba(0,0,0,0.5);
-    }
-    .portada p {
-      font-size: 1.2em;
-      margin-bottom: 30px;
-    }
-    .portada button {
-      padding: 15px 30px;
-      font-size: 1.2em;
-      background: #f5e6c8;
-      color: #002b5c;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: bold;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
-      transition: 0.3s;
-    }
-    .portada button:hover {
-      background: #c9a86a;
-      color: #001a33;
-      transform: scale(1.05);
-    }
-
-    /* Galería */
-    .galeria {
-      display: none;
-      padding: 40px;
-    }
-    .galeria h2 {
-      font-size: 2em;
-      margin-bottom: 20px;
-      color: #002b5c;
-    }
-    .qsl-gallery {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 20px;
-    }
-    .qsl-item {
-      width: 220px;
-      border: 2px solid #c9a86a;
-      border-radius: 10px;
-      padding: 10px;
-      background: #fff;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    }
-    .qsl-item img {
-      width: 100%;
-      border-radius: 8px;
-    }
-    .qsl-item a {
-      display: block;
-      margin-top: 10px;
-      padding: 8px;
-      background: #c9a86a;
-      color: #002b5c;
-      text-decoration: none;
-      border-radius: 6px;
-      font-weight: bold;
-    }
-    .qsl-item a:hover {
-      background: #f5e6c8;
-      color: #001a33;
-    }
-
-    #contador {
-      margin-top: 30px;
-      font-size: 1.3em;
-      color: #444;
+    .qsl-gallery img {
+      width: 200px;
+      margin: 10px;
+      border: 3px solid #c9a86a;
     }
     footer {
-      margin-top: 40px;
-      font-size: 0.9em;
-      color: #666;
+      margin-top: 30px;
+      padding: 10px;
+      background: #eee;
     }
   </style>
 </head>
 <body>
-  <!-- Portada -->
-  <div class="portada" id="portada">
+  <header>
     <h1>CL7ADV – QSLs de Amistad</h1>
-    <p>Hermandad, respeto y radioafición desde Cuba para el mundo</p>
-    <button onclick="mostrarGaleria()">Entrar a la galería</button>
+    <p>Hermandad, respeto y radioafición desde Camagüey, Cuba</p>
+  </header>
+
+  <h2>Galería de QSL</h2>
+  <div class="qsl-gallery">
+    <a href="qsl1.jpg" download><img src="qsl1.jpg" alt="QSL 1"></a>
+    <a href="qsl2.jpg" download><img src="qsl2.jpg" alt="QSL 2"></a>
+    <a href="qsl3.jpg" download><img src="QSL 3"></a>
   </div>
 
-  <!-- Galería -->
-  <div class="galeria" id="galeria">
-    <h2>Galería de QSLs</h2>
-    <div class="qsl-gallery">
-      <!-- Ejemplo de imágenes, sustituye con tus 21 archivos -->
-      <div class="qsl-item">
-        <img src="img/EA1062RCV.jpg" alt="QSL EA1062RCV">
-        <a href="img/EA1062RCV.jpg" download>⬇️ Descargar</a>
-      </div>
-      <div class="qsl-item">
-        <img src="img/EA5FM.jpg" alt="QSL EA5FM">
-        <a href="img/EA5FM.jpg" download>⬇️ Descargar</a>
-      </div>
-      <div class="qsl-item">
-        <img src="img/EA5JQE.jpg" alt="QSL EA5JQE">
-        <a href="img/EA5JQE.jpg" download>⬇️ Descargar</a>
-      </div>
-      <!-- Añade aquí todas tus demás QSLs -->
-    </div>
-
-    <p id="contador">Visitas: cargando...</p>
-    <script>
-      fetch('https://api.countapi.xyz/hit/cl7adv/qsl')
-        .then(response => response.json())
-        .then(data => {
-          document.getElementById('contador').innerText = "Visitas: " + data.value;
-        });
-    </script>
-
-    <footer>
-      © 2026 CL7ADV – Hermandad en la radioafición
-    </footer>
-  </div>
-
+  <h2>Mapa de QSOs</h2>
+  <div id="map" style="height:500px; width:90%; margin:auto; border:2px solid #c9a86a;"></div>
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script>
-    function mostrarGaleria() {
-      document.getElementById("portada").style.display = "none";
-      document.getElementById("galeria").style.display = "block";
-    }
+    var map = L.map('map').setView([21.5, -77.9], 6);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap'
+    }).addTo(map);
+    L.marker([21.5, -77.9]).addTo(map)
+      .bindPopup('CL7ADV – Camagüey, Cuba')
+      .openPopup();
   </script>
+
+  <h2>Contador de visitas</h2>
+  <p id="contador">Visitas: cargando...</p>
+  <script>
+    fetch('https://api.countapi.xyz/hit/cl7adv/qsl')
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById('contador').innerText = "Visitas: " + data.value;
+      });
+  </script>
+
+  <footer>
+    <p>© 2026 CL7ADV – Con hermandad y respeto</p>
+  </footer>
 </body>
 </html>
-
