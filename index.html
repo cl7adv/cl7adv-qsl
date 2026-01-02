@@ -112,64 +112,39 @@
     </footer>
   </div>
 
-<script>
-  function buscarQSL() {
-    const indicativo = document.getElementById("indicativo").value.trim().toUpperCase();
-    const resultado = document.getElementById("resultado");
+  <script>
+    function buscarQSL() {
+      const indicativo = document.getElementById("indicativo").value.trim().toUpperCase();
+      const resultado = document.getElementById("resultado");
 
-    if (!indicativo) {
-      resultado.innerHTML = `<p class="mensaje">🌺 Por favor escribe un indicativo</p>`;
-      setTimeout(() => { resultado.innerHTML = ""; }, 5000); // ahora 5 segundos
-      return;
-    }
-
-    const posibles = [`img/${indicativo}.jpg`, `img/${indicativo}-1.jpg`, `img/${indicativo}-2.jpg`];
-    let encontradas = [];
-
-    posibles.forEach(ruta => {
-      const img = new Image();
-      img.src = ruta;
-      img.onload = () => {
-        encontradas.push(ruta);
-        mostrarQSLs(encontradas, indicativo);
-      };
-    });
-
-    setTimeout(() => {
-      if (encontradas.length === 0) {
-        resultado.innerHTML = `<p class="mensaje">🌺 No tenemos QSL para <strong>${indicativo}</strong>, pero tu visita siempre es bienvenida.</p>`;
-        setTimeout(() => {
-          resultado.innerHTML = "";
-          document.getElementById("indicativo").value = "";
-        }, 5000); // mensaje cálido dura 5 segundos
+      if (!indicativo) {
+        resultado.innerHTML = `<p class="mensaje">🌺 Por favor escribe un indicativo</p>`;
+        setTimeout(() => { resultado.innerHTML = ""; }, 5000);
+        return;
       }
-    }, 1500);
-  }
 
-  function mostrarQSLs(lista, indicativo) {
-    const resultado = document.getElementById("resultado");
-    resultado.innerHTML = "";
-    lista.forEach(ruta => {
-      resultado.innerHTML += `
-        <div>
-          <img src="${ruta}" alt="QSL de ${indicativo}" class="qsl-img">
-          <br>
-          <a href="${ruta}" download class="descargar" onclick="reiniciar()">⬇️ Descargar QSL</a>
-        </div>
-      `;
-    });
-    // ❌ ya no hay temporizador automático aquí
-    // ✅ se reinicia solo cuando el usuario descarga
-  }
+      const posibles = [`img/${indicativo}.jpg`, `img/${indicativo}-1.jpg`, `img/${indicativo}-2.jpg`];
+      let encontradas = [];
 
-  function reiniciar() {
-    setTimeout(() => {
-      document.getElementById("resultado").innerHTML = "";
-      document.getElementById("indicativo").value = "";
-    }, 2000); // espera 2 segundos tras la descarga antes de limpiar
-  }
-</script>
+      posibles.forEach(ruta => {
+        const img = new Image();
+        img.src = ruta;
+        img.onload = () => {
+          encontradas.push(ruta);
+          mostrarQSLs(encontradas, indicativo);
+        };
+      });
 
+      setTimeout(() => {
+        if (encontradas.length === 0) {
+          resultado.innerHTML = `<p class="mensaje">🌺 No tenemos QSL para <strong>${indicativo}</strong>, pero tu visita siempre es bienvenida.</p>`;
+          setTimeout(() => {
+            resultado.innerHTML = "";
+            document.getElementById("indicativo").value = "";
+          }, 5000); // mensaje cálido dura 5 segundos
+        }
+      }, 1500);
+    }
 
     function mostrarQSLs(lista, indicativo) {
       const resultado = document.getElementById("resultado");
@@ -179,14 +154,21 @@
           <div>
             <img src="${ruta}" alt="QSL de ${indicativo}" class="qsl-img">
             <br>
-            <a href="${ruta}" download class="descargar">⬇️ Descargar QSL</a>
+            <a href="${ruta}" download class="descargar" onclick="reiniciar()">⬇️ Descargar QSL</a>
           </div>
         `;
       });
-      setTimeout(() => { resultado.innerHTML = ""; document.getElementById("indicativo").value = ""; }, 3000);
+    }
+
+    function reiniciar() {
+      const resultado = document.getElementById("resultado");
+      resultado.innerHTML = `<p class="mensaje">✅ Gracias por descargar tu QSL, buenos DXs en este 2026 🌺</p>`;
+      setTimeout(() => {
+        resultado.innerHTML = "";
+        document.getElementById("indicativo").value = "";
+      }, 2000); // espera 2 segundos tras agradecimiento
     }
   </script>
 
 </body>
 </html>
-
