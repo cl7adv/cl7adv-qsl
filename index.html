@@ -71,23 +71,23 @@
 
 <div class="search">
   <input id="callsign" type="text" placeholder="Ingresa indicativo (ej. CL7ADV)">
+  <select id="band">
+    <option value="">Banda</option>
+    <option>10m</option>
+    <option>20m</option>
+    <option>40m</option>
+    <option>80m</option>
+  </select>
+  <select id="mode">
+    <option value="">Modo</option>
+    <option>SSB</option>
+    <option>CW</option>
+    <option>FT8</option>
+    <option>FM</option>
+  </select>
   <button onclick="buscar()">Buscar</button>
 </div>
 
-<div id="results" class="results"></div>
-<div id="message" class="message" style="display:none;"></div>
-
-<footer>
-  Alfred CL7ADV · Cuba
-</footer>
-
-<script>
-const qslData = {
-  "CL7ADV": ["img/CL7ADV_1.jpg","img/CL7ADV_2.jpg"],
-  "CM8XYZ": ["img/CM8XYZ.jpg"]
-};
-
-function buscar(){
   const indicativo = document.getElementById("callsign").value.trim().toUpperCase();
   const results = document.getElementById("results");
   const message = document.getElementById("message");
