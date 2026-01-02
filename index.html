@@ -123,7 +123,13 @@
         return;
       }
 
-      const posibles = [`img/${indicativo}.jpg`, `img/${indicativo}-1.jpg`, `img/${indicativo}-2.jpg`];
+      // Generar lista de posibles rutas hasta 50 imágenes
+      let posibles = [];
+      posibles.push(`img/${indicativo}.jpg`); // primera imagen sin número
+      for (let i = 1; i <= 50; i++) {
+        posibles.push(`img/${indicativo}-${i}.jpg`);
+      }
+
       let encontradas = [];
 
       posibles.forEach(ruta => {
@@ -148,7 +154,7 @@
 
     function mostrarQSLs(lista, indicativo) {
       const resultado = document.getElementById("resultado");
-      resultado.innerHTML = "";
+      resultado.innerHTML = `<p class="mensaje">📡 Se encontraron ${lista.length} QSL para <strong>${indicativo}</strong></p>`;
       lista.forEach(ruta => {
         resultado.innerHTML += `
           <div>
@@ -166,7 +172,7 @@
       setTimeout(() => {
         resultado.innerHTML = "";
         document.getElementById("indicativo").value = "";
-      }, 6000); // espera 2 segundos tras agradecimiento
+      }, 2000); // espera 2 segundos tras agradecimiento
     }
   </script>
 
