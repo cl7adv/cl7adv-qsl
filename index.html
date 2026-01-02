@@ -1,6 +1,67 @@
-.qsl-gallery img {
-  width: 200px;
-  margin: 10px;
-  border: 3px solid #c9a86a;
-  border-radius: 8px;
-}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>CL7ADV – QSLs de Amistad</title>
+  <style>
+    body {
+      font-family: "Georgia", serif;
+      background: #fdfaf6;
+      color: #002b5c;
+      text-align: center;
+      margin: 0;
+      padding: 50px;
+    }
+    h1 {
+      font-size: 3em;
+      color: #c9a86a;
+      margin-bottom: 30px;
+    }
+    a {
+      display: inline-block;
+      padding: 15px 30px;
+      background: #002b5c;
+      color: white;
+      text-decoration: none;
+      font-size: 1.2em;
+      border-radius: 8px;
+      margin-top: 20px;
+    }
+    a:hover {
+      background: #c9a86a;
+      color: #002b5c;
+    }
+    #contador {
+      margin-top: 40px;
+      font-size: 1.5em;
+      color: #444;
+    }
+    footer {
+      margin-top: 50px;
+      font-size: 0.9em;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <h1>CL7ADV – QSLs de Amistad</h1>
+
+  <!-- Botón que abre la carpeta de imágenes -->
+  <a href="https://github.com/cl7adv/cl7adv-qsl/tree/main/img" target="_blank">Abrir carpeta de QSLs</a>
+
+  <!-- Contador de visitas -->
+  <p id="contador">Visitas: cargando...</p>
+  <script>
+    fetch('https://api.countapi.xyz/hit/cl7adv/qsl')
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById('contador').innerText = "Visitas: " + data.value;
+      });
+  </script>
+
+  <footer>
+    © 2026 CL7ADV – Hermandad y respeto en la radioafición
+  </footer>
+</body>
+</html>
+
