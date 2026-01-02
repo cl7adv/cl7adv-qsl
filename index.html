@@ -93,6 +93,34 @@
       color: #ffe082;
       text-shadow: 0 0 8px #ffeb3b;
     }
+
+    /* Estilos para la ventana emergente */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0; top: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.7);
+    }
+
+    .modal-contenido {
+      background: #fff;
+      color: #000;
+      margin: 5% auto;
+      padding: 20px;
+      border-radius: 12px;
+      width: 80%;
+      max-width: 700px;
+      text-align: center;
+    }
+
+    .cerrar {
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -112,6 +140,15 @@
     </footer>
   </div>
 
+  <!-- Ventana emergente -->
+  <div id="ventanaQSL" class="modal">
+    <div class="modal-contenido">
+      <span class="cerrar" onclick="cerrarVentana()">&times;</span>
+      <h2>QSLs disponibles</h2>
+      <div id="listaQSLs"></div>
+    </div>
+  </div>
+
   <script>
     function buscarQSL() {
       const indicativo = document.getElementById("indicativo").value.trim().toUpperCase();
@@ -125,7 +162,7 @@
 
       // Generar lista de posibles rutas hasta 50 imágenes
       let posibles = [];
-      posibles.push(`img/${indicativo}.jpg`); // primera imagen sin número
+      posibles.push(`img/${indicativo}.jpg`);
       for (let i = 1; i <= 50; i++) {
         posibles.push(`img/${indicativo}-${i}.jpg`);
       }
@@ -147,16 +184,18 @@
           setTimeout(() => {
             resultado.innerHTML = "";
             document.getElementById("indicativo").value = "";
-          }, 5000); // mensaje cálido dura 5 segundos
+          }, 5000);
         }
       }, 1500);
     }
 
     function mostrarQSLs(lista, indicativo) {
-      const resultado = document.getElementById("resultado");
-      resultado.innerHTML = `<p class="mensaje">📡 Se encontraron ${lista.length} QSL para <strong>${indicativo}</strong></p>`;
+      const ventana = document.getElementById("ventanaQSL");
+      const listaQSLs = document.getElementById("listaQSLs");
+      listaQSLs.innerHTML = `<p>📡 Se encontraron ${lista.length} QSL para <strong>${indicativo}</strong></p>`;
+
       lista.forEach(ruta => {
-        resultado.innerHTML += `
+        listaQSLs.innerHTML += `
           <div>
             <img src="${ruta}" alt="QSL de ${indicativo}" class="qsl-img">
             <br>
@@ -164,15 +203,22 @@
           </div>
         `;
       });
+
+      ventana.style.display = "block"; // abre la ventana
+    }
+
+    function cerrarVentana() {
+      document.getElementById("ventanaQSL").style.display = "none";
     }
 
     function reiniciar() {
-      const resultado = document.getElementById("resultado");
-      resultado.innerHTML = `<p class="mensaje">✅ Gracias por descargar tu QSL, buenos DXs en este 2026 🌺</p>`;
+      const listaQSLs = document.getElementById("listaQSLs");
+      listaQSLs.innerHTML = `<p class="mensaje">✅ Gracias por descargar tu QSL, buenos DXs 🌺</p>`;
       setTimeout(() => {
-        resultado.innerHTML = "";
+        cerrarVentana();
+        document.getElementById("resultado").innerHTML = "";
         document.getElementById("indicativo").value = "";
-      }, 2000); // espera 2 segundos tras agradecimiento
+      }, 2000);
     }
   </script>
 
