@@ -157,46 +157,4 @@
   </script>
 </body>
 </html>
-      transform: scale(1.05);
-    }
-    #contador {
-      margin-top: 40px;
-      font-size: 1.5em;
-      color: #444;
-    }
-    footer {
-      margin-top: 60px;
-      font-size: 0.9em;
-      color: #666;
-    }
-  </style>
-</head>
-<body>
-  <h1>CL7ADV – QSLs de Amistad</h1>
 
-  <div class="qsl-gallery">
-    <a href="img/EA1062RCV_28(1).jpg" download><img src="img/EA1062RCV_28(1).jpg" alt="QSL EA1062RCV"></a>
-    <a href="img/EA5FM_4(1).jpg" download><img src="img/EA5FM_4(1).jpg" alt="QSL EA5FM"></a>
-    <a href="img/EA5JQE_5(1).jpg" download><img src="img/EA5JQE_5(1).jpg" alt="QSL EA5JQE"></a>
-    <a href="img/EA7IM_7(1).jpg" download><img src="img/EA7IM_7(1).jpg" alt="QSL EA7IM"></a>
-    <a href="img/HJ3MAO_18(1).jpg" download><img src="img/HJ3MAO_18(1).jpg" alt="QSL HJ3MAO"></a>
-    <a href="img/HJ5RTD_20(1).jpg" download><img src="img/HJ5RTD_20(1).jpg" alt="QSL HJ5RTD"></a>
-    <a href="img/HJ6JBV_15(1).jpg" download><img src="img/HJ6JBV_15(1).jpg" alt="QSL HJ6JBV"></a>
-    <a href="img/HP3GNG_0(1).jpg" download><img src="img/HP3GNG_0(1).jpg" alt="QSL HP3GNG"></a>
-    <a href="img/LU2BR_16(1).jpg" download><img src="img/LU2BR_16(1).jpg" alt="QSL LU2BR"></a>
-  </div>
-
-  <p id="contador">Visitas: cargando...</p>
-  <script>
-    fetch('https://api.countapi.xyz/hit/cl7adv/qsl')
-      .then(response => response.json())
-      .then(data => {
-        document.getElementById('contador').innerText = "Visitas: " + data.value;
-      });
-  </script>
-
-  <footer>
-    © 2026 CL7ADV – Hermandad, respeto y radioafición desde Camagüey, Cuba
-  </footer>
-</body>
-</html>
