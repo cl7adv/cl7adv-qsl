@@ -54,3 +54,44 @@ function inicio(){
   document.getElementById("callsign").value="";
 }
 </script>
+<header>
+  <div class="sky">
+    <div class="sun"></div>
+    <div class="tower"></div>
+  </div>
+  <h1>Saludos en el aire · 2026 · Hermandad QSL</h1>
+</header>
+
+<style>
+  header {
+    position: relative;
+    text-align: center;
+    padding: 40px 20px;
+    background: #87CEEB; /* celeste */
+    color: #003366;
+    font-family: Arial, sans-serif;
+  }
+  .sky { position: relative; height: 120px; }
+  .sun {
+    width: 80px; height: 80px;
+    background: radial-gradient(circle, #FFD700 40%, #FFA500 100%);
+    border-radius: 50%;
+    position: absolute; top: 10px; left: 20px;
+    box-shadow: 0 0 40px #FFD700;
+  }
+  .tower {
+    width: 6px; height: 100px;
+    background: #333;
+    position: absolute; bottom: 0; right: 40px;
+  }
+  .tower::before, .tower::after {
+    content:""; position: absolute; width: 0; height: 0;
+    border-left: 30px solid transparent;
+    border-right: 30px solid transparent;
+    border-bottom: 40px solid #333;
+    left: -27px;
+  }
+  .tower::before { top: -40px; }
+  .tower::after { top: -80px; }
+  h1 { margin-top: 20px; font-size: 24px; font-weight: bold; }
+</style>
