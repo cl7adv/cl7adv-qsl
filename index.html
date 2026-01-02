@@ -1,19 +1,160 @@
-<!-- Modal -->
-<div class="modal" id="modal">
-  <span onclick="cerrarModal()">&times;</span>
-  <img id="imagenModal" src="">
-  <a id="descargarModal" href="" download>⬇️ Descargar esta QSL</a>
-</div>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>CL7ADV – QSLs de Amistad</title>
+  <style>
+    body {
+      font-family: "Georgia", serif;
+      background: #fdfaf6;
+      color: #002b5c;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+    }
 
-<script>
-  function abrirModal(src) {
-    // Mostrar la imagen en grande
-    document.getElementById("imagenModal").src = src;
-    // Configurar el botón de descarga con el mismo archivo
-    document.getElementById("descargarModal").href = src;
-    document.getElementById("modal").style.display = "flex";
-  }
-  function cerrarModal() {
-    document.getElementById("modal").style.display = "none";
-  }
-</script>
+    /* Portada sencilla y encantadora */
+    .portada {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #004b8d, #c9a86a);
+      color: white;
+      text-align: center;
+      padding: 20px;
+    }
+    .portada h1 {
+      font-size: 3em;
+      margin-bottom: 20px;
+      text-shadow: 2px 2px 6px rgba(0,0,0,0.5);
+    }
+    .portada p {
+      font-size: 1.2em;
+      margin-bottom: 30px;
+    }
+    .portada button {
+      padding: 15px 30px;
+      font-size: 1.2em;
+      background: #f5e6c8;
+      color: #002b5c;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+      transition: 0.3s;
+    }
+    .portada button:hover {
+      background: #c9a86a;
+      color: #001a33;
+      transform: scale(1.05);
+    }
+
+    /* Galería */
+    .galeria {
+      display: none;
+      padding: 40px;
+    }
+    .galeria h2 {
+      font-size: 2em;
+      margin-bottom: 20px;
+      color: #002b5c;
+    }
+    .qsl-gallery {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+    }
+    .qsl-item {
+      width: 220px;
+      border: 2px solid #c9a86a;
+      border-radius: 10px;
+      padding: 10px;
+      background: #fff;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    .qsl-item img {
+      width: 100%;
+      border-radius: 8px;
+    }
+    .qsl-item a {
+      display: block;
+      margin-top: 10px;
+      padding: 8px;
+      background: #c9a86a;
+      color: #002b5c;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: bold;
+    }
+    .qsl-item a:hover {
+      background: #f5e6c8;
+      color: #001a33;
+    }
+
+    #contador {
+      margin-top: 30px;
+      font-size: 1.3em;
+      color: #444;
+    }
+    footer {
+      margin-top: 40px;
+      font-size: 0.9em;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <!-- Portada -->
+  <div class="portada" id="portada">
+    <h1>CL7ADV – QSLs de Amistad</h1>
+    <p>Hermandad, respeto y radioafición desde Cuba para el mundo</p>
+    <button onclick="mostrarGaleria()">Entrar a la galería</button>
+  </div>
+
+  <!-- Galería -->
+  <div class="galeria" id="galeria">
+    <h2>Galería de QSLs</h2>
+    <div class="qsl-gallery">
+      <!-- Ejemplo de imágenes, sustituye con tus 21 archivos -->
+      <div class="qsl-item">
+        <img src="img/EA1062RCV.jpg" alt="QSL EA1062RCV">
+        <a href="img/EA1062RCV.jpg" download>⬇️ Descargar</a>
+      </div>
+      <div class="qsl-item">
+        <img src="img/EA5FM.jpg" alt="QSL EA5FM">
+        <a href="img/EA5FM.jpg" download>⬇️ Descargar</a>
+      </div>
+      <div class="qsl-item">
+        <img src="img/EA5JQE.jpg" alt="QSL EA5JQE">
+        <a href="img/EA5JQE.jpg" download>⬇️ Descargar</a>
+      </div>
+      <!-- Añade aquí todas tus demás QSLs -->
+    </div>
+
+    <p id="contador">Visitas: cargando...</p>
+    <script>
+      fetch('https://api.countapi.xyz/hit/cl7adv/qsl')
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById('contador').innerText = "Visitas: " + data.value;
+        });
+    </script>
+
+    <footer>
+      © 2026 CL7ADV – Hermandad y respeto en la radioafición
+    </footer>
+  </div>
+
+  <script>
+    function mostrarGaleria() {
+      document.getElementById("portada").style.display = "none";
+      document.getElementById("galeria").style.display = "block";
+    }
+  </script>
+</body>
+</html>
+
