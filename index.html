@@ -1,4 +1,152 @@
-<div id="resultado"></div>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Navegador QSL - CL7ADV</title>
+  <style>
+    /* PANEL DIGITAL ÉPICO */
+    .panel-sw {
+      max-width: 900px;
+      margin: 25px auto;
+      padding: 30px;
+      background: #05060a;
+      border: 2px solid #1a1d25;
+      border-radius: 10px;
+      box-shadow:
+          0 0 20px rgba(0, 255, 255, 0.25),
+          inset 0 0 25px rgba(0, 255, 255, 0.15);
+      color: #dffaff;
+      font-family: "Orbitron", Arial, sans-serif;
+      line-height: 1.7;
+    }
+
+    .panel-sw-title {
+      text-align: center;
+      font-size: 2rem;
+      font-weight: bold;
+      color: #00eaff;
+      text-shadow: 0 0 12px #00eaff, 0 0 25px #0099cc;
+      letter-spacing: 3px;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid rgba(0, 255, 255, 0.4);
+    }
+
+    .panel-sw-text {
+      font-size: 1.1rem;
+      color: #c7f7ff;
+      margin-bottom: 25px;
+    }
+
+    .panel-sw-signature {
+      text-align: center;
+      font-size: 1.2rem;
+      color: #00bcd4;
+      text-shadow: 0 0 8px #00bcd4;
+      margin-bottom: 30px;
+    }
+
+    .panel-sw-section-title {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #00eaff;
+      text-shadow: 0 0 8px #00eaff;
+      margin-bottom: 10px;
+      padding-bottom: 6px;
+      border-bottom: 2px solid rgba(0, 255, 255, 0.3);
+    }
+
+    .panel-sw-links a {
+      display: block;
+      text-decoration: none;
+      color: #ff4d4d;
+      font-weight: bold;
+      margin: 6px 0;
+      padding: 4px 0;
+      transition: 0.2s;
+    }
+
+    .panel-sw-links a:hover {
+      color: #ffffff;
+      text-shadow: 0 0 10px #ff4d4d;
+      transform: translateX(5px);
+    }
+
+    .panel-sw-counter {
+      text-align: center;
+      margin-top: 35px;
+      padding-top: 20px;
+      border-top: 2px solid rgba(0, 255, 255, 0.3);
+    }
+
+    /* Campo de búsqueda */
+    #indicativo {
+      padding: 10px;
+      font-size: 1rem;
+      border: 2px solid #00eaff;
+      border-radius: 8px;
+      background: #0d0f12;
+      color: #dffaff;
+      margin-right: 10px;
+    }
+
+    #buscarBtn {
+      padding: 10px 20px;
+      font-size: 1rem;
+      background: #00eaff;
+      color: #05060a;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    #buscarBtn:hover {
+      background: #0099cc;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+
+<div class="panel-sw">
+  <div class="panel-sw-title">BUENOS DXs ESTE 2026</div>
+
+  <div class="panel-sw-text">
+    Que cada llamada cruce LOS MARES, y que cada QSO nos recuerde que la radio une mundos lejanos.
+    Seguimos adelante.
+  </div>
+
+  <div class="panel-sw-signature">
+    — CL7ADV — Alfred · Radio, hermandad y comunidad
+  </div>
+
+  <div class="panel-sw-section-title">ENLACES ÚTILES PARA RADIOAFICIONADOS</div>
+
+  <div class="panel-sw-links">
+    <a href="https://ehamlog.ar/buscar-qsl/" target="_blank">eHamLog - Buscar QSL</a>
+    <a href="http://websdr.org/" target="_blank">WebSDR - Receptores SDR Online</a>
+    <a href="https://qsl.hamspark.com/" target="_blank">HamSpark - QSL Lookup</a>
+    <a href="https://lda.ar/" target="_blank">LDA - Log Digital Argentino</a>
+    <a href="https://www.hrdlog.net/Default.aspx" target="_blank">HRDLog - Logbook Online</a>
+    <a href="https://gadtm.netlify.app/" target="_blank">GADTM - Herramientas Digitales</a>
+    <a href="https://cl7adv.github.io/cl7adv-qsl/" target="_blank">QSL Finder - CL7ADV</a>
+  </div>
+
+  <div class="panel-sw-section-title">BUSCADOR DE QSL</div>
+  <input type="text" id="indicativo" placeholder="Escribe tu indicativo">
+  <button id="buscarBtn" onclick="buscarQSL()">Buscar QSL</button>
+
+  <div id="resultado"></div>
+
+  <div class="panel-sw-counter">
+    <a href="https://info.flagcounter.com/ReMh">
+      <img border="0"
+        src="https://s01.flagcounter.com/count2/ReMh/bg_556B2F/txt_F5DEB3/border_000000/columns_5/maxflags_15/viewers_0/labels_0/pageviews_0/flags_0/percent_0/" />
+    </a>
+  </div>
+</div>
 
 <script>
   function buscarQSL() {
@@ -11,9 +159,9 @@
 
     img.onload = function() {
       resultado.innerHTML = `
-        <img src="${ruta}" alt="QSL de ${indicativo}" style="max-width:300px;border:4px solid #c9a86a;border-radius:12px;margin-top:20px;">
+        <img src="${ruta}" alt="QSL de ${indicativo}" style="max-width:300px;border:4px solid #00eaff;border-radius:12px;margin-top:20px;box-shadow:0 0 15px #00eaff;">
         <br>
-        <a href="${ruta}" download style="display:inline-block;margin-top:15px;padding:12px 25px;background:#004b8d;color:white;border-radius:10px;text-decoration:none;font-size:1.2em;font-weight:bold;">
+        <a href="${ruta}" download style="display:inline-block;margin-top:15px;padding:12px 25px;background:#ff4d4d;color:white;border-radius:10px;text-decoration:none;font-size:1.2em;font-weight:bold;box-shadow:0 0 10px #ff4d4d;">
           ⬇️ Descargar QSL
         </a>
       `;
@@ -21,11 +169,10 @@
 
     img.onerror = function() {
       resultado.innerHTML = `
-        <p style="color:red;font-size:1.3em;margin-top:20px;">
+        <p style="color:red;font-size:1.3em;margin-top:20px;text-shadow:0 0 8px red;">
           ❌ No existe QSL para <strong>${indicativo}</strong>
         </p>
       `;
-
       setTimeout(() => {
         resultado.innerHTML = "";
         document.getElementById("indicativo").value = "";
@@ -33,3 +180,6 @@
     };
   }
 </script>
+
+</body>
+</html>
