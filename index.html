@@ -13,7 +13,7 @@
       Buscar tus QSLs confirmadas y compartir la hermandad
     </p>
     
-    <!-- Botón futurista de descarga -->
+    <!-- Botón general -->
     <a href="https://cl7adv.github.io/cl7adv-qsl/qsl.pdf" target="_blank" rel="noopener noreferrer"
        style="display:inline-block;margin-top:20px;padding:14px 28px;
        background:#00ff99;color:#0e2431;text-decoration:none;border-radius:10px;
@@ -23,36 +23,37 @@
     </a>
     
     <p style="margin-top:12px;font-size:14px;color:#00ff99;text-shadow:0 0 6px #00ff99;">
-      Al hacer clic se abrirá en una nueva pestaña del navegador
+      Al hacer clic se abrirá en una pestaña del navegador
     </p>
   </div>
-</body>
-<body style="background:#0e2431;color:#e6faff;font-family:Verdana,Arial,sans-serif;text-align:center;">
 
-  <h1 style="color:#00ff99;text-shadow:0 0 12px #00ff99;">
-    SALUDOS DE CL7ADV · AÑO 2026
-  </h1>
-  <p style="color:#ffffff;text-shadow:0 0 8px #ff00ff;">
-    Ingresa tu indicativo para buscar tus QSLs
-  </p>
-
-  <input id="callsign" type="text" placeholder="Tu indicativo"
-         style="padding:10px;border-radius:6px;border:2px solid #00ff99;">
-  <button onclick="buscarQSL()" 
-          style="margin-left:10px;padding:10px 20px;background:#00ff99;color:#0e2431;
-          border:none;border-radius:6px;box-shadow:0 0 10px #00ff99;font-weight:bold;">
-    Buscar
-  </button>
-
-  <div id="resultado" style="margin-top:20px;"></div>
+  <!-- Sección independiente: búsqueda de indicativos -->
+  <div style="padding:40px;text-align:center;margin-top:30px;
+  background:#1a0033;box-shadow:0 0 20px #ff00ff inset;border-top:2px solid #00ff99;">
+    
+    <h2 style="color:#00ff99;text-shadow:0 0 12px #00ff99;">
+      Ingresa tu indicativo para buscar tus QSLs
+    </h2>
+    
+    <input id="callsign" type="text" placeholder="Tu indicativo"
+           style="padding:10px;border-radius:6px;border:2px solid #00ff99;">
+    <button onclick="buscarQSL()" 
+            style="margin-left:10px;padding:10px 20px;background:#00ff99;color:#0e2431;
+            border:none;border-radius:6px;box-shadow:0 0 10px #00ff99;font-weight:bold;">
+      Buscar
+    </button>
+    
+    <div id="resultado" style="margin-top:20px;"></div>
+  </div>
 
   <script>
     function buscarQSL() {
       const callsign = document.getElementById('callsign').value.trim().toUpperCase();
       const resultado = document.getElementById('resultado');
 
-      // Simulación: base de datos de QSLs
+      // Base de datos simulada
       const qslDB = {
+        "CL7ADV": ["cl7adv_qsl1.pdf","cl7adv_qsl2.pdf"],
         "EA1ABC": ["ea1abc_qsl1.pdf","ea1abc_qsl2.pdf"],
         "DL2FK": ["dl2fk_qsl.pdf"]
       };
