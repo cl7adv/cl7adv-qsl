@@ -123,6 +123,48 @@
       document.getElementById('callsign').value = "";
     }
   </script>
+<script>
+  // Mostrar buscador automáticamente en 3 segundos
+  setTimeout(() => {
+    document.getElementById('buscador').style.display = "block";
+  }, 3000);
+
+  function buscarQSL() {
+    const callsign = document.getElementById('callsign').value.trim().toUpperCase();
+    const resultado = document.getElementById('resultado');
+
+    // ⚠️ Ajusta las rutas según tu carpeta "img/"
+    const qslDB = {
+      "CL7ADV": ["img/cl7adv_2026.jpg","img/cl7adv_extra.jpg"],
+      "EA1ABC": ["img/ea1abc.jpg"],
+      "DL2FK": ["img/dl2fk.jpg"]
+    };
+
+    if (qslDB[callsign]) {
+      const archivos = qslDB[callsign];
+      resultado.innerHTML = "<h3>QSLs encontradas:</h3>" +
+        archivos.map(a => `
+          <div>
+            <img src="${a}" alt="QSL ${callsign}" style="max-width:300px;border:3px solid #00ff99;box-shadow:0 0 12px #00ff99;">
+            <br>
+            <a href="${a}" download class="btn">Descargar QSL</a>
+          </div>
+        `).join("");
+    } else {
+      resultado.innerHTML = `<p class="mensaje">
+        Hermandad mundial: aún no tienes QSL registrada, pero siempre eres parte de la familia CL7ADV.
+      </p>
+      <button onclick="volverInicio()" class="btn">Volver al inicio</button>`;
+    }
+  }
+
+  function volverInicio() {
+    // Limpia resultados y vuelve al buscador vacío
+    document.getElementById('resultado').innerHTML = "";
+    document.getElementById('callsign').value = "";
+    document.getElementById('buscador').style.display = "block";
+  }
+</script>
 
 </body>
 </html>
