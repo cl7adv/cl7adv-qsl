@@ -11,7 +11,7 @@
       color:#e6faff;
       text-align:center;
     }
-    h1, h2 {
+    h1,h2 {
       color:#00ff99;
       text-shadow:0 0 12px #00ff99;
     }
@@ -22,16 +22,15 @@
     .btn {
       display:inline-block;
       margin:10px;
-      padding:14px 28px;
+      padding:12px 24px;
       background:#00ff99;
       color:#0e2431;
       text-decoration:none;
-      border-radius:10px;
-      box-shadow:0 0 15px #00ff99;
+      border-radius:8px;
+      box-shadow:0 0 12px #00ff99;
       font-weight:bold;
-      font-size:18px;
       text-transform:uppercase;
-      text-shadow:0 0 8px #00ff99;
+      text-shadow:0 0 6px #00ff99;
     }
     .resultado a {
       display:block;
@@ -56,71 +55,43 @@
       background:#1a0033;
       box-shadow:0 0 20px #ff00ff inset;
       border-top:2px solid #00ff99;
+      display:none; /* Oculto al inicio */
     }
   </style>
 </head>
 <body>
 
-  <!-- Portada única futurista 2026 -->
+  <!-- Portada futurista única -->
   <div style="padding:40px;background:linear-gradient(135deg,#0e2431,#1a0033);
               box-shadow:0 0 20px #00ff99 inset;">
     <h1>SALUDOS DE CL7ADV · AÑO 2026</h1>
     <p>Buscar tus QSLs confirmadas y compartir la hermandad</p>
   </div>
 
-  <!-- Sección de búsqueda de indicativos -->
-  <div class="seccion">
+  <!-- Buscador de indicativos -->
+  <div class="seccion" id="buscador">
     <h2>Ingresa tu indicativo para buscar tus QSLs</h2>
     <input id="callsign" type="text" placeholder="Tu indicativo"
            style="padding:10px;border-radius:6px;border:2px solid #00ff99;">
-    <button onclick="buscarQSL()" class="btn" style="font-size:14px;">Buscar</button>
+    <button onclick="buscarQSL()" class="btn">Buscar</button>
     <div id="resultado" class="resultado"></div>
   </div>
 
   <script>
+    // Mostrar buscador automáticamente en 3 segundos
+    setTimeout(() => {
+      document.getElementById('buscador').style.display = "block";
+    }, 3000);
+
     function buscarQSL() {
-      <script>
-  function buscarQSL() {
-    const callsign = document.getElementById('callsign').value.trim().toUpperCase();
-    const resultado = document.getElementById('resultado');
-
-    // Base de datos: sustituye con tus archivos reales
-    const qslDB = {
-      "CL7ADV": ["cl7adv_2026.pdf","cl7adv_extra.pdf"],
-      "EA1ABC": ["ea1abc.pdf"],
-      "DL2FK": ["dl2fk.pdf"]
-    };
-
-    if (qslDB[callsign]) {
-      const archivos = qslDB[callsign];
-      if (archivos.length > 1) {
-        resultado.innerHTML = "<h3>QSLs disponibles:</h3>" +
-          archivos.map(a => `<a href="${a}" target="_blank" rel="noopener noreferrer">${a}</a>`).join("");
-      } else {
-        resultado.innerHTML = `<a href="${archivos[0]}" target="_blank" rel="noopener noreferrer">Descargar QSL</a>`;
-      }
-    } else {
-      resultado.innerHTML = `<p class="mensaje">
-        Hermandad mundial: aún no tienes QSL registrada, pero siempre eres parte de la familia CL7ADV.
-      </p>
-      <button onclick="volverInicio()" class="btn">Volver al inicio</button>`;
-    }
-  }
-
-  function volverInicio() {
-    document.getElementById('resultado').innerHTML = "";
-    document.getElementById('callsign').value = "";
-  }
-</script>
-
       const callsign = document.getElementById('callsign').value.trim().toUpperCase();
       const resultado = document.getElementById('resultado');
 
-      // Base de datos simulada: sustituye con tus archivos reales
+      // ⚠️ Sustituye estos nombres por tus archivos reales en GitHub
       const qslDB = {
-        "CL7ADV": ["cl7adv_qsl1.pdf","cl7adv_qsl2.pdf"],
-        "EA1ABC": ["ea1abc_qsl1.pdf","ea1abc_qsl2.pdf"],
-        "DL2FK": ["dl2fk_qsl.pdf"]
+        "CL7ADV": ["cl7adv_2026.pdf"],
+        "EA1ABC": ["ea1abc.pdf"],
+        "DL2FK": ["dl2fk.pdf"]
       };
 
       if (qslDB[callsign]) {
@@ -135,8 +106,13 @@
         resultado.innerHTML = `<p class="mensaje">
           Hermandad mundial: aún no tienes QSL registrada, pero siempre eres parte de la familia CL7ADV.
         </p>
-        <a href="/" class="btn">Volver al inicio</a>`;
+        <button onclick="volverInicio()" class="btn">Volver al inicio</button>`;
       }
+    }
+
+    function volverInicio() {
+      document.getElementById('resultado').innerHTML = "";
+      document.getElementById('callsign').value = "";
     }
   </script>
 
