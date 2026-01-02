@@ -1,133 +1,242 @@
-<div class="buscador">
-  <h2>🔍 Buscar mi QSL</h2>
-  <p>Escriba su indicativo para ver y descargar su tarjeta:</p>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>CL7ADV – QSLs de Amistad</title>
 
-  <input type="text" id="indicativo" placeholder="Ej: LU1ABC">
-  <button onclick="buscarQSL()">Buscar</button>
+  <style>
+    body {
+      font-family: "Georgia", serif;
+      background: #fdfaf6;
+      color: #002b5c;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+    }
 
-  <div id="resultado"></div>
-</div>
-<script>
-  function buscarQSL() {
-    const indicativo = document.getElementById("indicativo").value.trim().toUpperCase();
-    const ruta = `img/${indicativo}.jpg`;
-    const resultado = document.getElementById("resultado");
+    /* Portada elegante */
+    .portada {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #001a33, #004b8d, #c9a86a);
+      background-size: 300% 300%;
+      animation: fondo 12s ease infinite;
+      color: white;
+      padding: 20px;
+    }
 
-    const img = new Image();
-    img.src = ruta;
+    @keyframes fondo {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
 
-    img.onload = function() {
-      resultado.innerHTML = `
-        <img src="${ruta}" alt="QSL de ${indicativo}" style="max-width:300px;border:4px solid #c9a86a;border-radius:12px;margin-top:20px;">
-        <br>
-        <a href="${ruta}" download style="display:inline-block;margin-top:15px;padding:12px 25px;background:#004b8d;color:white;border-radius:10px;text-decoration:none;font-size:1.2em;font-weight:bold;">
-          ⬇️ Descargar QSL
-        </a>
-      `;
-    };
+    .portada h1 {
+      font-size: 3.5em;
+      margin-bottom: 10px;
+      text-shadow: 3px 3px 10px rgba(0,0,0,0.6);
+      letter-spacing: 2px;
+      color: #f5e6c8;
+    }
 
-    img.onerror = function() {
-      resultado.innerHTML = `
-        <p style="color:red;font-size:1.3em;margin-top:20px;">
-          ❌ No existe QSL para <strong>${indicativo}</strong>
-        </p>
-      `;
+    .subtitulo {
+      font-size: 1.3em;
+      margin-bottom: 30px;
+      color: #f8f8f8;
+    }
 
-      setTimeout(() => {
-        resultado.innerHTML = "";
-        document.getElementById("indicativo").value = "";
-      }, 2500);
-    };
-  }
-</script>
+    .portada button {
+      padding: 15px 35px;
+      font-size: 1.2em;
+      background: #f5e6c8;
+      color: #002b5c;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: bold;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+      transition: 0.3s;
+    }
 
-<style>
-  .buscador {
-    margin-top: 40px;
-    padding: 30px;
-    background: #ffffff;
-    border-radius: 15px;
-    width: 80%;
-    max-width: 600px;
-    margin-left: auto;
-    margin-right: auto;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.2);
-  }
+    .portada button:hover {
+      background: #c9a86a;
+      color: #001a33;
+      transform: scale(1.05);
+    }
 
-  .buscador h2 {
-    font-size: 2.2em;
-    color: #004b8d;
-    margin-bottom: 10px;
-  }
+    /* Buscador */
+    .buscador {
+      margin-top: 40px;
+      padding: 30px;
+      background: #ffffff;
+      border-radius: 15px;
+      width: 80%;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+    }
 
-  .buscador p {
-    font-size: 1.3em;
-    color: #333;
-    margin-bottom: 20px;
-  }
+    .buscador h2 {
+      font-size: 2.2em;
+      color: #004b8d;
+      margin-bottom: 10px;
+    }
 
-  .buscador input {
-    width: 80%;
-    padding: 15px;
-    font-size: 1.3em;
-    border: 2px solid #c9a86a;
-    border-radius: 10px;
-    text-align: center;
-    outline: none;
-    margin-bottom: 15px;
-  }
+    .buscador p {
+      font-size: 1.3em;
+      color: #333;
+      margin-bottom: 20px;
+    }
 
-  .buscador button {
-    padding: 15px 35px;
-    font-size: 1.3em;
-    background: #c9a86a;
-    color: #002b5c;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: 0.3s;
-  }
+    .buscador input {
+      width: 80%;
+      padding: 15px;
+      font-size: 1.3em;
+      border: 2px solid #c9a86a;
+      border-radius: 10px;
+      text-align: center;
+      outline: none;
+      margin-bottom: 15px;
+    }
 
-  .buscador button:hover {
-    background: #f5e6c8;
-    transform: scale(1.05);
-  }
+    .buscador button {
+      padding: 15px 35px;
+      font-size: 1.3em;
+      background: #c9a86a;
+      color: #002b5c;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.3s;
+    }
 
-  #resultado img {
-    margin-top: 20px;
-    max-width: 300px;
-    border: 4px solid #c9a86a;
-    border-radius: 12px;
-  }
+    .buscador button:hover {
+      background: #f5e6c8;
+      transform: scale(1.05);
+    }
 
-  #resultado a {
-    display: inline-block;
-    margin-top: 15px;
-    padding: 12px 25px;
-    background: #004b8d;
-    color: white;
-    text-decoration: none;
-    border-radius: 10px;
-    font-size: 1.2em;
-    font-weight: bold;
-  }
+    #resultado img {
+      margin-top: 20px;
+      max-width: 300px;
+      border: 4px solid #c9a86a;
+      border-radius: 12px;
+    }
 
-  #resultado a:hover {
-    background: #002b5c;
-  }
-</style>
+    #resultado a {
+      display: inline-block;
+      margin-top: 15px;
+      padding: 12px 25px;
+      background: #004b8d;
+      color: white;
+      text-decoration: none;
+      border-radius: 10px;
+      font-size: 1.2em;
+      font-weight: bold;
+    }
 
-<script>
-  function buscarQSL() {
-    const indicativo = document.getElementById("indicativo").value.trim().toUpperCase();
-    const ruta = `img/${indicativo}.jpg`;
-    const resultado = document.getElementById("resultado");
+    #resultado a:hover {
+      background: #002b5c;
+    }
+  </style>
+</head>
 
-    resultado.innerHTML = `
-      <img src="${ruta}" alt="QSL de ${indicativo}">
-      <br>
-      <a href="${ruta}" download>⬇️ Descargar QSL</a>
-    `;
-  }
-</script>
+<body>
+
+  <!-- PORTADA -->
+  <div class="portada" id="portada">
+    <h1>CL7ADV – QSLs de Amistad</h1>
+    <p class="subtitulo">Hermandad, respeto y radioafición desde Cuba para el mundo</p>
+    <button onclick="document.getElementById('buscador').scrollIntoView({behavior:'smooth'})">
+      Buscar mi QSL
+    </button>
+  </div>
+
+  <!-- BUSCADOR -->
+  <div class="buscador" id="buscador">
+    <h2>🔍 Buscar mi QSL</h2>
+    <p>Escriba su indicativo para ver y descargar sus tarjetas:</p>
+
+    <input type="text" id="indicativo" placeholder="Ej: LU1ABC">
+    <button onclick="buscarQSL()">Buscar</button>
+
+    <div id="resultado"></div>
+  </div>
+
+  <!-- SCRIPT AVANZADO -->
+  <script>
+    function buscarQSL() {
+      const indicativo = document.getElementById("indicativo").value.trim().toUpperCase();
+      const resultado = document.getElementById("resultado");
+
+      const posibles = [
+        `img/${indicativo}.jpg`,
+        `img/${indicativo}-1.jpg`,
+        `img/${indicativo}-2.jpg`,
+        `img/${indicativo}-3.jpg`,
+        `img/${indicativo}.png`,
+        `img/${indicativo}-1.png`,
+        `img/${indicativo}-2.png`,
+        `img/${indicativo}-3.png`
+      ];
+
+      let encontradas = [];
+      let revisadas = 0;
+
+      posibles.forEach(ruta => {
+        const img = new Image();
+        img.src = ruta;
+
+        img.onload = function() {
+          encontradas.push(ruta);
+          revisadas++;
+          if (revisadas === posibles.length) mostrarResultados(encontradas, indicativo);
+        };
+
+        img.onerror = function() {
+          revisadas++;
+          if (revisadas === posibles.length) mostrarResultados(encontradas, indicativo);
+        };
+      });
+    }
+
+    function mostrarResultados(lista, indicativo) {
+      const resultado = document.getElementById("resultado");
+
+      if (lista.length === 0) {
+        resultado.innerHTML = `
+          <p style="color:red;font-size:1.3em;margin-top:20px;">
+            ❌ No existen QSLs para <strong>${indicativo}</strong>
+          </p>
+        `;
+
+        setTimeout(() => {
+          resultado.innerHTML = "";
+          document.getElementById("indicativo").value = "";
+        }, 2500);
+
+        return;
+      }
+
+      let html = `<h3>QSLs encontradas para ${indicativo}</h3>`;
+
+      lista.forEach(ruta => {
+        html += `
+          <div style="margin-top:20px;">
+            <img src="${ruta}">
+            <br>
+            <a href="${ruta}" download>⬇️ Descargar</a>
+          </div>
+        `;
+      });
+
+      resultado.innerHTML = html;
+    }
+  </script>
+
+</body>
+</html>
