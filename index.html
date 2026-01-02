@@ -79,6 +79,40 @@
 
   <script>
     function buscarQSL() {
+      <script>
+  function buscarQSL() {
+    const callsign = document.getElementById('callsign').value.trim().toUpperCase();
+    const resultado = document.getElementById('resultado');
+
+    // Base de datos: sustituye con tus archivos reales
+    const qslDB = {
+      "CL7ADV": ["cl7adv_2026.pdf","cl7adv_extra.pdf"],
+      "EA1ABC": ["ea1abc.pdf"],
+      "DL2FK": ["dl2fk.pdf"]
+    };
+
+    if (qslDB[callsign]) {
+      const archivos = qslDB[callsign];
+      if (archivos.length > 1) {
+        resultado.innerHTML = "<h3>QSLs disponibles:</h3>" +
+          archivos.map(a => `<a href="${a}" target="_blank" rel="noopener noreferrer">${a}</a>`).join("");
+      } else {
+        resultado.innerHTML = `<a href="${archivos[0]}" target="_blank" rel="noopener noreferrer">Descargar QSL</a>`;
+      }
+    } else {
+      resultado.innerHTML = `<p class="mensaje">
+        Hermandad mundial: aún no tienes QSL registrada, pero siempre eres parte de la familia CL7ADV.
+      </p>
+      <button onclick="volverInicio()" class="btn">Volver al inicio</button>`;
+    }
+  }
+
+  function volverInicio() {
+    document.getElementById('resultado').innerHTML = "";
+    document.getElementById('callsign').value = "";
+  }
+</script>
+
       const callsign = document.getElementById('callsign').value.trim().toUpperCase();
       const resultado = document.getElementById('resultado');
 
