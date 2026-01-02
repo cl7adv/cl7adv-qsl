@@ -57,23 +57,24 @@
     }
 
     .qsl-img {
-      max-width: 280px;
+      max-width: 100%;
       border: 4px solid #ffe082;
       border-radius: 12px;
-      margin: 10px;
+      margin: 5px;
       box-shadow: 0 0 15px #ffe082;
     }
 
     .descargar {
       display: inline-block;
-      margin-top: 10px;
-      padding: 10px 20px;
+      margin-top: 5px;
+      padding: 6px 12px;
       background: #4caf50;
       color: white;
       border-radius: 8px;
       text-decoration: none;
       font-weight: bold;
       transition: 0.3s;
+      font-size: 0.9rem;
     }
 
     .descargar:hover {
@@ -110,9 +111,10 @@
       margin: 5% auto;
       padding: 20px;
       border-radius: 12px;
-      width: 80%;
-      max-width: 700px;
+      width: 90%;
+      max-width: 900px;
       text-align: center;
+      position: relative;
     }
 
     .cerrar {
@@ -120,6 +122,24 @@
       font-size: 28px;
       font-weight: bold;
       cursor: pointer;
+    }
+
+    /* Galería en 3 columnas con scroll */
+    #listaQSLs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      max-height: 400px;
+      overflow-y: auto;
+      margin-top: 20px;
+      padding-right: 10px;
+    }
+
+    /* Botón fijo arriba a la derecha */
+    #btnTodas {
+      position: absolute;
+      top: 20px;
+      right: 20px;
     }
   </style>
 </head>
@@ -146,9 +166,8 @@
       <span class="cerrar" onclick="cerrarVentana()">&times;</span>
       <h2>QSLs disponibles</h2>
       <div id="contador"></div>
+      <button id="btnTodas" class="descargar" onclick="descargarTodas()">⬇️ Descargar todas</button>
       <div id="listaQSLs"></div>
-      <br>
-      <button class="descargar" onclick="descargarTodas()">⬇️ Descargar todas</button>
     </div>
   </div>
 
@@ -167,7 +186,6 @@
         return;
       }
 
-      // Generar lista de posibles rutas hasta 50 imágenes
       let posibles = [];
       posibles.push(`img/${indicativo}.jpg`);
       for (let i = 1; i <= 50; i++) {
@@ -201,7 +219,8 @@
       const listaQSLs = document.getElementById("listaQSLs");
       const contador = document.getElementById("contador");
 
-      listaQSLs.innerHTML = `<p>📡 Se encontraron ${lista.length} QSL para <strong>${indicativo}</strong></p>`;
+      listaQSLs.innerHTML = "";
+      contador.innerHTML = `<p class="mensaje">📡 Se encontraron ${lista.length} QSL para <strong>${indicativo}</strong></p>`;
       totalQSLs = lista.length;
       descargadas = 0;
       listaActual = lista;
@@ -213,12 +232,12 @@
           <div>
             <img src="${ruta}" alt="QSL de ${indicativo}" class="qsl-img">
             <br>
-            <a href="${ruta}" download class="descargar" onclick="marcarDescarga()">⬇️ Descargar QSL</a>
+            <a href="${ruta}" download class="descargar" onclick="marcarDescarga()">⬇️ Descargar</a>
           </div>
         `;
       });
 
-      ventana.style.display = "block"; // abre la ventana
+      ventana.style.display = "block";
     }
 
     function actualizarContador() {
@@ -230,8 +249,7 @@
       descargadas++;
       actualizarContador();
       if (descargadas >= totalQSLs) {
-        const listaQSLs = document.getElementById("listaQSLs");
-        listaQSLs.innerHTML = `<p class="mensaje">✅ Has descargado todas tus QSL, buenos DXs 🌺</p>`;
+        document.getElementById("listaQSLs").innerHTML = `<p class="mensaje">✅ Has descargado todas tus QSL, buenos DXs 🌺</p>`;
         setTimeout(() => {
           cerrarVentana();
           document.getElementById("resultado").innerHTML = "";
@@ -240,26 +258,4 @@
       }
     }
 
-    function descargarTodas() {
-      listaActual.forEach(ruta => {
-        const link = document.createElement("a");
-        link.href = ruta;
-        link.download = ruta.split("/").pop();
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        descargadas++;
-      });
-      actualizarContador();
-      if (descargadas >= totalQSLs) {
-        const listaQSLs = document.getElementById("listaQSLs");
-        listaQSLs.innerHTML = `<p class="mensaje">✅ Has descargado todas tus QSL, buenos DXs 🌺</p>`;
-        setTimeout(() => {
-          cerrarVentana();
-          document.getElementById("resultado").innerHTML = "";
-          document.getElementById("indicativo").value = "";
-        }, 2000);
-      }
-    }
-
-    function cerrarVentana
+    function descargar
