@@ -2,143 +2,55 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Navegador QSL 2026</title>
+<title>Navegador QSL Fácil</title>
 <style>
-  body { font-family: Arial, sans-serif; margin:0; background:#f0f8ff; color:#003366; }
-  header {
-    position: relative; text-align: center; padding: 40px 20px;
-    background: #87CEEB; /* celeste */
-    color: #003366;
-  }
-  .sky { position: relative; height: 140px; }
-  .sun {
-    width: 90px; height: 90px;
-    background: radial-gradient(circle, #FFD700 40%, #FFA500 100%);
-    border-radius: 50%;
-    position: absolute; top: 20px; left: 30px;
-    box-shadow: 0 0 40px #FFD700;
-  }
-  .tower {
-    width: 6px; height: 120px;
-    background: #333;
-    position: absolute; bottom: 0; right: 60px;
-  }
-  .tower::before, .tower::after {
-    content:""; position: absolute; width: 0; height: 0;
-    border-left: 30px solid transparent;
-    border-right: 30px solid transparent;
-    border-bottom: 40px solid #333;
-    left: -27px;
-  }
-  .tower::before { top: -40px; }
-  .tower::after { top: -80px; }
-  /* Ondas animadas */
-  .wave {
-    position: absolute; bottom: 100px; right: 63px;
-    width: 0; height: 0; border: 2px solid #003366;
-    border-radius: 50%; animation: pulse 3s infinite;
-  }
-  .wave:nth-child(1){ animation-delay:0s; }
-  .wave:nth-child(2){ animation-delay:1s; }
-  .wave:nth-child(3){ animation-delay:2s; }
-  @keyframes pulse {
-    from { width:0; height:0; opacity:1; }
-    to { width:120px; height:120px; opacity:0; }
-  }
-  h1 { margin-top: 20px; font-size: 26px; font-weight: bold; }
-  .search { padding:20px; text-align:center; }
-  input, select { padding:10px; border-radius:5px; border:1px solid #003366; margin:5px; }
-  button { padding:10px 15px; background:#FFD700; border:none; border-radius:5px; cursor:pointer; }
-  .results { display:flex; flex-wrap:wrap; justify-content:center; gap:20px; padding:20px; transition: all 0.5s ease; }
-  .card { background:#fff; padding:10px; border-radius:10px; text-align:center; box-shadow:0 0 5px #999; }
+  body { font-family: Arial, sans-serif; background:#f0f8ff; color:#003366; text-align:center; }
+  h1 { background:#87CEEB; padding:20px; }
+  input { padding:10px; margin:5px; }
+  button { padding:10px; background:#FFD700; border:none; cursor:pointer; }
+  .results { display:flex; flex-wrap:wrap; justify-content:center; gap:20px; margin-top:20px; }
+  .card { background:#fff; padding:10px; border-radius:10px; box-shadow:0 0 5px #999; }
   .card img { max-width:200px; border-radius:5px; }
-  .message { text-align:center; padding:20px; color:#555; font-style:italic; }
-  footer { background:#87CEEB; padding:15px; text-align:center; color:#003366; font-weight:bold; }
 </style>
 </head>
 <body>
 
-<header>
-  <div class="sky">
-    <div class="sun"></div>
-    <div class="tower"></div>
-    <div class="wave"></div>
-    <div class="wave"></div>
-    <div class="wave"></div>
-  </div>
-  <h1>Saludos en el aire · 2026 · Hermandad QSL</h1>
-</header>
+<h1>Hermandad QSL · 2026</h1>
 
-<div class="search">
-  <input id="callsign" type="text" placeholder="Ingresa indicativo (ej. CL7ADV)">
-  <select id="band">
-    <option value="">Banda</option>
-    <option>10m</option><option>20m</option><option>40m</option><option>80m</option>
-  </select>
-  <select id="mode">
-    <option value="">Modo</option>
-    <option>SSB</option><option>CW</option><option>FT8</option><option>FM</option>
-  </select>
-  <button onclick="buscar()">Buscar</button>
-</div>
+<input id="callsign" type="text" placeholder="Ingresa indicativo (ej. CL7ADV)">
+<button onclick="buscar()">Buscar</button>
 
 <div id="results" class="results"></div>
-<div id="message" class="message" style="display:none;"></div>
-
-<footer>
-  Alfred CL7ADV · Cuba
-</footer>
+<div id="message"></div>
 
 <script>
-const qslData = [
-  { callsign:"CL7ADV", file:"img/CL7ADV_1.jpg", band:"20m", mode:"SSB" },
-  { callsign:"CL7ADV", file:"img/CL7ADV_2.jpg", band:"40m", mode:"FT8" },
-  { callsign:"CM8XYZ", file:"img/CM8XYZ.jpg", band:"20m", mode:"CW" }
+// Lista de imágenes (ajusta según lo que tengas en la carpeta)
+const qslImages = [
+  "CL7ADV_1.jpg",
+  "CL7ADV_2.jpg",
+  "CM8XYZ.jpg"
 ];
 
 function buscar(){
   const indicativo = document.getElementById("callsign").value.trim().toUpperCase();
-  const band = document.getElementById("band").value;
-  const mode = document.getElementById("mode").value;
   const results = document.getElementById("results");
   const message = document.getElementById("message");
   results.innerHTML = "";
-  message.style.display = "none";
+  message.innerHTML = "";
 
-  const matches = qslData.filter(qsl =>
-    (!indicativo || qsl.callsign === indicativo) &&
-    (!band || qsl.band === band) &&
-    (!mode || qsl.mode === mode)
-  );
-
+  const matches = qslImages.filter(img => img.toUpperCase().includes(indicativo));
+  
   if(matches.length > 0){
-    matches.forEach(qsl=>{
+    matches.forEach(file=>{
       const card = document.createElement("div");
       card.className="card";
-      card.innerHTML = `<img src="${qsl.file}" alt="QSL ${qsl.callsign}">
-                        <br><button onclick="descargar('${qsl.file}')">Descargar QSL</button>`;
+      card.innerHTML = `<img src="images/${file}" alt="QSL ${indicativo}">
+                        <br><a href="images/${file}" download>Descargar</a>`;
       results.appendChild(card);
     });
   } else {
-    message.innerHTML = "No hay QSLs para esta búsqueda.<br><button onclick='inicio()'>Volver al inicio</button>";
-    message.style.display = "block";
+    message.innerHTML = "No hay QSLs para este indicativo.";
   }
-}
-
-function descargar(file){
-  const link = document.createElement("a");
-  link.href = file;
-  link.download = file.split("/").pop();
-  link.click();
-  setTimeout(inicio, 3000); // volver al inicio tras 3 segundos
-}
-
-function inicio(){
-  document.getElementById("results").innerHTML="";
-  document.getElementById("message").style.display="none";
-  document.getElementById("callsign").value="";
-  document.getElementById("band").value="";
-  document.getElementById("mode").value="";
 }
 </script>
 
