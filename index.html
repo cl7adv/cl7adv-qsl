@@ -145,6 +145,7 @@
     <div class="modal-contenido">
       <span class="cerrar" onclick="cerrarVentana()">&times;</span>
       <h2>QSLs disponibles</h2>
+      <div id="contador"></div>
       <div id="listaQSLs"></div>
       <br>
       <button class="descargar" onclick="descargarTodas()">⬇️ Descargar todas</button>
@@ -198,11 +199,14 @@
     function mostrarQSLs(lista, indicativo) {
       const ventana = document.getElementById("ventanaQSL");
       const listaQSLs = document.getElementById("listaQSLs");
-      listaQSLs.innerHTML = `<p>📡 Se encontraron ${lista.length} QSL para <strong>${indicativo}</strong></p>`;
+      const contador = document.getElementById("contador");
 
+      listaQSLs.innerHTML = `<p>📡 Se encontraron ${lista.length} QSL para <strong>${indicativo}</strong></p>`;
       totalQSLs = lista.length;
       descargadas = 0;
       listaActual = lista;
+
+      actualizarContador();
 
       lista.forEach(ruta => {
         listaQSLs.innerHTML += `
@@ -217,8 +221,14 @@
       ventana.style.display = "block"; // abre la ventana
     }
 
+    function actualizarContador() {
+      const contador = document.getElementById("contador");
+      contador.innerHTML = `<p class="mensaje">Has descargado ${descargadas} de ${totalQSLs} QSL</p>`;
+    }
+
     function marcarDescarga() {
       descargadas++;
+      actualizarContador();
       if (descargadas >= totalQSLs) {
         const listaQSLs = document.getElementById("listaQSLs");
         listaQSLs.innerHTML = `<p class="mensaje">✅ Has descargado todas tus QSL, buenos DXs 🌺</p>`;
@@ -238,15 +248,18 @@
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+        descargadas++;
       });
-      descargadas = totalQSLs;
-      marcarDescarga();
+      actualizarContador();
+      if (descargadas >= totalQSLs) {
+        const listaQSLs = document.getElementById("listaQSLs");
+        listaQSLs.innerHTML = `<p class="mensaje">✅ Has descargado todas tus QSL, buenos DXs 🌺</p>`;
+        setTimeout(() => {
+          cerrarVentana();
+          document.getElementById("resultado").innerHTML = "";
+          document.getElementById("indicativo").value = "";
+        }, 2000);
+      }
     }
 
-    function cerrarVentana() {
-      document.getElementById("ventanaQSL").style.display = "none";
-    }
-  </script>
-
-</body>
-</html>
+    function cerrarVentana
