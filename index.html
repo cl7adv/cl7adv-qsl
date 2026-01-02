@@ -1,159 +1,53 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <title>CL7ADV – QSLs de Amistad</title>
-  <style>
-    body {
-      font-family: "Georgia", serif;
-      background: #fdfaf6;
-      color: #002b5c;
-      margin: 0;
-      padding: 0;
-      text-align: center;
-    }
-    /* Portada */
-    .portada {
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      background: linear-gradient(135deg, #002b5c, #c9a86a);
-      color: white;
-    }
-    .portada h1 {
-      font-size: 3.5em;
-      margin-bottom: 20px;
-      text-shadow: 2px 2px #000;
-    }
-    .portada button {
-      padding: 15px 30px;
-      font-size: 1.2em;
-      background: #c9a86a;
-      color: #002b5c;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-    .portada button:hover {
-      background: white;
-      color: #002b5c;
-    }
-    /* Galería */
-    .galeria {
-      display: none;
-      padding: 40px;
-    }
-    .qsl-gallery {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 20px;
-    }
-    .qsl-gallery img {
-      width: 220px;
-      border: 3px solid #c9a86a;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: transform 0.3s;
-    }
-    .qsl-gallery img:hover {
-      transform: scale(1.05);
-    }
-    /* Modal */
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 1000;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.8);
-      justify-content: center;
-      align-items: center;
-    }
-    .modal img {
-      max-width: 90%;
-      max-height: 90%;
-      border: 5px solid #c9a86a;
-      border-radius: 10px;
-    }
-    .modal span {
-      position: absolute;
-      top: 20px;
-      right: 40px;
-      font-size: 2em;
-      color: white;
-      cursor: pointer;
-    }
-    #contador {
-      margin-top: 30px;
-      font-size: 1.3em;
-      color: #444;
-    }
-    footer {
-      margin-top: 40px;
-      font-size: 0.9em;
-      color: #666;
-    }
-  </style>
-</head>
-<body>
-  <!-- Portada -->
-  <div class="portada" id="portada">
-    <h1>CL7ADV – QSLs de Amistad</h1>
-    <button onclick="mostrarGaleria()">Entrar a la galería</button>
-  </div>
+/* Portada elegante */
+.portada {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #001a33, #004b8d, #c9a86a);
+  background-size: 300% 300%;
+  animation: fondo 12s ease infinite;
+  color: white;
+  text-align: center;
+  padding: 20px;
+}
 
-  <!-- Galería -->
-  <div class="galeria" id="galeria">
-    <h2>Galería de QSLs</h2>
-    <div class="qsl-gallery">
-      <img src="img/EA1062RCV_28(1).jpg" alt="QSL EA1062RCV" onclick="abrirModal(this.src)">
-      <img src="img/EA5FM_4(1).jpg" alt="QSL EA5FM" onclick="abrirModal(this.src)">
-      <img src="img/EA5JQE_5(1).jpg" alt="QSL EA5JQE" onclick="abrirModal(this.src)">
-      <img src="img/EA7IM_7(1).jpg" alt="QSL EA7IM" onclick="abrirModal(this.src)">
-      <img src="img/HJ3MAO_18(1).jpg" alt="QSL HJ3MAO" onclick="abrirModal(this.src)">
-      <img src="img/HJ5RTD_20(1).jpg" alt="QSL HJ5RTD" onclick="abrirModal(this.src)">
-      <img src="img/HJ6JBV_15(1).jpg" alt="QSL HJ6JBV" onclick="abrirModal(this.src)">
-      <img src="img/HP3GNG_0(1).jpg" alt="QSL HP3GNG" onclick="abrirModal(this.src)">
-      <img src="img/LU2BR_16(1).jpg" alt="QSL LU2BR" onclick="abrirModal(this.src)">
-    </div>
+@keyframes fondo {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
 
-    <p id="contador">Visitas: cargando...</p>
-    <script>
-      fetch('https://api.countapi.xyz/hit/cl7adv/qsl')
-        .then(response => response.json())
-        .then(data => {
-          document.getElementById('contador').innerText = "Visitas: " + data.value;
-        });
-    </script>
+.portada h1 {
+  font-size: 4em;
+  margin-bottom: 20px;
+  text-shadow: 3px 3px 10px rgba(0,0,0,0.6);
+  letter-spacing: 2px;
+  color: #f5e6c8;
+}
 
-    <footer>
-      © 2026 CL7ADV – Hermandad y respeto en la radioafición
-    </footer>
-  </div>
+.portada p {
+  font-size: 1.3em;
+  margin-bottom: 30px;
+  color: #f8f8f8;
+}
 
-  <!-- Modal -->
-  <div class="modal" id="modal">
-    <span onclick="cerrarModal()">&times;</span>
-    <img id="imagenModal" src="">
-  </div>
+.portada button {
+  padding: 18px 40px;
+  font-size: 1.3em;
+  background: #c9a86a;
+  color: #002b5c;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+  transition: 0.3s;
+}
 
-  <script>
-    function mostrarGaleria() {
-      document.getElementById("portada").style.display = "none";
-      document.getElementById("galeria").style.display = "block";
-    }
-    function abrirModal(src) {
-      document.getElementById("imagenModal").src = src;
-      document.getElementById("modal").style.display = "flex";
-    }
-    function cerrarModal() {
-      document.getElementById("modal").style.display = "none";
-    }
-  </script>
-</body>
-</html>
+.portada button:hover {
+  background: #f5e6c8;
+  color: #001a33;
+  transform: scale(1.05);
+}
