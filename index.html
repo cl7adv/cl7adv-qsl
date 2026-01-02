@@ -1,35 +1,100 @@
+<div class="buscador">
+  <h2>🔍 Buscar mi QSL</h2>
+  <p>Escriba su indicativo para ver y descargar su tarjeta:</p>
+
+  <input type="text" id="indicativo" placeholder="Ej: LU1ABC">
+  <button onclick="buscarQSL()">Buscar</button>
+
+  <div id="resultado"></div>
+</div>
+
+<style>
+  .buscador {
+    margin-top: 40px;
+    padding: 30px;
+    background: #ffffff;
+    border-radius: 15px;
+    width: 80%;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+  }
+
+  .buscador h2 {
+    font-size: 2.2em;
+    color: #004b8d;
+    margin-bottom: 10px;
+  }
+
+  .buscador p {
+    font-size: 1.3em;
+    color: #333;
+    margin-bottom: 20px;
+  }
+
+  .buscador input {
+    width: 80%;
+    padding: 15px;
+    font-size: 1.3em;
+    border: 2px solid #c9a86a;
+    border-radius: 10px;
+    text-align: center;
+    outline: none;
+    margin-bottom: 15px;
+  }
+
+  .buscador button {
+    padding: 15px 35px;
+    font-size: 1.3em;
+    background: #c9a86a;
+    color: #002b5c;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.3s;
+  }
+
+  .buscador button:hover {
+    background: #f5e6c8;
+    transform: scale(1.05);
+  }
+
+  #resultado img {
+    margin-top: 20px;
+    max-width: 300px;
+    border: 4px solid #c9a86a;
+    border-radius: 12px;
+  }
+
+  #resultado a {
+    display: inline-block;
+    margin-top: 15px;
+    padding: 12px 25px;
+    background: #004b8d;
+    color: white;
+    text-decoration: none;
+    border-radius: 10px;
+    font-size: 1.2em;
+    font-weight: bold;
+  }
+
+  #resultado a:hover {
+    background: #002b5c;
+  }
+</style>
+
 <script>
   function buscarQSL() {
     const indicativo = document.getElementById("indicativo").value.trim().toUpperCase();
     const ruta = `img/${indicativo}.jpg`;
     const resultado = document.getElementById("resultado");
 
-    // Crear imagen temporal para verificar si existe
-    const img = new Image();
-    img.src = ruta;
-
-    img.onload = function() {
-      // Si existe, mostrarla
-      resultado.innerHTML = `
-        <img src="${ruta}" alt="QSL de ${indicativo}">
-        <br>
-        <a href="${ruta}" download>⬇️ Descargar QSL</a>
-      `;
-    };
-
-    img.onerror = function() {
-      // Si NO existe, mostrar mensaje y limpiar después
-      resultado.innerHTML = `
-        <p style="color:red;font-size:1.3em;margin-top:20px;">
-          ❌ No se encontró una QSL para <strong>${indicativo}</strong>
-        </p>
-      `;
-
-      // Volver al estado inicial después de 3 segundos
-      setTimeout(() => {
-        resultado.innerHTML = "";
-        document.getElementById("indicativo").value = "";
-      }, 3000);
-    };
+    resultado.innerHTML = `
+      <img src="${ruta}" alt="QSL de ${indicativo}">
+      <br>
+      <a href="${ruta}" download>⬇️ Descargar QSL</a>
+    `;
   }
 </script>
