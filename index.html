@@ -258,4 +258,16 @@
       }
     }
 
-    function descargar
+    function descargarTodas() {
+      listaActual.forEach(ruta => {
+        const link = document.createElement("a");
+        link.href = ruta;
+        link.download = ruta.split("/").pop();
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        descargadas++;
+      });
+      actualizarContador();
+      if (descargadas >= totalQSLs) {
+        document.getElementById("lista
