@@ -27,3 +27,55 @@
     </p>
   </div>
 </body>
+<body style="background:#0e2431;color:#e6faff;font-family:Verdana,Arial,sans-serif;text-align:center;">
+
+  <h1 style="color:#00ff99;text-shadow:0 0 12px #00ff99;">
+    SALUDOS DE CL7ADV · AÑO 2026
+  </h1>
+  <p style="color:#ffffff;text-shadow:0 0 8px #ff00ff;">
+    Ingresa tu indicativo para buscar tus QSLs
+  </p>
+
+  <input id="callsign" type="text" placeholder="Tu indicativo"
+         style="padding:10px;border-radius:6px;border:2px solid #00ff99;">
+  <button onclick="buscarQSL()" 
+          style="margin-left:10px;padding:10px 20px;background:#00ff99;color:#0e2431;
+          border:none;border-radius:6px;box-shadow:0 0 10px #00ff99;font-weight:bold;">
+    Buscar
+  </button>
+
+  <div id="resultado" style="margin-top:20px;"></div>
+
+  <script>
+    function buscarQSL() {
+      const callsign = document.getElementById('callsign').value.trim().toUpperCase();
+      const resultado = document.getElementById('resultado');
+
+      // Simulación: base de datos de QSLs
+      const qslDB = {
+        "EA1ABC": ["ea1abc_qsl1.pdf","ea1abc_qsl2.pdf"],
+        "DL2FK": ["dl2fk_qsl.pdf"]
+      };
+
+      if (qslDB[callsign]) {
+        const archivos = qslDB[callsign];
+        if (archivos.length > 1) {
+          resultado.innerHTML = "<h3>QSLs disponibles:</h3>" +
+            archivos.map(a => `<a href="${a}" target="_blank" rel="noopener noreferrer"
+              style="display:block;margin:10px;padding:10px;background:#00ff99;color:#0e2431;
+              text-decoration:none;border-radius:6px;box-shadow:0 0 10px #00ff99;font-weight:bold;">
+              Descargar ${a}</a>`).join("");
+        } else {
+          resultado.innerHTML = `<a href="${archivos[0]}" target="_blank" rel="noopener noreferrer"
+            style="display:inline-block;margin:10px;padding:10px;background:#00ff99;color:#0e2431;
+            text-decoration:none;border-radius:6px;box-shadow:0 0 10px #00ff99;font-weight:bold;">
+            Descargar QSL</a>`;
+        }
+      } else {
+        resultado.innerHTML = `<p style="color:#00ff99;text-shadow:0 0 6px #00ff99;">
+          Hermandad mundial: aún no tienes QSL registrada, pero siempre eres parte de la familia CL7ADV.
+        </p>`;
+      }
+    }
+  </script>
+</body>
