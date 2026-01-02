@@ -1,39 +1,28 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <title>CL7ADV – QSLs de Amistad</title>
-  <style>
-    body {
-      font-family: "Georgia", serif;
-      background: #fdfaf6;
-      color: #002b5c;
-      margin: 0;
-      padding: 0;
-      text-align: center;
-    }
+<!-- Modal -->
+<div class="modal" id="modal">
+  <span onclick="cerrarModal()">&times;</span>
+  <div style="text-align:center;">
+    <img id="imagenModal" src="">
+    <br>
+    <a id="descargarModal" href="" download 
+       style="display:inline-block;margin-top:20px;padding:12px 25px;
+              background:#c9a86a;color:#002b5c;text-decoration:none;
+              border-radius:8px;font-weight:bold;">
+      Descargar esta QSL
+    </a>
+  </div>
+</div>
 
-    /* Portada elegante */
-    .portada {
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      background: linear-gradient(135deg, #001a33, #004b8d, #c9a86a);
-      background-size: 300% 300%;
-      animation: fondo 12s ease infinite;
-      color: white;
-      text-align: center;
-      padding: 20px;
-      opacity: 1;
-      transition: opacity 1s ease;
-    }
-    @keyframes fondo {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
+<script>
+  function abrirModal(src) {
+    document.getElementById("imagenModal").src = src;
+    document.getElementById("descargarModal").href = src;
+    document.getElementById("modal").style.display = "flex";
+  }
+  function cerrarModal() {
+    document.getElementById("modal").style.display = "none";
+  }
+</script>
     .portada h1 {
       font-size: 4em;
       margin-bottom: 20px;
