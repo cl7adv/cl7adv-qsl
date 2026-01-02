@@ -1,1 +1,165 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Navegador QSL Caribeño - CL7ADV</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Trebuchet MS", Arial, sans-serif;
+      background: linear-gradient(to bottom, #00bcd4, #009688);
+      color: #fff;
+      text-align: center;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 25px;
+      background: rgba(0,0,0,0.4);
+      border-radius: 15px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.6);
+    }
+
+    h1 {
+      font-size: 2.2rem;
+      margin-bottom: 15px;
+      text-shadow: 0 0 10px #ffe082;
+    }
+
+    #indicativo {
+      padding: 12px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 8px;
+      margin-right: 10px;
+      width: 220px;
+    }
+
+    #buscarBtn {
+      padding: 12px 20px;
+      font-size: 1rem;
+      background: #ff9800;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+
+    #buscarBtn:hover {
+      background: #f57c00;
+    }
+
+    #resultado {
+      margin-top: 25px;
+    }
+
+    .qsl-img {
+      max-width: 280px;
+      border: 4px solid #ffe082;
+      border-radius: 12px;
+      margin: 10px;
+      box-shadow: 0 0 15px #ffe082;
+    }
+
+    .descargar {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 10px 20px;
+      background: #4caf50;
+      color: white;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+
+    .descargar:hover {
+      background: #388e3c;
+    }
+
+    .mensaje {
+      font-size: 1.3rem;
+      margin-top: 20px;
+      color: #ffe082;
+      text-shadow: 0 0 8px #ffeb3b;
+    }
+
+    footer {
+      margin-top: 40px;
+      font-size: 1.1rem;
+      color: #ffe082;
+      text-shadow: 0 0 8px #ffeb3b;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>🌴 Bienvenido al sitio QSL Caribeño 🌊</h1>
+    <p>Escribe tu indicativo para buscar tus tarjetas QSL</p>
+
+    <input type="text" id="indicativo" placeholder="Ej: CL7ADV">
+    <button id="buscarBtn" onclick="buscarQSL()">Buscar QSL</button>
+
+    <div id="resultado"></div>
+
+    <footer>
+      — CL7ADV — Buenos DXs en este 2026<br>
+      Motor del proyecto: Alfred
+    </footer>
+  </div>
+
+  <script>
+    function buscarQSL() {
+      const indicativo = document.getElementById("indicativo").value.trim().toUpperCase();
+      const resultado = document.getElementById("resultado");
+
+      if (!indicativo) {
+        resultado.innerHTML = `<p class="mensaje">🌺 Por favor escribe un indicativo</p>`;
+        setTimeout(() => { resultado.innerHTML = ""; }, 3000);
+        return;
+      }
+
+      // Simulación: buscar múltiples imágenes
+      const posibles = [`img/${indicativo}.jpg`, `img/${indicativo}-1.jpg`, `img/${indicativo}-2.jpg`];
+      let encontradas = [];
+
+      posibles.forEach(ruta => {
+        const img = new Image();
+        img.src = ruta;
+        img.onload = () => {
+          encontradas.push(ruta);
+          mostrarQSLs(encontradas, indicativo);
+        };
+      });
+
+      setTimeout(() => {
+        if (encontradas.length === 0) {
+          resultado.innerHTML = `<p class="mensaje">🌺 No tenemos QSL para <strong>${indicativo}</strong>, pero tu visita siempre es bienvenida.</p>`;
+          setTimeout(() => { resultado.innerHTML = ""; document.getElementById("indicativo").value = ""; }, 3000);
+        }
+      }, 1500);
+    }
+
+    function mostrarQSLs(lista, indicativo) {
+      const resultado = document.getElementById("resultado");
+      resultado.innerHTML = "";
+      lista.forEach(ruta => {
+        resultado.innerHTML += `
+          <div>
+            <img src="${ruta}" alt="QSL de ${indicativo}" class="qsl-img">
+            <br>
+            <a href="${ruta}" download class="descargar">⬇️ Descargar QSL</a>
+          </div>
+        `;
+      });
+      setTimeout(() => { resultado.innerHTML = ""; document.getElementById("indicativo").value = ""; }, 3000);
+    }
+  </script>
+
+</body>
+</html>
 
