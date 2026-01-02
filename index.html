@@ -1,80 +1,22 @@
-<!-- PORTADA -->
-<div class="portada" id="portada">
-  <h1>CL7ADV – QSLs de Amistad</h1>
-  <p class="subtitulo">Hermandad, respeto y radioafición desde Cuba para el mundo</p>
-  <button onclick="mostrarGaleria()">Entrar a la galería</button>
+<div class="buscador">
+  <h2>Buscador de QSLs</h2>
+  <p>Ingresá tu indicativo para ver tu tarjeta:</p>
+  <input type="text" id="indicativo" placeholder="Ej: LU1ABC">
+  <button onclick="buscarQSL()">Buscar</button>
+  <div id="resultado"></div>
 </div>
 
-<style>
-  body {
-    font-family: "Georgia", serif;
-    background: #fdfaf6;
-    color: #002b5c;
-    margin: 0;
-    padding: 0;
-    text-align: center;
+<script>
+  function buscarQSL() {
+    const indicativo = document.getElementById("indicativo").value.trim().toUpperCase();
+    const ruta = `img/${indicativo}.jpg`;
+    const resultado = document.getElementById("resultado");
+    resultado.innerHTML = `
+      <img src="${ruta}" alt="QSL de ${indicativo}" style="max-width:300px;border:3px solid #c9a86a;border-radius:10px;">
+      <br>
+      <a href="${ruta}" download style="display:inline-block;margin-top:10px;padding:10px 20px;background:#c9a86a;color:#002b5c;border-radius:8px;text-decoration:none;font-weight:bold;">
+        ⬇️ Descargar QSL
+      </a>
+    `;
   }
-
-  /* Portada elegante mejorada */
-  .portada {
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    background: linear-gradient(135deg, #001a33, #004b8d, #c9a86a);
-    background-size: 300% 300%;
-    animation: fondo 12s ease infinite;
-    color: white;
-    padding: 20px;
-    opacity: 1;
-    transition: opacity 1s ease;
-  }
-
-  @keyframes fondo {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-  }
-
-  .portada h1 {
-    font-size: 3.5em;
-    margin-bottom: 10px;
-    text-shadow: 3px 3px 10px rgba(0,0,0,0.6);
-    letter-spacing: 2px;
-    color: #f5e6c8;
-    animation: fadeIn 2s ease;
-  }
-
-  .subtitulo {
-    font-size: 1.3em;
-    margin-bottom: 30px;
-    color: #f8f8f8;
-    animation: fadeIn 3s ease;
-  }
-
-  .portada button {
-    padding: 15px 35px;
-    font-size: 1.2em;
-    background: #f5e6c8;
-    color: #002b5c;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    font-weight: bold;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.4);
-    transition: 0.3s;
-    animation: fadeIn 4s ease;
-  }
-
-  .portada button:hover {
-    background: #c9a86a;
-    color: #001a33;
-    transform: scale(1.05);
-  }
-
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
-</style>
+</script>
