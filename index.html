@@ -166,7 +166,54 @@
   <div class="galeria" id="galeria">
     <h2>Galería de QSLs</h2>
     <div class="qsl-gallery">
+      <!-- Aquí van TODAS tus imágenes -->
       <img src="img/EA1062RCV_28(1).jpg" alt="QSL EA1062RCV" onclick="abrirModal(this.src)">
       <img src="img/EA5FM_4(1).jpg" alt="QSL EA5FM" onclick="abrirModal(this.src)">
       <img src="img/EA5JQE_5(1).jpg" alt="QSL EA5JQE" onclick="abrirModal(this.src)">
       <img src="img/EA7IM_7(1).jpg" alt="QSL EA7IM" onclick="abrirModal(this.src)">
+      <img src="img/HJ3MAO_18(1).jpg" alt="QSL HJ3MAO" onclick="abrirModal(this.src)">
+      <img src="img/HJ5RTD_20(1).jpg" alt="QSL HJ5RTD" onclick="abrirModal(this.src)">
+      <img src="img/HJ6JBV_15(1).jpg" alt="QSL HJ6JBV" onclick="abrirModal(this.src)">
+      <img src="img/HP3GNG_0(1).jpg" alt="QSL HP3GNG" onclick="abrirModal(this.src)">
+      <img src="img/LU2BR_16(1).jpg" alt="QSL LU2BR" onclick="abrirModal(this.src)">
+      <!-- Añade aquí las demás hasta completar las 21 -->
+    </div>
+
+    <p id="contador">Visitas: cargando...</p>
+    <script>
+      fetch('https://api.countapi.xyz/hit/cl7adv/qsl')
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById('contador').innerText = "Visitas: " + data.value;
+        });
+    </script>
+
+    <footer>
+      © 2026 CL7ADV – Hermandad y respeto en la radioafición
+    </footer>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal" id="modal">
+    <span onclick="cerrarModal()">&times;</span>
+    <img id="imagenModal" src="">
+    <a id="descargarModal" href="" download>Descargar esta QSL</a>
+  </div>
+
+  <script>
+    function mostrarGaleria() {
+      document.getElementById("portada").style.opacity = "0";
+      setTimeout(() => {
+        document.getElementById("portada").style.display = "none";
+        document.getElementById("galeria").style.display = "block";
+        setTimeout(() => {
+          document.getElementById("galeria").style.opacity = "1";
+        }, 50);
+      }, 1000);
+    }
+    function abrirModal(src) {
+      document.getElementById("imagenModal").src = src;
+      document.getElementById("descargarModal").href = src;
+      document.getElementById("modal").style.display = "flex";
+    }
+    function cerrarModal() {
