@@ -2,139 +2,126 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>QSLs de Amistad – CL7ADV</title>
+<title>Navegador QSL 2026</title>
 <style>
-    body {
-        font-family: "Georgia", serif;
-        background: #f4f4f4;
-        margin: 0;
-        padding: 0;
-        color: #222;
-    }
-    header {
-        background: #0a1a33;
-        color: white;
-        padding: 25px;
-        text-align: center;
-        border-bottom: 5px solid #c9a86a;
-    }
-    h1 {
-        margin: 0;
-        font-size: 38px;
-        letter-spacing: 2px;
-    }
-    h2 {
-        color: #0a1a33;
-        border-left: 5px solid #c9a86a;
-        padding-left: 10px;
-    }
-    .container {
-        width: 90%;
-        max-width: 900px;
-        margin: auto;
-        padding: 20px;
-    }
-    .qsl-gallery img {
-        width: 100%;
-        max-width: 260px;
-        margin: 10px;
-        border: 3px solid #c9a86a;
-        border-radius: 5px;
-    }
-    .qsl-gallery {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-    }
-    form {
-        background: white;
-        padding: 20px;
-        border-radius: 8px;
-        border: 2px solid #c9a86a;
-    }
-    input, select, textarea {
-        width: 100%;
-        padding: 10px;
-        margin-top: 8px;
-        margin-bottom: 15px;
-        border: 1px solid #aaa;
-        border-radius: 5px;
-    }
-    button {
-        background: #0a1a33;
-        color: white;
-        padding: 12px 20px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        font-size: 16px;
-    }
-    footer {
-        text-align: center;
-        padding: 20px;
-        background: #0a1a33;
-        color: white;
-        margin-top: 40px;
-    }
+  body { font-family: Arial, sans-serif; margin:0; background:#f0f8ff; color:#003366; }
+  header {
+    position: relative; text-align: center; padding: 40px 20px;
+    background: #87CEEB; /* celeste */
+    color: #003366;
+  }
+  .sky { position: relative; height: 140px; }
+  .sun {
+    width: 90px; height: 90px;
+    background: radial-gradient(circle, #FFD700 40%, #FFA500 100%);
+    border-radius: 50%;
+    position: absolute; top: 20px; left: 30px;
+    box-shadow: 0 0 40px #FFD700;
+  }
+  .tower {
+    width: 6px; height: 120px;
+    background: #333;
+    position: absolute; bottom: 0; right: 60px;
+  }
+  .tower::before, .tower::after {
+    content:""; position: absolute; width: 0; height: 0;
+    border-left: 30px solid transparent;
+    border-right: 30px solid transparent;
+    border-bottom: 40px solid #333;
+    left: -27px;
+  }
+  .tower::before { top: -40px; }
+  .tower::after { top: -80px; }
+  /* Ondas animadas */
+  .wave {
+    position: absolute; bottom: 100px; right: 63px;
+    width: 0; height: 0; border: 2px solid #003366;
+    border-radius: 50%; animation: pulse 3s infinite;
+  }
+  .wave:nth-child(1){ animation-delay:0s; }
+  .wave:nth-child(2){ animation-delay:1s; }
+  .wave:nth-child(3){ animation-delay:2s; }
+  @keyframes pulse {
+    from { width:0; height:0; opacity:1; }
+    to { width:120px; height:120px; opacity:0; }
+  }
+  h1 { margin-top: 20px; font-size: 26px; font-weight: bold; }
+  .search { padding:20px; text-align:center; }
+  input { padding:10px; border-radius:5px; border:1px solid #003366; }
+  button { padding:10px 15px; background:#FFD700; border:none; border-radius:5px; cursor:pointer; }
+  .results { display:flex; flex-wrap:wrap; justify-content:center; gap:20px; padding:20px; transition: all 0.5s ease; }
+  .card { background:#fff; padding:10px; border-radius:10px; text-align:center; box-shadow:0 0 5px #999; }
+  .card img { max-width:200px; border-radius:5px; }
+  .message { text-align:center; padding:20px; color:#555; font-style:italic; }
+  footer { background:#87CEEB; padding:15px; text-align:center; color:#003366; font-weight:bold; }
 </style>
 </head>
-
 <body>
 
 <header>
-    <h1>CL7ADV – QSLs de Amistad</h1>
-    <p>Un gracias estamos en frecuencia.</p>
+  <div class="sky">
+    <div class="sun"></div>
+    <div class="tower"></div>
+    <div class="wave"></div>
+    <div class="wave"></div>
+    <div class="wave"></div>
+  </div>
+  <h1>Saludos en el aire · 2026 · Hermandad QSL</h1>
 </header>
 
-<div class="container">
-
-    <h2>Galería de QSL</h2>
-    <p>Aquí comparto mis QSL digitales con cariño y respeto.</p>
-
-    <div class="qsl-gallery">
-        <!-- AGREGA TUS QSL AQUÍ -->
-        <img src="qsl1.jpg" alt="QSL 1">
-        <img src="qsl2.jpg" alt="QSL 2">
-        <img src="qsl3.jpg" alt="QSL 3">
-    </div>
-
-    <h2>Confirmar un QSO</h2>
-    <p>Si hicimos contacto, puedes dejar tu confirmación aquí.</p>
-
-    <form action="https://formspree.io/f/tu_codigo" method="POST">
-        <label>Tu indicativo:</label>
-        <input type="text" name="callsign" required>
-
-        <label>Fecha del QSO:</label>
-        <input type="date" name="date" required>
-
-        <label>Banda:</label>
-        <select name="band">
-            <option>40m</option>
-            <option>20m</option>
-            <option>15m</option>
-            <option>10m</option>
-        </select>
-
-        <label>Modo:</label>
-        <select name="mode">
-            <option>SSB</option>
-            <option>CW</option>
-            <option>FT8</option>
-            <option>FM</option>
-        </select>
-
-        <label>Mensaje opcional:</label>
-        <textarea name="message" rows="4"></textarea>
-
-        <button type="submit">Enviar confirmación</button>
-    </form>
-
+<div class="search">
+  <input id="callsign" type="text" placeholder="Ingresa indicativo (ej. CL7ADV)">
+  <button onclick="buscar()">Buscar</button>
 </div>
 
+<div id="results" class="results"></div>
+<div id="message" class="message" style="display:none;"></div>
+
 <footer>
-    © 2026 CL7ADV – 73.
+  Alfred CL7ADV · Cuba
 </footer>
+
+<script>
+const qslData = {
+  "CL7ADV": ["img/CL7ADV_1.jpg","img/CL7ADV_2.jpg"],
+  "CM8XYZ": ["img/CM8XYZ.jpg"]
+};
+
+function buscar(){
+  const indicativo = document.getElementById("callsign").value.trim().toUpperCase();
+  const results = document.getElementById("results");
+  const message = document.getElementById("message");
+  results.innerHTML = "";
+  message.style.display = "none";
+
+  if(qslData[indicativo]){
+    qslData[indicativo].forEach(file=>{
+      const card = document.createElement("div");
+      card.className="card";
+      card.innerHTML = `<img src="${file}" alt="QSL ${indicativo}">
+                        <br><button onclick="descargar('${file}')">Descargar QSL</button>`;
+      results.appendChild(card);
+    });
+  } else {
+    message.innerHTML = "No hay QSLs aún, pero seguimos unidos en el aire.<br><button onclick='inicio()'>Volver al inicio</button>";
+    message.style.display = "block";
+  }
+}
+
+function descargar(file){
+  const link = document.createElement("a");
+  link.href = file;
+  link.download = file.split("/").pop();
+  link.click();
+  setTimeout(inicio, 3000); // volver al inicio tras 3 segundos
+}
+
+function inicio(){
+  document.getElementById("results").innerHTML="";
+  document.getElementById("message").style.display="none";
+  document.getElementById("callsign").value="";
+}
+</script>
 
 </body>
 </html>
