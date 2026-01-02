@@ -1,49 +1,89 @@
-<body style="margin:0;background:#0e2431;font-family:Verdana,Arial,sans-serif;color:#e6faff;">
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>CL7ADV QSL 2026</title>
+  <style>
+    body {
+      margin:0;
+      background:#0e2431;
+      font-family:Verdana,Arial,sans-serif;
+      color:#e6faff;
+      text-align:center;
+    }
+    h1, h2 {
+      color:#00ff99;
+      text-shadow:0 0 12px #00ff99;
+    }
+    p {
+      color:#ffffff;
+      text-shadow:0 0 8px #ff00ff;
+    }
+    .btn {
+      display:inline-block;
+      margin:10px;
+      padding:14px 28px;
+      background:#00ff99;
+      color:#0e2431;
+      text-decoration:none;
+      border-radius:10px;
+      box-shadow:0 0 15px #00ff99;
+      font-weight:bold;
+      font-size:18px;
+      text-transform:uppercase;
+      text-shadow:0 0 8px #00ff99;
+    }
+    .resultado a {
+      display:block;
+      margin:10px auto;
+      padding:10px;
+      background:#00ff99;
+      color:#0e2431;
+      text-decoration:none;
+      border-radius:6px;
+      box-shadow:0 0 10px #00ff99;
+      font-weight:bold;
+      width:250px;
+    }
+    .mensaje {
+      color:#00ff99;
+      text-shadow:0 0 6px #00ff99;
+      margin-top:20px;
+    }
+    .seccion {
+      padding:40px;
+      margin-top:30px;
+      background:#1a0033;
+      box-shadow:0 0 20px #ff00ff inset;
+      border-top:2px solid #00ff99;
+    }
+  </style>
+</head>
+<body>
 
   <!-- Portada futurista 2026 -->
-  <div style="padding:40px;text-align:center;
-  background:linear-gradient(135deg,#0e2431,#1a0033);
-  box-shadow:0 0 20px #00ff99 inset;">
-    
-    <h1 style="font-size:28px;color:#00ff99;text-shadow:0 0 12px #00ff99;">
-      SALUDOS DE CL7ADV · AÑO 2026
-    </h1>
-    
-    <p style="font-size:20px;font-weight:bold;color:#ffffff;text-shadow:0 0 10px #ff00ff;">
-      Buscar tus QSLs confirmadas y compartir la hermandad
-    </p>
-    
+  <div style="padding:40px;background:linear-gradient(135deg,#0e2431,#1a0033);
+              box-shadow:0 0 20px #00ff99 inset;">
+    <h1>SALUDOS DE CL7ADV · AÑO 2026</h1>
+    <p>Buscar tus QSLs confirmadas y compartir la hermandad</p>
+
     <!-- Botón general -->
-    <a href="https://cl7adv.github.io/cl7adv-qsl/qsl.pdf" target="_blank" rel="noopener noreferrer"
-       style="display:inline-block;margin-top:20px;padding:14px 28px;
-       background:#00ff99;color:#0e2431;text-decoration:none;border-radius:10px;
-       box-shadow:0 0 15px #00ff99;font-weight:bold;font-size:18px;text-transform:uppercase;
-       text-shadow:0 0 8px #00ff99;">
-       DESCARGAR QSL 2026
+    <a href="qsl.pdf" target="_blank" rel="noopener noreferrer" class="btn">
+      DESCARGAR QSL 2026
     </a>
-    
+
     <p style="margin-top:12px;font-size:14px;color:#00ff99;text-shadow:0 0 6px #00ff99;">
       Al hacer clic se abrirá en una pestaña del navegador
     </p>
   </div>
 
   <!-- Sección independiente: búsqueda de indicativos -->
-  <div style="padding:40px;text-align:center;margin-top:30px;
-  background:#1a0033;box-shadow:0 0 20px #ff00ff inset;border-top:2px solid #00ff99;">
-    
-    <h2 style="color:#00ff99;text-shadow:0 0 12px #00ff99;">
-      Ingresa tu indicativo para buscar tus QSLs
-    </h2>
-    
+  <div class="seccion">
+    <h2>Ingresa tu indicativo para buscar tus QSLs</h2>
     <input id="callsign" type="text" placeholder="Tu indicativo"
            style="padding:10px;border-radius:6px;border:2px solid #00ff99;">
-    <button onclick="buscarQSL()" 
-            style="margin-left:10px;padding:10px 20px;background:#00ff99;color:#0e2431;
-            border:none;border-radius:6px;box-shadow:0 0 10px #00ff99;font-weight:bold;">
-      Buscar
-    </button>
-    
-    <div id="resultado" style="margin-top:20px;"></div>
+    <button onclick="buscarQSL()" class="btn" style="font-size:14px;">Buscar</button>
+    <div id="resultado" class="resultado"></div>
   </div>
 
   <script>
@@ -51,7 +91,7 @@
       const callsign = document.getElementById('callsign').value.trim().toUpperCase();
       const resultado = document.getElementById('resultado');
 
-      // Base de datos simulada
+      // Base de datos simulada: sustituye con tus archivos reales
       const qslDB = {
         "CL7ADV": ["cl7adv_qsl1.pdf","cl7adv_qsl2.pdf"],
         "EA1ABC": ["ea1abc_qsl1.pdf","ea1abc_qsl2.pdf"],
@@ -62,21 +102,17 @@
         const archivos = qslDB[callsign];
         if (archivos.length > 1) {
           resultado.innerHTML = "<h3>QSLs disponibles:</h3>" +
-            archivos.map(a => `<a href="${a}" target="_blank" rel="noopener noreferrer"
-              style="display:block;margin:10px;padding:10px;background:#00ff99;color:#0e2431;
-              text-decoration:none;border-radius:6px;box-shadow:0 0 10px #00ff99;font-weight:bold;">
-              Descargar ${a}</a>`).join("");
+            archivos.map(a => `<a href="${a}" target="_blank" rel="noopener noreferrer">${a}</a>`).join("");
         } else {
-          resultado.innerHTML = `<a href="${archivos[0]}" target="_blank" rel="noopener noreferrer"
-            style="display:inline-block;margin:10px;padding:10px;background:#00ff99;color:#0e2431;
-            text-decoration:none;border-radius:6px;box-shadow:0 0 10px #00ff99;font-weight:bold;">
-            Descargar QSL</a>`;
+          resultado.innerHTML = `<a href="${archivos[0]}" target="_blank" rel="noopener noreferrer">Descargar QSL</a>`;
         }
       } else {
-        resultado.innerHTML = `<p style="color:#00ff99;text-shadow:0 0 6px #00ff99;">
+        resultado.innerHTML = `<p class="mensaje">
           Hermandad mundial: aún no tienes QSL registrada, pero siempre eres parte de la familia CL7ADV.
         </p>`;
       }
     }
   </script>
+
 </body>
+</html>
