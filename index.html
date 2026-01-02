@@ -10,35 +10,25 @@
       background: #f4f4f4;
       margin: 0;
       padding: 0;
-      text-align: center;
     }
     header {
       background: #002b5c;
       color: white;
       padding: 20px;
+      text-align: center;
+    }
+    nav {
+      margin-top: 10px;
     }
     nav a {
-      margin: 0 10px;
+      margin: 0 15px;
       color: white;
       text-decoration: none;
       font-weight: bold;
     }
-    .search-box {
-      margin: 30px auto;
-    }
-    input[type="text"] {
-      padding: 10px;
-      width: 250px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-    }
-    button {
-      padding: 10px 20px;
-      background: #002b5c;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
+    section {
+      padding: 40px;
+      text-align: center;
     }
     .qsl-gallery img {
       width: 200px;
@@ -54,7 +44,7 @@
     footer {
       background: #ddd;
       padding: 15px;
-      margin-top: 40px;
+      text-align: center;
     }
   </style>
 </head>
@@ -62,47 +52,58 @@
   <header>
     <h1>CL7ADV – QSLs de Amistad</h1>
     <nav>
-      <a href="#">Inicio</a>
-      <a href="#">Actividades</a>
-      <a href="#">Descargar QSL</a>
+      <a href="#inicio">Inicio</a>
+      <a href="#actividades">Actividades</a>
+      <a href="#descargar">Descargar QSL</a>
     </nav>
   </header>
 
-  <div class="search-box">
-    <h2>Buscar QSL por indicativo</h2>
-    <input type="text" placeholder="Ingresa tu indicativo">
-    <button>Buscar</button>
-  </div>
+  <!-- Sección Inicio -->
+  <section id="inicio">
+    <h2>Bienvenido</h2>
+    <p>Hermandad, respeto y radioafición desde Camagüey, Cuba.</p>
+  </section>
 
-  <h2>Galería de QSL</h2>
-  <div class="qsl-gallery">
-    <a href="qsl1.jpg" download><img src="qsl1.jpg" alt="QSL 1"></a>
-    <a href="qsl2.jpg" download><img src="qsl2.jpg" alt="QSL 2"></a>
-    <a href="qsl3.jpg" download><img src="qsl3.jpg" alt="QSL 3"></a>
-  </div>
+  <!-- Sección Actividades -->
+  <section id="actividades">
+    <h2>Actividades</h2>
+    <p>Aquí puedes compartir tus QSOs, eventos y activaciones especiales.</p>
+    <div id="map"></div>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+      var map = L.map('map').setView([21.5, -77.9], 6);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap'
+      }).addTo(map);
+      L.marker([21.5, -77.9]).addTo(map)
+        .bindPopup('CL7ADV – Camagüey, Cuba')
+        .openPopup();
+    </script>
+  </section>
 
-  <h2>Mapa de QSOs</h2>
-  <div id="map"></div>
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-  <script>
-    var map = L.map('map').setView([21.5, -77.9], 6);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap'
-    }).addTo(map);
-    L.marker([21.5, -77.9]).addTo(map)
-      .bindPopup('CL7ADV – Camagüey, Cuba')
-      .openPopup();
-  </script>
+  <!-- Sección Descargar QSL -->
+  <section id="descargar">
+    <h2>Descargar QSL</h2>
+    <p>Haz clic en las imágenes para descargar tus certificados.</p>
+    <div class="qsl-gallery">
+      <a href="qsl1.jpg" download><img src="qsl1.jpg" alt="QSL 1"></a>
+      <a href="qsl2.jpg" download><img src="qsl2.jpg" alt="QSL 2"></a>
+      <a href="qsl3.jpg" download><img src="qsl3.jpg" alt="QSL 3"></a>
+    </div>
+  </section>
 
-  <h2>Contador de visitas</h2>
-  <p id="contador">Visitas: cargando...</p>
-  <script>
-    fetch('https://api.countapi.xyz/hit/cl7adv/qsl')
-      .then(response => response.json())
-      .then(data => {
-        document.getElementById('contador').innerText = "Visitas: " + data.value;
-      });
-  </script>
+  <!-- Contador -->
+  <section>
+    <h2>Contador de visitas</h2>
+    <p id="contador">Visitas: cargando...</p>
+    <script>
+      fetch('https://api.countapi.xyz/hit/cl7adv/qsl')
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById('contador').innerText = "Visitas: " + data.value;
+        });
+    </script>
+  </section>
 
   <footer>
     <p>© 2026 CL7ADV – Con hermandad y respeto</p>
