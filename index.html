@@ -10,26 +10,31 @@
       color: #002b5c;
       text-align: center;
       margin: 0;
-      padding: 50px;
+      padding: 40px;
     }
     h1 {
       font-size: 3em;
       color: #c9a86a;
       margin-bottom: 30px;
     }
-    a {
-      display: inline-block;
-      padding: 15px 30px;
-      background: #002b5c;
-      color: white;
-      text-decoration: none;
-      font-size: 1.2em;
-      border-radius: 8px;
-      margin-top: 20px;
+    .qsl-gallery {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 30px;
     }
-    a:hover {
-      background: #c9a86a;
-      color: #002b5c;
+    .qsl-gallery a {
+      text-decoration: none;
+    }
+    .qsl-gallery img {
+      width: 220px;
+      border: 3px solid #c9a86a;
+      border-radius: 10px;
+      transition: transform 0.3s;
+    }
+    .qsl-gallery img:hover {
+      transform: scale(1.05);
     }
     #contador {
       margin-top: 40px;
@@ -37,7 +42,7 @@
       color: #444;
     }
     footer {
-      margin-top: 50px;
+      margin-top: 60px;
       font-size: 0.9em;
       color: #666;
     }
@@ -46,10 +51,18 @@
 <body>
   <h1>CL7ADV – QSLs de Amistad</h1>
 
-  <!-- Botón que abre la carpeta de imágenes -->
-  <a href="https://github.com/cl7adv/cl7adv-qsl/tree/main/img" target="_blank">Abrir carpeta de QSLs</a>
+  <div class="qsl-gallery">
+    <a href="img/EA1062RCV_28(1).jpg" download><img src="img/EA1062RCV_28(1).jpg" alt="QSL EA1062RCV"></a>
+    <a href="img/EA5FM_4(1).jpg" download><img src="img/EA5FM_4(1).jpg" alt="QSL EA5FM"></a>
+    <a href="img/EA5JQE_5(1).jpg" download><img src="img/EA5JQE_5(1).jpg" alt="QSL EA5JQE"></a>
+    <a href="img/EA7IM_7(1).jpg" download><img src="img/EA7IM_7(1).jpg" alt="QSL EA7IM"></a>
+    <a href="img/HJ3MAO_18(1).jpg" download><img src="img/HJ3MAO_18(1).jpg" alt="QSL HJ3MAO"></a>
+    <a href="img/HJ5RTD_20(1).jpg" download><img src="img/HJ5RTD_20(1).jpg" alt="QSL HJ5RTD"></a>
+    <a href="img/HJ6JBV_15(1).jpg" download><img src="img/HJ6JBV_15(1).jpg" alt="QSL HJ6JBV"></a>
+    <a href="img/HP3GNG_0(1).jpg" download><img src="img/HP3GNG_0(1).jpg" alt="QSL HP3GNG"></a>
+    <a href="img/LU2BR_16(1).jpg" download><img src="img/LU2BR_16(1).jpg" alt="QSL LU2BR"></a>
+  </div>
 
-  <!-- Contador de visitas -->
   <p id="contador">Visitas: cargando...</p>
   <script>
     fetch('https://api.countapi.xyz/hit/cl7adv/qsl')
@@ -60,8 +73,7 @@
   </script>
 
   <footer>
-    © 2026 CL7ADV – Hermandad y respeto en la radioafición
+    © 2026 CL7ADV – Hermandad, respeto y radioafición desde Camagüey, Cuba
   </footer>
 </body>
 </html>
-
