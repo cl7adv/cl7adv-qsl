@@ -7,19 +7,33 @@
     <style>
         :root {
             --primary: #00bcd4; --accent: #ff9800; --gold: #ffe082; --neon: #00ff99;
-            --glass: rgba(14, 36, 49, 0.96);
+            --glass: rgba(14, 36, 49, 0.96); /* Un poco más oscuro para mejor contraste */
         }
         body { 
             margin: 0; font-family: 'Segoe UI', sans-serif; 
-            background: radial-gradient(circle at center, #00acc1, #013d3e); 
-            background-attachment: fixed; color: #fff; 
+            /* Fondo de imagen de la cabina de radio en la playa */
+            background-image: url('https://i.ibb.co/L90f4F2/radio-beach-hut-wide.jpg'); /* URL de ejemplo, reemplaza con la tuya */
+            background-size: cover; /* Cubre todo el fondo */
+            background-position: center center; /* Centra la imagen */
+            background-attachment: fixed; /* La imagen no se mueve al hacer scroll */
+            color: #fff; 
             display: flex; align-items: center; justify-content: center; min-height: 100vh;
+            /* Oscurecer el fondo un poco para que el buscador resalte más */
+            background-color: rgba(0, 0, 0, 0.4); 
+            background-blend-mode: darken;
         }
         .container { 
             max-width: 650px; width: 90%; padding: 40px; 
-            background: var(--glass); border-radius: 30px; 
-            box-shadow: 0 30px 70px rgba(0,0,0,0.8); 
-            border: 1px solid rgba(0, 255, 153, 0.3); text-align: center;
+            background: var(--glass); border-radius: 20px; /* Bordes ligeramente más cuadrados para pantalla */
+            box-shadow: 0 0 40px rgba(0, 255, 153, 0.6), inset 0 0 15px rgba(0,255,153,0.2); /* Sombra neón más potente */
+            border: 2px solid var(--neon); /* Borde neón visible */
+            text-align: center;
+            /* Efecto de "pantalla encendida" */
+            animation: screenGlow 1.5s infinite alternate;
+        }
+        @keyframes screenGlow {
+            from { box-shadow: 0 0 40px rgba(0, 255, 153, 0.6), inset 0 0 15px rgba(0,255,153,0.2); }
+            to { box-shadow: 0 0 55px rgba(0, 255, 153, 0.8), inset 0 0 20px rgba(0,255,153,0.3); }
         }
         h1 { font-size: 2.2rem; margin-bottom: 5px; text-shadow: 0 0 15px var(--neon); }
         .subtitle { color: var(--gold); margin-bottom: 30px; font-size: 0.9rem; letter-spacing: 2px; }
@@ -36,6 +50,7 @@
             color: #fff; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; 
             box-shadow: 0 5px 0 #b35900; transition: 0.1s;
         }
+        #buscarBtn:active { transform: translateY(3px); box-shadow: 0 2px 0 #b35900; }
         .progress-container {
             width: 100%; max-width: 400px; height: 10px; 
             background: rgba(255,255,255,0.1); border-radius: 20px;
@@ -56,6 +71,7 @@
         .fade-out { opacity: 0; }
         .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); overflow-y: auto; }
         .modal-content { background: var(--glass); margin: 5% auto; padding: 30px; border-radius: 20px; width: 85%; max-width: 800px; border: 2px solid var(--neon); text-align: center; }
+        footer { margin-top: 40px; font-size: 0.8rem; opacity: 0.7; color: var(--gold); }
     </style>
 </head>
 <body>
@@ -73,6 +89,9 @@
         </div>
         <div id="status" class="status-text"></div>
         <div id="resultado"></div>
+        <footer>
+            73's Cordiales - Alfred - 2026
+        </footer>
     </div>
 
     <div id="modalQSL" class="modal">
@@ -134,31 +153,27 @@
             document.getElementById('pContainer').style.display = "none";
             document.getElementById('status').innerText = "";
 
-            // Extensiones a probar
             const ext = ['jpg', 'JPG', 'png', 'PNG', 'jpeg', 'JPEG'];
             let encontradas = [];
             
-            // Generar lista de rutas (CL7ADV.jpg, CL7ADV-1.jpg, etc)
             let rutasAProbar = [];
             ext.forEach(e => {
                 rutasAProbar.push(`img/${call}.${e}`);
                 for(let i=1; i<=5; i++) rutasAProbar.push(`img/${call}-${i}.${e}`);
             });
 
-            // Promesas de carga
             const promesas = rutasAProbar.map(ruta => {
                 return new Promise((resolve) => {
                     const img = new Image();
                     img.onload = () => { encontradas.push(ruta); resolve(); };
                     img.onerror = () => resolve();
-                    img.src = ruta + "?t=" + new Date().getTime(); // Evitar cache
+                    img.src = ruta + "?t=" + new Date().getTime(); 
                 });
             });
 
             await Promise.all(promesas);
 
             if (encontradas.length > 0) {
-                // Eliminar duplicados si los hay
                 const unicas = [...new Set(encontradas)];
                 abrirModal(call, unicas);
             } else {
