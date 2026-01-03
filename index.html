@@ -1,32 +1,39 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   <title>Navegador QSL Caribeño - CL7ADV</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Nunito:wght@300;600;800&display=swap" rel="stylesheet">
   <style>
     :root{
-      --accent: #c77a1a;
-      --accent-600: #b25f12;
-      --muted: #4b3424;
-      --card-bg: rgba(255,255,255,0.94);
+      /* Paleta inspirada en colores cubanos: azul, rojo, blanco y dorado cálido */
+      --cuba-blue: #0b5bd7;
+      --cuba-red: #d62828;
+      --cuba-white: #ffffff;
+      --cuba-gold: #d99a3b;
+      --muted: #3f2b1f;
+      --card-bg: rgba(255,255,255,0.95);
       --radius-lg: 16px;
-      --shadow-1: 0 12px 40px rgba(40,20,10,0.12);
+      --shadow-1: 0 14px 40px rgba(40,20,10,0.12);
+      --glass: rgba(255,255,255,0.6);
+      --transition-fast: 160ms;
     }
+
     *{box-sizing:border-box}
     html,body{height:100%}
     body{
       margin:0;
       font-family:"Nunito",system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;
       color:var(--muted);
+      background: linear-gradient(180deg,#fff8f2,#fff2e6);
       -webkit-font-smoothing:antialiased;
       -moz-osx-font-smoothing:grayscale;
       line-height:1.45;
-      background-color:#f7efe6;
+      padding:18px;
     }
 
-    /* Hero: sunset beach background (place img/sunset-beach.jpg in img/) */
+    /* HERO: fondo atardecer (asegúrate de subir img/sunset-beach.jpg) */
     .hero {
       position: relative;
       min-height: 48vh;
@@ -37,171 +44,152 @@
       background-image: url('img/sunset-beach.jpg');
       background-size: cover;
       background-position: center center;
-      background-repeat: no-repeat;
-      border-bottom-left-radius: 28px;
-      border-bottom-right-radius: 28px;
+      border-radius: 18px;
       box-shadow: var(--shadow-1);
       overflow: hidden;
     }
     .hero::before{
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(180deg, rgba(0,0,0,0.28), rgba(0,0,0,0.18) 40%, rgba(255,160,60,0.06) 100%);
-      mix-blend-mode: multiply;
-      pointer-events: none;
+      content:"";
+      position:absolute; inset:0;
+      background: linear-gradient(180deg, rgba(0,0,0,0.32), rgba(0,0,0,0.14) 40%, rgba(217,137,46,0.06) 100%);
+      mix-blend-mode:multiply;
+      pointer-events:none;
     }
+
     .hero-inner{
-      position: relative;
-      z-index: 2;
-      max-width: 980px;
-      width: 100%;
-      display: flex;
-      gap: 20px;
-      align-items: center;
-      justify-content: space-between;
-      padding: 18px;
+      position:relative; z-index:2; width:100%; max-width:1100px; display:flex; gap:20px; align-items:center; justify-content:space-between;
     }
+
+    .brand {
+      display:flex; gap:18px; align-items:center;
+    }
+
     .logo {
-      width:84px;
-      height:84px;
-      border-radius:12px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,250,245,0.9));
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-family:"Playfair Display",serif;
-      font-weight:700;
-      color: #5a351f;
-      font-size:1.05rem;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.18);
-      border: 1px solid rgba(255,255,255,0.35);
+      width:88px; height:88px; border-radius:14px;
+      background: linear-gradient(180deg,#fff,#fff6ec);
+      display:flex; align-items:center; justify-content:center;
+      font-family:"Playfair Display",serif; font-weight:700; color:var(--cuba-blue);
+      font-size:1.1rem; box-shadow: 0 10px 30px rgba(0,0,0,0.18); border:1px solid rgba(255,255,255,0.35);
     }
+
     .hero-title {
-      color: #fff;
-      font-family: "Playfair Display", serif;
-      font-size: 2.2rem;
-      line-height:1.02;
-      margin:0;
-      text-shadow: 0 6px 22px rgba(0,0,0,0.45);
-      letter-spacing: 0.2px;
+      color: var(--cuba-white);
+      font-family:"Playfair Display",serif;
+      font-size:2.4rem; margin:0; text-shadow: 0 8px 28px rgba(0,0,0,0.45);
     }
-    .hero-sub {
-      color: rgba(255,255,255,0.92);
-      margin-top:6px;
-      font-size:1rem;
-      text-shadow: 0 6px 18px rgba(0,0,0,0.35);
-    }
+    .hero-sub { color: rgba(255,255,255,0.95); margin-top:8px; font-size:1rem; text-shadow: 0 6px 18px rgba(0,0,0,0.35); }
 
     /* Main container overlapping hero */
     .container {
-      max-width: 980px;
-      margin: -40px auto 28px;
-      padding: 22px;
-      background: var(--card-bg);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-1);
-      border: 1px solid rgba(180,120,60,0.06);
-      position: relative;
-      z-index: 3;
+      max-width:1100px; margin:-48px auto 28px; padding:24px;
+      background: var(--card-bg); border-radius:var(--radius-lg); box-shadow: var(--shadow-1);
+      border:1px solid rgba(180,120,60,0.06); position:relative; z-index:3;
     }
 
-    .controls{
-      display:flex;
-      gap:12px;
-      align-items:center;
-      justify-content:center;
-      flex-wrap:wrap;
-      margin-bottom:14px;
+    .controls { display:flex; gap:12px; align-items:center; justify-content:center; flex-wrap:wrap; margin-bottom:14px; }
+    #indicativo {
+      padding:12px 14px; border-radius:12px; border:1px solid rgba(120,80,40,0.08);
+      width:260px; font-size:1rem; background: linear-gradient(180deg,#fff,#fffaf3);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.6); color:var(--muted); outline:none;
+      transition: box-shadow var(--transition-fast), transform var(--transition-fast);
     }
-    #indicativo{
-      padding:12px 14px;
-      border-radius:12px;
-      border:1px solid rgba(120,80,40,0.08);
-      width:240px;
-      font-size:1rem;
-      background: linear-gradient(180deg,#fff,#fffaf3);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.6);
-      color:var(--muted);
-      outline: none;
-      transition: box-shadow .14s ease, transform .14s ease;
-    }
-    #indicativo:focus{
-      box-shadow: 0 8px 20px rgba(200,120,60,0.12);
-      transform: translateY(-2px);
-    }
-    #buscarBtn{
-      padding:12px 18px;
-      border-radius:12px;
-      border:none;
-      background: linear-gradient(180deg,var(--accent),var(--accent-600));
-      color:white;
-      font-weight:800;
-      cursor:pointer;
-      box-shadow: 0 10px 26px rgba(180,90,20,0.12);
-      transition: transform .12s ease, box-shadow .12s ease;
-    }
-    #buscarBtn:hover{ transform: translateY(-3px); box-shadow: 0 14px 34px rgba(180,90,20,0.16); }
+    #indicativo:focus { box-shadow: 0 8px 20px rgba(200,120,60,0.12); transform: translateY(-2px); }
 
-    #resultado{ margin-top:14px; min-height:40px; text-align:center; color:var(--muted); }
-    .mensaje{ font-size:1rem; color:var(--accent-600); margin:8px 0; }
+    #buscarBtn {
+      padding:12px 18px; border-radius:12px; border:none;
+      background: linear-gradient(180deg,var(--cuba-blue), #0847b0);
+      color:var(--cuba-white); font-weight:800; cursor:pointer;
+      box-shadow: 0 10px 26px rgba(10,50,150,0.12); transition: transform var(--transition-fast);
+    }
+    #buscarBtn:hover { transform: translateY(-3px); }
 
-    /* QSL cards */
+    #resultado { margin-top:14px; min-height:40px; text-align:center; color:var(--muted); }
+    .mensaje { font-size:1rem; color:var(--cuba-red); margin:8px 0; }
+
+    /* Radio station card (Cuban style) */
+    .radio-card {
+      display:flex; gap:18px; align-items:center; justify-content:space-between;
+      padding:14px; border-radius:12px; background: linear-gradient(180deg, rgba(11,91,215,0.04), rgba(214,90,90,0.02));
+      border: 1px solid rgba(11,91,215,0.06); box-shadow: 0 8px 20px rgba(10,40,100,0.06);
+      margin: 12px auto; max-width:880px;
+    }
+
+    .radio-info {
+      display:flex; gap:12px; align-items:center;
+    }
+
+    .station-badge {
+      width:84px; height:84px; border-radius:12px; display:flex; align-items:center; justify-content:center;
+      background: linear-gradient(180deg,var(--cuba-red), #b21f1f); color:var(--cuba-white); font-weight:800; font-family:"Playfair Display",serif;
+      box-shadow: 0 8px 20px rgba(180,40,40,0.12);
+      border: 2px solid rgba(255,255,255,0.12);
+    }
+
+    .station-meta { display:flex; flex-direction:column; gap:4px; }
+    .station-name { font-weight:800; font-size:1.05rem; color:var(--muted); }
+    .station-freq { font-size:0.95rem; color:#6b4f3a; }
+
+    /* Player controls */
+    .player-controls { display:flex; gap:10px; align-items:center; }
+    .btn-play {
+      width:56px; height:56px; border-radius:12px; border:none; cursor:pointer;
+      background: linear-gradient(180deg,var(--cuba-gold), #c07a2a); color:#fff; font-weight:800;
+      box-shadow: 0 10px 26px rgba(200,120,40,0.12);
+      display:flex; align-items:center; justify-content:center; font-size:1.1rem;
+    }
+    .btn-play.paused { background: linear-gradient(180deg,var(--cuba-blue), #0847b0); }
+
+    .volume { width:120px; }
+    .status { font-size:0.95rem; color:#5a3f2b; margin-left:8px; min-width:140px; }
+
+    /* Wave visual (simple animated bars) */
+    .wave {
+      display:flex; gap:4px; align-items:end; height:36px; margin-left:12px;
+    }
+    .wave div {
+      width:6px; background: linear-gradient(180deg,#ffd89a,#ffb74d); border-radius:3px;
+      animation: wave 900ms linear infinite;
+      opacity:0.95;
+    }
+    .wave div:nth-child(1){ animation-delay: 0ms; height:8px; }
+    .wave div:nth-child(2){ animation-delay: 120ms; height:18px; }
+    .wave div:nth-child(3){ animation-delay: 240ms; height:12px; }
+    .wave div:nth-child(4){ animation-delay: 360ms; height:26px; }
+    .wave div:nth-child(5){ animation-delay: 480ms; height:10px; }
+    @keyframes wave {
+      0% { transform: scaleY(0.4); }
+      50% { transform: scaleY(1.0); }
+      100% { transform: scaleY(0.4); }
+    }
+
+    /* QSL list and modal */
     #listaQSLs { display:flex; flex-wrap:wrap; gap:18px; justify-content:center; margin-top:12px; }
-    .qsl-img{
-      max-width:240px;
-      border-radius:12px;
-      border: 3px solid rgba(200,140,80,0.12);
-      box-shadow: 0 12px 30px rgba(120,70,30,0.08);
-      background: linear-gradient(180deg,#fff,#fff8f2);
-      transition: transform .22s ease, box-shadow .22s ease;
-    }
-    .qsl-img:hover{ transform: translateY(-6px); box-shadow: 0 20px 40px rgba(120,70,30,0.12); }
-    .descargar{
-      display:inline-block;
-      margin-top:10px;
-      padding:9px 16px;
-      border-radius:10px;
-      background: #5aa04a;
-      color:#fff;
-      text-decoration:none;
-      font-weight:800;
-      box-shadow: 0 8px 18px rgba(80,120,60,0.08);
-      transition: transform .12s ease;
-    }
-    .descargar:hover{ transform: translateY(-3px); }
+    .qsl-img { max-width:240px; border-radius:12px; border: 3px solid rgba(200,140,80,0.12); box-shadow: 0 12px 30px rgba(120,70,30,0.08); background: linear-gradient(180deg,#fff,#fff8f2); transition: transform .22s ease; }
+    .qsl-img:hover { transform: translateY(-6px); }
 
-    footer{ margin-top:28px; text-align:center; color:#7a5a44; font-size:0.95rem; }
-
-    /* Loader */
-    .loader-wrap{ display:none; margin-top:12px; align-items:center; justify-content:center; gap:12px; }
-    .spinner{ width:22px; height:22px; border:3px solid rgba(120,80,40,0.12); border-top-color:var(--accent); border-radius:50%; animation:spin 1s linear infinite; }
-    @keyframes spin{ to{ transform:rotate(360deg); } }
-    .progress-bar{ position:relative; width:380px; height:14px; background: rgba(200,140,80,0.08); border-radius:10px; overflow:hidden; box-shadow: inset 0 2px 6px rgba(0,0,0,0.04); }
-    .progress-fill{ height:100%; background: linear-gradient(90deg,#ffd89a,#ffb74d); width:0%; transition: width 160ms ease; }
-    .card-thumb{ position:absolute; top:-30px; width:64px; height:40px; background: linear-gradient(180deg,#fff,#fff0df); color:#4a2f1a; border:2px solid rgba(200,140,80,0.18); border-radius:8px; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:0.85rem; box-shadow: 0 8px 22px rgba(120,70,30,0.12); transform:translateX(-50%); transition:left 100ms cubic-bezier(.2,.8,.2,1); pointer-events:none; overflow:hidden; }
-    .card-thumb img{ width:100%; height:100%; object-fit:cover; display:block; }
-    .progress-text{ font-size:0.95rem; color:#7a5a44; margin-top:8px; text-align:center; }
-
-    /* Modal */
-    .modal{ display:none; position:fixed; inset:0; z-index:1200; background: rgba(20,12,8,0.45); align-items:center; justify-content:center; padding:20px; }
-    .modal-contenido{ width:100%; max-width:920px; background: linear-gradient(180deg,#fffaf0,#fff7ef); border-radius:14px; padding:18px; box-shadow: 0 20px 50px rgba(60,30,10,0.25); color:#3f2b1f; }
-    .cerrar{ float:right; font-size:26px; cursor:pointer; color:#7a5a44; }
+    .modal { display:none; position:fixed; inset:0; z-index:1200; background: rgba(20,12,8,0.45); align-items:center; justify-content:center; padding:20px; }
+    .modal-contenido { width:100%; max-width:920px; background: linear-gradient(180deg,#fffaf0,#fff7ef); border-radius:14px; padding:18px; box-shadow: 0 20px 50px rgba(60,30,10,0.25); color:#3f2b1f; }
+    .cerrar { float:right; font-size:26px; cursor:pointer; color:#7a5a44; }
 
     @media (max-width:720px){
       .hero-inner{ flex-direction:column; gap:12px; text-align:center; }
       .hero-title{ font-size:1.6rem; }
-      .container{ margin-top: -28px; padding:18px; }
+      .container{ margin-top:-28px; padding:18px; }
       .progress-bar{ width:260px; }
       #indicativo{ width:160px; }
+      .radio-card{ flex-direction:column; align-items:center; text-align:center; gap:12px; }
+      .player-controls{ justify-content:center; }
     }
   </style>
 </head>
 <body>
-  <!-- Hero with sunset beach background -->
+  <!-- Hero -->
   <section class="hero" role="banner" aria-label="Portada atardecer en la playa">
     <div class="hero-inner">
-      <div class="logo" aria-hidden="true">CL7</div>
+      <div class="brand" aria-hidden="true">
+        <div class="logo">CL7</div>
+      </div>
+
       <div style="flex:1; max-width:720px; text-align:center;">
         <h1 class="hero-title">Navegador QSL Caribeño</h1>
         <p class="hero-sub">Busca y descarga tus QSL con estilo — buenos DXs desde la costa</p>
@@ -209,14 +197,36 @@
     </div>
   </section>
 
-  <!-- Main content -->
+  <!-- Main -->
   <main class="container" role="main">
     <div class="controls" aria-label="Controles de búsqueda">
       <input id="indicativo" type="text" placeholder="Ej: CL7ADV" aria-label="Indicativo">
       <button id="buscarBtn" type="button">Buscar QSL</button>
     </div>
 
-    <div id="loaderContainer" class="loader-wrap" aria-hidden="true">
+    <!-- Radio station card (Cuban colors) -->
+    <section class="radio-card" aria-label="Estación de radio">
+      <div class="radio-info">
+        <div class="station-badge" aria-hidden="true">RAD</div>
+        <div class="station-meta">
+          <div class="station-name">Estación QSL Caribeña</div>
+          <div class="station-freq">FM 88.7 · Streaming · Santa Cruz del Sur</div>
+          <div style="font-size:0.9rem; color:#6b4f3a;">Programación: música, DX, reportes y QSLs</div>
+        </div>
+      </div>
+
+      <div class="player-controls" aria-hidden="false">
+        <button id="playBtn" class="btn-play" aria-pressed="false" title="Reproducir / Pausar">▶</button>
+        <input id="volume" class="volume" type="range" min="0" max="1" step="0.01" value="0.8" aria-label="Volumen">
+        <div class="wave" aria-hidden="true">
+          <div></div><div></div><div></div><div></div><div></div>
+        </div>
+        <div id="radioStatus" class="status">Detenida</div>
+      </div>
+    </section>
+
+    <!-- Loader (kept from previous design) -->
+    <div id="loaderContainer" class="loader-wrap" aria-hidden="true" style="display:none;">
       <div class="spinner" id="spinner" role="status" aria-hidden="true"></div>
       <div>
         <div class="progress-bar" id="progressBar">
@@ -247,8 +257,69 @@
   </div>
 
   <script>
+    // Variables QSL
     let totalQSLs = 0, descargadas = 0, listaActual = [], imagenCargada = false, timeoutId = null;
 
+    // Radio player (simulado)
+    const playBtn = document.getElementById('playBtn');
+    const volume = document.getElementById('volume');
+    const radioStatus = document.getElementById('radioStatus');
+    const wave = document.querySelectorAll('.wave div');
+
+    let isPlaying = false;
+    let waveInterval = null;
+
+    function setWaveActive(active) {
+      if (!wave) return;
+      if (active) {
+        wave.forEach((bar, i) => {
+          bar.style.animationPlayState = 'running';
+        });
+      } else {
+        wave.forEach(bar => {
+          bar.style.animationPlayState = 'paused';
+        });
+      }
+    }
+
+    function startWaveSimulation() {
+      setWaveActive(true);
+      if (waveInterval) clearInterval(waveInterval);
+      waveInterval = setInterval(() => {
+        wave.forEach(bar => {
+          const h = 8 + Math.round(Math.random() * 28);
+          bar.style.height = h + 'px';
+        });
+      }, 220);
+    }
+
+    function stopWaveSimulation() {
+      setWaveActive(false);
+      if (waveInterval) { clearInterval(waveInterval); waveInterval = null; }
+      wave.forEach((bar, i) => {
+        bar.style.height = (8 + i*4) + 'px';
+      });
+    }
+
+    playBtn.addEventListener('click', () => {
+      isPlaying = !isPlaying;
+      playBtn.classList.toggle('paused', !isPlaying);
+      playBtn.textContent = isPlaying ? '⏸' : '▶';
+      playBtn.setAttribute('aria-pressed', String(isPlaying));
+      radioStatus.textContent = isPlaying ? 'Reproduciendo · Estación QSL Caribeña' : 'Detenida';
+      if (isPlaying) startWaveSimulation(); else stopWaveSimulation();
+    });
+
+    volume.addEventListener('input', (e) => {
+      // Simulación: ajustar intensidad de la onda según volumen
+      const v = parseFloat(e.target.value);
+      wave.forEach((bar, i) => {
+        const base = 8 + i*4;
+        bar.style.height = Math.round(base * (0.4 + v*1.2)) + 'px';
+      });
+    });
+
+    // QSL search logic (same behavior as before)
     window.onerror = function(message, source, lineno, colno, error) {
       console.error('ERROR GLOBAL:', message, 'at', source + ':' + lineno + ':' + colno);
       const resultado = document.getElementById('resultado');
@@ -263,6 +334,8 @@
       document.getElementById('ventanaQSL').addEventListener('click', (e) => {
         if (e.target === document.getElementById('ventanaQSL')) cerrarVentana();
       });
+      // Initialize wave paused
+      stopWaveSimulation();
     });
 
     function animateCardTo(cardElem, targetPct, duration = 100) {
@@ -290,7 +363,7 @@
       const indicativo = document.getElementById("indicativo").value.trim().toUpperCase();
       const resultado = document.getElementById("resultado");
       const listaQSLs = document.getElementById("listaQSLs");
-      resultado.innerHTML = ""; listaQSLs.innerHTML = "";
+      resultado.innerHTML = ""; if (listaQSLs) listaQSLs.innerHTML = "";
 
       if (!indicativo){
         resultado.innerHTML = `<p class="mensaje">🌺 Por favor escribe un indicativo</p>`;
@@ -302,9 +375,10 @@
       const progressFill = document.getElementById('progressFill');
       const progressText = document.getElementById('progressText');
       const cardThumb = document.getElementById('cardThumb');
-      loader.style.display = 'flex'; loader.setAttribute('aria-hidden','false');
-      progressFill.style.width = '0%'; cardThumb.style.left = '0%';
-      progressText.textContent = '🔄 Buscando QSL…';
+      if (loader) { loader.style.display = 'flex'; loader.setAttribute('aria-hidden','false'); }
+      if (progressFill) progressFill.style.width = '0%';
+      if (cardThumb) cardThumb.style.left = '0%';
+      if (progressText) progressText.textContent = '🔄 Buscando QSL…';
 
       let posibles = []; posibles.push(`img/${indicativo}.jpg`);
       for (let i=1;i<=50;i++) posibles.push(`img/${indicativo}-${i}.jpg`);
@@ -314,11 +388,11 @@
 
       function actualizarProgreso(){
         const pct = Math.round((comprobadas / totalPosibles) * 100);
-        progressFill.style.width = pct + '%';
+        if (progressFill) progressFill.style.width = pct + '%';
         const offset = 12;
         const cardPos = Math.min(100, pct + offset);
-        animateCardTo(cardThumb, cardPos, 90);
-        progressText.textContent = `Comprobadas ${comprobadas} / ${totalPosibles} (${pct}%)`;
+        if (cardThumb) animateCardTo(cardThumb, cardPos, 90);
+        if (progressText) progressText.textContent = `Comprobadas ${comprobadas} / ${totalPosibles} (${pct}%)`;
       }
 
       posibles.forEach(ruta=>{
@@ -328,16 +402,16 @@
           if (!encontradas.includes(ruta)){
             imagenCargada = true; encontradas.push(ruta);
             mostrarQSLs(encontradas, indicativo);
-            progressFill.style.width = '100%';
-            animateCardTo(cardThumb, 100, 90);
-            progressText.textContent = `Se encontraron ${encontradas.length} QSL`;
-            setTimeout(()=>{ loader.style.display='none'; loader.setAttribute('aria-hidden','true'); }, 700);
+            if (progressFill) progressFill.style.width = '100%';
+            if (cardThumb) animateCardTo(cardThumb, 100, 90);
+            if (progressText) progressText.textContent = `Se encontraron ${encontradas.length} QSL`;
+            setTimeout(()=>{ if (loader) { loader.style.display='none'; loader.setAttribute('aria-hidden','true'); } }, 700);
           }
         };
         img.onerror = ()=>{
           comprobadas++; actualizarProgreso();
           if (comprobadas >= totalPosibles && !imagenCargada){
-            setTimeout(()=>{ loader.style.display='none'; loader.setAttribute('aria-hidden','true'); }, 300);
+            setTimeout(()=>{ if (loader) { loader.style.display='none'; loader.setAttribute('aria-hidden','true'); } }, 300);
           }
         };
         img.src = ruta;
@@ -346,8 +420,8 @@
       timeoutId = setTimeout(()=>{
         if (!imagenCargada){
           resultado.innerHTML = `<p class="mensaje">❌ No tenemos esa QSL, pero pronto estará lista 🌺</p>`;
-          progressText.textContent = 'Búsqueda finalizada: no se encontraron imágenes';
-          setTimeout(()=>{ loader.style.display='none'; loader.setAttribute('aria-hidden','true'); }, 900);
+          if (progressText) progressText.textContent = 'Búsqueda finalizada: no se encontraron imágenes';
+          setTimeout(()=>{ if (loader) { loader.style.display='none'; loader.setAttribute('aria-hidden','true'); } }, 900);
         }
       }, 10000);
     }
@@ -356,11 +430,11 @@
       const ventana = document.getElementById("ventanaQSL");
       const listaQSLs = document.getElementById("listaQSLs");
       if (!lista || lista.length===0) return;
-      listaQSLs.innerHTML = `<p class="mensaje">📡 Se encontraron ${lista.length} QSL para <strong>${indicativo}</strong></p>`;
+      if (listaQSLs) listaQSLs.innerHTML = `<p class="mensaje">📡 Se encontraron ${lista.length} QSL para <strong>${indicativo}</strong></p>`;
       totalQSLs = lista.length; descargadas = 0; listaActual = lista.slice();
       actualizarContador();
       lista.forEach(ruta=>{
-        listaQSLs.innerHTML += `
+        if (listaQSLs) listaQSLs.innerHTML += `
           <div>
             <img src="${ruta}" alt="QSL de ${indicativo}" class="qsl-img">
             <br>
@@ -368,19 +442,19 @@
           </div>
         `;
       });
-      ventana.style.display = "flex"; ventana.setAttribute('aria-hidden','false');
+      if (ventana) { ventana.style.display = "flex"; ventana.setAttribute('aria-hidden','false'); }
     }
 
     function actualizarContador(){
       const contador = document.getElementById("contador");
-      contador.innerHTML = `<p class="mensaje">Has descargado ${descargadas} de ${totalQSLs} QSL</p>`;
+      if (contador) contador.innerHTML = `<p class="mensaje">Has descargado ${descargadas} de ${totalQSLs} QSL</p>`;
     }
 
     function marcarDescarga(){
       descargadas++; actualizarContador();
       if (descargadas >= totalQSLs){
         const listaQSLs = document.getElementById("listaQSLs");
-        listaQSLs.innerHTML = `<p class="mensaje">✅ Has descargado todas tus QSL, buenos DXs 🌺</p>`;
+        if (listaQSLs) listaQSLs.innerHTML = `<p class="mensaje">✅ Has descargado todas tus QSL, buenos DXs 🌺</p>`;
         setTimeout(()=>{ cerrarVentana(); document.getElementById("resultado").innerHTML=""; document.getElementById("indicativo").value=""; }, 1600);
       }
     }
@@ -396,14 +470,14 @@
       actualizarContador();
       if (descargadas >= totalQSLs){
         const listaQSLs = document.getElementById("listaQSLs");
-        listaQSLs.innerHTML = `<p class="mensaje">✅ Has descargado todas tus QSL, buenos DXs 🌺</p>`;
+        if (listaQSLs) listaQSLs.innerHTML = `<p class="mensaje">✅ Has descargado todas tus QSL, buenos DXs 🌺</p>`;
         setTimeout(()=>{ cerrarVentana(); document.getElementById("resultado").innerHTML=""; document.getElementById("indicativo").value=""; }, 1600);
       }
     }
 
     function cerrarVentana(){
       const ventana = document.getElementById("ventanaQSL");
-      ventana.style.display = "none"; ventana.setAttribute('aria-hidden','true');
+      if (ventana) { ventana.style.display = "none"; ventana.setAttribute('aria-hidden','true'); }
     }
   </script>
 </body>
