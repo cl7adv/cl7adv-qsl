@@ -3,201 +3,189 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CL7ADV | Radio Club Santa Cruz</title>
+    <title>Radio Club Santa Cruz | Master Tools</title>
     <style>
         :root {
             --bg-dark: #0e2431;
             --neon-green: #00ff99;
             --neon-pink: #ff00ff;
             --text-light: #e6faff;
-            --nav-bg: #1e3a47;
+            --primary: #00bcd4;
             --accent: #ff9800;
         }
 
         body {
             font-family: 'Verdana', sans-serif;
-            background-color: #050a14; 
+            background: linear-gradient(to bottom, #1e3a47, #050a14);
             color: var(--text-light);
-            margin: 0; 
-            display: flex; 
-            flex-direction: column; 
-            min-height: 100vh;
+            margin: 0; min-height: 100vh;
+            display: flex; flex-direction: column;
         }
 
         /* NAVEGACIÓN */
         .top-nav {
-            background: var(--nav-bg);
+            background: #1e3a47;
             padding: 12px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            display: flex; justify-content: space-between; align-items: center;
             box-shadow: 0 4px 15px rgba(0,0,0,0.5);
             border-bottom: 2px solid var(--neon-green);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
+            position: sticky; top: 0; z-index: 1000;
         }
 
-        .brand { font-weight: bold; font-size: 1.2rem; color: var(--neon-green); text-shadow: 0 0 5px var(--neon-green); }
         .nav-btn {
-            background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.2);
-            color: white;
-            padding: 8px 15px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            margin-left: 5px;
+            background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
+            color: white; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: bold; margin-left: 5px;
         }
         .nav-btn.active { background: var(--accent); border-color: var(--accent); }
 
-        /* SECCIONES */
-        .section { display: none; padding: 20px; }
+        /* CONTENEDORES */
+        .section { display: none; padding: 20px; animation: fadeIn 0.4s ease; }
         .section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* BUSCADOR (ESTILO BASE) */
-        .search-container {
-            max-width: 600px;
-            margin: 50px auto;
-            text-align: center;
-            background: var(--bg-dark);
-            padding: 40px;
-            border-radius: 20px;
-            border: 2px solid var(--neon-green);
+        /* BUSCADOR */
+        .container-box { 
+            max-width: 900px; margin: 30px auto; padding: 30px; 
+            background: rgba(0,0,0,0.4); backdrop-filter: blur(10px); border-radius: 20px; text-align: center;
         }
-        .search-box {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-        }
-        .search-box input {
-            flex: 1;
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid var(--neon-green);
-            background: #000;
-            color: white;
-            font-size: 1.1rem;
-        }
+        .tool-box { background: #fff; padding: 20px; border-radius: 15px; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-bottom: 20px; }
+        .tool-box input { padding: 10px; border: 2px solid #ddd; border-radius: 8px; width: 180px; }
 
-        /* GENERADOR ELITE */
-        .main-container {
-            display: flex;
-            flex-direction: row;
-            gap: 20px;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
+        /* QSL ELITE PANEL */
+        .elite-grid { display: flex; flex-direction: row; gap: 20px; max-width: 1400px; margin: 0 auto; }
         .controls-panel {
-            flex: 0 0 320px;
-            background: var(--bg-dark);
-            padding: 20px;
-            border-radius: 12px;
-            border: 2px solid var(--neon-green);
-            height: 80vh;
-            overflow-y: auto;
+            flex: 0 0 320px; background: var(--bg-dark); padding: 20px; border-radius: 12px;
+            border: 2px solid var(--neon-green); height: 80vh; overflow-y: auto;
         }
-        .preview-panel { flex: 1; text-align: center; }
-        canvas { 
-            max-width: 100%; 
-            height: auto; 
-            border: 2px solid var(--neon-green); 
-            border-radius: 10px;
-            background: #000;
-        }
-
-        /* ELEMENTOS COMUNES */
-        .section-label { color: var(--neon-green); font-size: 0.8em; margin: 15px 0 8px; display: block; text-transform: uppercase; font-weight: bold; }
-        .action-btn { background: var(--neon-green); color: #000; font-weight: bold; padding: 12px 20px; border: none; border-radius: 8px; cursor: pointer; width: 100%; }
-        input[type="color"] { width: 100%; height: 30px; border: none; cursor: pointer; background: none; }
+        .preview-panel { flex: 1; display: flex; flex-direction: column; align-items: center; }
         
-        .gallery-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .gallery-item { width: 100%; height: 60px; object-fit: cover; border-radius: 6px; cursor: pointer; border: 2px solid transparent; }
+        /* ESTILOS DE FORMULARIO ELITE */
+        .section-label { color: var(--neon-green); font-size: 0.75em; margin: 15px 0 8px; display: block; border-bottom: 1px solid #30363d; font-weight: bold; text-transform: uppercase; }
+        .gallery-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .gallery-item { width: 100%; height: 50px; object-fit: cover; border-radius: 4px; cursor: pointer; border: 2px solid transparent; }
         .gallery-item.active { border-color: var(--neon-pink); }
-
-        @media (max-width: 900px) {
-            .main-container { flex-direction: column; }
-            .controls-panel { width: 100%; height: auto; }
+        input[type="text"], input[type="date"], input[type="time"], input[type="file"] {
+            width: 100%; padding: 8px; background: #050a14; border: 1px solid var(--neon-green); border-radius: 6px; color: white; margin-bottom: 5px; box-sizing: border-box;
         }
+
+        .action-btn { padding: 12px 25px; background: var(--neon-green); color: #000; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; text-transform: uppercase; }
+        
+        canvas { max-width: 100%; height: auto; border-radius: 12px; border: 1px solid var(--neon-green); background: #000; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+
+        #downloadModal {
+            display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.9); justify-content: center; align-items: center;
+        }
+        .modal-content { background: var(--bg-dark); padding: 30px; border-radius: 15px; border: 2px solid var(--neon-green); text-align: center; }
+
+        @media (max-width: 900px) { .elite-grid { flex-direction: column; } .controls-panel { width: 100%; height: auto; } }
     </style>
 </head>
 <body>
 
     <nav class="top-nav">
-        <div class="brand">🌴 CL7ADV | SANTA CRUZ</div>
-        <div>
-            <button class="nav-btn active" onclick="showSection('busqueda', this)">🔍 Buscar</button>
-            <button class="nav-btn" onclick="showSection('generador', this)">🎨 Generar QSL</button>
+        <div style="font-weight:bold; color: var(--neon-green);">🌴 RADIO CLUB SANTA CRUZ</div>
+        <div class="nav-buttons">
+            <button class="nav-btn active" onclick="showSection('busqueda', this)">🔍 BUSCADOR</button>
+            <button class="nav-btn" onclick="showSection('qsl-elite', this)">🎨 QSL ELITE</button>
+            <button class="nav-btn" onclick="showSection('escudos', this)">🛡️ ESCUDOS</button>
         </div>
     </nav>
 
     <div id="busqueda" class="section active">
-        <div class="search-container">
-            <h1 style="color: var(--neon-green)">Buscador de QSL</h1>
-            <p>Introduce tu indicativo para descargar tus tarjetas confirmadas.</p>
-            <div class="search-box">
-                <input type="text" id="qslInput" placeholder="Ej: CO7xxx">
-                <button class="action-btn" style="width: auto;" onclick="alert('Buscando en servidor...')">BUSCAR</button>
+        <div class="container-box">
+            <h1>🌊 Buscador QSL</h1>
+            <p>Ingresa tu indicativo para localizar tus tarjetas en nuestro servidor.</p>
+            <div class="tool-box">
+                <input type="text" id="indicativoSearch" placeholder="Ej: CO7xxx">
+                <button class="action-btn" onclick="alert('Buscando en servidor...')">Buscar</button>
             </div>
         </div>
     </div>
 
-    <div id="generador" class="section">
-        <div class="main-container">
+    <div id="qsl-elite" class="section">
+        <div class="elite-grid">
             <div class="controls-panel">
                 <span class="section-label">1. Fondo</span>
                 <div class="gallery-grid">
                     <img class="gallery-item" src="https://cdn.pixabay.com/photo/2017/01/20/00/30/maldives-1993704_960_720.jpg" onclick="changeBG(this)">
                     <img class="gallery-item" src="https://cdn.pixabay.com/photo/2017/01/28/02/24/ocean-2014647_960_720.jpg" onclick="changeBG(this)">
                 </div>
-                <input type="file" id="bgInput" accept="image/*" style="margin-top:10px; width:100%;">
+                <input type="file" id="bgInputElite" accept="image/*" style="margin-top:10px;">
 
                 <span class="section-label">2. Estilo</span>
-                <div style="display: flex; gap: 5px;">
-                    <div style="flex:1"><label style="font-size:10px">Indicativo</label><input type="color" id="callColor" value="#ff00ff" oninput="draw()"></div>
-                    <div style="flex:1"><label style="font-size:10px">Tabla</label><input type="color" id="boxColor" value="#0e2431" oninput="draw()"></div>
-                    <div style="flex:1"><label style="font-size:10px">Texto</label><input type="color" id="textColor" value="#00ff99" oninput="draw()"></div>
+                <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:5px;">
+                    <div><label style="font-size:10px">Nombre</label><input type="color" id="callColor" value="#ff00ff" oninput="drawElite()"></div>
+                    <div><label style="font-size:10px">Tabla</label><input type="color" id="boxColor" value="#0e2431" oninput="drawElite()"></div>
+                    <div><label style="font-size:10px">Texto</label><input type="color" id="textColor" value="#00ff99" oninput="drawElite()"></div>
                 </div>
 
-                <span class="section-label">3. Datos del QSO</span>
-                <input type="text" id="myCall" value="CL7ADV" placeholder="Mi Indicativo" oninput="draw()" style="width:100%; margin-bottom:5px; padding:8px; box-sizing:border-box;">
-                <input type="text" id="toCall" placeholder="Confirming QSO with" oninput="draw()" style="width:100%; margin-bottom:5px; padding:8px; box-sizing:border-box;">
-                
-                <div style="display: flex; gap: 5px; margin-bottom:5px;">
-                    <input type="text" id="qBand" placeholder="Band" oninput="draw()" style="width:33%; padding:5px;">
-                    <input type="text" id="qMode" placeholder="Mode" oninput="draw()" style="width:33%; padding:5px;">
-                    <input type="text" id="qRst" placeholder="RST" oninput="draw()" style="width:33%; padding:5px;">
-                </div>
-                
-                <input type="text" id="qMsg" placeholder="Remarks / 73" oninput="draw()" style="width:100%; margin-bottom:15px; padding:8px; box-sizing:border-box;">
+                <span class="section-label">3. Mis Datos</span>
+                <input type="text" id="myCall" value="CL7ADV" oninput="drawElite()">
+                <input type="text" id="myLocator" value="EL98xx" oninput="drawElite()">
 
-                <button class="action-btn" onclick="descargarQSL()">DESCARGAR QSL</button>
+                <span class="section-label">4. Datos QSO</span>
+                <input type="text" id="toCall" placeholder="Indicativo Destino" oninput="drawElite()">
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:5px;">
+                    <input type="date" id="qDate" oninput="drawElite()">
+                    <input type="time" id="qTime" oninput="drawElite()">
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:5px;">
+                    <input type="text" id="qBand" placeholder="Band" oninput="drawElite()">
+                    <input type="text" id="qMode" placeholder="Mode" oninput="drawElite()">
+                    <input type="text" id="qRst" placeholder="RST" oninput="drawElite()">
+                </div>
+                <input type="text" id="qMsg" placeholder="73 / Saludos cordiales" oninput="drawElite()">
+
+                <button class="action-btn" style="width:100%; margin-top:15px;" onclick="showDownloadMenu()">Descargar QSL</button>
             </div>
 
             <div class="preview-panel">
                 <canvas id="qslCanvas" width="900" height="550"></canvas>
-                <p style="font-size: 0.8rem; color: #8b949e; margin-top: 10px;">Mueve el texto y la tabla arrastrándolos con el dedo o mouse.</p>
+                <p style="font-size: 0.7rem; color: #8b949e; margin-top: 10px;">📱 Arrastra los elementos en el cuadro para moverlos.</p>
             </div>
         </div>
     </div>
 
+    <div id="escudos" class="section">
+        <div class="container-box">
+            <h1>🛡️ Generador de Escudo</h1>
+            <div class="tool-box">
+                <input type="text" id="inLicencia" placeholder="Licencia" oninput="dibujarEscudo()">
+                <input type="text" id="inNombre" placeholder="Nombre" oninput="dibujarEscudo()">
+                <input type="text" id="inLocator" placeholder="Locator" oninput="dibujarEscudo()">
+                <button class="action-btn" onclick="descargarEscudo()" style="background:#2e7d32; color:white;">Descargar PNG</button>
+            </div>
+            <canvas id="escudoCanvas" width="600" height="700"></canvas>
+        </div>
+    </div>
+
+    <div id="downloadModal">
+        <div class="modal-content">
+            <h2 style="color:var(--neon-green);">EXPORTAR QSL</h2>
+            <button class="action-btn" style="background:var(--neon-pink); margin:10px;" onclick="executeDownload('png')">PNG (HD)</button>
+            <button class="action-btn" style="background:white; color:black; margin:10px;" onclick="executeDownload('jpeg')">JPG (Web)</button><br>
+            <button onclick="hideDownloadMenu()" style="background:none; border:none; color:red; cursor:pointer; margin-top:15px;">CANCELAR</button>
+        </div>
+    </div>
+
     <script>
-        // NAVEGACIÓN
-        function showSection(sectionId, btn) {
+        // --- NAVEGACIÓN ---
+        function showSection(id, btn) {
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(sectionId).classList.add('active');
+            document.getElementById(id).classList.add('active');
             btn.classList.add('active');
-            if(sectionId === 'generador') draw();
+            if(id === 'qsl-elite') drawElite();
+            if(id === 'escudos') dibujarEscudo();
         }
 
-        // GENERADOR ELITE
-        const canvas = document.getElementById('qslCanvas');
-        const ctx = canvas.getContext('2d');
-        let bgImg = new Image();
-        bgImg.crossOrigin = "anonymous";
-
-        let posMyCall = { x: 50, y: 120, w: 300 };
+        // --- LÓGICA QSL ELITE ---
+        const canvasQsl = document.getElementById('qslCanvas');
+        const ctxQsl = canvasQsl.getContext('2d');
+        let bgImgElite = new Image();
+        bgImgElite.crossOrigin = "anonymous";
+        let posMyCall = { x: 50, y: 110, w: 300 };
         let posDataBox = { x: 60, y: 320 };
         let dragTarget = null;
         let dragOffset = { x: 0, y: 0 };
@@ -205,87 +193,125 @@
         function changeBG(el) {
             document.querySelectorAll('.gallery-item').forEach(img => img.classList.remove('active'));
             el.classList.add('active');
-            bgImg.src = el.src;
+            bgImgElite.src = el.src;
         }
 
-        bgImg.onload = draw;
+        document.getElementById('bgInputElite').addEventListener('change', (e) => {
+            const reader = new FileReader();
+            reader.onload = (event) => { bgImgElite.src = event.target.result; };
+            if(e.target.files[0]) reader.readAsDataURL(e.target.files[0]);
+        });
 
-        // Arrastre
-        function getCoords(e) {
-            const rect = canvas.getBoundingClientRect();
-            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-            return {
-                x: (clientX - rect.left) * (canvas.width / rect.width),
-                y: (clientY - rect.top) * (canvas.height / rect.height)
-            };
+        bgImgElite.onload = drawElite;
+
+        function drawElite() {
+            const bColor = document.getElementById('boxColor').value;
+            const tColor = document.getElementById('textColor').value;
+            const cColor = document.getElementById('callColor').value;
+            
+            ctxQsl.clearRect(0,0,900,550);
+            if(bgImgElite.src) ctxQsl.drawImage(bgImgElite, 0, 0, 900, 550);
+
+            // Marca de agua
+            ctxQsl.font = "bold 20px Verdana"; ctxQsl.textAlign = "right";
+            ctxQsl.fillStyle = "rgba(255,0,0,0.7)"; ctxQsl.fillText("ZMR-CUBA", 880, 40); ctxQsl.textAlign = "left";
+
+            // Indicativo
+            ctxQsl.shadowColor = "rgba(0,0,0,0.9)"; ctxQsl.shadowBlur = 15;
+            ctxQsl.fillStyle = cColor; ctxQsl.font = "bold 95px Verdana";
+            const call = document.getElementById('myCall').value.toUpperCase();
+            ctxQsl.fillText(call, posMyCall.x, posMyCall.y);
+            ctxQsl.fillStyle = "#00ff99"; ctxQsl.font = "bold 30px Verdana";
+            ctxQsl.fillText("Locator: " + document.getElementById('myLocator').value.toUpperCase(), posMyCall.x + 5, posMyCall.y + 45);
+            ctxQsl.shadowBlur = 0;
+
+            // Tabla QSO (Estilo v10.3)
+            let r = parseInt(bColor.slice(1,3), 16), g = parseInt(bColor.slice(3,5), 16), b = parseInt(bColor.slice(5,7), 16);
+            ctxQsl.fillStyle = `rgba(${r},${g},${b},0.85)`;
+            ctxQsl.fillRect(posDataBox.x, posDataBox.y, 780, 180);
+            ctxQsl.strokeStyle = tColor; ctxQsl.lineWidth = 3; ctxQsl.strokeRect(posDataBox.x, posDataBox.y, 780, 180);
+
+            // Líneas de Datos
+            ctxQsl.fillStyle = tColor;
+            ctxQsl.font = "bold 18px Verdana";
+            ctxQsl.fillText("CONFIRMING QSO WITH: " + document.getElementById('toCall').value.toUpperCase(), posDataBox.x + 20, posDataBox.y + 45);
+            ctxQsl.font = "16px Courier New";
+            ctxQsl.fillText(`DATE: ${document.getElementById('qDate').value}  TIME: ${document.getElementById('qTime').value}`, posDataBox.x + 20, posDataBox.y + 90);
+            ctxQsl.fillText(`BAND: ${document.getElementById('qBand').value}  MODE: ${document.getElementById('qMode').value}  RST: ${document.getElementById('qRst').value}`, posDataBox.x + 20, posDataBox.y + 125);
+            ctxQsl.fillText(`REMARKS: ${document.getElementById('qMsg').value}`, posDataBox.x + 20, posDataBox.y + 160);
         }
 
-        canvas.onmousedown = canvas.ontouchstart = (e) => {
-            const coords = getCoords(e);
-            if (coords.x >= posDataBox.x && coords.x <= posDataBox.x + 780 && coords.y >= posDataBox.y && coords.y <= posDataBox.y + 180) {
-                dragTarget = 'dataBox';
-            } else if (coords.x >= posMyCall.x && coords.x <= posMyCall.x + posMyCall.w && coords.y >= posMyCall.y - 80 && coords.y <= posMyCall.y + 20) {
-                dragTarget = 'myCall';
-            }
-            if(dragTarget) {
-                const target = dragTarget === 'dataBox' ? posDataBox : posMyCall;
-                dragOffset.x = coords.x - target.x;
-                dragOffset.y = coords.y - target.y;
-                e.preventDefault();
+        // --- LÓGICA ESCUDOS ---
+        const canvasEsc = document.getElementById('escudoCanvas');
+        const ctxEsc = canvasEsc.getContext('2d');
+
+        function dibujarEscudo() {
+            const licencia = document.getElementById('inLicencia').value.toUpperCase() || "CALLSIGN";
+            const nombre = document.getElementById('inNombre').value.toUpperCase() || "TU NOMBRE";
+            const locator = document.getElementById('inLocator').value.toUpperCase() || "LOCATOR";
+            ctxEsc.clearRect(0, 0, 600, 700);
+            ctxEsc.beginPath();
+            ctxEsc.moveTo(50, 50); ctxEsc.lineTo(550, 50); ctxEsc.lineTo(550, 400);
+            ctxEsc.bezierCurveTo(550, 650, 300, 680, 300, 680); ctxEsc.bezierCurveTo(300, 680, 50, 650, 50, 400);
+            ctxEsc.closePath();
+            ctxEsc.fillStyle = "#1e3a47"; ctxEsc.fill();
+            ctxEsc.strokeStyle = "#ffe082"; ctxEsc.lineWidth = 15; ctxEsc.stroke();
+            ctxEsc.fillStyle = "#ffe082"; ctxEsc.fillRect(0, 320, 600, 80);
+            ctxEsc.fillStyle = "#1e3a47"; ctxEsc.font = "bold 32px Arial"; ctxEsc.textAlign = "center";
+            ctxEsc.fillText("RADIO CLUB SANTA CRUZ", 300, 372);
+            ctxEsc.fillStyle = "white"; ctxEsc.fillRect(80, 100, 200, 100); ctxEsc.fillRect(320, 100, 200, 100); ctxEsc.fillRect(150, 480, 300, 100);
+            ctxEsc.fillStyle = "#333"; ctxEsc.font = "bold 24px Arial"; ctxEsc.fillText(licencia, 180, 160);
+            ctxEsc.font = "bold 18px Arial"; ctxEsc.fillText(nombre, 420, 160);
+            ctxEsc.font = "bold 35px Courier New"; ctxEsc.fillText(locator, 300, 545);
+            ctxEsc.fillStyle = "#ffe082"; ctxEsc.font = "bold 14px Arial"; ctxEsc.fillText("CALLSIGN", 180, 120); ctxEsc.fillText("NAME", 420, 120); ctxEsc.fillText("GRID LOCATOR", 300, 500);
+        }
+
+        // --- DRAG AND DROP QSL ELITE ---
+        canvasQsl.onmousedown = canvasQsl.ontouchstart = (e) => {
+            const rect = canvasQsl.getBoundingClientRect();
+            const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+            const y = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
+            const scaleX = 900 / rect.width; const scaleY = 550 / rect.height;
+            const mx = x * scaleX; const my = y * scaleY;
+
+            if (mx >= posDataBox.x && mx <= posDataBox.x + 780 && my >= posDataBox.y && my <= posDataBox.y + 180) {
+                dragTarget = 'dataBox'; dragOffset.x = mx - posDataBox.x; dragOffset.y = my - posDataBox.y;
+            } else if (mx >= posMyCall.x && mx <= posMyCall.x + 400 && my >= posMyCall.y - 80 && my <= posMyCall.y + 50) {
+                dragTarget = 'myCall'; dragOffset.x = mx - posMyCall.x; dragOffset.y = my - posMyCall.y;
             }
         };
 
         window.onmousemove = window.ontouchmove = (e) => {
             if (!dragTarget) return;
-            const coords = getCoords(e);
-            const target = dragTarget === 'dataBox' ? posDataBox : posMyCall;
-            target.x = coords.x - dragOffset.x;
-            target.y = coords.y - dragOffset.y;
-            draw();
+            const rect = canvasQsl.getBoundingClientRect();
+            const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+            const y = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
+            const mx = x * (900 / rect.width); const my = y * (550 / rect.height);
+            if (dragTarget === 'dataBox') { posDataBox.x = mx - dragOffset.x; posDataBox.y = my - dragOffset.y; }
+            else { posMyCall.x = mx - dragOffset.x; posMyCall.y = my - dragOffset.y; }
+            drawElite();
         };
 
         window.onmouseup = window.ontouchend = () => dragTarget = null;
 
-        function draw() {
-            ctx.clearRect(0,0,900,550);
-            if(bgImg.src) ctx.drawImage(bgImg, 0, 0, 900, 550);
-
-            const tColor = document.getElementById('textColor').value;
-            const bColor = document.getElementById('boxColor').value;
-            const cColor = document.getElementById('callColor').value;
-
-            // Mi Call
-            ctx.shadowBlur = 10; ctx.shadowColor = "black";
-            ctx.fillStyle = cColor; ctx.font = "bold 100px Verdana";
-            const call = document.getElementById('myCall').value.toUpperCase();
-            ctx.fillText(call, posMyCall.x, posMyCall.y);
-            posMyCall.w = ctx.measureText(call).width;
-
-            // Tabla QSO
-            ctx.shadowBlur = 0;
-            ctx.fillStyle = bColor + "CC"; // 80% opacidad
-            ctx.fillRect(posDataBox.x, posDataBox.y, 780, 180);
-            ctx.strokeStyle = tColor; ctx.lineWidth = 2;
-            ctx.strokeRect(posDataBox.x, posDataBox.y, 780, 180);
-
-            ctx.fillStyle = tColor;
-            ctx.font = "bold 20px Verdana";
-            ctx.fillText("CONFIRMING QSO WITH: " + document.getElementById('toCall').value.toUpperCase(), posDataBox.x + 20, posDataBox.y + 50);
-            ctx.font = "18px Courier New";
-            ctx.fillText(`BAND: ${document.getElementById('qBand').value} | MODE: ${document.getElementById('qMode').value} | RST: ${document.getElementById('qRst').value}`, posDataBox.x + 20, posDataBox.y + 100);
-            ctx.fillText(`REMARKS: ${document.getElementById('qMsg').value}`, posDataBox.x + 20, posDataBox.y + 150);
-        }
-
-        function descargarQSL() {
+        // --- EXPORTAR ---
+        function showDownloadMenu() { document.getElementById('downloadModal').style.display = 'flex'; }
+        function hideDownloadMenu() { document.getElementById('downloadModal').style.display = 'none'; }
+        function executeDownload(format) {
             const link = document.createElement('a');
-            link.download = 'QSL_CL7ADV.png';
-            link.href = canvas.toDataURL();
+            link.download = `QSL_ELITE.${format}`;
+            link.href = canvasQsl.toDataURL(`image/${format}`, 0.9);
+            link.click();
+            hideDownloadMenu();
+        }
+        function descargarEscudo() {
+            const link = document.createElement('a');
+            link.download = 'Escudo_Santa_Cruz.png';
+            link.href = canvasEsc.toDataURL();
             link.click();
         }
 
-        // Iniciar con fondo por defecto
-        window.onload = () => { changeBG(document.querySelector('.gallery-item')); draw(); }
+        window.onload = () => { changeBG(document.querySelector('.gallery-item')); dibujarEscudo(); }
     </script>
 </body>
 </html>
