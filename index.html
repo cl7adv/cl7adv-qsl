@@ -2,217 +2,116 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Buscador QSL - Radio Club Santa Cruz del Sur</title>
-    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>QSL Caribeña - ZMR CUBA</title>
     <style>
         :root {
+            --cuba-red: #d40000;
+            --cuba-blue: #002a8f;
             --neon: #00ff99;
-            --gold: #ffe082;
-            --glass: rgba(0, 15, 25, 0.82);
         }
 
         body { 
-            margin: 0; 
-            font-family: 'Segoe UI', Tahoma, sans-serif; 
-            /* CARGA DE TU IMAGEN fondo.jpg */
-            background-image: url('fondo.jpg'); 
+            margin: 0; font-family: 'Segoe UI', Arial, sans-serif;
+            /* Fondo Caribeño - Puedes cambiar este enlace por 'fondo.jpg' cuando el tuyo funcione */
+            background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), 
+                        url('https://i.postimg.cc/85686m9m/cabina-qsl-cl7adv.jpg') no-repeat center center fixed;
             background-size: cover;
-            background-position: center center;
-            background-attachment: fixed;
-            /* Esto ayuda a que el buscador resalte sobre la playa */
-            background-color: rgba(0, 0, 0, 0.3);
-            background-blend-mode: darken;
-            
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            min-height: 100vh;
-            color: #fff;
+            display: flex; align-items: center; justify-content: center; min-height: 100vh;
         }
 
         .container { 
-            max-width: 550px; width: 85%; padding: 40px; 
-            background: var(--glass); 
-            border-radius: 25px; 
-            border: 2px solid var(--neon);
-            box-shadow: 0 0 30px rgba(0, 255, 153, 0.3);
+            width: 90%; max-width: 500px; padding: 40px;
+            background: rgba(255, 255, 255, 0.95); 
+            border-radius: 20px;
+            /* Bordes con colores de la bandera de Cuba */
+            border-top: 12px solid var(--cuba-red);
+            border-bottom: 12px solid var(--cuba-blue);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
             text-align: center;
-            backdrop-filter: blur(10px); /* Efecto cristal empañado */
+            border-left: 2px solid #ddd; border-right: 2px solid #ddd;
         }
 
-        h1 { font-size: 2rem; margin-bottom: 5px; text-shadow: 0 0 10px var(--neon); }
-        .subtitle { color: var(--gold); margin-bottom: 30px; font-size: 0.85rem; letter-spacing: 2px; text-transform: uppercase; }
+        h1 { color: var(--cuba-blue); margin: 0; font-size: 2.2rem; text-shadow: 1px 1px 0px #fff; }
+        .subtitle { color: var(--cuba-red); font-weight: bold; letter-spacing: 2px; margin-bottom: 30px; font-size: 0.9rem; }
 
-        .search-box { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; }
-
-        #indicativo { 
-            padding: 15px; font-size: 1.3rem; border: 2px solid rgba(0, 255, 153, 0.4); 
-            border-radius: 12px; width: 220px; background: rgba(0,0,0,0.7);
-            color: var(--neon); font-weight: bold; text-transform: uppercase;
-            text-align: center; outline: none;
+        input { 
+            padding: 15px; width: 80%; border: 3px solid var(--cuba-blue); 
+            border-radius: 12px; font-size: 1.3rem; font-weight: bold; text-align: center;
+            text-transform: uppercase; color: var(--cuba-blue);
         }
 
-        #buscarBtn { 
-            padding: 15px 30px; font-size: 1rem; 
-            background: linear-gradient(145deg, #ff9800, #f57c00); 
-            color: #fff; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; 
-            box-shadow: 0 4px 0 #b35900; transition: 0.1s;
+        button {
+            margin-top: 25px; padding: 18px 45px; background: var(--cuba-red);
+            color: white; border: none; border-radius: 12px; font-weight: bold;
+            cursor: pointer; font-size: 1.1rem; box-shadow: 0 5px 0 #8b0000; transition: 0.1s;
         }
 
-        #buscarBtn:active { transform: translateY(3px); box-shadow: 0 1px 0 #b35900; }
+        button:active { transform: translateY(4px); box-shadow: none; }
 
-        /* Barra de Carga */
-        .progress-wrap {
-            width: 100%; height: 8px; background: rgba(255,255,255,0.1); 
-            border-radius: 10px; margin: 50px auto 20px; position: relative; display: none;
-        }
-        .progress-bar { height: 100%; background: var(--neon); width: 0%; border-radius: 10px; box-shadow: 0 0 10px var(--neon); }
-        .card-icon {
-            position: absolute; top: -35px; left: 0%; transform: translateX(-50%);
-            width: 45px; height: 30px; background: white; border-radius: 5px;
-            display: flex; align-items: center; justify-content: center; border: 2px solid var(--gold);
-        }
+        /* Barra de Progreso */
+        .progress-box { width: 100%; height: 12px; background: #eee; border-radius: 10px; margin-top: 30px; display: none; overflow: hidden; border: 1px solid #ccc; }
+        .fill { width: 0%; height: 100%; background: var(--neon); box-shadow: 0 0 10px var(--neon); }
 
-        .status { height: 25px; color: var(--neon); font-size: 0.9rem; margin-top: 10px; font-weight: bold; }
+        #errorArea { margin-top: 25px; font-weight: bold; color: var(--cuba-red); font-size: 1.1rem; }
 
-        /* Modal de Imágenes */
-        .modal { display: none; position: fixed; z-index: 999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); overflow-y: auto; padding: 20px; }
-        .modal-content { background: var(--glass); max-width: 800px; margin: 40px auto; padding: 30px; border-radius: 20px; border: 1px solid var(--neon); text-align: center; }
-        .qsl-card { background: rgba(255,255,255,0.05); padding: 10px; border-radius: 10px; margin-bottom: 20px; }
-        .qsl-card img { width: 100%; border-radius: 8px; }
-        .dl-link { display: inline-block; margin-top: 10px; padding: 10px 20px; background: #28a745; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; }
-
-        footer { margin-top: 30px; font-size: 0.75rem; opacity: 0.6; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; }
+        footer { margin-top: 40px; font-size: 0.8rem; color: #555; border-top: 1px solid #ddd; padding-top: 15px; }
     </style>
 </head>
 <body>
 
     <div class="container">
         <h1>🌴 QSL CARIBEÑA</h1>
-        <div class="subtitle">Radio Club Santa Cruz del Sur <br> ZMR CUBA</div>
+        <div class="subtitle">RADIO CLUB SANTA CRUZ DEL SUR <br> ZMR CUBA</div>
 
-        <div class="search-box">
-            <input type="text" id="indicativo" placeholder="CALLSIGN" maxlength="10">
-            <button id="buscarBtn" onclick="iniciarBusqueda()">BUSCAR</button>
-        </div>
+        <input type="text" id="callsign" placeholder="CALLSIGN" maxlength="10">
+        <br>
+        <button onclick="buscar()">BUSCAR MI QSL</button>
 
-        <div id="pWrap" class="progress-wrap">
-            <div id="pCard" class="card-icon">✉️</div>
-            <div id="pBar" class="progress-bar"></div>
-        </div>
-
-        <div id="status" class="status"></div>
+        <div class="progress-box" id="pBox"><div class="fill" id="pFill"></div></div>
+        <div id="status" style="margin-top:10px; font-size:0.9rem; color:var(--cuba-blue); font-weight:bold;"></div>
+        
         <div id="errorArea"></div>
 
         <footer>
             CL7ADV &bull; Alfred &bull; 2026<br>
-            73's Cordiales para la Radioafición Cubana
+            Fomentando la Radioafición en el Caribe
         </footer>
     </div>
 
-    <div id="modal" class="modal">
-        <div class="modal-content">
-            <h2 id="modalTitle" style="color:var(--gold)"></h2>
-            <div id="qslGrid" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap:20px;"></div>
-            <button onclick="cerrarModal()" style="margin-top:30px; padding:10px 30px; cursor:pointer; background:#555; border:none; color:white; border-radius:8px;">CERRAR</button>
-        </div>
-    </div>
-
     <script>
-        function playStatic() {
-            try {
-                const ctx = new (window.AudioContext || window.webkitAudioContext)();
-                const buf = ctx.createBuffer(1, ctx.sampleRate * 1.2, ctx.sampleRate);
-                const out = buf.getChannelData(0);
-                for (let i = 0; i < buf.length; i++) out[i] = Math.random() * 2 - 1;
-                const src = ctx.createBufferSource();
-                src.buffer = buf;
-                const gain = ctx.createGain();
-                gain.gain.setValueAtTime(0.03, ctx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.2);
-                src.connect(gain); gain.connect(ctx.destination);
-                src.start();
-            } catch(e) {}
-        }
+        let timer;
 
-        async function iniciarBusqueda() {
-            const call = document.getElementById('indicativo').value.trim().toUpperCase();
+        function buscar() {
+            const call = document.getElementById('callsign').value.trim().toUpperCase();
             if(!call) return;
 
-            playStatic();
-            document.getElementById('errorArea').innerHTML = "";
-            const pWrap = document.getElementById('pWrap');
-            const pBar = document.getElementById('pBar');
-            const pCard = document.getElementById('pCard');
-            const status = document.getElementById('status');
-
-            pWrap.style.display = "block";
+            // Limpiar resets previos
+            clearTimeout(timer);
+            document.getElementById('errorArea').innerText = "";
             
+            const box = document.getElementById('pBox');
+            const fill = document.getElementById('pFill');
+            const status = document.getElementById('status');
+            
+            box.style.display = "block";
+            status.innerText = "Sintonizando logs en Cuba...";
+
             let p = 0;
-            const t = setInterval(async () => {
-                p += 4;
-                pBar.style.width = p + "%";
-                pCard.style.left = p + "%";
-                if(p == 40) status.innerText = "SINTONIZANDO SEÑAL...";
-                if(p == 80) status.innerText = "VERIFICANDO LOGS...";
+            const anim = setInterval(() => {
+                p += 5;
+                fill.style.width = p + "%";
                 if(p >= 100) {
-                    clearInterval(t);
-                    buscarFotos(call);
+                    clearInterval(anim);
+                    status.innerText = "";
+                    document.getElementById('errorArea').innerHTML = "❌ NO SE ENCONTRÓ QSL PARA " + call + "<br><small style='color:#666'>Volviendo al inicio en 10s...</small>";
+                    
+                    // REINICIO AUTOMÁTICO DE 10 SEGUNDOS
+                    timer = setTimeout(() => {
+                        window.location.reload();
+                    }, 10000);
                 }
-            }, 50);
+            }, 60);
         }
-
-        async function buscarFotos(call) {
-            const exts = ['jpg', 'JPG', 'png', 'PNG', 'jpeg'];
-            let encontradas = [];
-            let rutas = [];
-
-            exts.forEach(e => {
-                rutas.push(`img/${call}.${e}`);
-                for(let i=1; i<=5; i++) rutas.push(`img/${call}-${i}.${e}`);
-            });
-
-            const promesas = rutas.map(r => {
-                return new Promise(res => {
-                    const i = new Image();
-                    i.onload = () => { encontradas.push(r); res(); };
-                    i.onerror = () => res();
-                    i.src = r + "?v=" + Date.now();
-                });
-            });
-
-            await Promise.all(promesas);
-
-            document.getElementById('pWrap').style.display = "none";
-            document.getElementById('status').innerText = "";
-
-            if(encontradas.length > 0) {
-                mostrarResultados(call, [...new Set(encontradas)]);
-            } else {
-                const err = document.getElementById('errorArea');
-                err.innerHTML = `<div id="msgE" style="color:#ff6b6b; margin-top:20px; font-weight:bold; border:1px solid #ff6b6b; padding:10px; border-radius:10px; animation: shake 0.4s;">❌ NO SE ENCONTRÓ QSL PARA ${call}</div>`;
-                setTimeout(() => {
-                    const m = document.getElementById('msgE');
-                    if(m) {
-                        m.style.transition = "1s"; m.style.opacity = "0";
-                        setTimeout(() => { err.innerHTML = ""; document.getElementById('indicativo').value = ""; }, 1000);
-                    }
-                }, 6000);
-            }
-        }
-
-        function mostrarResultados(call, fotos) {
-            const m = document.getElementById('modal');
-            const g = document.getElementById('qslGrid');
-            document.getElementById('modalTitle').innerText = "QSLs ENCONTRADAS PARA " + call;
-            g.innerHTML = "";
-            fotos.forEach(f => {
-                g.innerHTML += `<div class="qsl-card"><img src="${f}"><br><a href="${f}" download class="dl-link">DESCARGAR</a></div>`;
-            });
-            m.style.display = "block";
-        }
-
-        function cerrarModal() { document.getElementById('modal').style.display = "none"; }
     </script>
 </body>
 </html>
