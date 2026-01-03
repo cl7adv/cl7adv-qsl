@@ -7,37 +7,36 @@
   <style>
     :root {
       --primary: #00bcd4;
+      --primary-dark: #009688;
       --accent: #ff9800;
       --gold: #ffe082;
-      --glass: rgba(255, 255, 255, 0.1);
+      --glass: rgba(0, 0, 0, 0.4);
     }
 
     body { 
       margin: 0; 
-      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
-      background: radial-gradient(circle at top, #00bcd4, #00796b); 
+      font-family: "Trebuchet MS", Arial, sans-serif; 
+      background: linear-gradient(to bottom, var(--primary), var(--primary-dark)); 
       color: #fff; 
       min-height: 100vh;
-      display: flex;
-      flex-direction: column;
+      text-align: center;
     }
 
     .container { 
       max-width: 900px; 
       margin: 40px auto; 
       padding: 30px; 
-      background: rgba(0, 0, 0, 0.3);
+      background: var(--glass);
       backdrop-filter: blur(10px);
       border: 1px solid rgba(255,255,255,0.1);
       border-radius: 20px; 
-      box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.5);
     }
 
     h1 { 
       font-size: 2.5rem; 
       margin-bottom: 10px; 
-      text-shadow: 0 4px 10px rgba(0,0,0,0.3);
-      letter-spacing: -1px;
+      text-shadow: 0 0 10px var(--gold);
     }
 
     .search-box {
@@ -45,21 +44,19 @@
       display: flex;
       justify-content: center;
       gap: 10px;
+      flex-wrap: wrap;
     }
 
     #indicativo { 
       padding: 15px; 
       font-size: 1.1rem; 
-      border: 2px solid transparent; 
+      border: none; 
       border-radius: 12px; 
-      width: 250px; 
-      background: rgba(255,255,255,0.9);
+      width: 220px; 
+      background: #fff;
       color: #333;
       outline: none;
-      transition: 0.3s;
     }
-
-    #indicativo:focus { border-color: var(--accent); box-shadow: 0 0 15px rgba(255,152,0,0.4); }
 
     #buscarBtn { 
       padding: 15px 30px; 
@@ -70,34 +67,28 @@
       border-radius: 12px; 
       cursor: pointer; 
       font-weight: bold; 
-      text-transform: uppercase;
-      transition: all 0.3s ease;
+      transition: 0.3s;
     }
 
-    #buscarBtn:hover { background: #f57c00; transform: translateY(-2px); }
+    #buscarBtn:hover { background: #f57c00; transform: scale(1.05); }
 
-    /* Estilo de las Tarjetas QSL */
+    /* Tarjetas QSL */
     .qsl-card {
-      background: var(--glass);
+      background: rgba(255,255,255,0.1);
       padding: 15px;
       border-radius: 15px;
-      transition: 0.4s;
-      animation: fadeIn 0.5s ease-out forwards;
+      border: 2px solid var(--gold);
+      transition: 0.3s;
     }
-
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
     .qsl-img { 
       width: 100%;
-      max-width: 280px; 
+      max-width: 220px; 
       border-radius: 8px; 
-      transition: 0.3s;
-      cursor: zoom-in;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
     }
 
-    .qsl-img:hover { transform: scale(1.05); }
-
-    /* Loader Pro */
+    /* Loader con tu barra especial */
     .loader-wrap { 
       display: none; 
       margin: 20px 0; 
@@ -106,32 +97,37 @@
     }
 
     .progress-bar { 
-      width: 100%; 
-      max-width: 400px;
-      height: 10px; 
-      background: rgba(255,255,255,0.1); 
-      border-radius: 20px; 
+      width: 300px;
+      height: 14px; 
+      background: rgba(255,224,130,0.2); 
+      border-radius: 10px; 
       position: relative;
       margin-top: 30px;
+      overflow: visible;
     }
 
     .progress-fill { 
       height: 100%; 
-      background: linear-gradient(90deg, #4caf50, #8bc34a); 
+      background: linear-gradient(90deg, #ffd54f, var(--accent)); 
       width: 0%; 
-      border-radius: 20px;
-      transition: width 0.3s;
+      border-radius: 10px;
+      transition: width 0.2s;
     }
 
     .card-thumb { 
       position: absolute; 
-      top: -35px; 
-      padding: 5px 10px;
-      background: var(--gold); 
-      color: #333; 
-      border-radius: 5px; 
+      top: -32px; 
+      width: 50px;
+      height: 30px;
+      background: #fff;
+      color: #000; 
+      border: 2px solid var(--gold);
+      border-radius: 6px; 
       font-weight: bold; 
       font-size: 0.7rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       transform: translateX(-50%);
     }
 
@@ -142,25 +138,38 @@
       z-index: 1000; 
       left: 0; top: 0; width: 100%; height: 100%; 
       background: rgba(0,0,0,0.85); 
-      backdrop-filter: blur(5px);
     }
 
     .modal-contenido { 
-      background: #1a1a1a; 
-      margin: 2% auto; 
+      background: #fff; 
+      color: #333;
+      margin: 5% auto; 
       padding: 30px; 
       border-radius: 20px; 
       width: 90%; 
-      max-width: 1000px; 
-      max-height: 85vh;
+      max-width: 900px; 
+      max-height: 80vh;
       overflow-y: auto;
     }
 
-    footer { margin: auto 0 20px; padding: 20px; }
+    .cerrar { float: right; font-size: 2rem; cursor: pointer; font-weight: bold; }
 
-    @media (max-width: 600px) {
-      .search-box { flex-direction: column; align-items: center; }
-      #indicativo { width: 80%; }
+    .descargar { 
+      display: inline-block;
+      margin-top: 10px;
+      padding: 10px 20px;
+      background: #4caf50;
+      color: white;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    footer { margin-top: 40px; padding: 20px; color: var(--gold); }
+
+    @media (max-width: 480px) {
+      #indicativo { width: 100%; }
+      .progress-bar { width: 240px; }
     }
   </style>
 </head>
@@ -168,25 +177,25 @@
 
   <div class="container">
     <h1>🌴 QSL Caribeño 🌊</h1>
-    <p style="color: var(--gold)">Descarga tus confirmaciones de contacto - DX 2026</p>
+    <p>Introduce tu indicativo para descargar tus tarjetas</p>
 
     <div class="search-box">
-      <input type="text" id="indicativo" placeholder="Introduce Indicativo..." autocomplete="off">
-      <button id="buscarBtn">Buscar Radio-Tarjetas</button>
+      <input type="text" id="indicativo" placeholder="Ej: CL7ADV" autocomplete="off">
+      <button id="buscarBtn">BUSCAR QSL</button>
     </div>
 
     <div id="loaderContainer" class="loader-wrap">
       <div class="progress-bar">
         <div id="progressFill" class="progress-fill"></div>
-        <div id="cardThumb" class="card-thumb" style="left:0%;">TX...</div>
+        <div id="cardThumb" class="card-thumb" style="left:0%;">QSL</div>
       </div>
-      <p id="progressText" style="margin-top:15px; font-size: 0.9rem;"></p>
+      <p id="progressText" style="margin-top:15px; color: var(--gold);"></p>
     </div>
 
     <div id="resultado"></div>
 
     <footer>
-      <p>73's de <strong>CL7ADV</strong> | Radio Club Santa Cruz Del Sur</p>
+      <p>— CL7ADV — Buenos DXs en este 2026</p>
       <a href="https://info.flagcounter.com/qvMz" target="_blank">
         <img src="https://s01.flagcounter.com/count2/qvMz/bg_57A8DE/txt_000000/border_F55B0F/columns_5/maxflags_20/viewers_0/labels_0/pageviews_0/flags_0/percent_0/" alt="Visitas" border="0">
       </a>
@@ -195,13 +204,12 @@
 
   <div id="ventanaQSL" class="modal">
     <div class="modal-contenido">
-      <span class="cerrar" id="cerrarBtn" style="float:right; cursor:pointer; font-size: 2rem;">&times;</span>
-      <h2 id="qslTitle">📡 QSLs Encontradas</h2>
-      <div id="contador" style="margin-bottom: 20px;"></div>
-      <div id="listaQSLs" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px;"></div>
-      <div style="margin-top: 30px;">
-        <button id="descargarTodasBtn" class="descargar" style="padding: 15px 25px; background: #4caf50; border: none; color: white; border-radius: 10px; cursor: pointer; font-weight: bold;">⬇️ Descargar Galería Completa</button>
-      </div>
+      <span class="cerrar" id="cerrarBtn">&times;</span>
+      <h2 style="color: var(--primary-dark)">📡 Tarjetas Localizadas</h2>
+      <div id="contador" style="font-weight: bold; margin-bottom: 20px;"></div>
+      <div id="listaQSLs" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 20px;"></div>
+      <br>
+      <button id="descargarTodasBtn" class="descargar" style="border:none; cursor:pointer; background: #2e7d32;">⬇️ Descargar Todas las QSL</button>
     </div>
   </div>
 
@@ -218,17 +226,17 @@
       const indicativo = document.getElementById("indicativo").value.trim().toUpperCase();
       if (!indicativo) return alert("Escribe un indicativo");
 
-      // Reset
+      // Reset total
       encontradas = [];
       comprobadas = 0;
       document.getElementById('listaQSLs').innerHTML = '';
+      document.getElementById('resultado').innerHTML = '';
       document.getElementById('loaderContainer').style.display = 'flex';
       
       const rutasPosibles = [];
-      // Generar lista de rutas con todos los formatos
       FORMATOS.forEach(ext => {
         rutasPosibles.push(`img/${indicativo}.${ext}`);
-        for(let i=1; i<=20; i++) rutasPosibles.push(`img/${indicativo}-${i}.${ext}`);
+        for(let i=1; i<=25; i++) rutasPosibles.push(`img/${indicativo}-${i}.${ext}`);
       });
 
       const total = rutasPosibles.length;
@@ -236,11 +244,14 @@
       for (let ruta of rutasPosibles) {
         verificarImagen(ruta).then(existe => {
           comprobadas++;
-          if (existe) {
+          
+          // LA CLAVE: Solo agregar si no existe ya en el array de encontradas
+          if (existe && !encontradas.includes(ruta)) {
             encontradas.push(ruta);
             agregarALista(ruta, indicativo);
             document.getElementById('ventanaQSL').style.display = 'block';
           }
+          
           actualizarUI(comprobadas, total);
         });
       }
@@ -261,29 +272,31 @@
       div.className = 'qsl-card';
       div.innerHTML = `
         <img src="${ruta}" class="qsl-img" alt="QSL">
-        <p style="font-size:0.8rem; margin:10px 0;">${ruta.split('/').pop()}</p>
-        <a href="${ruta}" download class="descargar" style="color:var(--gold); text-decoration:none; font-weight:bold;">⬇️ Descargar</a>
+        <br>
+        <a href="${ruta}" download class="descargar">⬇️ Descargar</a>
       `;
       container.appendChild(div);
-      actualizarContador();
+      actualizarContador(indicativo);
     }
 
     function actualizarUI(actual, total) {
       const pct = Math.round((actual / total) * 100);
       document.getElementById('progressFill').style.width = pct + '%';
       document.getElementById('cardThumb').style.left = pct + '%';
-      document.getElementById('progressText').textContent = `Escaneando frecuencias... ${pct}%`;
+      document.getElementById('progressText').textContent = `Buscando QSLs... ${pct}%`;
       
       if (actual === total) {
         setTimeout(() => {
           document.getElementById('loaderContainer').style.display = 'none';
-          if (encontradas.length === 0) alert("No se encontraron tarjetas para este indicativo.");
+          if (encontradas.length === 0) {
+            document.getElementById('resultado').innerHTML = `<p style="color:var(--gold); font-weight:bold;">❌ No se encontraron QSL para este indicativo.</p>`;
+          }
         }, 1000);
       }
     }
 
-    function actualizarContador() {
-      document.getElementById('contador').textContent = `Se han localizado ${encontradas.length} tarjetas en el servidor.`;
+    function actualizarContador(indicativo) {
+      document.getElementById('contador').textContent = `¡Hola ${indicativo}! Hemos encontrado ${encontradas.length} tarjetas.`;
     }
 
     function descargarTodas() {
@@ -293,7 +306,7 @@
           link.href = ruta;
           link.download = ruta.split("/").pop();
           link.click();
-        }, index * 500); // Delay para evitar bloqueo del navegador
+        }, index * 400); 
       });
     }
   </script>
