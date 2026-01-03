@@ -7,7 +7,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Nunito:wght@300;600;800&display=swap" rel="stylesheet">
   <style>
     :root{
-      /* Paleta inspirada en colores de playa cálidos y marinos */
       --sea-deep: #0b6b7a;
       --sea-mid: #1aa3b8;
       --sand: #f3d9b6;
@@ -16,25 +15,19 @@
       --card-bg: rgba(255,255,255,0.94);
       --radius-lg: 16px;
       --shadow-1: 0 14px 40px rgba(40,20,10,0.10);
-      --neon-color: #ffd86b; /* warm neon for borders and glow */
-      --neon-accent: #7ef0ff; /* cool neon accent for contrast */
-      --transition-fast: 160ms;
+      --neon-color: #ffd86b;   /* brillo cálido */
+      --neon-accent: #7ef0ff;  /* brillo frío */
     }
 
-    *{box-sizing:border-box}
-    html,body{height:100%}
     body{
       margin:0;
       font-family:"Nunito",system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;
       color:var(--muted);
       background: linear-gradient(180deg,#fffaf0,#fff6ee);
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
       line-height:1.45;
-      padding:18px;
     }
 
-    /* HERO: sunset beach background (place img/sunset-beach.jpg in img/) */
+    /* Portada con atardecer en la playa */
     .hero {
       position: relative;
       min-height: 48vh;
@@ -42,192 +35,107 @@
       align-items: center;
       justify-content: center;
       padding: 36px 18px;
-      background-image: url('img/sunset-beach.jpg');
+      background-image:
+        linear-gradient(180deg, rgba(6,30,40,0.28), rgba(255,160,60,0.06) 60%),
+        url('img/sunset-beach.jpg');
       background-size: cover;
       background-position: center center;
       border-radius: 18px;
       box-shadow: var(--shadow-1);
-      overflow: hidden;
-    }
-    .hero::before{
-      content:"";
-      position:absolute; inset:0;
-      /* subtle warm overlay to enhance beach tones and legibility */
-      background: linear-gradient(180deg, rgba(6,30,40,0.28), rgba(255,160,60,0.06) 60%);
-      mix-blend-mode: multiply;
-      pointer-events:none;
     }
 
-    .hero-inner{
-      position:relative; z-index:2; width:100%; max-width:1100px; display:flex; gap:20px; align-items:center; justify-content:space-between;
-    }
-
-    .brand { display:flex; gap:18px; align-items:center; }
-
-    .logo {
-      width:88px; height:88px; border-radius:14px;
-      background: linear-gradient(180deg,#fff,#fff6ec);
-      display:flex; align-items:center; justify-content:center;
-      font-family:"Playfair Display",serif; font-weight:700; color:var(--sea-deep);
-      font-size:1.1rem; box-shadow: 0 10px 30px rgba(0,0,0,0.18); border:1px solid rgba(255,255,255,0.35);
-    }
-
-    /* Elegant title with neon border effect */
+    .hero-inner{position:relative; z-index:2; text-align:center;}
     .hero-title {
-      color: #fff;
-      font-family: "Playfair Display", serif;
-      font-size: 2.4rem;
-      line-height:1.02;
-      margin:0;
+      color:#fff;
+      font-family:"Playfair Display",serif;
+      font-size:2.4rem;
       letter-spacing:0.2px;
-      /* neon border effect using layered text-shadows */
       text-shadow:
         0 0 2px rgba(255,255,255,0.9),
         0 0 6px var(--neon-color),
         0 0 12px rgba(255,180,80,0.6),
         0 6px 18px rgba(0,0,0,0.45);
+      margin:0;
     }
+    .hero-sub {color:rgba(255,255,255,0.95); margin-top:8px;}
 
-    .hero-sub {
-      color: rgba(255,255,255,0.95);
-      margin-top:8px;
-      font-size:1rem;
-      text-shadow: 0 6px 18px rgba(0,0,0,0.35);
-    }
-
-    /* Main container overlapping hero */
+    /* Contenedor principal */
     .container {
       max-width:1100px; margin:-48px auto 28px; padding:24px;
       background: var(--card-bg); border-radius:var(--radius-lg); box-shadow: var(--shadow-1);
-      border:1px solid rgba(180,120,60,0.06); position:relative; z-index:3;
     }
 
-    .controls { display:flex; gap:12px; align-items:center; justify-content:center; flex-wrap:wrap; margin-bottom:14px; }
+    .controls {display:flex; gap:12px; justify-content:center; flex-wrap:wrap;}
     #indicativo {
-      padding:12px 14px; border-radius:12px; border:1px solid rgba(120,80,40,0.08);
-      width:260px; font-size:1rem; background: linear-gradient(180deg,#fff,#fffaf3);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.6); color:var(--muted); outline:none;
-      transition: box-shadow var(--transition-fast), transform var(--transition-fast);
+      padding:12px 14px; border-radius:12px; border:1px solid rgba(120,80,40,0.12);
+      width:260px; font-size:1rem; background:#fff; color:var(--muted);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.6);
     }
-    #indicativo:focus { box-shadow: 0 8px 20px rgba(200,120,60,0.12); transform: translateY(-2px); }
-
-    /* Neon-outlined button */
     #buscarBtn {
       padding:12px 18px; border-radius:12px; border:none;
       background: linear-gradient(180deg,var(--sea-mid), var(--sea-deep));
-      color: #fff; font-weight:800; cursor:pointer;
-      box-shadow: 0 10px 26px rgba(10,50,70,0.10);
-      position:relative;
-      transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+      color:#fff; font-weight:800; cursor:pointer;
+      box-shadow: 0 0 16px var(--neon-accent), 0 10px 26px rgba(10,50,70,0.14);
+      transition: transform 160ms ease, box-shadow 160ms ease;
     }
-    /* neon border using pseudo-element */
-    #buscarBtn::after {
-      content: "";
-      position: absolute;
-      inset: -2px;
-      border-radius: 12px;
-      background: linear-gradient(90deg, rgba(255,216,107,0.12), rgba(126,240,255,0.06));
-      box-shadow: 0 0 18px 4px rgba(255,216,107,0.06);
-      z-index: -1;
-      transition: opacity 160ms ease;
-    }
-    #buscarBtn:hover { transform: translateY(-3px); box-shadow: 0 14px 34px rgba(10,50,70,0.14); }
-    #buscarBtn:active { transform: translateY(-1px); }
+    #buscarBtn:hover{transform:translateY(-3px); box-shadow: 0 0 18px var(--neon-accent), 0 14px 34px rgba(10,50,70,0.18);}
 
-    /* Neon-styled headings and small accents */
-    .section-title {
-      font-family: "Playfair Display", serif;
-      font-size:1.15rem;
-      color: var(--sea-deep);
-      margin: 8px 0 12px;
-      text-shadow:
-        0 0 2px rgba(255,255,255,0.9),
-        0 0 8px var(--neon-accent),
-        0 6px 12px rgba(0,0,0,0.08);
-    }
+    #resultado{margin-top:14px; text-align:center;}
+    .mensaje{color:var(--sea-deep);}
 
-    #resultado{ margin-top:14px; min-height:40px; text-align:center; color:var(--muted); }
-    .mensaje{ font-size:1rem; color:var(--sea-deep); margin:8px 0; }
+    /* Loader con carta animada */
+    .loader-wrap{display:none; margin-top:12px; justify-content:center; gap:12px; align-items:center;}
+    .spinner{width:22px; height:22px; border:3px solid rgba(120,80,40,0.12); border-top-color:var(--sun); border-radius:50%; animation:spin 1s linear infinite;}
+    @keyframes spin{to{transform:rotate(360deg);}}
+    .progress-bar{position:relative; width:380px; height:14px; background:rgba(200,140,80,0.06); border-radius:10px; overflow:hidden; box-shadow: inset 0 2px 6px rgba(0,0,0,0.04);}
+    .progress-fill{height:100%; background:linear-gradient(90deg,#ffd89a,#ffb74d); width:0%; transition: width 160ms ease;}
+    .card-thumb{position:absolute; top:-30px; width:64px; height:40px; background:#fff0df; border-radius:8px; display:flex; align-items:center; justify-content:center; font-weight:800; box-shadow:0 0 14px var(--neon-color); transform:translateX(-50%); left:0%;}
+    .progress-text{text-align:center; margin-top:8px; color:#7a5a44;}
 
-    /* QSL cards */
+    /* QSLs */
     #listaQSLs { display:flex; flex-wrap:wrap; gap:18px; justify-content:center; margin-top:12px; }
-    .qsl-img{
-      max-width:240px;
-      border-radius:12px;
-      border: 3px solid rgba(200,140,80,0.12);
-      box-shadow: 0 12px 30px rgba(120,70,30,0.08);
-      background: linear-gradient(180deg,#fff,#fff8f2);
-      transition: transform .22s ease, box-shadow .22s ease;
-    }
-    .qsl-img:hover{ transform: translateY(-6px); box-shadow: 0 20px 40px rgba(120,70,30,0.12); }
-
-    .descargar{
-      display:inline-block;
-      margin-top:10px;
-      padding:9px 16px;
-      border-radius:10px;
-      background: linear-gradient(180deg,var(--sun), #ff9f3b);
-      color:#fff;
-      text-decoration:none;
-      font-weight:800;
-      box-shadow: 0 8px 18px rgba(200,120,40,0.08);
-      transition: transform var(--transition-fast);
-    }
-    .descargar:hover{ transform: translateY(-3px); }
-
-    /* Loader (card moving) */
-    .loader-wrap{ display:none; margin-top:12px; align-items:center; justify-content:center; gap:12px; }
-    .spinner{ width:22px; height:22px; border:3px solid rgba(120,80,40,0.12); border-top-color:var(--sun); border-radius:50%; animation:spin 1s linear infinite; }
-    @keyframes spin{ to{ transform:rotate(360deg); } }
-    .progress-bar{ position:relative; width:380px; height:14px; background: rgba(200,140,80,0.06); border-radius:10px; overflow:hidden; box-shadow: inset 0 2px 6px rgba(0,0,0,0.04); }
-    .progress-fill{ height:100%; background: linear-gradient(90deg,#ffd89a,#ffb74d); width:0%; transition: width 160ms ease; }
-    .card-thumb{ position:absolute; top:-30px; width:64px; height:40px; background: linear-gradient(180deg,#fff,#fff0df); color:#4a2f1a; border:2px solid rgba(200,140,80,0.18); border-radius:8px; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:0.85rem; box-shadow: 0 8px 22px rgba(120,70,30,0.12); transform:translateX(-50%); transition:left 80ms cubic-bezier(.2,.8,.2,1); pointer-events:none; overflow:hidden; }
-    .card-thumb img{ width:100%; height:100%; object-fit:cover; display:block; }
-    .progress-text{ font-size:0.95rem; color:#7a5a44; margin-top:8px; text-align:center; }
+    .qsl-img{max-width:240px; border-radius:12px; box-shadow:0 0 12px var(--neon-accent);}
+    .descargar{display:inline-block; margin-top:10px; padding:9px 16px; border-radius:10px; background:var(--sun); color:#fff; font-weight:800; box-shadow:0 0 12px var(--neon-color); transition:transform 160ms ease;}
+    .descargar:hover{transform:translateY(-2px);}
 
     /* Modal */
     .modal{ display:none; position:fixed; inset:0; z-index:1200; background: rgba(20,12,8,0.45); align-items:center; justify-content:center; padding:20px; }
     .modal-contenido{ width:100%; max-width:920px; background: linear-gradient(180deg,#fffaf0,#fff7ef); border-radius:14px; padding:18px; box-shadow: 0 20px 50px rgba(60,30,10,0.25); color:#3f2b1f; }
     .cerrar{ float:right; font-size:26px; cursor:pointer; color:#7a5a44; }
 
+    footer{text-align:center; margin-top:28px; color:#7a5a44;}
+
     @media (max-width:720px){
-      .hero-inner{ flex-direction:column; gap:12px; text-align:center; }
-      .hero-title{ font-size:1.6rem; }
       .container{ margin-top:-28px; padding:18px; }
       .progress-bar{ width:260px; }
-      #indicativo{ width:160px; }
+      #indicativo{ width:180px; }
+      .hero-title{ font-size:1.9rem; }
     }
   </style>
 </head>
 <body>
-  <!-- Hero with sunset beach background -->
+  <!-- Hero -->
   <section class="hero" role="banner" aria-label="Portada atardecer en la playa">
     <div class="hero-inner">
-      <div class="brand" aria-hidden="true">
-        <div class="logo">CL7</div>
-      </div>
-
-      <div style="flex:1; max-width:720px; text-align:center;">
-        <h1 class="hero-title">Navegador QSL Caribeño</h1>
-        <p class="hero-sub">Busca y descarga tus QSL con estilo — buenos DXs desde la costa</p>
-      </div>
+      <h1 class="hero-title">Navegador QSL Caribeño</h1>
+      <p class="hero-sub">Busca y descarga tus QSL con estilo — buenos DXs desde la costa</p>
     </div>
   </section>
 
-  <!-- Main content -->
+  <!-- Main -->
   <main class="container" role="main">
     <div class="controls" aria-label="Controles de búsqueda">
       <input id="indicativo" type="text" placeholder="Ej: CL7ADV" aria-label="Indicativo">
       <button id="buscarBtn" type="button">Buscar QSL</button>
     </div>
 
-    <!-- Loader with moving card -->
+    <!-- Loader -->
     <div id="loaderContainer" class="loader-wrap" aria-hidden="true">
-      <div class="spinner" id="spinner" role="status" aria-hidden="true"></div>
+      <div class="spinner" role="status" aria-hidden="true"></div>
       <div>
         <div class="progress-bar" id="progressBar">
-          <div id="progressFill" class="progress-fill" style="width:0%"></div>
-          <div id="cardThumb" class="card-thumb" style="left:0%"><img id="cardThumbImg" src="img/mini-qsl.jpg" alt="mini QSL" onerror="this.style.display='none'; this.parentElement.textContent='QSL'"></div>
+          <div id="progressFill" class="progress-fill"></div>
+          <div id="cardThumb" class="card-thumb">QSL</div>
         </div>
         <div id="progressText" class="progress-text">Iniciando búsqueda...</div>
       </div>
@@ -243,8 +151,8 @@
   <!-- Modal QSLs -->
   <div id="ventanaQSL" class="modal" aria-hidden="true">
     <div class="modal-contenido" role="dialog" aria-modal="true" aria-labelledby="qslTitle">
-      <span class="cerrar" id="cerrarBtn" title="Cerrar">&times;</span>
-      <h2 id="qslTitle" class="section-title">QSLs disponibles</h2>
+      <span id="cerrarBtn" class="cerrar" title="Cerrar">&times;</span>
+      <h2 id="qslTitle">QSLs disponibles</h2>
       <div id="contador"></div>
       <div id="listaQSLs"></div>
       <br>
@@ -255,25 +163,17 @@
   <script>
     let totalQSLs = 0, descargadas = 0, listaActual = [], imagenCargada = false, timeoutId = null;
 
-    window.onerror = function(message, source, lineno, colno, error) {
-      console.error('ERROR GLOBAL:', message, 'at', source + ':' + lineno + ':' + colno);
-      const resultado = document.getElementById('resultado');
-      if (resultado) resultado.innerHTML = `<p class="mensaje">⚠️ Error: ${message} (ver consola)</p>`;
-      return false;
-    };
-
-    document.addEventListener('DOMContentLoaded', () => {
-      document.getElementById('buscarBtn').addEventListener('click', buscarQSL);
-      document.getElementById('cerrarBtn').addEventListener('click', cerrarVentana);
-      document.getElementById('descargarTodasBtn').addEventListener('click', descargarTodas);
-      document.getElementById('ventanaQSL').addEventListener('click', (e) => {
-        if (e.target === document.getElementById('ventanaQSL')) cerrarVentana();
-      });
+    // Eventos
+    document.getElementById('buscarBtn').addEventListener('click', buscarQSL);
+    document.getElementById('cerrarBtn').addEventListener('click', cerrarVentana);
+    document.getElementById('descargarTodasBtn').addEventListener('click', descargarTodas);
+    document.getElementById('ventanaQSL').addEventListener('click', (e) => {
+      const modal = document.getElementById('ventanaQSL');
+      if (e.target === modal) cerrarVentana();
     });
 
-    function animateCardTo(cardElem, targetPct, duration = 90) {
-      if (!cardElem) return;
-      if (cardElem._animFrame) cancelAnimationFrame(cardElem._animFrame);
+    // Animación rápida de la carta
+    function animateCardTo(cardElem, targetPct, duration = 110) {
       const start = parseFloat(cardElem.style.left) || 0;
       const end = Math.max(0, Math.min(100, targetPct));
       const startTime = performance.now();
@@ -283,10 +183,9 @@
         const eased = ease(t);
         const current = start + (end - start) * eased;
         cardElem.style.left = current + '%';
-        if (t < 1) cardElem._animFrame = requestAnimationFrame(step);
-        else cardElem._animFrame = null;
+        if (t < 1) requestAnimationFrame(step);
       }
-      cardElem._animFrame = requestAnimationFrame(step);
+      requestAnimationFrame(step);
     }
 
     function buscarQSL(){
@@ -296,11 +195,10 @@
       const indicativo = document.getElementById("indicativo").value.trim().toUpperCase();
       const resultado = document.getElementById("resultado");
       const listaQSLs = document.getElementById("listaQSLs");
-      resultado.innerHTML = ""; if (listaQSLs) listaQSLs.innerHTML = "";
+      resultado.innerHTML = ""; listaQSLs.innerHTML = "";
 
       if (!indicativo){
         resultado.innerHTML = `<p class="mensaje">🌺 Por favor escribe un indicativo</p>`;
-        setTimeout(()=>{ resultado.innerHTML = ""; }, 4500);
         return;
       }
 
@@ -308,24 +206,29 @@
       const progressFill = document.getElementById('progressFill');
       const progressText = document.getElementById('progressText');
       const cardThumb = document.getElementById('cardThumb');
-      if (loader) { loader.style.display = 'flex'; loader.setAttribute('aria-hidden','false'); }
-      if (progressFill) progressFill.style.width = '0%';
-      if (cardThumb) cardThumb.style.left = '0%';
-      if (progressText) progressText.textContent = '🔄 Buscando QSL…';
 
-      let posibles = []; posibles.push(`img/${indicativo}.jpg`);
+      loader.style.display = 'flex';
+      loader.setAttribute('aria-hidden','false');
+      progressFill.style.width = '0%';
+      cardThumb.style.left = '0%';
+      progressText.textContent = '🔄 Buscando QSL… espera unos segundos';
+
+      // Generar rutas posibles
+      const posibles = [];
+      posibles.push(`img/${indicativo}.jpg`);
       for (let i=1;i<=50;i++) posibles.push(`img/${indicativo}-${i}.jpg`);
 
-      let encontradas = [], comprobadas = 0, totalPosibles = posibles.length;
-      if (timeoutId) clearTimeout(timeoutId);
+      let encontradas = [];
+      let comprobadas = 0;
+      const totalPosibles = posibles.length;
 
       function actualizarProgreso(){
         const pct = Math.round((comprobadas / totalPosibles) * 100);
-        if (progressFill) progressFill.style.width = pct + '%';
+        progressFill.style.width = pct + '%';
         const offset = 12;
         const cardPos = Math.min(100, pct + offset);
-        if (cardThumb) animateCardTo(cardThumb, cardPos, 80);
-        if (progressText) progressText.textContent = `Comprobadas ${comprobadas} / ${totalPosibles} (${pct}%)`;
+        animateCardTo(cardThumb, cardPos, 90);
+        progressText.textContent = `Comprobadas ${comprobadas} / ${totalPosibles} (${pct}%)`;
       }
 
       posibles.forEach(ruta=>{
@@ -333,28 +236,30 @@
         img.onload = ()=>{
           comprobadas++; actualizarProgreso();
           if (!encontradas.includes(ruta)){
-            imagenCargada = true; encontradas.push(ruta);
+            imagenCargada = true;
+            encontradas.push(ruta);
             mostrarQSLs(encontradas, indicativo);
-            if (progressFill) progressFill.style.width = '100%';
-            if (cardThumb) animateCardTo(cardThumb, 100, 80);
-            if (progressText) progressText.textContent = `Se encontraron ${encontradas.length} QSL`;
-            setTimeout(()=>{ if (loader) { loader.style.display='none'; loader.setAttribute('aria-hidden','true'); } }, 700);
+            progressFill.style.width = '100%';
+            animateCardTo(cardThumb, 100, 90);
+            progressText.textContent = `Se encontraron ${encontradas.length} QSL`;
+            setTimeout(()=>{ loader.style.display='none'; loader.setAttribute('aria-hidden','true'); }, 700);
           }
         };
         img.onerror = ()=>{
           comprobadas++; actualizarProgreso();
           if (comprobadas >= totalPosibles && !imagenCargada){
-            setTimeout(()=>{ if (loader) { loader.style.display='none'; loader.setAttribute('aria-hidden','true'); } }, 300);
+            setTimeout(()=>{ loader.style.display='none'; loader.setAttribute('aria-hidden','true'); }, 300);
           }
         };
         img.src = ruta;
       });
 
+      // Fallback de 10s
       timeoutId = setTimeout(()=>{
         if (!imagenCargada){
           resultado.innerHTML = `<p class="mensaje">❌ No tenemos esa QSL, pero pronto estará lista 🌺</p>`;
-          if (progressText) progressText.textContent = 'Búsqueda finalizada: no se encontraron imágenes';
-          setTimeout(()=>{ if (loader) { loader.style.display='none'; loader.setAttribute('aria-hidden','true'); } }, 900);
+          progressText.textContent = 'Búsqueda finalizada: no se encontraron imágenes';
+          setTimeout(()=>{ loader.style.display='none'; loader.setAttribute('aria-hidden','true'); }, 900);
         }
       }, 10000);
     }
@@ -363,11 +268,16 @@
       const ventana = document.getElementById("ventanaQSL");
       const listaQSLs = document.getElementById("listaQSLs");
       if (!lista || lista.length===0) return;
-      if (listaQSLs) listaQSLs.innerHTML = `<p class="mensaje">📡 Se encontraron ${lista.length} QSL para <strong>${indicativo}</strong></p>`;
-      totalQSLs = lista.length; descargadas = 0; listaActual = lista.slice();
+
+      listaQSLs.innerHTML = `<p class="mensaje">📡 Se encontraron ${lista.length} QSL para <strong>${indicativo}</strong></p>`;
+      totalQSLs = lista.length;
+      descargadas = 0;
+      listaActual = lista.slice();
+
       actualizarContador();
+
       lista.forEach(ruta=>{
-        if (listaQSLs) listaQSLs.innerHTML += `
+        listaQSLs.innerHTML += `
           <div>
             <img src="${ruta}" alt="QSL de ${indicativo}" class="qsl-img">
             <br>
@@ -375,20 +285,27 @@
           </div>
         `;
       });
-      if (ventana) { ventana.style.display = "flex"; ventana.setAttribute('aria-hidden','false'); }
+
+      ventana.style.display = "flex";
+      ventana.setAttribute('aria-hidden','false');
     }
 
     function actualizarContador(){
       const contador = document.getElementById("contador");
-      if (contador) contador.innerHTML = `<p class="mensaje">Has descargado ${descargadas} de ${totalQSLs} QSL</p>`;
+      contador.innerHTML = `<p class="mensaje">Has descargado ${descargadas} de ${totalQSLs} QSL</p>`;
     }
 
     function marcarDescarga(){
-      descargadas++; actualizarContador();
+      descargadas++;
+      actualizarContador();
       if (descargadas >= totalQSLs){
         const listaQSLs = document.getElementById("listaQSLs");
-        if (listaQSLs) listaQSLs.innerHTML = `<p class="mensaje">✅ Has descargado todas tus QSL, buenos DXs 🌺</p>`;
-        setTimeout(()=>{ cerrarVentana(); document.getElementById("resultado").innerHTML=""; document.getElementById("indicativo").value=""; }, 1600);
+        listaQSLs.innerHTML = `<p class="mensaje">✅ Has descargado todas tus QSL, buenos DXs 🌺</p>`;
+        setTimeout(()=>{
+          cerrarVentana();
+          document.getElementById("resultado").innerHTML="";
+          document.getElementById("indicativo").value="";
+        }, 1600);
       }
     }
 
@@ -403,14 +320,19 @@
       actualizarContador();
       if (descargadas >= totalQSLs){
         const listaQSLs = document.getElementById("listaQSLs");
-        if (listaQSLs) listaQSLs.innerHTML = `<p class="mensaje">✅ Has descargado todas tus QSL, buenos DXs 🌺</p>`;
-        setTimeout(()=>{ cerrarVentana(); document.getElementById("resultado").innerHTML=""; document.getElementById("indicativo").value=""; }, 1600);
+        listaQSLs.innerHTML = `<p class="mensaje">✅ Has descargado todas tus QSL, buenos DXs 🌺</p>`;
+        setTimeout(()=>{
+          cerrarVentana();
+          document.getElementById("resultado").innerHTML="";
+          document.getElementById("indicativo").value="";
+        }, 1600);
       }
     }
 
     function cerrarVentana(){
       const ventana = document.getElementById("ventanaQSL");
-      if (ventana) { ventana.style.display = "none"; ventana.setAttribute('aria-hidden','true'); }
+      ventana.style.display = "none";
+      ventana.setAttribute('aria-hidden','true');
     }
   </script>
 </body>
