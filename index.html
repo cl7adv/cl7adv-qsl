@@ -6,104 +6,56 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <style>
         :root {
-            --primary: #00bcd4;
-            --accent: #ff9800;
-            --gold: #ffe082;
-            --neon: #00ff99;
+            --primary: #00bcd4; --accent: #ff9800; --gold: #ffe082; --neon: #00ff99;
             --glass: rgba(14, 36, 49, 0.96);
         }
-
         body { 
             margin: 0; font-family: 'Segoe UI', sans-serif; 
             background: radial-gradient(circle at center, #00acc1, #013d3e); 
             background-attachment: fixed; color: #fff; 
             display: flex; align-items: center; justify-content: center; min-height: 100vh;
         }
-
         .container { 
             max-width: 650px; width: 90%; padding: 40px; 
             background: var(--glass); border-radius: 30px; 
             box-shadow: 0 30px 70px rgba(0,0,0,0.8); 
             border: 1px solid rgba(0, 255, 153, 0.3); text-align: center;
         }
-
         h1 { font-size: 2.2rem; margin-bottom: 5px; text-shadow: 0 0 15px var(--neon); }
         .subtitle { color: var(--gold); margin-bottom: 30px; font-size: 0.9rem; letter-spacing: 2px; }
-
         .search-group { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; }
-
         #indicativo { 
             padding: 15px; font-size: 1.3rem; border: 2px solid rgba(255,255,255,0.1); 
             border-radius: 12px; width: 220px; background: #000;
             color: var(--neon); font-weight: bold; text-transform: uppercase;
             text-align: center; letter-spacing: 2px;
         }
-
         #buscarBtn { 
             padding: 15px 30px; font-size: 1rem; 
             background: linear-gradient(145deg, #ffb74d, #f57c00); 
             color: #fff; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; 
             box-shadow: 0 5px 0 #b35900; transition: 0.1s;
         }
-
-        #buscarBtn:active { transform: translateY(3px); box-shadow: 0 2px 0 #b35900; }
-
-        /* Barra de Carga con Carta */
         .progress-container {
             width: 100%; max-width: 400px; height: 10px; 
             background: rgba(255,255,255,0.1); border-radius: 20px;
             margin: 50px auto 20px; position: relative; display: none;
         }
-
         .progress-fill { height: 100%; background: var(--neon); width: 0%; border-radius: 20px; transition: 0.2s; }
-
         .card-icon {
-            position: absolute; top: -35px; left: 0%;
-            width: 50px; height: 32px; background: #fff;
-            border: 2px solid var(--gold); border-radius: 5px;
-            color: #333; font-weight: bold; font-size: 10px;
-            display: flex; align-items: center; justify-content: center;
-            transform: translateX(-50%); transition: 0.2s;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            position: absolute; top: -35px; left: 0%; width: 50px; height: 32px; background: #fff;
+            border: 2px solid var(--gold); border-radius: 5px; color: #333; font-weight: bold;
+            display: flex; align-items: center; justify-content: center; transform: translateX(-50%); transition: 0.2s;
         }
         .card-icon::after { content: "✉️"; font-size: 16px; }
-
         .status-text { height: 40px; color: var(--neon); font-weight: bold; margin-top: 10px; }
-
-        /* Estilo de la Galería de Resultados */
-        .qsl-result-card {
-            background: rgba(255,255,255,0.05); padding: 15px; border-radius: 15px;
-            border: 1px solid var(--gold); margin-bottom: 20px;
-        }
-        .qsl-img { width: 100%; border-radius: 10px; margin-bottom: 10px; }
-        .btn-dl { 
-            display: inline-block; padding: 10px 20px; background: #4caf50; 
-            color: white; text-decoration: none; border-radius: 8px; font-weight: bold;
-        }
-
-        .error-msg {
-            background: rgba(255, 68, 68, 0.2); border: 1px solid #ff4444;
-            color: #ffbaba; padding: 15px; border-radius: 12px;
-            margin-top: 20px; animation: shake 0.5s; transition: opacity 1s;
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-10px); }
-            75% { transform: translateX(10px); }
-        }
-
+        .qsl-img { width: 100%; border-radius: 10px; margin-bottom: 10px; border: 2px solid var(--gold); }
+        .btn-dl { display: inline-block; padding: 10px 20px; background: #4caf50; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; }
+        .error-msg { background: rgba(255, 68, 68, 0.2); border: 1px solid #ff4444; color: #ffbaba; padding: 15px; border-radius: 12px; margin-top: 20px; animation: shake 0.5s; transition: opacity 1s; }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-10px); } 75% { transform: translateX(10px); } }
         .fade-out { opacity: 0; }
-
-        /* Modal para ver las QSLs */
-        .modal { 
-            display: none; position: fixed; z-index: 100; left: 0; top: 0; 
-            width: 100%; height: 100%; background: rgba(0,0,0,0.9); overflow-y: auto;
-        }
-        .modal-content { 
-            background: var(--glass); margin: 5% auto; padding: 30px; 
-            border-radius: 20px; width: 85%; max-width: 800px; border: 2px solid var(--neon);
-        }
+        .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); overflow-y: auto; }
+        .modal-content { background: var(--glass); margin: 5% auto; padding: 30px; border-radius: 20px; width: 85%; max-width: 800px; border: 2px solid var(--neon); text-align: center; }
     </style>
 </head>
 <body>
@@ -111,17 +63,14 @@
     <div class="container">
         <h1>🌴 QSL Caribeña 🌊</h1>
         <p class="subtitle">CL7ADV - SANTA CRUZ DEL SUR</p>
-
         <div class="search-group">
             <input type="text" id="indicativo" placeholder="INDICATIVO" maxlength="10">
             <button id="buscarBtn" onclick="buscarQSL()">BUSCAR QSL</button>
         </div>
-
         <div id="pContainer" class="progress-container">
             <div id="card" class="card-icon">QSL</div>
             <div id="fill" class="progress-fill"></div>
         </div>
-
         <div id="status" class="status-text"></div>
         <div id="resultado"></div>
     </div>
@@ -130,7 +79,7 @@
         <div class="modal-content">
             <h2 id="modalTitle" style="color: var(--gold);"></h2>
             <div id="gridQSLs" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;"></div>
-            <button onclick="cerrarModal()" style="margin-top:30px; padding:10px 25px; border-radius:10px; cursor:pointer;">CERRAR</button>
+            <button onclick="cerrarModal()" style="margin-top:30px; padding:10px 25px; cursor:pointer; background:var(--accent); border:none; color:white; font-weight:bold; border-radius:10px;">CERRAR</button>
         </div>
     </div>
 
@@ -146,10 +95,9 @@
                 const gainNode = audioCtx.createGain();
                 gainNode.gain.setValueAtTime(0.04, audioCtx.currentTime);
                 gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1.5);
-                whiteNoise.connect(gainNode);
-                gainNode.connect(audioCtx.destination);
+                whiteNoise.connect(gainNode); gainNode.connect(audioCtx.destination);
                 whiteNoise.start();
-            } catch(e) { console.log("Audio no soportado"); }
+            } catch(e) {}
         }
 
         async function buscarQSL() {
@@ -167,14 +115,12 @@
             pContainer.style.display = "block";
             status.innerText = "SINTONIZANDO SEÑAL...";
             
-            // Animación visual de la carta
             let progreso = 0;
-            const anim = setInterval(async () => {
+            const anim = setInterval(() => {
                 progreso += 5;
                 fill.style.width = progreso + "%";
                 card.style.left = progreso + "%";
-                if(progreso == 50) status.innerText = "BUSCANDO EN CARPETA IMG...";
-                
+                if(progreso == 50) status.innerText = "BUSCANDO ARCHIVOS...";
                 if (progreso >= 100) {
                     clearInterval(anim);
                     verificarArchivosReales(call);
@@ -183,36 +129,40 @@
         }
 
         async function verificarArchivosReales(call) {
-            const pContainer = document.getElementById('pContainer');
-            const status = document.getElementById('status');
             const res = document.getElementById('resultado');
             const input = document.getElementById('indicativo');
+            document.getElementById('pContainer').style.display = "none";
+            document.getElementById('status').innerText = "";
 
-            // Lista de nombres de archivos a probar en la carpeta img/
-            const archivosAProbar = [`img/${call}.jpg`];
-            for(let i=1; i<=10; i++) archivosAProbar.push(`img/${call}-${i}.jpg`);
-
+            // Extensiones a probar
+            const ext = ['jpg', 'JPG', 'png', 'PNG', 'jpeg', 'JPEG'];
             let encontradas = [];
+            
+            // Generar lista de rutas (CL7ADV.jpg, CL7ADV-1.jpg, etc)
+            let rutasAProbar = [];
+            ext.forEach(e => {
+                rutasAProbar.push(`img/${call}.${e}`);
+                for(let i=1; i<=5; i++) rutasAProbar.push(`img/${call}-${i}.${e}`);
+            });
 
-            // ESTA ES LA PARTE QUE BUSCA REALMENTE
-            const promesas = archivosAProbar.map(ruta => {
+            // Promesas de carga
+            const promesas = rutasAProbar.map(ruta => {
                 return new Promise((resolve) => {
                     const img = new Image();
                     img.onload = () => { encontradas.push(ruta); resolve(); };
                     img.onerror = () => resolve();
-                    img.src = ruta;
+                    img.src = ruta + "?t=" + new Date().getTime(); // Evitar cache
                 });
             });
 
             await Promise.all(promesas);
 
-            pContainer.style.display = "none";
-            status.innerText = "";
-
             if (encontradas.length > 0) {
-                abrirModal(call, encontradas);
+                // Eliminar duplicados si los hay
+                const unicas = [...new Set(encontradas)];
+                abrirModal(call, unicas);
             } else {
-                res.innerHTML = `<div class="error-msg" id="msgErr">❌ NO SE ENCONTRARON QSLs PARA ${call} EN EL SERVIDOR</div>`;
+                res.innerHTML = `<div class="error-msg" id="msgErr">❌ NO SE ENCONTRÓ QSL PARA ${call}</div>`;
                 setTimeout(() => {
                     const m = document.getElementById('msgErr');
                     if(m) {
@@ -227,12 +177,11 @@
             const modal = document.getElementById('modalQSL');
             const grid = document.getElementById('gridQSLs');
             const title = document.getElementById('modalTitle');
-            
             title.innerText = `QSLs ENCONTRADAS PARA ${call}`;
             grid.innerHTML = "";
             fotos.forEach(f => {
                 grid.innerHTML += `
-                    <div class="qsl-result-card">
+                    <div style="background:rgba(255,255,255,0.05); padding:10px; border-radius:10px;">
                         <img src="${f}" class="qsl-img">
                         <a href="${f}" download class="btn-dl">⬇️ DESCARGAR</a>
                     </div>`;
