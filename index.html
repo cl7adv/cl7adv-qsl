@@ -15,12 +15,29 @@
     .qsl-img { max-width: 220px; border: 4px solid #ffe082; border-radius: 12px; margin: 10px; box-shadow: 0 0 15px #ffe082; }
     .descargar { display: inline-block; margin-top: 10px; padding: 8px 16px; background: #4caf50; color: white; border-radius: 8px; text-decoration: none; font-weight: bold; transition: 0.3s; }
     .descargar:hover { background: #388e3c; }
-    .mensaje { font-size: 1.3rem; margin-top: 20px; color: #ffe082; text-shadow: 0 0 8px #ffeb3b; }
-    footer { margin-top: 40px; font-size: 1.1rem; color: #ffe082; text-shadow: 0 0 8px #ffeb3b; }
+    .mensaje { font-size: 1.1rem; margin-top: 12px; color: #ffe082; text-shadow: 0 0 8px #ffeb3b; }
+    footer { margin-top: 30px; font-size: 1rem; color: #ffe082; text-shadow: 0 0 8px #ffeb3b; }
     .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); }
-    .modal-contenido { background: #fff; color: #000; margin: 5% auto; padding: 20px; border-radius: 12px; width: 80%; max-width: 900px; text-align: center; }
+    .modal-contenido { background: #fff; color: #000; margin: 5% auto; padding: 20px; border-radius: 12px; width: 90%; max-width: 900px; text-align: center; }
     .cerrar { float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
     #listaQSLs { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; margin-top: 20px; }
+
+    /* Loader y barra con carta */
+    .loader-wrap { display: none; margin-top: 12px; align-items: center; justify-content: center; }
+    .spinner { width: 22px; height: 22px; border: 3px solid rgba(255,255,255,0.25); border-top-color: #ffe082; border-radius: 50%; animation: spin 1s linear infinite; margin-right: 12px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .progress-bar { position: relative; width: 360px; height: 14px; background: rgba(255,224,130,0.12); border-radius: 10px; overflow: hidden; box-shadow: inset 0 0 6px rgba(0,0,0,0.25); display: inline-block; vertical-align: middle; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg,#ffd54f,#ffb300); width: 0%; transition: width 300ms ease; }
+
+    .card-thumb { position: absolute; top: -28px; width: 56px; height: 36px; background: linear-gradient(180deg,#fff,#ffe082); color: #000; border: 2px solid #ffd54f; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.85rem; box-shadow: 0 4px 10px rgba(0,0,0,0.25); transform: translateX(-50%); transition: left 300ms ease; pointer-events: none; }
+    .progress-text { font-size: 0.95rem; margin-top: 6px; color: #ffe082; }
+
+    @media (max-width: 480px) {
+      .progress-bar { width: 260px; }
+      #indicativo { width: 140px; display: block; margin: 10px auto; }
+      #buscarBtn { display: block; margin: 0 auto; }
+    }
   </style>
 </head>
 <body>
@@ -28,8 +45,22 @@
     <h1>🌴 Bienvenido al sitio QSL Caribeño 🌊</h1>
     <p>Escribe tu indicativo para buscar tus tarjetas QSL</p>
 
-    <input type="text" id="indicativo" placeholder="Ej: CL7ADV" aria-label="Indicativo">
-    <button id="buscarBtn" type="button">Buscar QSL</button>
+    <div>
+      <input type="text" id="indicativo" placeholder="Ej: CL7ADV" aria-label="Indicativo">
+      <button id="buscarBtn" type="button">Buscar QSL</button>
+    </div>
+
+    <!-- Loader con carta moviéndose -->
+    <div id="loaderContainer" class="loader-wrap" aria-hidden="true">
+      <div class="spinner" id="spinner" role="status" aria-hidden="true"></div>
+      <div>
+        <div class="progress-bar" id="progressBar">
+          <div id="progressFill" class="progress-fill" style="width:0%"></div>
+          <div id="cardThumb" class="card-thumb" style="left:0%;">QSL</div>
+        </div>
+        <div id="progressText" class="progress-text">Iniciando búsqueda...</div>
+      </div>
+    </div>
 
     <div id="resultado" role="status" aria-live="polite"></div>
 
@@ -75,15 +106,16 @@
       document.getElementById('buscarBtn').addEventListener('click', buscarQSL);
       document.getElementById('cerrarBtn').addEventListener('click', cerrarVentana);
       document.getElementById('descargarTodasBtn').addEventListener('click', descargarTodas);
+      // Cerrar modal al hacer click fuera del contenido
+      document.getElementById('ventanaQSL').addEventListener('click', (e) => {
+        if (e.target === document.getElementById('ventanaQSL')) cerrarVentana();
+      });
     });
 
     function buscarQSL() {
       // Reiniciar estado
       imagenCargada = false;
-      if (timeoutId) {
-        clearTimeout(timeoutId);
-        timeoutId = null;
-      }
+      if (timeoutId) { clearTimeout(timeoutId); timeoutId = null; }
 
       const indicativo = document.getElementById("indicativo").value.trim().toUpperCase();
       const resultado = document.getElementById("resultado");
@@ -99,8 +131,18 @@
         return;
       }
 
+      // Mostrar loader y resetear barra y carta
+      const loader = document.getElementById('loaderContainer');
+      const progressFill = document.getElementById('progressFill');
+      const progressText = document.getElementById('progressText');
+      const cardThumb = document.getElementById('cardThumb');
+      loader.style.display = 'flex';
+      loader.setAttribute('aria-hidden', 'false');
+      progressFill.style.width = '0%';
+      cardThumb.style.left = '0%';
+      progressText.textContent = '🔄 Buscando QSL… espera unos segundos';
+
       console.log('Buscando QSL para', indicativo);
-      resultado.innerHTML = `<p class="mensaje">🔄 Buscando QSL… espera unos segundos</p>`;
 
       // Generar rutas posibles
       let posibles = [];
@@ -108,29 +150,58 @@
       for (let i = 1; i <= 50; i++) posibles.push(`img/${indicativo}-${i}.jpg`);
 
       let encontradas = [];
+      let comprobadas = 0;
+      const totalPosibles = posibles.length;
+
+      // cancelar timeout anterior si existe
+      if (timeoutId) clearTimeout(timeoutId);
+
+      // Helper para actualizar barra y mover carta
+      function actualizarProgreso() {
+        const pct = Math.round((comprobadas / totalPosibles) * 100);
+        progressFill.style.width = pct + '%';
+        const cardPos = Math.min(100, pct);
+        cardThumb.style.left = cardPos + '%';
+        progressText.textContent = `Imágenes comprobadas: ${comprobadas} / ${totalPosibles} (${pct}%)`;
+      }
 
       posibles.forEach(ruta => {
         const img = new Image();
         img.onload = () => {
+          comprobadas++;
+          actualizarProgreso();
+
           if (!encontradas.includes(ruta)) {
             imagenCargada = true;
             encontradas.push(ruta);
             console.log('Imagen encontrada:', ruta);
             mostrarQSLs(encontradas, indicativo);
-            resultado.innerHTML = "";
+            // marcar barra completa y mensaje de éxito
+            progressFill.style.width = '100%';
+            cardThumb.style.left = '100%';
+            progressText.textContent = `Se encontraron ${encontradas.length} QSL`;
+            // ocultar loader tras breve pausa
+            setTimeout(() => { loader.style.display = 'none'; loader.setAttribute('aria-hidden','true'); }, 800);
           }
         };
         img.onerror = () => {
-          // ignorar si no existe
+          comprobadas++;
+          actualizarProgreso();
+          if (comprobadas >= totalPosibles && !imagenCargada) {
+            // ocultar loader y mostrar mensaje final
+            setTimeout(() => { loader.style.display = 'none'; loader.setAttribute('aria-hidden','true'); }, 300);
+          }
         };
-        // Asignar src al final para disparar onload/onerror
         img.src = ruta;
       });
 
-      // Esperar 10s antes de mostrar mensaje de no encontrada
+      // Esperar 10s antes de mostrar mensaje de no encontrada (fallback)
       timeoutId = setTimeout(() => {
         if (!imagenCargada) {
           resultado.innerHTML = `<p class="mensaje">❌ No tenemos esa QSL, pero pronto estará lista 🌺</p>`;
+          progressText.textContent = 'Búsqueda finalizada: no se encontraron imágenes';
+          // ocultar loader tras 1s
+          setTimeout(() => { loader.style.display = 'none'; loader.setAttribute('aria-hidden','true'); }, 1000);
           console.log('No se encontraron imágenes para', indicativo);
         }
       }, 10000);
@@ -214,4 +285,3 @@
   </script>
 </body>
 </html>
-
