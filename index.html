@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <title>Navegador QSL Caribeño - CL7ADV</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
   <style>
-    /* (mantén tu CSS tal cual) */
     body { margin: 0; font-family: "Trebuchet MS", Arial, sans-serif; background: linear-gradient(to bottom, #00bcd4, #009688); color: #fff; text-align: center; }
     .container { max-width: 900px; margin: 40px auto; padding: 25px; background: rgba(0,0,0,0.4); border-radius: 15px; box-shadow: 0 0 20px rgba(0,0,0,0.6); }
     h1 { font-size: 2.2rem; margin-bottom: 15px; text-shadow: 0 0 10px #ffe082; }
@@ -28,41 +28,49 @@
     <h1>🌴 Bienvenido al sitio QSL Caribeño 🌊</h1>
     <p>Escribe tu indicativo para buscar tus tarjetas QSL</p>
 
-    <input type="text" id="indicativo" placeholder="Ej: CL7ADV">
-    <button id="buscarBtn">Buscar QSL</button>
+    <input type="text" id="indicativo" placeholder="Ej: CL7ADV" aria-label="Indicativo">
+    <button id="buscarBtn" type="button">Buscar QSL</button>
 
-    <div id="resultado"></div>
+    <div id="resultado" role="status" aria-live="polite"></div>
 
     <footer>
       — CL7ADV — Buenos DXs en este 2026<br>
       Motor del proyecto: Radio Club Santa Cruz Del Sur/Alfred
       <br><br>
-      <a href="https://info.flagcounter.com/qvMz">
+      <a href="https://info.flagcounter.com/qvMz" target="_blank" rel="noopener">
         <img src="https://s01.flagcounter.com/count2/qvMz/bg_57A8DE/txt_000000/border_F55B0F/columns_5/maxflags_20/viewers_0/labels_0/pageviews_0/flags_0/percent_0/" alt="Flag Counter" border="0">
       </a>
     </footer>
   </div>
 
-  <div id="ventanaQSL" class="modal">
-    <div class="modal-contenido">
-      <span class="cerrar" id="cerrarBtn">&times;</span>
-      <h2>QSLs disponibles</h2>
+  <div id="ventanaQSL" class="modal" aria-hidden="true">
+    <div class="modal-contenido" role="dialog" aria-modal="true" aria-labelledby="qslTitle">
+      <span class="cerrar" id="cerrarBtn" title="Cerrar">&times;</span>
+      <h2 id="qslTitle">QSLs disponibles</h2>
       <div id="contador"></div>
       <div id="listaQSLs"></div>
       <br>
-      <button class="descargar" id="descargarTodasBtn">⬇️ Descargar todas</button>
+      <button class="descargar" id="descargarTodasBtn" type="button">⬇️ Descargar todas</button>
     </div>
   </div>
 
-  <!-- Script al final del body -->
   <script>
+    // Variables globales
     let totalQSLs = 0;
     let descargadas = 0;
     let listaActual = [];
     let imagenCargada = false;
     let timeoutId = null;
 
-    // Asignar eventos de forma segura
+    // Manejo de errores global para depuración
+    window.onerror = function(message, source, lineno, colno, error) {
+      console.error('ERROR GLOBAL:', message, 'at', source + ':' + lineno + ':' + colno);
+      const resultado = document.getElementById('resultado');
+      if (resultado) resultado.innerHTML = `<p class="mensaje">⚠️ Error: ${message} (ver consola)</p>`;
+      return false;
+    };
+
+    // Asignar eventos cuando el DOM esté listo
     document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('buscarBtn').addEventListener('click', buscarQSL);
       document.getElementById('cerrarBtn').addEventListener('click', cerrarVentana);
@@ -70,7 +78,13 @@
     });
 
     function buscarQSL() {
-      imagenCargada = false; // reiniciar cada búsqueda
+      // Reiniciar estado
+      imagenCargada = false;
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+        timeoutId = null;
+      }
+
       const indicativo = document.getElementById("indicativo").value.trim().toUpperCase();
       const resultado = document.getElementById("resultado");
       const listaQSLs = document.getElementById("listaQSLs");
@@ -88,14 +102,12 @@
       console.log('Buscando QSL para', indicativo);
       resultado.innerHTML = `<p class="mensaje">🔄 Buscando QSL… espera unos segundos</p>`;
 
+      // Generar rutas posibles
       let posibles = [];
       posibles.push(`img/${indicativo}.jpg`);
       for (let i = 1; i <= 50; i++) posibles.push(`img/${indicativo}-${i}.jpg`);
 
       let encontradas = [];
-
-      // cancelar timeout anterior si existe
-      if (timeoutId) clearTimeout(timeoutId);
 
       posibles.forEach(ruta => {
         const img = new Image();
@@ -109,12 +121,13 @@
           }
         };
         img.onerror = () => {
-          // no existe: ignorar
+          // ignorar si no existe
         };
+        // Asignar src al final para disparar onload/onerror
         img.src = ruta;
       });
 
-      // esperar 10s antes de mostrar mensaje de no encontrada
+      // Esperar 10s antes de mostrar mensaje de no encontrada
       timeoutId = setTimeout(() => {
         if (!imagenCargada) {
           resultado.innerHTML = `<p class="mensaje">❌ No tenemos esa QSL, pero pronto estará lista 🌺</p>`;
@@ -127,17 +140,16 @@
       const ventana = document.getElementById("ventanaQSL");
       const listaQSLs = document.getElementById("listaQSLs");
 
-      // Si la lista está vacía, no abrir la ventana
       if (!lista || lista.length === 0) return;
 
+      // Limpiar antes de añadir para evitar duplicados
       listaQSLs.innerHTML = `<p>📡 Se encontraron ${lista.length} QSL para <strong>${indicativo}</strong></p>`;
       totalQSLs = lista.length;
       descargadas = 0;
-      listaActual = lista.slice(); // copia
+      listaActual = lista.slice();
 
       actualizarContador();
 
-      // Añadir imágenes (limpiamos antes para evitar duplicados)
       lista.forEach(ruta => {
         listaQSLs.innerHTML += `
           <div>
@@ -149,6 +161,7 @@
       });
 
       ventana.style.display = "block";
+      ventana.setAttribute('aria-hidden', 'false');
     }
 
     function actualizarContador() {
@@ -196,7 +209,9 @@
     function cerrarVentana() {
       const ventana = document.getElementById("ventanaQSL");
       ventana.style.display = "none";
+      ventana.setAttribute('aria-hidden', 'true');
     }
   </script>
 </body>
 </html>
+
