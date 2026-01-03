@@ -2,14 +2,12 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>QSL Caribeña v28.1 - ZMR CUBA</title>
+    <title>QSL Caribeña v28.2 - ZMR CUBA</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <style>
         :root {
             --neon-blue: #00eaff;
             --neon-pink: #ff00ff;
-            --cuba-red: #d40000;
-            --cuba-blue: #002a8f;
             --bg-dark: #0f172a; 
             --bg-darker: #020617;
         }
@@ -18,196 +16,172 @@
             margin: 0; font-family: 'Segoe UI', sans-serif;
             background: radial-gradient(circle at center, var(--bg-dark) 0%, var(--bg-darker) 100%);
             display: flex; flex-direction: column; align-items: center; justify-content: center; 
-            min-height: 100vh; color: white; overflow-x: hidden;
-        }
-
-        #utc-clock {
-            position: fixed; top: 20px; right: 20px; background: rgba(0, 0, 0, 0.7);
-            padding: 10px 20px; border-radius: 12px; border: 1px solid var(--neon-blue);
-            color: var(--neon-blue); font-family: monospace; font-weight: bold; z-index: 1001;
+            min-height: 100vh; color: white;
         }
 
         .container { 
-            width: 90%; max-width: 600px; padding: 40px;
-            background: rgba(15, 23, 42, 0.8); border-radius: 30px; 
-            border: 2px solid rgba(0, 234, 255, 0.3); text-align: center;
-            backdrop-filter: blur(20px); animation: floating 4s ease-in-out infinite;
+            width: 90%; max-width: 550px; padding: 40px;
+            background: rgba(15, 23, 42, 0.85); border-radius: 30px; 
+            border: 2px solid var(--neon-blue); text-align: center;
+            backdrop-filter: blur(20px); box-shadow: 0 0 30px rgba(0, 234, 255, 0.2);
         }
 
-        @keyframes floating { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-
-        h1 { color: var(--neon-blue); font-size: 2.5rem; text-shadow: 0 0 20px var(--neon-blue); margin-bottom: 5px; }
-        .subtitle { color: var(--neon-pink); font-weight: bold; margin-bottom: 30px; font-size: 0.9rem; }
+        h1 { color: var(--neon-blue); text-shadow: 0 0 15px var(--neon-blue); margin: 0; }
+        .subtitle { color: var(--neon-pink); font-size: 0.9rem; margin-bottom: 30px; font-weight: bold; }
 
         input { 
-            padding: 18px; width: 80%; border: 2px solid var(--neon-pink); 
-            border-radius: 15px; font-size: 1.5rem; font-weight: bold; text-align: center;
-            text-transform: uppercase; color: var(--neon-blue); background: rgba(0,0,0,0.7);
-            outline: none; transition: 0.3s;
+            padding: 15px; width: 80%; border: 2px solid var(--neon-pink); 
+            border-radius: 12px; font-size: 1.4rem; font-weight: bold; text-align: center;
+            text-transform: uppercase; color: var(--neon-blue); background: rgba(0,0,0,0.5);
+            outline: none;
         }
 
-        input:focus { border-color: var(--neon-blue); box-shadow: 0 0 20px rgba(0, 234, 255, 0.4); }
-
-        .btn-main {
-            margin-top: 25px; padding: 15px 40px; 
+        .btn-search {
+            margin-top: 20px; padding: 15px 40px; 
             background: linear-gradient(135deg, var(--neon-blue), var(--neon-pink));
-            color: white; border: none; border-radius: 50px; font-weight: 800;
-            cursor: pointer; font-size: 1.1rem; text-transform: uppercase;
+            color: white; border: none; border-radius: 50px; font-weight: bold;
+            cursor: pointer; font-size: 1.1rem;
         }
 
-        .progress-box { width: 100%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 10px; margin-top: 30px; display: none; overflow: hidden; }
-        .fill { width: 0%; height: 100%; background: var(--neon-blue); transition: width 0.2s; }
+        .loader-bar { width: 100%; height: 6px; background: #222; border-radius: 10px; margin-top: 25px; display: none; overflow: hidden; }
+        .loader-fill { width: 0%; height: 100%; background: var(--neon-blue); transition: width 0.3s; }
 
-        /* MODAL Y CARTAS */
-        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); backdrop-filter: blur(10px); overflow-y: auto; }
-        .modal-content { max-width: 900px; margin: 40px auto; padding: 20px; text-align: center; }
+        /* MODAL */
+        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); overflow-y: auto; padding: 20px; box-sizing: border-box; }
+        .modal-content { max-width: 800px; margin: 20px auto; background: #111; padding: 30px; border-radius: 20px; border: 1px solid var(--neon-blue); text-align: center; }
+        .qsl-card { background: #1e293b; padding: 15px; border-radius: 15px; margin-bottom: 20px; }
+        .qsl-card img { width: 100%; border-radius: 10px; display: block; margin-bottom: 15px; }
         
-        .qsl-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
-        .qsl-card { background: #1e293b; padding: 15px; border-radius: 15px; border: 1px solid var(--neon-blue); }
-        .qsl-card img { width: 100%; border-radius: 10px; margin-bottom: 15px; }
-
-        .actions { display: flex; gap: 10px; justify-content: center; }
-        .btn-dl { background: var(--cuba-red); color: white; padding: 10px; border-radius: 5px; text-decoration: none; font-size: 0.8rem; flex: 1; }
-        .btn-share { background: var(--cuba-blue); color: white; padding: 10px; border-radius: 5px; cursor: pointer; border: none; font-size: 0.8rem; flex: 1; }
-
-        footer { margin-top: 40px; font-size: 0.8rem; opacity: 0.6; }
+        .btn-group { display: flex; gap: 10px; justify-content: center; }
+        .btn-action { flex: 1; padding: 12px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 0.9rem; border: none; cursor: pointer; color: white; }
+        .btn-download { background: #d40000; }
+        .btn-share { background: #002a8f; }
     </style>
 </head>
 <body>
 
-    <div id="utc-clock">UTC --:--:--</div>
-
     <div class="container">
         <h1>🌴 QSL CARIBEÑA</h1>
-        <div class="subtitle">RADIO CLUB SANTA CRUZ DEL SUR &bull; v28.1</div>
+        <div class="subtitle">v28.2 GLOBAL - ZMR CUBA</div>
 
-        <input type="text" id="callsign" placeholder="CALLSIGN" maxlength="12">
+        <input type="text" id="callsign" placeholder="TU INDICATIVO" maxlength="12">
         <br>
-        <button class="btn-main" onclick="buscar()">BUSCAR MI QSL</button>
+        <button class="btn-search" onclick="iniciarBusqueda()">BUSCAR QSL</button>
 
-        <div class="progress-box" id="pBox"><div class="fill" id="pFill"></div></div>
-        <div id="status" style="margin-top:10px; color:var(--neon-pink); font-size:0.8rem;"></div>
-        <div id="errorArea" style="margin-top:15px; color:#ff4444;"></div>
-
-        <footer>
-            CL7ADV &bull; Alfred &bull; 2026<br>
-            Soporte: PNG, JPG, JPEG
-        </footer>
+        <div class="loader-bar" id="lBar"><div class="loader-fill" id="lFill"></div></div>
+        <div id="status" style="margin-top:10px; font-size:0.8rem; color:var(--neon-pink);"></div>
     </div>
 
     <div id="qslModal" class="modal">
         <div class="modal-content">
-            <h2 id="modalTitle" style="color:var(--neon-blue)"></h2>
-            <div id="qslGrid" class="qsl-grid"></div>
-            <button class="btn-main" onclick="cerrarModal()" style="background:#333; margin-top:30px;">CERRAR</button>
+            <h2 id="modalTitle" style="color:var(--neon-blue); margin-top:0;"></h2>
+            <div id="qslGrid"></div>
+            <button class="btn-search" onclick="cerrarModal()" style="background:#444;">VOLVER</button>
         </div>
     </div>
 
     <script>
-        function updateClock() {
-            const now = new Date();
-            document.getElementById('utc-clock').innerText = `UTC ${now.getUTCHours().toString().padStart(2,'0')}:${now.getUTCMinutes().toString().padStart(2,'0')}:${now.getUTCSeconds().toString().padStart(2,'0')}`;
-        }
-        setInterval(updateClock, 1000);
-
-        let isSearching = false;
-
-        async function buscar() {
-            if (isSearching) return;
+        // --- MOTOR DE BÚSQUEDA v28.2 ---
+        
+        async function iniciarBusqueda() {
             const call = document.getElementById('callsign').value.trim().toUpperCase();
             if(!call) return;
 
-            isSearching = true;
-            const pBox = document.getElementById('pBox');
-            const pFill = document.getElementById('pFill');
+            const lBar = document.getElementById('lBar');
+            const lFill = document.getElementById('lFill');
             const status = document.getElementById('status');
-            const errorArea = document.getElementById('errorArea');
-
-            errorArea.innerText = '';
-            pBox.style.display = 'block';
-            pFill.style.width = '10%';
-            status.innerText = 'CONECTANDO AL REPETIDOR...';
-
-            // Simulamos avance de carga
-            setTimeout(() => pFill.style.width = '40%', 200);
             
-            // v28.1: Lógica optimizada para evitar el "trabado" por 404
-            const formatos = ['png', 'jpg', 'jpeg', 'PNG', 'JPG', 'JPEG'];
-            let encontradas = [];
-            
-            // Creamos las rutas
-            let rutas = [];
-            formatos.forEach(ext => {
-                rutas.push(`img/${call}.${ext}`);
-                for(let i=1; i<=3; i++) rutas.push(`img/${call}-${i}.${ext}`);
+            lBar.style.display = 'block';
+            lFill.style.width = '10%';
+            status.innerText = 'ESCANEANDO FORMATOS PNG Y JPG...';
+
+            // Lista de archivos a probar (Mayúsculas y minúsculas son vitales)
+            const extensiones = ['png', 'PNG', 'jpg', 'JPG', 'jpeg', 'JPEG'];
+            let encontrados = [];
+
+            // Generar rutas: indicativo directo y con guiones
+            let rutasAProbar = [];
+            extensiones.forEach(ext => {
+                rutasAProbar.push(`img/${call}.${ext}`);
+                for(let i=1; i<=3; i++) {
+                    rutasAProbar.push(`img/${call}-${i}.${ext}`);
+                }
             });
 
-            // Procesamos las imágenes de una en una o en pequeños grupos para evitar ERR_HTTP2_PING_FAILED
-            for (const ruta of rutas) {
-                try {
-                    const existe = await verificarImagen(ruta);
-                    if (existe) encontradas.push(ruta);
-                } catch (e) { /* Ignorar errores 404 */ }
+            // PROCESO DE VERIFICACIÓN (Uno por uno para evitar el error de PING/bloqueo)
+            for(let i=0; i < rutasAProbar.length; i++) {
+                const porcentaje = Math.round(((i + 1) / rutasAProbar.length) * 100);
+                lFill.style.width = porcentaje + '%';
+                
+                const existe = await verificarArchivo(rutasAProbar[i]);
+                if(existe) {
+                    encontrados.push(rutasAProbar[i]);
+                }
             }
 
-            pFill.style.width = '100%';
-            
-            setTimeout(() => {
-                pBox.style.display = 'none';
-                if (encontradas.length > 0) {
-                    mostrarResultados(call, encontradas);
-                } else {
-                    errorArea.innerHTML = `❌ NO SE ENCONTRÓ QSL PARA ${call}<br><small>Verifica el indicativo o el formato.</small>`;
-                }
-                isSearching = false;
-            }, 500);
+            lBar.style.display = 'none';
+            if(encontrados.length > 0) {
+                mostrarQSL(call, encontrados);
+            } else {
+                status.innerText = '❌ NO SE ENCONTRÓ NINGÚN ARCHIVO .PNG O .JPG';
+                setTimeout(() => status.innerText = '', 5000);
+            }
         }
 
-        function verificarImagen(url) {
+        // Función clave: Verifica si el archivo existe realmente
+        function verificarArchivo(url) {
             return new Promise((resolve) => {
                 const img = new Image();
+                // Si carga, el archivo existe
                 img.onload = () => resolve(true);
+                // Si falla, no existe (el 404 en consola es inevitable pero no detiene el código)
                 img.onerror = () => resolve(false);
-                img.src = url + "?t=" + new Date().getTime(); // Anti-cache
+                // Añadimos un número aleatorio al final para obligar al navegador a buscar el archivo real
+                img.src = url + "?check=" + Math.random();
             });
         }
 
-        function mostrarResultados(call, fotos) {
+        function mostrarQSL(call, fotos) {
             const grid = document.getElementById('qslGrid');
-            document.getElementById('modalTitle').innerText = `QSLs DE ${call}`;
+            document.getElementById('modalTitle').innerText = `RESULTADOS PARA ${call}`;
             grid.innerHTML = '';
             
-            fotos.forEach(f => {
+            fotos.forEach(ruta => {
                 grid.innerHTML += `
                     <div class="qsl-card">
-                        <img src="${f}" alt="QSL">
-                        <div class="actions">
-                            <a href="${f}" download class="btn-dl">DESCARGAR</a>
-                            <button class="btn-share" onclick="compartir('${f}', '${call}')">COMPARTIR</button>
+                        <img src="${ruta}" alt="QSL">
+                        <div class="btn-group">
+                            <a href="${ruta}" download class="btn-action btn-download">DESCARGAR</a>
+                            <button onclick="compartir('${ruta}', '${call}')" class="btn-action btn-share">COMPARTIR</button>
                         </div>
                     </div>`;
             });
             document.getElementById('qslModal').style.display = 'block';
         }
 
-        async function compartir(url, call) {
+        function compartir(url, call) {
+            const shareData = {
+                title: 'Mi QSL ZMR CUBA',
+                text: 'Confirmación de contacto radial con ' + call,
+                url: window.location.href
+            };
+
             if (navigator.share) {
-                try {
-                    await navigator.share({
-                        title: 'Mi QSL Caribeña',
-                        text: `Mira mi contacto QSL con ZMR CUBA (Indicativo: ${call})`,
-                        url: window.location.href
-                    });
-                } catch (err) { console.log("Error al compartir"); }
+                navigator.share(shareData).catch(() => console.log('Compartir cancelado'));
             } else {
-                alert("Copiado al portapapeles para compartir: " + window.location.href);
+                alert("Enlace listo para compartir: " + window.location.href);
             }
         }
 
         function cerrarModal() {
             document.getElementById('qslModal').style.display = 'none';
-            isSearching = false;
+            document.getElementById('status').innerText = '';
         }
+
+        // Permitir Enter en el input
+        document.getElementById('callsign').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') iniciarBusqueda();
+        });
     </script>
 </body>
 </html>
