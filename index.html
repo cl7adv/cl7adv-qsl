@@ -35,7 +35,7 @@
     }
 
     .container { 
-      max-width: 800px; 
+      max-width: 900px; 
       margin: 40px auto; 
       padding: 30px; 
       background: rgba(0,0,0,0.4);
@@ -82,36 +82,49 @@
       transform: scale(1.05);
     }
 
+    /* ESTILO DE GALERÍA PARA MÚLTIPLES QSL */
     #result-display {
       min-height: 200px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      justify-items: center;
+      align-items: start;
       border: 2px dashed rgba(255,255,255,0.3);
       border-radius: 15px;
       padding: 20px;
       background: rgba(255,255,255,0.05);
     }
 
-    #result-display img {
+    .qsl-card {
+      background: rgba(255,255,255,0.1);
+      padding: 10px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.2);
+      width: 100%;
+      max-width: 350px;
+    }
+
+    .qsl-card img {
       max-width: 100%;
       height: auto;
-      border-radius: 10px;
-      border: 3px solid white;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-      margin-bottom: 20px;
+      border-radius: 8px;
+      border: 2px solid white;
+      margin-bottom: 10px;
     }
 
     .download-link {
       background: #2e7d32;
       color: white;
-      padding: 10px 20px;
+      padding: 8px 15px;
       text-decoration: none;
-      border-radius: 8px;
+      border-radius: 6px;
       font-weight: bold;
+      font-size: 0.9rem;
       display: inline-block;
     }
+
+    .no-results { grid-column: 1 / -1; padding: 40px; }
 
     footer { margin-top: 50px; color: var(--gold); font-weight: bold; padding: 20px; }
   </style>
@@ -123,16 +136,16 @@
   </nav>
 
   <div class="container">
-    <h1>🌊 Buscador de QSL</h1>
-    <p style="margin-bottom: 25px;">Buscando en directorio: <code style="background: #000; padding: 2px 6px; border-radius: 4px;">img/</code></p>
+    <h1>🌊 Buscador Multi-QSL</h1>
+    <p style="margin-bottom: 25px;">Buscando coincidencias en: <code style="background: #000; padding: 2px 6px; border-radius: 4px;">img/</code></p>
     
     <div class="tool-box">
       <input type="text" id="qslInput" placeholder="INDICATIVO" onkeyup="if(event.key==='Enter') buscarQSL()">
-      <button class="action-btn" onclick="buscarQSL()">BUSCAR</button>
+      <button class="action-btn" onclick="buscarQSL()">BUSCAR TODO</button>
     </div>
 
     <div id="result-display">
-      <p id="status-text" style="opacity: 0.6;">Introduce un indicativo para comenzar.</p>
+      <p class="no-results" id="status-text" style="opacity: 0.6;">Introduce un indicativo para ver los resultados.</p>
     </div>
 
     <footer>— Motor del Proyecto: CL7ADV —</footer>
@@ -145,43 +158,56 @@
       
       if (!input) return;
 
-      display.innerHTML = '<p>🔍 Buscando...</p>';
+      display.innerHTML = '<p class="no-results">🔍 Escaneando formatos...</p>';
 
-      // Extensiones a probar (en minúsculas suelen ser las más comunes)
       const ext = ['jpg', 'png', 'jpeg', 'JPG', 'PNG'];
-      
-      const intentarCargar = (index) => {
-        if (index >= ext.length) {
-          display.innerHTML = `
-            <div style="padding: 20px;">
-              <p style="color: #ffcdd2;">❌ No se encontró <b>${input}</b></p>
-              <p style="font-size: 0.8rem; opacity: 0.7;">Asegúrate de que el archivo esté en la carpeta <b>img/</b></p>
-            </div>`;
-          return;
-        }
+      let encontrados = 0;
+      let procesados = 0;
 
-        const nombreArchivo = `${input}.${ext[index]}`;
-        // RUTA EN MINÚSCULAS
+      // Limpiamos el contenedor para empezar a añadir tarjetas
+      const contenedorTemporal = [];
+
+      ext.forEach((extension) => {
+        const nombreArchivo = `${input}.${extension}`;
         const rutaFinal = `img/${nombreArchivo}`;
         const img = new Image();
 
         img.onload = function() {
-          display.innerHTML = `
-            <p style="color: #c8e6c9; font-weight: bold; margin-bottom: 15px;">✅ QSL ENCONTRADA</p>
-            <img src="${rutaFinal}" alt="QSL ${input}">
-            <br>
-            <a href="${rutaFinal}" download="${nombreArchivo}" class="download-link">💾 DESCARGAR</a>
+          encontrados++;
+          const card = `
+            <div class="qsl-card">
+              <img src="${rutaFinal}" alt="QSL ${input}">
+              <p style="font-size: 0.8rem; margin: 5px 0;">Archivo: ${nombreArchivo}</p>
+              <a href="${rutaFinal}" download="${nombreArchivo}" class="download-link">💾 DESCARGAR</a>
+            </div>
           `;
+          contenedorTemporal.push(card);
+          verificarFinalizacion();
         };
 
         img.onerror = function() {
-          intentarCargar(index + 1);
+          verificarFinalizacion();
         };
 
         img.src = rutaFinal;
-      };
+      });
 
-      intentarCargar(0);
+      function verificarFinalizacion() {
+        procesados++;
+        // Cuando hayamos probado todas las extensiones
+        if (procesados === ext.length) {
+          if (encontrados === 0) {
+            display.innerHTML = `
+              <div class="no-results">
+                <p style="color: #ffcdd2; font-size: 1.2rem;">❌ No se encontró ninguna QSL para <b>${input}</b></p>
+                <p style="font-size: 0.8rem; opacity: 0.7;">Verifique que los archivos estén en <b>img/</b></p>
+              </div>`;
+          } else {
+            // Mostramos todas las imágenes encontradas
+            display.innerHTML = contenedorTemporal.join('');
+          }
+        }
+      }
     }
   </script>
 </body>
