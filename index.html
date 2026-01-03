@@ -6,103 +6,151 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <style>
         :root {
-            --primary: #00bcd4; --accent: #ff9800; --gold: #ffe082; --neon: #00ff99;
-            --glass: rgba(14, 36, 49, 0.96); /* Un poco más oscuro para mejor contraste */
+            --primary: #00bcd4;
+            --accent: #ff9800;
+            --gold: #ffe082;
+            --neon: #00ff99;
+            /* Cristal oscuro traslúcido para ver el fondo */
+            --glass: rgba(0, 20, 30, 0.85); 
         }
+
         body { 
-            margin: 0; font-family: 'Segoe UI', sans-serif; 
-            /* Fondo de imagen de la cabina de radio en la playa */
-            background-image: url('https://i.ibb.co/L90f4F2/radio-beach-hut-wide.jpg'); /* URL de ejemplo, reemplaza con la tuya */
-            background-size: cover; /* Cubre todo el fondo */
-            background-position: center center; /* Centra la imagen */
-            background-attachment: fixed; /* La imagen no se mueve al hacer scroll */
+            margin: 0; 
+            font-family: 'Segoe UI', Tahoma, sans-serif; 
+            /* USANDO TU IMAGEN fondo.jpg */
+            background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('fondo.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
             color: #fff; 
-            display: flex; align-items: center; justify-content: center; min-height: 100vh;
-            /* Oscurecer el fondo un poco para que el buscador resalte más */
-            background-color: rgba(0, 0, 0, 0.4); 
-            background-blend-mode: darken;
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            min-height: 100vh;
+            overflow-x: hidden;
         }
+
+        /* Contenedor Efecto Cristal Neón */
         .container { 
-            max-width: 650px; width: 90%; padding: 40px; 
-            background: var(--glass); border-radius: 20px; /* Bordes ligeramente más cuadrados para pantalla */
-            box-shadow: 0 0 40px rgba(0, 255, 153, 0.6), inset 0 0 15px rgba(0,255,153,0.2); /* Sombra neón más potente */
-            border: 2px solid var(--neon); /* Borde neón visible */
+            max-width: 600px; 
+            width: 85%; 
+            padding: 40px; 
+            background: var(--glass); 
+            border-radius: 30px; 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8), 0 0 20px rgba(0, 255, 153, 0.2); 
+            border: 2px solid var(--neon);
             text-align: center;
-            /* Efecto de "pantalla encendida" */
-            animation: screenGlow 1.5s infinite alternate;
+            backdrop-filter: blur(8px); /* Desenfoque del fondo para realismo */
+            animation: fadeIn 1s ease-in-out;
         }
-        @keyframes screenGlow {
-            from { box-shadow: 0 0 40px rgba(0, 255, 153, 0.6), inset 0 0 15px rgba(0,255,153,0.2); }
-            to { box-shadow: 0 0 55px rgba(0, 255, 153, 0.8), inset 0 0 20px rgba(0,255,153,0.3); }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-        h1 { font-size: 2.2rem; margin-bottom: 5px; text-shadow: 0 0 15px var(--neon); }
-        .subtitle { color: var(--gold); margin-bottom: 30px; font-size: 0.9rem; letter-spacing: 2px; }
+
+        h1 { font-size: 2.3rem; margin-bottom: 5px; text-shadow: 0 0 15px var(--neon); color: #fff; }
+        .subtitle { color: var(--gold); margin-bottom: 30px; font-size: 0.9rem; letter-spacing: 3px; font-weight: bold; }
+
         .search-group { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; }
+
         #indicativo { 
-            padding: 15px; font-size: 1.3rem; border: 2px solid rgba(255,255,255,0.1); 
-            border-radius: 12px; width: 220px; background: #000;
+            padding: 15px; font-size: 1.4rem; border: 2px solid rgba(0, 255, 153, 0.3); 
+            border-radius: 15px; width: 240px; background: rgba(0,0,0,0.6);
             color: var(--neon); font-weight: bold; text-transform: uppercase;
-            text-align: center; letter-spacing: 2px;
+            text-align: center; letter-spacing: 2px; outline: none;
         }
+
+        #indicativo:focus { border-color: var(--neon); box-shadow: 0 0 15px var(--neon); }
+
         #buscarBtn { 
-            padding: 15px 30px; font-size: 1rem; 
+            padding: 15px 35px; font-size: 1.1rem; 
             background: linear-gradient(145deg, #ffb74d, #f57c00); 
-            color: #fff; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; 
-            box-shadow: 0 5px 0 #b35900; transition: 0.1s;
+            color: #fff; border: none; border-radius: 15px; cursor: pointer; font-weight: bold; 
+            box-shadow: 0 5px 0 #b35900; transition: 0.1s; text-transform: uppercase;
         }
+
         #buscarBtn:active { transform: translateY(3px); box-shadow: 0 2px 0 #b35900; }
+
+        /* Barra de Carga con Carta */
         .progress-container {
             width: 100%; max-width: 400px; height: 10px; 
             background: rgba(255,255,255,0.1); border-radius: 20px;
             margin: 50px auto 20px; position: relative; display: none;
         }
-        .progress-fill { height: 100%; background: var(--neon); width: 0%; border-radius: 20px; transition: 0.2s; }
+
+        .progress-fill { height: 100%; background: var(--neon); width: 0%; border-radius: 20px; transition: 0.2s; box-shadow: 0 0 10px var(--neon); }
+
         .card-icon {
-            position: absolute; top: -35px; left: 0%; width: 50px; height: 32px; background: #fff;
-            border: 2px solid var(--gold); border-radius: 5px; color: #333; font-weight: bold;
-            display: flex; align-items: center; justify-content: center; transform: translateX(-50%); transition: 0.2s;
+            position: absolute; top: -38px; left: 0%;
+            width: 50px; height: 32px; background: #fff;
+            border: 2px solid var(--gold); border-radius: 6px;
+            color: #333; font-weight: bold; font-size: 10px;
+            display: flex; align-items: center; justify-content: center;
+            transform: translateX(-50%); transition: 0.2s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
         }
         .card-icon::after { content: "✉️"; font-size: 16px; }
-        .status-text { height: 40px; color: var(--neon); font-weight: bold; margin-top: 10px; }
-        .qsl-img { width: 100%; border-radius: 10px; margin-bottom: 10px; border: 2px solid var(--gold); }
-        .btn-dl { display: inline-block; padding: 10px 20px; background: #4caf50; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; }
-        .error-msg { background: rgba(255, 68, 68, 0.2); border: 1px solid #ff4444; color: #ffbaba; padding: 15px; border-radius: 12px; margin-top: 20px; animation: shake 0.5s; transition: opacity 1s; }
-        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-10px); } 75% { transform: translateX(10px); } }
+
+        .status-text { height: 30px; color: var(--neon); font-weight: bold; margin-top: 10px; font-size: 0.9rem; }
+
+        /* Estilo de Errores y Galería */
+        .error-msg {
+            background: rgba(255, 68, 68, 0.25); border: 1px solid #ff4444;
+            color: #fff; padding: 15px; border-radius: 15px;
+            margin-top: 20px; animation: shake 0.5s; transition: opacity 1s;
+        }
+
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
         .fade-out { opacity: 0; }
-        .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); overflow-y: auto; }
-        .modal-content { background: var(--glass); margin: 5% auto; padding: 30px; border-radius: 20px; width: 85%; max-width: 800px; border: 2px solid var(--neon); text-align: center; }
-        footer { margin-top: 40px; font-size: 0.8rem; opacity: 0.7; color: var(--gold); }
+
+        /* Modal */
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); overflow-y: auto; }
+        .modal-content { background: var(--glass); margin: 5% auto; padding: 30px; border-radius: 25px; width: 85%; max-width: 800px; border: 2px solid var(--neon); text-align: center; }
+        .qsl-thumb { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 15px; border: 1px solid var(--gold); }
+        .qsl-img { width: 100%; border-radius: 10px; margin-bottom: 12px; }
+        .btn-dl { display: inline-block; padding: 12px 25px; background: #28a745; color: white; text-decoration: none; border-radius: 10px; font-weight: bold; transition: 0.3s; }
+        .btn-dl:hover { background: #218838; transform: scale(1.05); }
+
+        footer { margin-top: 40px; font-size: 0.85rem; opacity: 0.8; color: var(--gold); border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; }
     </style>
 </head>
 <body>
 
     <div class="container">
         <h1>🌴 QSL Caribeña 🌊</h1>
-        <p class="subtitle">CL7ADV - SANTA CRUZ DEL SUR</p>
+        <p class="subtitle">RADIO CLUB SANTA CRUZ DEL SUR</p>
+
         <div class="search-group">
-            <input type="text" id="indicativo" placeholder="INDICATIVO" maxlength="10">
-            <button id="buscarBtn" onclick="buscarQSL()">BUSCAR QSL</button>
+            <input type="text" id="indicativo" placeholder="INDICATIVO" maxlength="10" onkeypress="if(event.key==='Enter') buscarQSL()">
+            <button id="buscarBtn" onclick="buscarQSL()">BUSCAR</button>
         </div>
+
         <div id="pContainer" class="progress-container">
             <div id="card" class="card-icon">QSL</div>
             <div id="fill" class="progress-fill"></div>
         </div>
+
         <div id="status" class="status-text"></div>
         <div id="resultado"></div>
+
         <footer>
-            73's Cordiales - Alfred - 2026
+            CL7ADV &bull; Alfred &bull; 2026<br>
+            73's Cordiales para todos los colegas
         </footer>
     </div>
 
     <div id="modalQSL" class="modal">
         <div class="modal-content">
-            <h2 id="modalTitle" style="color: var(--gold);"></h2>
-            <div id="gridQSLs" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;"></div>
-            <button onclick="cerrarModal()" style="margin-top:30px; padding:10px 25px; cursor:pointer; background:var(--accent); border:none; color:white; font-weight:bold; border-radius:10px;">CERRAR</button>
+            <h2 id="modalTitle" style="color: var(--gold); margin-bottom: 25px;"></h2>
+            <div id="gridQSLs" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;"></div>
+            <br>
+            <button onclick="cerrarModal()" style="margin-top:20px; padding:12px 30px; border-radius:12px; cursor:pointer; background:var(--accent); border:none; color:white; font-weight:bold;">CERRAR VENTANA</button>
         </div>
     </div>
 
     <script>
+        // Sonido de Estática
         function playRadioSound() {
             try {
                 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -136,50 +184,51 @@
             
             let progreso = 0;
             const anim = setInterval(() => {
-                progreso += 5;
+                progreso += 4;
                 fill.style.width = progreso + "%";
                 card.style.left = progreso + "%";
-                if(progreso == 50) status.innerText = "BUSCANDO ARCHIVOS...";
+                if(progreso == 40) status.innerText = "ESCANEANDO CARPETA IMG...";
+                if(progreso == 80) status.innerText = "LOCALIZANDO ARCHIVOS...";
+
                 if (progreso >= 100) {
                     clearInterval(anim);
-                    verificarArchivosReales(call);
+                    verificarArchivos(call);
                 }
-            }, 50);
+            }, 60);
         }
 
-        async function verificarArchivosReales(call) {
+        async function verificarArchivos(call) {
             const res = document.getElementById('resultado');
             const input = document.getElementById('indicativo');
             document.getElementById('pContainer').style.display = "none";
             document.getElementById('status').innerText = "";
 
-            const ext = ['jpg', 'JPG', 'png', 'PNG', 'jpeg', 'JPEG'];
+            const ext = ['jpg', 'JPG', 'png', 'PNG'];
             let encontradas = [];
-            
-            let rutasAProbar = [];
+            let rutas = [];
+
             ext.forEach(e => {
-                rutasAProbar.push(`img/${call}.${e}`);
-                for(let i=1; i<=5; i++) rutasAProbar.push(`img/${call}-${i}.${e}`);
+                rutas.push(`img/${call}.${e}`);
+                for(let i=1; i<=10; i++) rutas.push(`img/${call}-${i}.${e}`);
             });
 
-            const promesas = rutasAProbar.map(ruta => {
+            const promesas = rutas.map(ruta => {
                 return new Promise((resolve) => {
                     const img = new Image();
                     img.onload = () => { encontradas.push(ruta); resolve(); };
                     img.onerror = () => resolve();
-                    img.src = ruta + "?t=" + new Date().getTime(); 
+                    img.src = ruta + "?v=" + new Date().getTime(); 
                 });
             });
 
             await Promise.all(promesas);
 
             if (encontradas.length > 0) {
-                const unicas = [...new Set(encontradas)];
-                abrirModal(call, unicas);
+                abrirModal(call, [...new Set(encontradas)]);
             } else {
-                res.innerHTML = `<div class="error-msg" id="msgErr">❌ NO SE ENCONTRÓ QSL PARA ${call}</div>`;
+                res.innerHTML = `<div class="error-msg" id="msg">⚠️ NO SE ENCONTRÓ QSL PARA ${call}</div>`;
                 setTimeout(() => {
-                    const m = document.getElementById('msgErr');
+                    const m = document.getElementById('msg');
                     if(m) {
                         m.classList.add('fade-out');
                         setTimeout(() => { res.innerHTML = ""; input.value = ""; }, 1000);
@@ -191,14 +240,13 @@
         function abrirModal(call, fotos) {
             const modal = document.getElementById('modalQSL');
             const grid = document.getElementById('gridQSLs');
-            const title = document.getElementById('modalTitle');
-            title.innerText = `QSLs ENCONTRADAS PARA ${call}`;
+            document.getElementById('modalTitle').innerText = `RESULTADOS PARA: ${call}`;
             grid.innerHTML = "";
             fotos.forEach(f => {
                 grid.innerHTML += `
-                    <div style="background:rgba(255,255,255,0.05); padding:10px; border-radius:10px;">
+                    <div class="qsl-thumb">
                         <img src="${f}" class="qsl-img">
-                        <a href="${f}" download class="btn-dl">⬇️ DESCARGAR</a>
+                        <a href="${f}" download class="btn-dl">DESCARGAR QSL</a>
                     </div>`;
             });
             modal.style.display = "block";
