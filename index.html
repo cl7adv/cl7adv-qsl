@@ -202,13 +202,12 @@
         };
       });
 
-      setTimeout(() => {
-        if (encontradas.length === 0) {
-          resultado.innerHTML = `<p class="mensaje">🌺 No tenemos QSL para <strong>${indicativo}</strong>, pero tu visita siempre es bienvenida.</p>`;
-          setTimeout(() => {
-            resultado.innerHTML = "";
-            document.getElementById("indicativo").value = "";
-          }, 15000);
+     setTimeout(() => {
+  if (!imagenCargada) {
+    mostrarMensaje("No tenemos esa QSL, pero pornto estara lista, gracias");
+  }
+}, 10000); // espera 10 segundos
+
         }
       }, 1500);
     }
