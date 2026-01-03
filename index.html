@@ -25,10 +25,22 @@
     .top-nav {
       background: var(--nav-bg);
       padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       box-shadow: 0 4px 15px rgba(0,0,0,0.4);
       position: sticky;
       top: 0;
       z-index: 1000;
+    }
+
+    .visitor-counter {
+      background: rgba(0,0,0,0.3);
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      border: 1px solid var(--gold);
+      color: var(--gold);
     }
 
     .container { 
@@ -113,12 +125,15 @@
 <body>
 
   <nav class="top-nav">
-    <div style="font-weight:bold; font-size: 1.2rem;">🌴 RADIO CLUB SANTA CRUZ</div>
+    <div style="font-weight:bold; font-size: 1.1rem;">🌴 RADIO CLUB SANTA CRUZ</div>
+    <div class="visitor-counter">
+      Visitas: <span id="count">...</span>
+    </div>
   </nav>
 
   <div class="container">
     <h1>🌊 Buscador de QSLs</h1>
-    <p>Buscando coincidencias en carpeta <code style="background:#000; padding:3px;">img/</code></p>
+    <p>Localizando archivos en carpeta <code style="background:#000; padding:3px;">img/</code></p>
     
     <div class="tool-box">
       <input type="text" id="qslInput" placeholder="INDICATIVO" onkeyup="if(event.key==='Enter') buscarTodo()">
@@ -133,6 +148,13 @@
   </div>
 
   <script>
+    // LÓGICA DEL CONTADOR (Usa CountAPI)
+    // Nota: El "namespace" debe ser único para tu sitio
+    function cb(response) {
+        document.getElementById('count').innerText = response.value;
+    }
+
+    // LÓGICA DE BÚSQUEDA
     function buscarTodo() {
       const indicativo = document.getElementById('qslInput').value.trim().toUpperCase();
       const display = document.getElementById('result-display');
@@ -146,13 +168,12 @@
       let totalPeticiones = 0;
       let peticionesFinalizadas = 0;
 
-      // Creamos la lista de nombres a probar
       const nombresAProbar = [];
 
-      // 1. Añadir nombres base (ej: CO7ADV.jpg)
+      // 1. Nombres base
       extensiones.forEach(ext => nombresAProbar.push(`${indicativo}.${ext}`));
 
-      // 2. Añadir nombres con guion (ej: CO7ADV-1.jpg, CO7ADV-2.jpg... hasta 10)
+      // 2. Nombres con guion (del 1 al 10)
       for (let i = 1; i <= 10; i++) {
         extensiones.forEach(ext => {
           nombresAProbar.push(`${indicativo}-${i}.${ext}`);
@@ -167,7 +188,6 @@
 
         imgTest.onload = function() {
           encontrados++;
-          // Eliminar mensaje de espera si es la primera encontrada
           const status = document.getElementById('status-text');
           if (status) status.remove();
 
@@ -197,5 +217,8 @@
       }
     }
   </script>
+
+  <script async src="https://api.countapi.xyz/hit/radioclub-santacruz-qsl/visits?callback=cb"></script>
+
 </body>
 </html>
