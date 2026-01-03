@@ -7,81 +7,103 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Nunito:wght@300;600;800&display=swap" rel="stylesheet">
   <style>
     :root{
-      --bg-1: #fff8f2;
-      --bg-2: #fff2e6;
       --accent: #c77a1a;
       --accent-600: #b25f12;
-      --muted: #5a3f2b;
-      --card-bg: #fffdf8;
-      --glass: rgba(255,255,255,0.7);
-      --shadow-1: 0 8px 30px rgba(80,40,10,0.08);
+      --muted: #4b3424;
+      --card-bg: rgba(255,255,255,0.94);
       --radius-lg: 16px;
-      --radius-md: 10px;
-      --transition-fast: 160ms;
-      --transition-med: 260ms;
+      --shadow-1: 0 12px 40px rgba(40,20,10,0.12);
     }
-
     *{box-sizing:border-box}
     html,body{height:100%}
     body{
       margin:0;
       font-family:"Nunito",system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;
-      background:
-        radial-gradient(800px 400px at 10% 10%, rgba(255,230,200,0.6), transparent 12%),
-        linear-gradient(180deg,var(--bg-1),var(--bg-2));
       color:var(--muted);
       -webkit-font-smoothing:antialiased;
       -moz-osx-font-smoothing:grayscale;
       line-height:1.45;
-      padding:28px 18px;
+      background-color:#f7efe6;
     }
 
-    .container{
-      max-width:980px;
-      margin:0 auto;
-      background: linear-gradient(180deg, rgba(255,255,255,0.92), rgba(255,250,245,0.95));
-      border-radius:var(--radius-lg);
-      padding:28px;
+    /* Hero: sunset beach background (place img/sunset-beach.jpg in img/) */
+    .hero {
+      position: relative;
+      min-height: 48vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 36px 18px;
+      background-image: url('img/sunset-beach.jpg');
+      background-size: cover;
+      background-position: center center;
+      background-repeat: no-repeat;
+      border-bottom-left-radius: 28px;
+      border-bottom-right-radius: 28px;
       box-shadow: var(--shadow-1);
-      border:1px solid rgba(180,120,60,0.06);
-      overflow:hidden;
+      overflow: hidden;
     }
-
-    header{
-      display:flex;
-      gap:18px;
-      align-items:center;
-      margin-bottom:8px;
+    .hero::before{
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(0,0,0,0.28), rgba(0,0,0,0.18) 40%, rgba(255,160,60,0.06) 100%);
+      mix-blend-mode: multiply;
+      pointer-events: none;
     }
-
-    .logo{
-      width:76px;
-      height:76px;
+    .hero-inner{
+      position: relative;
+      z-index: 2;
+      max-width: 980px;
+      width: 100%;
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px;
+    }
+    .logo {
+      width:84px;
+      height:84px;
       border-radius:12px;
-      background: linear-gradient(180deg,#fff,#fff6ec);
+      background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,250,245,0.9));
       display:flex;
       align-items:center;
       justify-content:center;
-      box-shadow: 0 8px 22px rgba(160,100,40,0.08);
-      border: 1px solid rgba(200,140,80,0.06);
-      font-weight:800;
-      color:var(--accent-600);
       font-family:"Playfair Display",serif;
+      font-weight:700;
+      color: #5a351f;
       font-size:1.05rem;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+      border: 1px solid rgba(255,255,255,0.35);
     }
-
-    h1{
+    .hero-title {
+      color: #fff;
+      font-family: "Playfair Display", serif;
+      font-size: 2.2rem;
+      line-height:1.02;
       margin:0;
-      font-family:"Playfair Display",serif;
-      font-size:1.7rem;
-      color:#4b3424;
-      letter-spacing:0.2px;
+      text-shadow: 0 6px 22px rgba(0,0,0,0.45);
+      letter-spacing: 0.2px;
+    }
+    .hero-sub {
+      color: rgba(255,255,255,0.92);
+      margin-top:6px;
+      font-size:1rem;
+      text-shadow: 0 6px 18px rgba(0,0,0,0.35);
     }
 
-    p.lead{
-      margin:6px 0 18px;
-      color:#6f4f3a;
-      font-size:1rem;
+    /* Main container overlapping hero */
+    .container {
+      max-width: 980px;
+      margin: -40px auto 28px;
+      padding: 22px;
+      background: var(--card-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-1);
+      border: 1px solid rgba(180,120,60,0.06);
+      position: relative;
+      z-index: 3;
     }
 
     .controls{
@@ -92,7 +114,6 @@
       flex-wrap:wrap;
       margin-bottom:14px;
     }
-
     #indicativo{
       padding:12px 14px;
       border-radius:12px;
@@ -103,13 +124,12 @@
       box-shadow: inset 0 1px 0 rgba(255,255,255,0.6);
       color:var(--muted);
       outline: none;
-      transition: box-shadow var(--transition-fast), transform var(--transition-fast);
+      transition: box-shadow .14s ease, transform .14s ease;
     }
     #indicativo:focus{
-      box-shadow: 0 6px 18px rgba(200,120,60,0.12);
+      box-shadow: 0 8px 20px rgba(200,120,60,0.12);
       transform: translateY(-2px);
     }
-
     #buscarBtn{
       padding:12px 18px;
       border-radius:12px;
@@ -119,26 +139,24 @@
       font-weight:800;
       cursor:pointer;
       box-shadow: 0 10px 26px rgba(180,90,20,0.12);
-      transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+      transition: transform .12s ease, box-shadow .12s ease;
     }
     #buscarBtn:hover{ transform: translateY(-3px); box-shadow: 0 14px 34px rgba(180,90,20,0.16); }
-    #buscarBtn:active{ transform: translateY(-1px); }
 
-    #resultado{ margin-top:14px; min-height:40px; text-align:center; }
-
+    #resultado{ margin-top:14px; min-height:40px; text-align:center; color:var(--muted); }
     .mensaje{ font-size:1rem; color:var(--accent-600); margin:8px 0; }
 
-    /* QSL card */
+    /* QSL cards */
+    #listaQSLs { display:flex; flex-wrap:wrap; gap:18px; justify-content:center; margin-top:12px; }
     .qsl-img{
       max-width:240px;
       border-radius:12px;
       border: 3px solid rgba(200,140,80,0.12);
       box-shadow: 0 12px 30px rgba(120,70,30,0.08);
       background: linear-gradient(180deg,#fff,#fff8f2);
-      transition: transform var(--transition-med), box-shadow var(--transition-med);
+      transition: transform .22s ease, box-shadow .22s ease;
     }
     .qsl-img:hover{ transform: translateY(-6px); box-shadow: 0 20px 40px rgba(120,70,30,0.12); }
-
     .descargar{
       display:inline-block;
       margin-top:10px;
@@ -149,70 +167,50 @@
       text-decoration:none;
       font-weight:800;
       box-shadow: 0 8px 18px rgba(80,120,60,0.08);
-      transition: transform var(--transition-fast);
+      transition: transform .12s ease;
     }
     .descargar:hover{ transform: translateY(-3px); }
 
-    footer{
-      margin-top:28px;
-      text-align:center;
-      color:#7a5a44;
-      font-size:0.95rem;
-    }
-
-    /* Modal */
-    .modal{ display:none; position:fixed; inset:0; z-index:1200; background: rgba(20,12,8,0.45); align-items:center; justify-content:center; padding:20px; }
-    .modal-contenido{
-      width:100%;
-      max-width:920px;
-      background: linear-gradient(180deg,#fffaf0,#fff7ef);
-      border-radius:14px;
-      padding:18px;
-      box-shadow: 0 20px 50px rgba(60,30,10,0.25);
-      color:#3f2b1f;
-    }
-    .cerrar{ float:right; font-size:26px; cursor:pointer; color:#7a5a44; }
-
-    #listaQSLs{ display:flex; flex-wrap:wrap; gap:18px; justify-content:center; margin-top:12px; }
+    footer{ margin-top:28px; text-align:center; color:#7a5a44; font-size:0.95rem; }
 
     /* Loader */
     .loader-wrap{ display:none; margin-top:12px; align-items:center; justify-content:center; gap:12px; }
     .spinner{ width:22px; height:22px; border:3px solid rgba(120,80,40,0.12); border-top-color:var(--accent); border-radius:50%; animation:spin 1s linear infinite; }
     @keyframes spin{ to{ transform:rotate(360deg); } }
-
     .progress-bar{ position:relative; width:380px; height:14px; background: rgba(200,140,80,0.08); border-radius:10px; overflow:hidden; box-shadow: inset 0 2px 6px rgba(0,0,0,0.04); }
     .progress-fill{ height:100%; background: linear-gradient(90deg,#ffd89a,#ffb74d); width:0%; transition: width 160ms ease; }
-
-    .card-thumb{
-      position:absolute; top:-30px; width:64px; height:40px;
-      background: linear-gradient(180deg,#fff,#fff0df);
-      color:#4a2f1a; border:2px solid rgba(200,140,80,0.18);
-      border-radius:8px; display:flex; align-items:center; justify-content:center;
-      font-weight:800; font-size:0.85rem; box-shadow: 0 8px 22px rgba(120,70,30,0.12);
-      transform:translateX(-50%); transition:left 100ms cubic-bezier(.2,.8,.2,1); pointer-events:none;
-      overflow:hidden;
-    }
+    .card-thumb{ position:absolute; top:-30px; width:64px; height:40px; background: linear-gradient(180deg,#fff,#fff0df); color:#4a2f1a; border:2px solid rgba(200,140,80,0.18); border-radius:8px; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:0.85rem; box-shadow: 0 8px 22px rgba(120,70,30,0.12); transform:translateX(-50%); transition:left 100ms cubic-bezier(.2,.8,.2,1); pointer-events:none; overflow:hidden; }
     .card-thumb img{ width:100%; height:100%; object-fit:cover; display:block; }
-
     .progress-text{ font-size:0.95rem; color:#7a5a44; margin-top:8px; text-align:center; }
 
-    @media (max-width:640px){
+    /* Modal */
+    .modal{ display:none; position:fixed; inset:0; z-index:1200; background: rgba(20,12,8,0.45); align-items:center; justify-content:center; padding:20px; }
+    .modal-contenido{ width:100%; max-width:920px; background: linear-gradient(180deg,#fffaf0,#fff7ef); border-radius:14px; padding:18px; box-shadow: 0 20px 50px rgba(60,30,10,0.25); color:#3f2b1f; }
+    .cerrar{ float:right; font-size:26px; cursor:pointer; color:#7a5a44; }
+
+    @media (max-width:720px){
+      .hero-inner{ flex-direction:column; gap:12px; text-align:center; }
+      .hero-title{ font-size:1.6rem; }
+      .container{ margin-top: -28px; padding:18px; }
       .progress-bar{ width:260px; }
       #indicativo{ width:160px; }
-      .logo{ width:60px; height:60px; font-size:0.95rem; }
     }
   </style>
 </head>
 <body>
-  <div class="container" role="main">
-    <header>
+  <!-- Hero with sunset beach background -->
+  <section class="hero" role="banner" aria-label="Portada atardecer en la playa">
+    <div class="hero-inner">
       <div class="logo" aria-hidden="true">CL7</div>
-      <div>
-        <h1>Navegador QSL Caribeño</h1>
-        <p class="lead">Busca y descarga tus QSL con estilo cálido y profesional</p>
+      <div style="flex:1; max-width:720px; text-align:center;">
+        <h1 class="hero-title">Navegador QSL Caribeño</h1>
+        <p class="hero-sub">Busca y descarga tus QSL con estilo — buenos DXs desde la costa</p>
       </div>
-    </header>
+    </div>
+  </section>
 
+  <!-- Main content -->
+  <main class="container" role="main">
     <div class="controls" aria-label="Controles de búsqueda">
       <input id="indicativo" type="text" placeholder="Ej: CL7ADV" aria-label="Indicativo">
       <button id="buscarBtn" type="button">Buscar QSL</button>
@@ -223,7 +221,6 @@
       <div>
         <div class="progress-bar" id="progressBar">
           <div id="progressFill" class="progress-fill" style="width:0%"></div>
-          <!-- Si subes img/mini-qsl.jpg se mostrará dentro de la carta -->
           <div id="cardThumb" class="card-thumb" style="left:0%"><img id="cardThumbImg" src="img/mini-qsl.jpg" alt="mini QSL" onerror="this.style.display='none'; this.parentElement.textContent='QSL'"></div>
         </div>
         <div id="progressText" class="progress-text">Iniciando búsqueda...</div>
@@ -235,8 +232,9 @@
     <footer>
       — CL7ADV — Buenos DXs en este 2026 · Radio Club Santa Cruz Del Sur/Alfred
     </footer>
-  </div>
+  </main>
 
+  <!-- Modal QSLs -->
   <div id="ventanaQSL" class="modal" aria-hidden="true">
     <div class="modal-contenido" role="dialog" aria-modal="true" aria-labelledby="qslTitle">
       <span class="cerrar" id="cerrarBtn" title="Cerrar">&times;</span>
