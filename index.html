@@ -1,654 +1,312 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Navegador QSL Caribeño - CL7ADV</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <style>
-    body { margin: 0; font-family: "Trebuchet MS", Arial, sans-serif; background: linear-gradient(to bottom, #00bcd4, #009688); color: #fff; text-align: center; }
-    .container { max-width: 900px; margin: 40px auto; padding: 25px; background: rgba(0,0,0,0.4); border-radius: 15px; box-shadow: 0 0 20px rgba(0,0,0,0.6); }
-    h1 { font-size: 2.2rem; margin-bottom: 15px; text-shadow: 0 0 10px #ffe082; }
-    #indicativo { padding: 12px; font-size: 1rem; border: none; border-radius: 8px; margin-right: 10px; width: 220px; }
-    #buscarBtn { padding: 12px 20px; font-size: 1rem; background: #ff9800; color: #fff; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.3s; }
-    #buscarBtn:hover { background: #f57c00; }
-    #resultado { margin-top: 25px; }
-    .qsl-img { max-width: 220px; border: 4px solid #ffe082; border-radius: 12px; margin: 10px; box-shadow: 0 0 15px #ffe082; }
-    .descargar { display: inline-block; margin-top: 10px; padding: 8px 16px; background: #4caf50; color: white; border-radius: 8px; text-decoration: none; font-weight: bold; transition: 0.3s; }
-    .descargar:hover { background: #388e3c; }
-    .mensaje { font-size: 1.1rem; margin-top: 12px; color: #ffe082; text-shadow: 0 0 8px #ffeb3b; }
-    footer { margin-top: 30px; font-size: 1rem; color: #ffe082; text-shadow: 0 0 8px #ffeb3b; }
-    .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); }
-    .modal-contenido { background: #fff; color: #000; margin: 5% auto; padding: 20px; border-radius: 12px; width: 90%; max-width: 900px; text-align: center; }
-    .cerrar { float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
-    #listaQSLs { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; margin-top: 20px; }
+    <meta charset="UTF-8">
+    <title>Buscador QSL Caribeño - CL7ADV</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <style>
+        :root {
+            --primary: #00bcd4;
+            --primary-dark: #009688;
+            --accent: #ff9800;
+            --gold: #ffe082;
+            --dark-bg: #0e2431;
+        }
 
-    /* Loader y barra con carta */
-    .loader-wrap { display: none; margin-top: 12px; align-items: center; justify-content: center; }
-    .spinner { width: 22px; height: 22px; border: 3px solid rgba(255,255,255,0.25); border-top-color: #ffe082; border-radius: 50%; animation: spin 1s linear infinite; margin-right: 12px; }
-    @keyframes spin { to { transform: rotate(360deg); } }
+        body { 
+            margin: 0; 
+            font-family: "Trebuchet MS", Arial, sans-serif; 
+            background: linear-gradient(to bottom, var(--primary), var(--primary-dark)); 
+            background-attachment: fixed;
+            color: #fff; 
+            text-align: center; 
+            min-height: 100vh;
+        }
 
-    .progress-bar { position: relative; width: 360px; height: 14px; background: rgba(255,224,130,0.12); border-radius: 10px; overflow: hidden; box-shadow: inset 0 0 6px rgba(0,0,0,0.25); display: inline-block; vertical-align: middle; }
-    .progress-fill { height: 100%; background: linear-gradient(90deg,#ffd54f,#ffb300); width: 0%; transition: width 200ms ease; }
+        .container { 
+            max-width: 800px; 
+            margin: 40px auto; 
+            padding: 30px; 
+            background: rgba(14, 36, 49, 0.85); 
+            border-radius: 20px; 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4); 
+            border: 1px solid var(--primary);
+        }
 
-    /* Transición más rápida; movement will be animated via JS for smoothness */
-    .card-thumb { position: absolute; top: -28px; width: 56px; height: 36px; background: linear-gradient(180deg,#fff,#ffe082); color: #000; border: 2px solid #ffd54f; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.85rem; box-shadow: 0 4px 10px rgba(0,0,0,0.25); transform: translateX(-50%); transition: left 120ms cubic-bezier(.2,.8,.2,1); pointer-events: none; }
-    .progress-text { font-size: 0.95rem; margin-top: 6px; color: #ffe082; }
+        h1 { font-size: 2.2rem; margin-bottom: 10px; text-shadow: 0 0 10px var(--gold); }
+        p.subtitle { margin-bottom: 25px; opacity: 0.9; }
 
-    @media (max-width: 480px) {
-      .progress-bar { width: 260px; }
-      #indicativo { width: 140px; display: block; margin: 10px auto; }
-      #buscarBtn { display: block; margin: 0 auto; }
-    }
-  </style>
+        .search-box {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        #indicativo { 
+            padding: 15px; 
+            font-size: 1.1rem; 
+            border: none; 
+            border-radius: 10px; 
+            width: 250px; 
+            text-transform: uppercase;
+            font-weight: bold;
+            color: var(--dark-bg);
+        }
+
+        #buscarBtn { 
+            padding: 15px 25px; 
+            font-size: 1rem; 
+            background: var(--accent); 
+            color: #fff; 
+            border: none; 
+            border-radius: 10px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            transition: 0.3s; 
+            text-transform: uppercase;
+        }
+
+        #buscarBtn:hover { background: #f57c00; transform: scale(1.05); }
+
+        /* Loader y Animación de Carta */
+        .loader-wrap { 
+            display: none; 
+            margin: 20px auto; 
+            flex-direction: column; 
+            align-items: center; 
+        }
+
+        .progress-bar-container {
+            position: relative;
+            width: 300px;
+            height: 12px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            margin-top: 35px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--gold);
+            width: 0%;
+            border-radius: 10px;
+            transition: width 0.3s;
+        }
+
+        .card-icon {
+            position: absolute;
+            top: -30px;
+            width: 50px;
+            height: 35px;
+            background: #fff;
+            color: var(--dark-bg);
+            border-radius: 5px;
+            border: 2px solid var(--gold);
+            font-weight: bold;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform: translateX(-50%);
+            transition: left 0.3s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .card-icon::after {
+            content: "✉️";
+            font-size: 14px;
+        }
+
+        /* Resultados y Modal */
+        .qsl-card {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        .qsl-img { 
+            max-width: 100%; 
+            border-radius: 10px; 
+            border: 3px solid var(--gold);
+            margin-bottom: 15px;
+        }
+
+        .btn-download {
+            display: inline-block;
+            padding: 12px 20px;
+            background: #4caf50;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .btn-download:hover { background: #388e3c; }
+
+        .modal { 
+            display: none; 
+            position: fixed; 
+            z-index: 1000; 
+            left: 0; top: 0; 
+            width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.9); 
+            overflow-y: auto;
+        }
+
+        .modal-content { 
+            background: var(--dark-bg); 
+            margin: 5% auto; 
+            padding: 30px; 
+            border-radius: 20px; 
+            width: 90%; 
+            max-width: 850px; 
+            border: 2px solid var(--gold);
+        }
+
+        .close-btn { color: #ff4444; float: right; font-size: 30px; font-weight: bold; cursor: pointer; }
+
+        footer { margin-top: 40px; color: var(--gold); font-weight: bold; font-size: 0.9rem; }
+
+        @media (max-width: 500px) {
+            .search-box { flex-direction: column; align-items: center; }
+            #indicativo { width: 90%; }
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <h1>🌴 Bienvenido al sitio QSL Caribeño 🌊</h1>
-    <p>Escribe tu indicativo para buscar tus tarjetas QSL</p>
 
-    <div>
-      <input type="text" id="indicativo" placeholder="Ej: CL7ADV" aria-label="Indicativo">
-      <button id="buscarBtn" type="button">Buscar QSL</button>
-    </div>
+    <div class="container">
+        <h1>🌴 Buscador QSL Caribeño 🌊</h1>
+        <p class="subtitle">Ingresa tu indicativo para descargar tus tarjetas confirmadas.</p>
 
-    <!-- Loader con carta moviéndose -->
-    <div id="loaderContainer" class="loader-wrap" aria-hidden="true">
-      <div class="spinner" id="spinner" role="status" aria-hidden="true"></div>
-      <div>
-        <div class="progress-bar" id="progressBar">
-          <div id="progressFill" class="progress-fill" style="width:0%"></div>
-          <div id="cardThumb" class="card-thumb" style="left:0%;">QSL</div>
+        <div class="search-box">
+            <input type="text" id="indicativo" placeholder="EJ: CL7ADV" maxlength="10">
+            <button id="buscarBtn" onclick="iniciarBusqueda()">BUSCAR QSL</button>
         </div>
-        <div id="progressText" class="progress-text">Iniciando búsqueda...</div>
-      </div>
+
+        <div id="loader" class="loader-wrap">
+            <div class="progress-bar-container">
+                <div id="cardIcon" class="card-icon" style="left: 0%;">QSL</div>
+                <div id="barFill" class="progress-fill"></div>
+            </div>
+            <p id="statusText" style="margin-top: 15px; color: var(--gold);">Explorando archivos...</p>
+        </div>
+
+        <div id="resultadoFinal"></div>
+
+        <footer>
+            — CL7ADV — Radio Club Santa Cruz del Sur<br>
+            Buenos DXs en este 2026
+        </footer>
     </div>
 
-    <div id="resultado" role="status" aria-live="polite"></div>
-
-    <footer>
-      — CL7ADV — Buenos DXs en este 2026<br>
-      Motor del proyecto: Radio Club Santa Cruz Del Sur/Alfred
-      <br><br>
-      <a href="https://info.flagcounter.com/qvMz" target="_blank" rel="noopener">
-        <img src="https://s01.flagcounter.com/count2/qvMz/bg_57A8DE/txt_000000/border_F55B0F/columns_5/maxflags_20/viewers_0/labels_0/pageviews_0/flags_0/percent_0/" alt="Flag Counter" border="0">
-      </a>
-    </footer>
-  </div>
-
-  <div id="ventanaQSL" class="modal" aria-hidden="true">
-    <div class="modal-contenido" role="dialog" aria-modal="true" aria-labelledby="qslTitle">
-      <span class="cerrar" id="cerrarBtn" title="Cerrar">&times;</span>
-      <h2 id="qslTitle">QSLs disponibles</h2>
-      <div id="contador"></div>
-      <div id="listaQSLs"></div>
-      <br>
-      <button class="descargar" id="descargarTodasBtn" type="button">⬇️ Descargar todas</button>
+    <div id="modalQSL" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="cerrarModal()">&times;</span>
+            <h2 id="tituloModal" style="color: var(--gold);"></h2>
+            <div id="contenedorQSLs" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+                </div>
+        </div>
     </div>
-  </div>
 
-  <script>
-    // Variables globales
-    let totalQSLs = 0;
-    let descargadas = 0;
-    let listaActual = [];
-    let imagenCargada = false;
-    let timeoutId = null;
+    <script>
+        function iniciarBusqueda() {
+            const indicativo = document.getElementById('indicativo').value.trim().toUpperCase();
+            const loader = document.getElementById('loader');
+            const bar = document.getElementById('barFill');
+            const icon = document.getElementById('cardIcon');
+            const status = document.getElementById('statusText');
+            const res = document.getElementById('resultadoFinal');
 
-    // Manejo de errores global para depuración
-    window.onerror = function(message, source, lineno, colno, error) {
-      console.error('ERROR GLOBAL:', message, 'at', source + ':' + lineno + ':' + colno);
-      const resultado = document.getElementById('resultado');
-      if (resultado) resultado.innerHTML = `<p class="mensaje">⚠️ Error: ${message} (ver consola)</p>`;
-      return false;
-    };
+            if (!indicativo) {
+                alert("Por favor, escribe un indicativo.");
+                return;
+            }
 
-    // Asignar eventos cuando el DOM esté listo
-    document.addEventListener('DOMContentLoaded', () => {
-      document.getElementById('buscarBtn').addEventListener('click', buscarQSL);
-      document.getElementById('cerrarBtn').addEventListener('click', cerrarVentana);
-      document.getElementById('descargarTodasBtn').addEventListener('click', descargarTodas);
-      // Cerrar modal al hacer click fuera del contenido
-      document.getElementById('ventanaQSL').addEventListener('click', (e) => {
-        if (e.target === document.getElementById('ventanaQSL')) cerrarVentana();
-      });
-    });
+            // Reset
+            res.innerHTML = "";
+            loader.style.display = "flex";
+            let progreso = 0;
+            
+            // Simular escaneo de carpetas
+            const intervalo = setInterval(() => {
+                progreso += 5;
+                bar.style.width = progreso + "%";
+                icon.style.left = progreso + "%";
+                
+                if(progreso < 40) status.innerText = "Revisando base de datos...";
+                else if(progreso < 80) status.innerText = "Localizando archivos de " + indicativo + "...";
+                else status.innerText = "¡Casi listo!";
 
-    // Animación suave de la carta usando requestAnimationFrame
-    function animateCardTo(cardElem, targetPct, duration = 140) {
-      if (!cardElem) return;
-      if (cardElem._animFrame) cancelAnimationFrame(cardElem._animFrame);
-      const start = parseFloat(cardElem.style.left) || 0;
-      const end = Math.max(0, Math.min(100, targetPct));
-      const startTime = performance.now();
-
-      function ease(t) {
-        return t < 0.5 ? 2*t*t : -1 + (4 - 2*t)*t;
-      }
-
-      function step(now) {
-        const t = Math.min(1, (now - startTime) / duration);
-        const eased = ease(t);
-        const current = start + (end - start) * eased;
-        cardElem.style.left = current + '%';
-        if (t < 1) {
-          cardElem._animFrame = requestAnimationFrame(step);
-        } else {
-          cardElem._animFrame = null;
+                if (progreso >= 100) {
+                    clearInterval(intervalo);
+                    verificarArchivos(indicativo);
+                }
+            }, 80);
         }
-      }
-      cardElem._animFrame = requestAnimationFrame(step);
-    }
 
-    function buscarQSL() {
-      // Reiniciar estado
-      imagenCargada = false;
-      if (timeoutId) { clearTimeout(timeoutId); timeoutId = null; }
+        async function verificarArchivos(call) {
+            const loader = document.getElementById('loader');
+            const contenedor = document.getElementById('contenedorQSLs');
+            const titulo = document.getElementById('tituloModal');
+            
+            // Lista de posibles nombres (el normal y con números)
+            const posibles = [`img/${call}.jpg`];
+            for (let i = 1; i <= 20; i++) posibles.push(`img/${call}-${i}.jpg`);
 
-      const indicativo = document.getElementById("indicativo").value.trim().toUpperCase();
-      const resultado = document.getElementById("resultado");
-      const listaQSLs = document.getElementById("listaQSLs");
+            let encontradas = [];
+            
+            // Comprobación real de imágenes
+            const promesas = posibles.map(ruta => {
+                return new Promise((resolve) => {
+                    const img = new Image();
+                    img.onload = () => { encontradas.push(ruta); resolve(); };
+                    img.onerror = () => resolve();
+                    img.src = ruta;
+                });
+            });
 
-      // limpiar resultados previos
-      resultado.innerHTML = "";
-      listaQSLs.innerHTML = "";
+            await Promise.all(promesas);
 
-      if (!indicativo) {
-        resultado.innerHTML = `<p class="mensaje">🌺 Por favor escribe un indicativo</p>`;
-        setTimeout(() => { resultado.innerHTML = ""; }, 5000);
-        return;
-      }
+            loader.style.display = "none";
 
-      // Mostrar loader y resetear barra y carta
-      const loader = document.getElementById('loaderContainer');
-      const progressFill = document.getElementById('progressFill');
-      const progressText = document.getElementById('progressText');
-      const cardThumb = document.getElementById('cardThumb');
-      loader.style.display = 'flex';
-      loader.setAttribute('aria-hidden', 'false');
-      progressFill.style.width = '0%';
-      cardThumb.style.left = '0%';
-      progressText.textContent = '🔄 Buscando QSL… espera unos segundos';
-
-      console.log('Buscando QSL para', indicativo);
-
-      // Generar rutas posibles
-      let posibles = [];
-      posibles.push(`img/${indicativo}.jpg`);
-      for (let i = 1; i <= 50; i++) posibles.push(`img/${indicativo}-${i}.jpg`);
-
-      let encontradas = [];
-      let comprobadas = 0;
-      const totalPosibles = posibles.length;
-
-      // cancelar timeout anterior si existe
-      if (timeoutId) clearTimeout(timeoutId);
-
-      // Helper para actualizar barra y mover carta (con offset para sensación de avance)
-      function actualizarProgreso() {
-        const pct = Math.round((comprobadas / totalPosibles) * 100);
-        progressFill.style.width = pct + '%';
-
-        // Offset para que la carta vaya por delante del fill (ajusta entre 4 y 12)
-        const offset = 10;
-        const cardPos = Math.min(100, pct + offset);
-
-        // Usar animación suave
-        animateCardTo(cardThumb, cardPos, 120);
-
-        progressText.textContent = `Imágenes comprobadas: ${comprobadas} / ${totalPosibles} (${pct}%)`;
-      }
-
-      posibles.forEach(ruta => {
-        const img = new Image();
-        img.onload = () => {
-          comprobadas++;
-          actualizarProgreso();
-
-          if (!encontradas.includes(ruta)) {
-            imagenCargada = true;
-            encontradas.push(ruta);
-            console.log('Imagen encontrada:', ruta);
-            mostrarQSLs(encontradas, indicativo);
-            // marcar barra completa y mover carta al final
-            progressFill.style.width = '100%';
-            animateCardTo(cardThumb, 100, 120);
-            progressText.textContent = `Se encontraron ${encontradas.length} QSL`;
-            // ocultar loader tras breve pausa
-            setTimeout(() => { loader.style.display = 'none'; loader.setAttribute('aria-hidden','true'); }, 700);
-          }
-        };
-        img.onerror = () => {
-          comprobadas++;
-          actualizarProgreso();
-          if (comprobadas >= totalPosibles && !imagenCargada) {
-            // ocultar loader y mostrar mensaje final
-            setTimeout(() => { loader.style.display = 'none'; loader.setAttribute('aria-hidden','true'); }, 300);
-          }
-        };
-        img.src = ruta;
-      });
-
-      // Esperar 10s antes de mostrar mensaje de no encontrada (fallback)
-      timeoutId = setTimeout(() => {
-        if (!imagenCargada) {
-          resultado.innerHTML = `<p class="mensaje">❌ No tenemos esa QSL, pero pronto estará lista 🌺</p>`;
-          progressText.textContent = 'Búsqueda finalizada: no se encontraron imágenes';
-          // ocultar loader tras 1s
-          setTimeout(() => { loader.style.display = 'none'; loader.setAttribute('aria-hidden','true'); }, 1000);
-          console.log('No se encontraron imágenes para', indicativo);
+            if (encontradas.length > 0) {
+                titulo.innerText = `Se encontraron ${encontradas.length} QSLs para ${call}`;
+                contenedor.innerHTML = "";
+                
+                encontradas.forEach(ruta => {
+                    contenedor.innerHTML += `
+                        <div class="qsl-card">
+                            <img src="${ruta}" class="qsl-img">
+                            <a href="${ruta}" download class="btn-download">⬇️ DESCARGAR QSL</a>
+                        </div>
+                    `;
+                });
+                document.getElementById('modalQSL').style.display = "block";
+            } else {
+                document.getElementById('resultadoFinal').innerHTML = `
+                    <div style="padding: 20px; color: #ffe082; background: rgba(255,0,0,0.2); border-radius: 10px;">
+                        ❌ No se encontraron tarjetas para <strong>${call}</strong>.<br>
+                        Vuelve a intentarlo más tarde.
+                    </div>
+                `;
+            }
         }
-      }, 10000);
-    }
 
-    function mostrarQSLs(lista, indicativo) {
-      const ventana = document.getElementById("ventanaQSL");
-      const listaQSLs = document.getElementById("listaQSLs");
+        function cerrarModal() {
+            document.getElementById('modalQSL').style.display = "none";
+        }
 
-      if (!lista || lista.length === 0) return;
-
-      // Limpiar antes de añadir para evitar duplicados
-      listaQSLs.innerHTML = `<p>📡 Se encontraron ${lista.length} QSL para <strong>${indicativo}</strong></p>`;
-      totalQSLs = lista.length;
-      descargadas = 0;
-      listaActual = lista.slice();
-
-      actualizarContador();
-
-      lista.forEach(ruta => {
-        listaQSLs.innerHTML += `
-          <div>
-            <img src="${ruta}" alt="QSL de ${indicativo}" class="qsl-img">
-            <br>
-            <a href="${ruta}" download class="descargar" onclick="marcarDescarga()">⬇️ Descargar QSL</a>
-          </div>
-        `;
-      });
-
-      ventana.style.display = "block";
-      ventana.setAttribute('aria-hidden', 'false');
-    }
-
-    function actualizarContador() {
-      const contador = document.getElementById("contador");
-      contador.innerHTML = `<p class="mensaje">Has descargado ${descargadas} de ${totalQSLs} QSL</p>`;
-    }
-
-    function marcarDescarga() {
-      descargadas++;
-      actualizarContador();
-      if (descargadas >= totalQSLs) {
-        const listaQSLs = document.getElementById("listaQSLs");
-        listaQSLs.innerHTML = `<p class="mensaje">✅ Has descargado todas tus QSL, buenos DXs 🌺</p>`;
-        setTimeout(() => {
-          cerrarVentana();
-          document.getElementById("resultado").innerHTML = "";
-          document.getElementById("indicativo").value = "";
-        }, 2000);
-      }
-    }
-
-    function descargarTodas() {
-      if (!listaActual || listaActual.length === 0) return;
-      listaActual.forEach(ruta => {
-        const link = document.createElement("a");
-        link.href = ruta;
-        link.download = ruta.split("/").pop();
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        descargadas++;
-      });
-      actualizarContador();
-      if (descargadas >= totalQSLs) {
-        const listaQSLs = document.getElementById("listaQSLs");
-        listaQSLs.innerHTML = `<p class="mensaje">✅ Has descargado todas tus QSL, buenos DXs 🌺</p>`;
-        setTimeout(() => {
-          cerrarVentana();
-          document.getElementById("resultado").innerHTML = "";
-          document.getElementById("indicativo").value = "";
-        }, 2000);
-      }
-    }
-
-    function cerrarVentana() {
-      const ventana = document.getElementById("ventanaQSL");
-      ventana.style.display = "none";
-      ventana.setAttribute('aria-hidden', 'true');
-    }
-  </script>
-</body>
-</html>
-      border: 1px solid rgba(80, 160, 255, 0.25);
-      box-shadow:
-        inset 0 0 12px rgba(0, 150, 255, 0.15),
-        0 8px 20px rgba(0, 0, 0, 0.45);
-    }
-
-    h1, h2 {
-      margin-top: 0;
-    }
-
-    label {
-      font-size: 12px;
-      color: #9ec7ff;
-      margin-bottom: 4px;
-      display: block;
-    }
-
-    input, select, textarea {
-      background: rgba(5, 12, 22, 0.8);
-      border: 1px solid rgba(80, 160, 255, 0.25);
-      color: #eaf6ff;
-      border-radius: 8px;
-      padding: 8px;
-      width: 100%;
-      margin-bottom: 10px;
-      box-shadow: inset 0 0 8px rgba(0, 150, 255, 0.15);
-    }
-
-    textarea {
-      min-height: 70px;
-      resize: vertical;
-    }
-
-    button {
-      padding: 10px 16px;
-      border-radius: 8px;
-      border: none;
-      cursor: pointer;
-      font-weight: 600;
-      margin: 4px;
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
-    }
-
-    button.primary {
-      background: linear-gradient(180deg, #3fd0c9, #1a8f89);
-      color: #06121f;
-      box-shadow: 0 4px 10px rgba(63, 208, 201, 0.4);
-    }
-
-    button.secondary {
-      background: linear-gradient(180deg, #ffd36e, #c79a32);
-      color: #06121f;
-      box-shadow: 0 4px 10px rgba(255, 211, 110, 0.4);
-    }
-
-    button.danger {
-      background: linear-gradient(180deg, #ff6b6b, #c73a3a);
-      color: white;
-      box-shadow: 0 4px 10px rgba(255, 107, 107, 0.4);
-    }
-
-    button.info {
-      background: linear-gradient(180deg, #6ec1ff, #2c7ed6);
-      color: #06121f;
-      box-shadow: 0 4px 10px rgba(110, 193, 255, 0.4);
-    }
-
-    button:active {
-      transform: translateY(2px);
-      box-shadow: 0 2px 6px rgba(0,0,0,0.4);
-    }
-
-    #qslCanvas {
-      background: #0b1624;
-      border-radius: 16px;
-      box-shadow:
-        0 20px 40px rgba(0, 0, 0, 0.6),
-        0 0 25px rgba(0, 150, 255, 0.25),
-        inset 0 0 20px rgba(0, 150, 255, 0.15);
-      transform: perspective(900px) rotateX(4deg);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-      width: 100%;
-      height: auto;
-    }
-
-    #qslCanvas:hover {
-      transform: perspective(900px) rotateX(0deg);
-      box-shadow:
-        0 30px 60px rgba(0, 0, 0, 0.7),
-        0 0 35px rgba(0, 150, 255, 0.35),
-        inset 0 0 25px rgba(0, 150, 255, 0.25);
-    }
-
-    /* Mensaje de QSL no encontrada */
-    #noQslMessage {
-      position: fixed;
-      top: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(180, 30, 60, 0.95);
-      color: #fff;
-      padding: 12px 20px;
-      border-radius: 10px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.6);
-      font-weight: 600;
-      z-index: 9999;
-      display: none;
-    }
-
-    #noQslMessage span {
-      display: block;
-      font-size: 13px;
-      opacity: 0.9;
-      margin-top: 4px;
-    }
-
-    @media (max-width: 800px) {
-      main {
-        grid-template-columns: 1fr;
-      }
-    }
-  </style>
-</head>
-
-<body>
-  <header>
-    <h1>QSL Caribe — Generador 3D Técnico</h1>
-    <p>Tarjetas QSL técnicas en vista 3D, listas para imprimir o guardar</p>
-  </header>
-
-  <!-- Mensaje flotante de QSL no encontrada -->
-  <div id="noQslMessage">
-    QSL no encontrada en el sistema.
-    <span>Regresando al inicio en 10 segundos…</span>
-  </div>
-
-  <main>
-    <section class="panel">
-      <h2>Datos del QSO</h2>
-      <form id="qsoForm">
-        <label for="indicativo">Indicativo</label>
-        <input id="indicativo" placeholder="CM2ABC" required />
-
-        <label for="nombre">Nombre del operador</label>
-        <input id="nombre" placeholder="Alfred" />
-
-        <label for="ubicacion">QTH / Ubicación</label>
-        <input id="ubicacion" placeholder="Santa Cruz del Sur, Camagüey, Cuba" />
-
-        <label for="pais">País</label>
-        <input id="pais" placeholder="Cuba" />
-
-        <label for="fecha">Fecha</label>
-        <input id="fecha" type="date" />
-
-        <label for="hora">Hora (UTC)</label>
-        <input id="hora" type="time" />
-
-        <label for="frecuencia">Frecuencia (MHz)</label>
-        <input id="frecuencia" placeholder="14.070" />
-
-        <label for="modo">Modo</label>
-        <select id="modo">
-          <option>SSB</option>
-          <option>CW</option>
-          <option>FT8</option>
-          <option>FM</option>
-          <option>AM</option>
-          <option>DIGI</option>
-        </select>
-
-        <label for="rst">Señal (RST)</label>
-        <input id="rst" placeholder="59 / 599" />
-
-        <label for="qsl">QSL vía</label>
-        <input id="qsl" placeholder="Directa / Buro / eQSL / LoTW" />
-
-        <label for="notas">Notas</label>
-        <textarea id="notas" placeholder="Gracias por el QSO. 73 y DX!"></textarea>
-
-        <label for="fondo">Imagen de fondo</label>
-        <input id="fondo" type="file" accept="image/*">
-
-        <div>
-          <button type="button" class="primary" id="btnGenerar">Generar tarjeta</button>
-          <button type="button" class="secondary" id="btnDescargar">Descargar PNG</button>
-          <button type="button" class="secondary" id="btnImprimir">Imprimir</button>
-          <button type="button" class="danger" id="btnLimpiar">Limpiar</button>
-        </div>
-
-        <!-- Botón de ejemplo para mostrar QSL no encontrada -->
-        <div style="margin-top:10px;">
-          <button type="button" class="info" id="btnSimularNoQsl">
-            Simular QSL no encontrada
-          </button>
-        </div>
-      </form>
-    </section>
-
-    <section class="panel">
-      <h2>Vista previa</h2>
-      <canvas id="qslCanvas" width="1200" height="800"></canvas>
-    </section>
-  </main>
-
-  <script>
-    const form = document.getElementById('qsoForm');
-    const canvas = document.getElementById('qslCanvas');
-    const ctx = canvas.getContext('2d');
-    const fondoInput = document.getElementById('fondo');
-    const noQslMessage = document.getElementById('noQslMessage');
-
-    const fontTitle = "700 62px system-ui, Segoe UI, Arial";
-    const fontLabel = "700 20px system-ui, Segoe UI, Arial";
-    const fontText  = "400 22px system-ui, Segoe UI, Arial";
-
-    document.getElementById('btnGenerar').addEventListener('click', () => drawCard(readData()));
-    document.getElementById('btnDescargar').addEventListener('click', downloadPNG);
-    document.getElementById('btnImprimir').addEventListener('click', () => window.print());
-    document.getElementById('btnLimpiar').addEventListener('click', () => {
-      form.reset();
-      drawCard(defaultData());
-    });
-
-    // Botón para simular "QSL no encontrada"
-    document.getElementById('btnSimularNoQsl').addEventListener('click', () => {
-      mostrarQslNoEncontrada();
-    });
-
-    // Dibuja una tarjeta inicial por defecto
-    drawCard(defaultData());
-
-    function defaultData() {
-      const ahora = new Date();
-      return {
-        indicativo: "CM2ABC",
-        nombre: "Alfred",
-        ubicacion: "Santa Cruz del Sur, Camagüey",
-        pais: "Cuba",
-        fecha: ahora.toISOString().slice(0,10),
-        hora: ahora.toISOString().slice(11,16),
-        frecuencia: "14.070",
-        modo: "SSB",
-        rst: "59",
-        qsl: "eQSL / LoTW",
-        notas: "Gracias por el QSO. 73 y DX!"
-      };
-    }
-
-    function readData() {
-      const get = id => document.getElementById(id).value.trim();
-      return {
-        indicativo: get("indicativo") || "—",
-        nombre: get("nombre"),
-        ubicacion: get("ubicacion"),
-        pais: get("pais"),
-        fecha: get("fecha"),
-        hora: get("hora"),
-        frecuencia: get("frecuencia"),
-        modo: get("modo"),
-        rst: get("rst"),
-        qsl: get("qsl"),
-        notas: get("notas"),
-      };
-    }
-
-    function downloadPNG() {
-      const url = canvas.toDataURL("image/png");
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `QSL_${Date.now()}.png`;
-      a.click();
-    }
-
-    function drawCard(d) {
-      const W = canvas.width, H = canvas.height;
-      ctx.clearRect(0,0,W,H);
-
-      if (fondoInput && fondoInput.files && fondoInput.files[0]) {
-        const img = new Image();
-        img.onload = () => {
-          ctx.drawImage(img, 0, 0, W, H);
-          drawOverlay(d);
-        };
-        img.src = URL.createObjectURL(fondoInput.files[0]);
-      } else {
-        const g = ctx.createLinearGradient(0,0,0,H);
-        g.addColorStop(0, "#062036");
-        g.addColorStop(1, "#103251");
-        ctx.fillStyle = g;
-        ctx.fillRect(0,0,W,H);
-        drawOverlay(d);
-      }
-    }
-
-    function drawOverlay(d) {
-      const pad = 40;
-      ctx.fillStyle = "rgba(0,0,0,0.5)";
-      ctx.fillRect(pad, pad, canvas.width - pad*2, canvas.height - pad*2);
-
-      ctx.fillStyle = "#fff";
-
-      ctx.font = fontTitle;
-      ctx.fillText((d.indicativo || "—").toUpperCase(), pad+30, pad+80);
-
-      ctx.font = fontLabel;
-      ctx.fillText("Fecha: " + (d.fecha || "—"), pad+30, pad+150);
-      ctx.fillText("Hora (UTC): " + (d.hora || "—"), pad+30, pad+190);
-      ctx.fillText("Frecuencia: " + (d.frecuencia || "—"), pad+30, pad+230);
-      ctx.fillText("Modo: " + (d.modo || "—"), pad+30, pad+270);
-      ctx.fillText("RST: " + (d.rst || "—"), pad+30, pad+310);
-      ctx.fillText("QSL vía: " + (d.qsl || "—"), pad+30, pad+350);
-      ctx.fillText("Operador: " + (d.nombre || "—"), pad+30, pad+390);
-      ctx.fillText("QTH: " + (d.ubicacion || "—"), pad+30, pad+430);
-      ctx.fillText("País: " + (d.pais || "—"), pad+30, pad+470);
-
-      ctx.font = fontText;
-      ctx.fillText("Notas: " + (d.notas || "—"), pad+30, pad+520);
-    }
-
-    // Mostrar mensaje de QSL no encontrada durante 10 segundos y luego volver al inicio
-    function mostrarQslNoEncontrada() {
-      if (!noQslMessage) return;
-      noQslMessage.style.display = "block";
-
-      setTimeout(() => {
-        noQslMessage.style.display = "none";
-        // Regresar a inicio: recargar la página
-        window.location.reload();
-      }, 10000); // 10 segundos
-    }
-  </script>
+        // Cerrar si hace click fuera del cuadro blanco
+        window.onclick = function(event) {
+            const modal = document.getElementById('modalQSL');
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
 </body>
 </html>
