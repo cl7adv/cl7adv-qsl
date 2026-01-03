@@ -7,16 +7,17 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Nunito:wght@300;600;800&display=swap" rel="stylesheet">
   <style>
     :root{
-      /* Paleta inspirada en colores cubanos: azul, rojo, blanco y dorado cálido */
-      --cuba-blue: #0b5bd7;
-      --cuba-red: #d62828;
-      --cuba-white: #ffffff;
-      --cuba-gold: #d99a3b;
+      /* Paleta inspirada en colores de playa cálidos y marinos */
+      --sea-deep: #0b6b7a;
+      --sea-mid: #1aa3b8;
+      --sand: #f3d9b6;
+      --sun: #ffb74d;
       --muted: #3f2b1f;
-      --card-bg: rgba(255,255,255,0.95);
+      --card-bg: rgba(255,255,255,0.94);
       --radius-lg: 16px;
-      --shadow-1: 0 14px 40px rgba(40,20,10,0.12);
-      --glass: rgba(255,255,255,0.6);
+      --shadow-1: 0 14px 40px rgba(40,20,10,0.10);
+      --neon-color: #ffd86b; /* warm neon for borders and glow */
+      --neon-accent: #7ef0ff; /* cool neon accent for contrast */
       --transition-fast: 160ms;
     }
 
@@ -26,14 +27,14 @@
       margin:0;
       font-family:"Nunito",system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;
       color:var(--muted);
-      background: linear-gradient(180deg,#fff8f2,#fff2e6);
+      background: linear-gradient(180deg,#fffaf0,#fff6ee);
       -webkit-font-smoothing:antialiased;
       -moz-osx-font-smoothing:grayscale;
       line-height:1.45;
       padding:18px;
     }
 
-    /* HERO: fondo atardecer (asegúrate de subir img/sunset-beach.jpg) */
+    /* HERO: sunset beach background (place img/sunset-beach.jpg in img/) */
     .hero {
       position: relative;
       min-height: 48vh;
@@ -51,8 +52,9 @@
     .hero::before{
       content:"";
       position:absolute; inset:0;
-      background: linear-gradient(180deg, rgba(0,0,0,0.32), rgba(0,0,0,0.14) 40%, rgba(217,137,46,0.06) 100%);
-      mix-blend-mode:multiply;
+      /* subtle warm overlay to enhance beach tones and legibility */
+      background: linear-gradient(180deg, rgba(6,30,40,0.28), rgba(255,160,60,0.06) 60%);
+      mix-blend-mode: multiply;
       pointer-events:none;
     }
 
@@ -60,24 +62,38 @@
       position:relative; z-index:2; width:100%; max-width:1100px; display:flex; gap:20px; align-items:center; justify-content:space-between;
     }
 
-    .brand {
-      display:flex; gap:18px; align-items:center;
-    }
+    .brand { display:flex; gap:18px; align-items:center; }
 
     .logo {
       width:88px; height:88px; border-radius:14px;
       background: linear-gradient(180deg,#fff,#fff6ec);
       display:flex; align-items:center; justify-content:center;
-      font-family:"Playfair Display",serif; font-weight:700; color:var(--cuba-blue);
+      font-family:"Playfair Display",serif; font-weight:700; color:var(--sea-deep);
       font-size:1.1rem; box-shadow: 0 10px 30px rgba(0,0,0,0.18); border:1px solid rgba(255,255,255,0.35);
     }
 
+    /* Elegant title with neon border effect */
     .hero-title {
-      color: var(--cuba-white);
-      font-family:"Playfair Display",serif;
-      font-size:2.4rem; margin:0; text-shadow: 0 8px 28px rgba(0,0,0,0.45);
+      color: #fff;
+      font-family: "Playfair Display", serif;
+      font-size: 2.4rem;
+      line-height:1.02;
+      margin:0;
+      letter-spacing:0.2px;
+      /* neon border effect using layered text-shadows */
+      text-shadow:
+        0 0 2px rgba(255,255,255,0.9),
+        0 0 6px var(--neon-color),
+        0 0 12px rgba(255,180,80,0.6),
+        0 6px 18px rgba(0,0,0,0.45);
     }
-    .hero-sub { color: rgba(255,255,255,0.95); margin-top:8px; font-size:1rem; text-shadow: 0 6px 18px rgba(0,0,0,0.35); }
+
+    .hero-sub {
+      color: rgba(255,255,255,0.95);
+      margin-top:8px;
+      font-size:1rem;
+      text-shadow: 0 6px 18px rgba(0,0,0,0.35);
+    }
 
     /* Main container overlapping hero */
     .container {
@@ -95,81 +111,84 @@
     }
     #indicativo:focus { box-shadow: 0 8px 20px rgba(200,120,60,0.12); transform: translateY(-2px); }
 
+    /* Neon-outlined button */
     #buscarBtn {
       padding:12px 18px; border-radius:12px; border:none;
-      background: linear-gradient(180deg,var(--cuba-blue), #0847b0);
-      color:var(--cuba-white); font-weight:800; cursor:pointer;
-      box-shadow: 0 10px 26px rgba(10,50,150,0.12); transition: transform var(--transition-fast);
+      background: linear-gradient(180deg,var(--sea-mid), var(--sea-deep));
+      color: #fff; font-weight:800; cursor:pointer;
+      box-shadow: 0 10px 26px rgba(10,50,70,0.10);
+      position:relative;
+      transition: transform var(--transition-fast), box-shadow var(--transition-fast);
     }
-    #buscarBtn:hover { transform: translateY(-3px); }
-
-    #resultado { margin-top:14px; min-height:40px; text-align:center; color:var(--muted); }
-    .mensaje { font-size:1rem; color:var(--cuba-red); margin:8px 0; }
-
-    /* Radio station card (Cuban style) */
-    .radio-card {
-      display:flex; gap:18px; align-items:center; justify-content:space-between;
-      padding:14px; border-radius:12px; background: linear-gradient(180deg, rgba(11,91,215,0.04), rgba(214,90,90,0.02));
-      border: 1px solid rgba(11,91,215,0.06); box-shadow: 0 8px 20px rgba(10,40,100,0.06);
-      margin: 12px auto; max-width:880px;
+    /* neon border using pseudo-element */
+    #buscarBtn::after {
+      content: "";
+      position: absolute;
+      inset: -2px;
+      border-radius: 12px;
+      background: linear-gradient(90deg, rgba(255,216,107,0.12), rgba(126,240,255,0.06));
+      box-shadow: 0 0 18px 4px rgba(255,216,107,0.06);
+      z-index: -1;
+      transition: opacity 160ms ease;
     }
+    #buscarBtn:hover { transform: translateY(-3px); box-shadow: 0 14px 34px rgba(10,50,70,0.14); }
+    #buscarBtn:active { transform: translateY(-1px); }
 
-    .radio-info {
-      display:flex; gap:12px; align-items:center;
-    }
-
-    .station-badge {
-      width:84px; height:84px; border-radius:12px; display:flex; align-items:center; justify-content:center;
-      background: linear-gradient(180deg,var(--cuba-red), #b21f1f); color:var(--cuba-white); font-weight:800; font-family:"Playfair Display",serif;
-      box-shadow: 0 8px 20px rgba(180,40,40,0.12);
-      border: 2px solid rgba(255,255,255,0.12);
-    }
-
-    .station-meta { display:flex; flex-direction:column; gap:4px; }
-    .station-name { font-weight:800; font-size:1.05rem; color:var(--muted); }
-    .station-freq { font-size:0.95rem; color:#6b4f3a; }
-
-    /* Player controls */
-    .player-controls { display:flex; gap:10px; align-items:center; }
-    .btn-play {
-      width:56px; height:56px; border-radius:12px; border:none; cursor:pointer;
-      background: linear-gradient(180deg,var(--cuba-gold), #c07a2a); color:#fff; font-weight:800;
-      box-shadow: 0 10px 26px rgba(200,120,40,0.12);
-      display:flex; align-items:center; justify-content:center; font-size:1.1rem;
-    }
-    .btn-play.paused { background: linear-gradient(180deg,var(--cuba-blue), #0847b0); }
-
-    .volume { width:120px; }
-    .status { font-size:0.95rem; color:#5a3f2b; margin-left:8px; min-width:140px; }
-
-    /* Wave visual (simple animated bars) */
-    .wave {
-      display:flex; gap:4px; align-items:end; height:36px; margin-left:12px;
-    }
-    .wave div {
-      width:6px; background: linear-gradient(180deg,#ffd89a,#ffb74d); border-radius:3px;
-      animation: wave 900ms linear infinite;
-      opacity:0.95;
-    }
-    .wave div:nth-child(1){ animation-delay: 0ms; height:8px; }
-    .wave div:nth-child(2){ animation-delay: 120ms; height:18px; }
-    .wave div:nth-child(3){ animation-delay: 240ms; height:12px; }
-    .wave div:nth-child(4){ animation-delay: 360ms; height:26px; }
-    .wave div:nth-child(5){ animation-delay: 480ms; height:10px; }
-    @keyframes wave {
-      0% { transform: scaleY(0.4); }
-      50% { transform: scaleY(1.0); }
-      100% { transform: scaleY(0.4); }
+    /* Neon-styled headings and small accents */
+    .section-title {
+      font-family: "Playfair Display", serif;
+      font-size:1.15rem;
+      color: var(--sea-deep);
+      margin: 8px 0 12px;
+      text-shadow:
+        0 0 2px rgba(255,255,255,0.9),
+        0 0 8px var(--neon-accent),
+        0 6px 12px rgba(0,0,0,0.08);
     }
 
-    /* QSL list and modal */
+    #resultado{ margin-top:14px; min-height:40px; text-align:center; color:var(--muted); }
+    .mensaje{ font-size:1rem; color:var(--sea-deep); margin:8px 0; }
+
+    /* QSL cards */
     #listaQSLs { display:flex; flex-wrap:wrap; gap:18px; justify-content:center; margin-top:12px; }
-    .qsl-img { max-width:240px; border-radius:12px; border: 3px solid rgba(200,140,80,0.12); box-shadow: 0 12px 30px rgba(120,70,30,0.08); background: linear-gradient(180deg,#fff,#fff8f2); transition: transform .22s ease; }
-    .qsl-img:hover { transform: translateY(-6px); }
+    .qsl-img{
+      max-width:240px;
+      border-radius:12px;
+      border: 3px solid rgba(200,140,80,0.12);
+      box-shadow: 0 12px 30px rgba(120,70,30,0.08);
+      background: linear-gradient(180deg,#fff,#fff8f2);
+      transition: transform .22s ease, box-shadow .22s ease;
+    }
+    .qsl-img:hover{ transform: translateY(-6px); box-shadow: 0 20px 40px rgba(120,70,30,0.12); }
 
-    .modal { display:none; position:fixed; inset:0; z-index:1200; background: rgba(20,12,8,0.45); align-items:center; justify-content:center; padding:20px; }
-    .modal-contenido { width:100%; max-width:920px; background: linear-gradient(180deg,#fffaf0,#fff7ef); border-radius:14px; padding:18px; box-shadow: 0 20px 50px rgba(60,30,10,0.25); color:#3f2b1f; }
-    .cerrar { float:right; font-size:26px; cursor:pointer; color:#7a5a44; }
+    .descargar{
+      display:inline-block;
+      margin-top:10px;
+      padding:9px 16px;
+      border-radius:10px;
+      background: linear-gradient(180deg,var(--sun), #ff9f3b);
+      color:#fff;
+      text-decoration:none;
+      font-weight:800;
+      box-shadow: 0 8px 18px rgba(200,120,40,0.08);
+      transition: transform var(--transition-fast);
+    }
+    .descargar:hover{ transform: translateY(-3px); }
+
+    /* Loader (card moving) */
+    .loader-wrap{ display:none; margin-top:12px; align-items:center; justify-content:center; gap:12px; }
+    .spinner{ width:22px; height:22px; border:3px solid rgba(120,80,40,0.12); border-top-color:var(--sun); border-radius:50%; animation:spin 1s linear infinite; }
+    @keyframes spin{ to{ transform:rotate(360deg); } }
+    .progress-bar{ position:relative; width:380px; height:14px; background: rgba(200,140,80,0.06); border-radius:10px; overflow:hidden; box-shadow: inset 0 2px 6px rgba(0,0,0,0.04); }
+    .progress-fill{ height:100%; background: linear-gradient(90deg,#ffd89a,#ffb74d); width:0%; transition: width 160ms ease; }
+    .card-thumb{ position:absolute; top:-30px; width:64px; height:40px; background: linear-gradient(180deg,#fff,#fff0df); color:#4a2f1a; border:2px solid rgba(200,140,80,0.18); border-radius:8px; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:0.85rem; box-shadow: 0 8px 22px rgba(120,70,30,0.12); transform:translateX(-50%); transition:left 80ms cubic-bezier(.2,.8,.2,1); pointer-events:none; overflow:hidden; }
+    .card-thumb img{ width:100%; height:100%; object-fit:cover; display:block; }
+    .progress-text{ font-size:0.95rem; color:#7a5a44; margin-top:8px; text-align:center; }
+
+    /* Modal */
+    .modal{ display:none; position:fixed; inset:0; z-index:1200; background: rgba(20,12,8,0.45); align-items:center; justify-content:center; padding:20px; }
+    .modal-contenido{ width:100%; max-width:920px; background: linear-gradient(180deg,#fffaf0,#fff7ef); border-radius:14px; padding:18px; box-shadow: 0 20px 50px rgba(60,30,10,0.25); color:#3f2b1f; }
+    .cerrar{ float:right; font-size:26px; cursor:pointer; color:#7a5a44; }
 
     @media (max-width:720px){
       .hero-inner{ flex-direction:column; gap:12px; text-align:center; }
@@ -177,13 +196,11 @@
       .container{ margin-top:-28px; padding:18px; }
       .progress-bar{ width:260px; }
       #indicativo{ width:160px; }
-      .radio-card{ flex-direction:column; align-items:center; text-align:center; gap:12px; }
-      .player-controls{ justify-content:center; }
     }
   </style>
 </head>
 <body>
-  <!-- Hero -->
+  <!-- Hero with sunset beach background -->
   <section class="hero" role="banner" aria-label="Portada atardecer en la playa">
     <div class="hero-inner">
       <div class="brand" aria-hidden="true">
@@ -197,36 +214,15 @@
     </div>
   </section>
 
-  <!-- Main -->
+  <!-- Main content -->
   <main class="container" role="main">
     <div class="controls" aria-label="Controles de búsqueda">
       <input id="indicativo" type="text" placeholder="Ej: CL7ADV" aria-label="Indicativo">
       <button id="buscarBtn" type="button">Buscar QSL</button>
     </div>
 
-    <!-- Radio station card (Cuban colors) -->
-    <section class="radio-card" aria-label="Estación de radio">
-      <div class="radio-info">
-        <div class="station-badge" aria-hidden="true">RAD</div>
-        <div class="station-meta">
-          <div class="station-name">Estación QSL Caribeña</div>
-          <div class="station-freq">FM 88.7 · Streaming · Santa Cruz del Sur</div>
-          <div style="font-size:0.9rem; color:#6b4f3a;">Programación: música, DX, reportes y QSLs</div>
-        </div>
-      </div>
-
-      <div class="player-controls" aria-hidden="false">
-        <button id="playBtn" class="btn-play" aria-pressed="false" title="Reproducir / Pausar">▶</button>
-        <input id="volume" class="volume" type="range" min="0" max="1" step="0.01" value="0.8" aria-label="Volumen">
-        <div class="wave" aria-hidden="true">
-          <div></div><div></div><div></div><div></div><div></div>
-        </div>
-        <div id="radioStatus" class="status">Detenida</div>
-      </div>
-    </section>
-
-    <!-- Loader (kept from previous design) -->
-    <div id="loaderContainer" class="loader-wrap" aria-hidden="true" style="display:none;">
+    <!-- Loader with moving card -->
+    <div id="loaderContainer" class="loader-wrap" aria-hidden="true">
       <div class="spinner" id="spinner" role="status" aria-hidden="true"></div>
       <div>
         <div class="progress-bar" id="progressBar">
@@ -248,7 +244,7 @@
   <div id="ventanaQSL" class="modal" aria-hidden="true">
     <div class="modal-contenido" role="dialog" aria-modal="true" aria-labelledby="qslTitle">
       <span class="cerrar" id="cerrarBtn" title="Cerrar">&times;</span>
-      <h2 id="qslTitle">QSLs disponibles</h2>
+      <h2 id="qslTitle" class="section-title">QSLs disponibles</h2>
       <div id="contador"></div>
       <div id="listaQSLs"></div>
       <br>
@@ -257,69 +253,8 @@
   </div>
 
   <script>
-    // Variables QSL
     let totalQSLs = 0, descargadas = 0, listaActual = [], imagenCargada = false, timeoutId = null;
 
-    // Radio player (simulado)
-    const playBtn = document.getElementById('playBtn');
-    const volume = document.getElementById('volume');
-    const radioStatus = document.getElementById('radioStatus');
-    const wave = document.querySelectorAll('.wave div');
-
-    let isPlaying = false;
-    let waveInterval = null;
-
-    function setWaveActive(active) {
-      if (!wave) return;
-      if (active) {
-        wave.forEach((bar, i) => {
-          bar.style.animationPlayState = 'running';
-        });
-      } else {
-        wave.forEach(bar => {
-          bar.style.animationPlayState = 'paused';
-        });
-      }
-    }
-
-    function startWaveSimulation() {
-      setWaveActive(true);
-      if (waveInterval) clearInterval(waveInterval);
-      waveInterval = setInterval(() => {
-        wave.forEach(bar => {
-          const h = 8 + Math.round(Math.random() * 28);
-          bar.style.height = h + 'px';
-        });
-      }, 220);
-    }
-
-    function stopWaveSimulation() {
-      setWaveActive(false);
-      if (waveInterval) { clearInterval(waveInterval); waveInterval = null; }
-      wave.forEach((bar, i) => {
-        bar.style.height = (8 + i*4) + 'px';
-      });
-    }
-
-    playBtn.addEventListener('click', () => {
-      isPlaying = !isPlaying;
-      playBtn.classList.toggle('paused', !isPlaying);
-      playBtn.textContent = isPlaying ? '⏸' : '▶';
-      playBtn.setAttribute('aria-pressed', String(isPlaying));
-      radioStatus.textContent = isPlaying ? 'Reproduciendo · Estación QSL Caribeña' : 'Detenida';
-      if (isPlaying) startWaveSimulation(); else stopWaveSimulation();
-    });
-
-    volume.addEventListener('input', (e) => {
-      // Simulación: ajustar intensidad de la onda según volumen
-      const v = parseFloat(e.target.value);
-      wave.forEach((bar, i) => {
-        const base = 8 + i*4;
-        bar.style.height = Math.round(base * (0.4 + v*1.2)) + 'px';
-      });
-    });
-
-    // QSL search logic (same behavior as before)
     window.onerror = function(message, source, lineno, colno, error) {
       console.error('ERROR GLOBAL:', message, 'at', source + ':' + lineno + ':' + colno);
       const resultado = document.getElementById('resultado');
@@ -334,11 +269,9 @@
       document.getElementById('ventanaQSL').addEventListener('click', (e) => {
         if (e.target === document.getElementById('ventanaQSL')) cerrarVentana();
       });
-      // Initialize wave paused
-      stopWaveSimulation();
     });
 
-    function animateCardTo(cardElem, targetPct, duration = 100) {
+    function animateCardTo(cardElem, targetPct, duration = 90) {
       if (!cardElem) return;
       if (cardElem._animFrame) cancelAnimationFrame(cardElem._animFrame);
       const start = parseFloat(cardElem.style.left) || 0;
@@ -391,7 +324,7 @@
         if (progressFill) progressFill.style.width = pct + '%';
         const offset = 12;
         const cardPos = Math.min(100, pct + offset);
-        if (cardThumb) animateCardTo(cardThumb, cardPos, 90);
+        if (cardThumb) animateCardTo(cardThumb, cardPos, 80);
         if (progressText) progressText.textContent = `Comprobadas ${comprobadas} / ${totalPosibles} (${pct}%)`;
       }
 
@@ -403,7 +336,7 @@
             imagenCargada = true; encontradas.push(ruta);
             mostrarQSLs(encontradas, indicativo);
             if (progressFill) progressFill.style.width = '100%';
-            if (cardThumb) animateCardTo(cardThumb, 100, 90);
+            if (cardThumb) animateCardTo(cardThumb, 100, 80);
             if (progressText) progressText.textContent = `Se encontraron ${encontradas.length} QSL`;
             setTimeout(()=>{ if (loader) { loader.style.display='none'; loader.setAttribute('aria-hidden','true'); } }, 700);
           }
