@@ -15,19 +15,19 @@
       --card-bg: rgba(255,255,255,0.94);
       --radius-lg: 16px;
       --shadow-1: 0 14px 40px rgba(40,20,10,0.10);
-      --neon-color: #ffd86b;   /* brillo cálido */
-      --neon-accent: #7ef0ff;  /* brillo frío */
+      --neon-color: #ffd86b;
+      --neon-accent: #7ef0ff;
     }
 
     body{
       margin:0;
-      font-family:"Nunito",system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;
+      font-family:"Nunito",system-ui;
       color:var(--muted);
       background: linear-gradient(180deg,#fffaf0,#fff6ee);
       line-height:1.45;
     }
 
-    /* Portada con atardecer en la playa */
+    /* Hero con degradado caribeño */
     .hero {
       position: relative;
       min-height: 48vh;
@@ -35,21 +35,15 @@
       align-items: center;
       justify-content: center;
       padding: 36px 18px;
-      background-image:
-        linear-gradient(180deg, rgba(6,30,40,0.28), rgba(255,160,60,0.06) 60%),
-        url('img/sunset-beach.jpg');
-      background-size: cover;
-      background-position: center center;
+      background: linear-gradient(135deg, var(--sea-mid), var(--sea-deep) 40%, var(--sun) 100%);
       border-radius: 18px;
       box-shadow: var(--shadow-1);
     }
-
     .hero-inner{position:relative; z-index:2; text-align:center;}
     .hero-title {
       color:#fff;
       font-family:"Playfair Display",serif;
       font-size:2.4rem;
-      letter-spacing:0.2px;
       text-shadow:
         0 0 2px rgba(255,255,255,0.9),
         0 0 6px var(--neon-color),
@@ -78,24 +72,24 @@
       box-shadow: 0 0 16px var(--neon-accent), 0 10px 26px rgba(10,50,70,0.14);
       transition: transform 160ms ease, box-shadow 160ms ease;
     }
-    #buscarBtn:hover{transform:translateY(-3px); box-shadow: 0 0 18px var(--neon-accent), 0 14px 34px rgba(10,50,70,0.18);}
+    #buscarBtn:hover{transform:translateY(-3px);}
 
     #resultado{margin-top:14px; text-align:center;}
     .mensaje{color:var(--sea-deep);}
 
-    /* Loader con carta animada */
+    /* Loader */
     .loader-wrap{display:none; margin-top:12px; justify-content:center; gap:12px; align-items:center;}
     .spinner{width:22px; height:22px; border:3px solid rgba(120,80,40,0.12); border-top-color:var(--sun); border-radius:50%; animation:spin 1s linear infinite;}
     @keyframes spin{to{transform:rotate(360deg);}}
-    .progress-bar{position:relative; width:380px; height:14px; background:rgba(200,140,80,0.06); border-radius:10px; overflow:hidden; box-shadow: inset 0 2px 6px rgba(0,0,0,0.04);}
-    .progress-fill{height:100%; background:linear-gradient(90deg,#ffd89a,#ffb74d); width:0%; transition: width 160ms ease;}
+    .progress-bar{position:relative; width:380px; height:14px; background:rgba(200,140,80,0.06); border-radius:10px;}
+    .progress-fill{height:100%; background:linear-gradient(90deg,#ffd89a,#ffb74d); width:0%;}
     .card-thumb{position:absolute; top:-30px; width:64px; height:40px; background:#fff0df; border-radius:8px; display:flex; align-items:center; justify-content:center; font-weight:800; box-shadow:0 0 14px var(--neon-color); transform:translateX(-50%); left:0%;}
     .progress-text{text-align:center; margin-top:8px; color:#7a5a44;}
 
     /* QSLs */
     #listaQSLs { display:flex; flex-wrap:wrap; gap:18px; justify-content:center; margin-top:12px; }
     .qsl-img{max-width:240px; border-radius:12px; box-shadow:0 0 12px var(--neon-accent);}
-    .descargar{display:inline-block; margin-top:10px; padding:9px 16px; border-radius:10px; background:var(--sun); color:#fff; font-weight:800; box-shadow:0 0 12px var(--neon-color); transition:transform 160ms ease;}
+    .descargar{display:inline-block; margin-top:10px; padding:9px 16px; border-radius:10px; background:var(--sun); color:#fff; font-weight:800; box-shadow:0 0 12px var(--neon-color);}
     .descargar:hover{transform:translateY(-2px);}
 
     /* Modal */
@@ -104,18 +98,11 @@
     .cerrar{ float:right; font-size:26px; cursor:pointer; color:#7a5a44; }
 
     footer{text-align:center; margin-top:28px; color:#7a5a44;}
-
-    @media (max-width:720px){
-      .container{ margin-top:-28px; padding:18px; }
-      .progress-bar{ width:260px; }
-      #indicativo{ width:180px; }
-      .hero-title{ font-size:1.9rem; }
-    }
   </style>
 </head>
 <body>
   <!-- Hero -->
-  <section class="hero" role="banner" aria-label="Portada atardecer en la playa">
+  <section class="hero">
     <div class="hero-inner">
       <h1 class="hero-title">Navegador QSL Caribeño</h1>
       <p class="hero-sub">Busca y descarga tus QSL con estilo — buenos DXs desde la costa</p>
@@ -123,17 +110,17 @@
   </section>
 
   <!-- Main -->
-  <main class="container" role="main">
-    <div class="controls" aria-label="Controles de búsqueda">
-      <input id="indicativo" type="text" placeholder="Ej: CL7ADV" aria-label="Indicativo">
-      <button id="buscarBtn" type="button">Buscar QSL</button>
+  <main class="container">
+    <div class="controls">
+      <input id="indicativo" type="text" placeholder="Ej: CL7ADV">
+      <button id="buscarBtn">Buscar QSL</button>
     </div>
 
     <!-- Loader -->
-    <div id="loaderContainer" class="loader-wrap" aria-hidden="true">
-      <div class="spinner" role="status" aria-hidden="true"></div>
+    <div id="loaderContainer" class="loader-wrap">
+      <div class="spinner"></div>
       <div>
-        <div class="progress-bar" id="progressBar">
+        <div class="progress-bar">
           <div id="progressFill" class="progress-fill"></div>
           <div id="cardThumb" class="card-thumb">QSL</div>
         </div>
@@ -141,7 +128,7 @@
       </div>
     </div>
 
-    <div id="resultado" role="status" aria-live="polite"></div>
+    <div id="resultado"></div>
 
     <footer>
       — CL7ADV — Buenos DXs en este 2026 · Radio Club Santa Cruz Del Sur/Alfred
@@ -149,187 +136,14 @@
   </main>
 
   <!-- Modal QSLs -->
-  <div id="ventanaQSL" class="modal" aria-hidden="true">
-    <div class="modal-contenido" role="dialog" aria-modal="true" aria-labelledby="qslTitle">
-      <span id="cerrarBtn" class="cerrar" title="Cerrar">&times;</span>
-      <h2 id="qslTitle">QSLs disponibles</h2>
+  <div id="ventanaQSL" class="modal">
+    <div class="modal-contenido">
+      <span id="cerrarBtn" class="cerrar">&times;</span>
+      <h2>QSLs disponibles</h2>
       <div id="contador"></div>
       <div id="listaQSLs"></div>
-      <br>
-      <button class="descargar" id="descargarTodasBtn" type="button">⬇️ Descargar todas</button>
-    </div>
-  </div>
-
-  <script>
-    let totalQSLs = 0, descargadas = 0, listaActual = [], imagenCargada = false, timeoutId = null;
-
-    // Eventos
-    document.getElementById('buscarBtn').addEventListener('click', buscarQSL);
-    document.getElementById('cerrarBtn').addEventListener('click', cerrarVentana);
-    document.getElementById('descargarTodasBtn').addEventListener('click', descargarTodas);
-    document.getElementById('ventanaQSL').addEventListener('click', (e) => {
-      const modal = document.getElementById('ventanaQSL');
-      if (e.target === modal) cerrarVentana();
-    });
-
-    // Animación rápida de la carta
-    function animateCardTo(cardElem, targetPct, duration = 110) {
-      const start = parseFloat(cardElem.style.left) || 0;
-      const end = Math.max(0, Math.min(100, targetPct));
-      const startTime = performance.now();
-      function ease(t){ return t<0.5 ? 2*t*t : -1 + (4 - 2*t)*t; }
-      function step(now){
-        const t = Math.min(1, (now - startTime) / duration);
-        const eased = ease(t);
-        const current = start + (end - start) * eased;
-        cardElem.style.left = current + '%';
-        if (t < 1) requestAnimationFrame(step);
-      }
-      requestAnimationFrame(step);
-    }
-
-    function buscarQSL(){
-      imagenCargada = false;
-      if (timeoutId){ clearTimeout(timeoutId); timeoutId = null; }
-
-      const indicativo = document.getElementById("indicativo").value.trim().toUpperCase();
-      const resultado = document.getElementById("resultado");
-      const listaQSLs = document.getElementById("listaQSLs");
-      resultado.innerHTML = ""; listaQSLs.innerHTML = "";
-
-      if (!indicativo){
-        resultado.innerHTML = `<p class="mensaje">🌺 Por favor escribe un indicativo</p>`;
-        return;
-      }
-
-      const loader = document.getElementById('loaderContainer');
-      const progressFill = document.getElementById('progressFill');
-      const progressText = document.getElementById('progressText');
-      const cardThumb = document.getElementById('cardThumb');
-
-      loader.style.display = 'flex';
-      loader.setAttribute('aria-hidden','false');
-      progressFill.style.width = '0%';
-      cardThumb.style.left = '0%';
-      progressText.textContent = '🔄 Buscando QSL… espera unos segundos';
-
-      // Generar rutas posibles
-      const posibles = [];
-      posibles.push(`img/${indicativo}.jpg`);
-      for (let i=1;i<=50;i++) posibles.push(`img/${indicativo}-${i}.jpg`);
-
-      let encontradas = [];
-      let comprobadas = 0;
-      const totalPosibles = posibles.length;
-
-      function actualizarProgreso(){
-        const pct = Math.round((comprobadas / totalPosibles) * 100);
-        progressFill.style.width = pct + '%';
-        const offset = 12;
-        const cardPos = Math.min(100, pct + offset);
-        animateCardTo(cardThumb, cardPos, 90);
-        progressText.textContent = `Comprobadas ${comprobadas} / ${totalPosibles} (${pct}%)`;
-      }
-
-      posibles.forEach(ruta=>{
-        const img = new Image();
-        img.onload = ()=>{
-          comprobadas++; actualizarProgreso();
-          if (!encontradas.includes(ruta)){
-            imagenCargada = true;
-            encontradas.push(ruta);
-            mostrarQSLs(encontradas, indicativo);
-            progressFill.style.width = '100%';
-            animateCardTo(cardThumb, 100, 90);
-            progressText.textContent = `Se encontraron ${encontradas.length} QSL`;
-            setTimeout(()=>{ loader.style.display='none'; loader.setAttribute('aria-hidden','true'); }, 700);
-          }
-        };
-        img.onerror = ()=>{
-          comprobadas++; actualizarProgreso();
-          if (comprobadas >= totalPosibles && !imagenCargada){
-            setTimeout(()=>{ loader.style.display='none'; loader.setAttribute('aria-hidden','true'); }, 300);
-          }
-        };
-        img.src = ruta;
-      });
-
-      // Fallback de 10s
-      timeoutId = setTimeout(()=>{
-        if (!imagenCargada){
-          resultado.innerHTML = `<p class="mensaje">❌ No tenemos esa QSL, pero pronto estará lista 🌺</p>`;
-          progressText.textContent = 'Búsqueda finalizada: no se encontraron imágenes';
-          setTimeout(()=>{ loader.style.display='none'; loader.setAttribute('aria-hidden','true'); }, 900);
-        }
-      }, 10000);
-    }
-
-    function mostrarQSLs(lista, indicativo){
-      const ventana = document.getElementById("ventanaQSL");
-      const listaQSLs = document.getElementById("listaQSLs");
-      if (!lista || lista.length===0) return;
-
-      listaQSLs.innerHTML = `<p class="mensaje">📡 Se encontraron ${lista.length} QSL para <strong>${indicativo}</strong></p>`;
-      totalQSLs = lista.length;
-      descargadas = 0;
-      listaActual = lista.slice();
-
-      actualizarContador();
-
-      lista.forEach(ruta=>{
-        listaQSLs.innerHTML += `
-          <div>
-            <img src="${ruta}" alt="QSL de ${indicativo}" class="qsl-img">
-            <br>
-            <a href="${ruta}" download class="descargar" onclick="marcarDescarga()">⬇️ Descargar QSL</a>
-          </div>
-        `;
-      });
-
-      ventana.style.display = "flex";
-      ventana.setAttribute('aria-hidden','false');
-    }
-
-    function actualizarContador(){
-      const contador = document.getElementById("contador");
-      contador.innerHTML = `<p class="mensaje">Has descargado ${descargadas} de ${totalQSLs} QSL</p>`;
-    }
-
-    function marcarDescarga(){
-      descargadas++;
-      actualizarContador();
-      if (descargadas >= totalQSLs){
-        const listaQSLs = document.getElementById("listaQSLs");
-        listaQSLs.innerHTML = `<p class="mensaje">✅ Has descargado todas tus QSL, buenos DXs 🌺</p>`;
-        setTimeout(()=>{
-          cerrarVentana();
-          document.getElementById("resultado").innerHTML="";
-          document.getElementById("indicativo").value="";
-        }, 1600);
-      }
-    }
-
-    function descargarTodas(){
-      if (!listaActual || listaActual.length===0) return;
-      listaActual.forEach(ruta=>{
-        const link = document.createElement("a");
-        link.href = ruta; link.download = ruta.split("/").pop();
-        document.body.appendChild(link); link.click(); document.body.removeChild(link);
-        descargadas++;
-      });
-      actualizarContador();
-      if (descargadas >= totalQSLs){
-        const listaQSLs = document.getElementById("listaQSLs");
-        listaQSLs.innerHTML = `<p class="mensaje">✅ Has descargado todas tus QSL, buenos DXs 🌺</p>`;
-        setTimeout(()=>{
-          cerrarVentana();
-          document.getElementById("resultado").innerHTML="";
-          document.getElementById("indicativo").value="";
-        }, 1600);
-      }
-    }
-
-    function cerrarVentana(){
+      <button class="descargar" id="descargarTodas
+            function cerrarVentana(){
       const ventana = document.getElementById("ventanaQSL");
       ventana.style.display = "none";
       ventana.setAttribute('aria-hidden','true');
