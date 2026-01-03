@@ -3,43 +3,63 @@
   let descargadas = 0;
   let listaActual = [];
 
+  // Extensiones a probar por cada archivo
+  const EXTENSIONES = ["jpg", "JPG", "png", "webp"];
+
   function buscarQSL() {
     const indicativo = document.getElementById("indicativo").value.trim().toUpperCase();
     const resultado = document.getElementById("resultado");
 
     if (!indicativo) {
       resultado.innerHTML = `<p class="mensaje">🌺 Por favor escribe un indicativo 🕊️🕊️🕊️</p>`;
-      setTimeout(() => { resultado.innerHTML = ""; }, 5000);
+      setTimeout(() => { resultado.innerHTML = ""; }, 4000);
       return;
     }
 
-    let posibles = [];
-    posibles.push(`img/${indicativo}.jpg`);
-    for (let i = 1; i <= 50; i++) {
-      posibles.push(`img/${indicativo}-${i}.jpg`);
-    }
+    // Generamos rutas potenciales: base + sufijos -i
+    const bases = [`${indicativo}`, ...Array.from({ length: 50 }, (_, i) => `${indicativo}-${i + 1}`)];
+    const posibles = [];
 
-    let encontradas = [];
+    // Rutas relativas explícitas (./img/) y múltiples extensiones
+    bases.forEach(base => {
+      EXTENSIONES.forEach(ext => posibles.push(`./img/${base}.${ext}`));
+    });
+
+    const encontradas = [];
+    let pendientes = posibles.length;
+
+    // Indicador de carga (opcional)
+    resultado.innerHTML = `<p class="mensaje">🔎 Buscando QSL para <strong>${indicativo}</strong>… 🕊️🕊️🕊️</p>`;
 
     posibles.forEach(ruta => {
       const img = new Image();
-      img.src = ruta;
       img.onload = () => {
-        encontradas.push(ruta);
+        // Evitar duplicar la misma QSL con distinta extensión
+        const nombre = ruta.replace(/\.(jpg|JPG|png|webp)$/, "");
+        if (!encontradas.some(r => r.replace(/\.(jpg|JPG|png|webp)$/, "") === nombre)) {
+          encontradas.push(ruta);
+        }
+      };
+      img.onerror = () => { /* ignora errores individualmente */ };
+      img.src = ruta;
+
+      // Cuando termina el intento (carga o error), descontamos y decidimos
+      img.onloadend = img.onerror = () => {
+        pendientes--;
+        if (pendientes === 0) {
+          if (encontradas.length > 0) {
+            mostrarQSLs(encontradas, indicativo);
+            resultado.innerHTML = ""; // limpia mensaje de búsqueda
+          } else {
+            resultado.innerHTML = `<p class="mensaje">🌺 No tenemos QSL para <strong>${indicativo}</strong>, pero tu visita siempre es bienvenida 🕊️🕊️🕊️</p>`;
+            setTimeout(() => {
+              resultado.innerHTML = "";
+              document.getElementById("indicativo").value = "";
+            }, 4000);
+          }
+        }
       };
     });
-
-    setTimeout(() => {
-      if (encontradas.length > 0) {
-        mostrarQSLs(encontradas, indicativo);
-      } else {
-        resultado.innerHTML = `<p class="mensaje">🌺 No tenemos QSL para <strong>${indicativo}</strong>, pero tu visita siempre es bienvenida 🕊️🕊️🕊️</p>`;
-        setTimeout(() => {
-          resultado.innerHTML = "";
-          document.getElementById("indicativo").value = "";
-        }, 5000);
-      }
-    }, 1500);
   }
 
   function mostrarQSLs(lista, indicativo) {
@@ -50,7 +70,7 @@
     listaQSLs.innerHTML = `<p>📡 Se encontraron ${lista.length} QSL para <strong>${indicativo}</strong></p>`;
     totalQSLs = lista.length;
     descargadas = 0;
-    listaActual = lista;
+    listaActual = lista.slice(); // copia defensiva
 
     actualizarContador();
 
@@ -87,6 +107,7 @@
   }
 
   function descargarTodas() {
+    // Nota: algunos navegadores pueden limitar múltiples descargas automáticas
     listaActual.forEach(ruta => {
       const link = document.createElement("a");
       link.href = ruta;
@@ -113,3 +134,4 @@
     ventana.style.display = "none";
   }
 </script>
+
