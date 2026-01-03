@@ -2,7 +2,7 @@
   let totalQSLs = 0;
   let descargadas = 0;
   let listaActual = [];
-  let imagenCargada = false; // 🔹 variable global para saber si alguna imagen se cargó
+  let imagenCargada = false; // ✅ variable global
 
   function buscarQSL() {
     const indicativo = document.getElementById("indicativo").value.trim().toUpperCase();
@@ -13,6 +13,9 @@
       setTimeout(() => { resultado.innerHTML = ""; }, 5000);
       return;
     }
+
+    // Mostrar mensaje de carga
+    resultado.innerHTML = `<p class="mensaje">🔄 Buscando QSL… espera unos segundos</p>`;
 
     let posibles = [];
     posibles.push(`img/${indicativo}.jpg`);
@@ -25,20 +28,21 @@
     posibles.forEach(ruta => {
       const img = new Image();
       img.onload = () => {
-        imagenCargada = true; // ✅ se cargó al menos una
+        imagenCargada = true; // ✅ al menos una cargó
         encontradas.push(ruta);
         mostrarQSLs(encontradas, indicativo);
+        resultado.innerHTML = ""; // borra mensaje de carga
       };
       img.onerror = () => {
-        // no hace nada, simplemente ignora si no existe
+        // ignora si no existe
       };
       img.src = ruta;
     });
 
-    // 🔹 Espera 10 segundos antes de mostrar mensaje de error
+    // 🔹 Espera 10 segundos antes de mostrar error
     setTimeout(() => {
       if (!imagenCargada) {
-        resultado.innerHTML = `<p class="mensaje">❌ No tenemos esa QSL, pero pronto estará lista. Gracias 🌺</p>`;
+        resultado.innerHTML = `<p class="mensaje">❌ No tenemos esa QSL, pero pronto estará lista 🌺</p>`;
       }
     }, 10000);
   }
