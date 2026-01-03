@@ -59,7 +59,7 @@
 
         .card-icon {
             position: absolute; top: -35px; left: 0%;
-            width: 45px; height: 30px; background: #fff;
+            width: 50px; height: 32px; background: #fff;
             border: 2px solid var(--gold); border-radius: 5px;
             color: #333; font-weight: bold; font-size: 10px;
             display: flex; align-items: center; justify-content: center;
@@ -69,6 +69,17 @@
         .card-icon::after { content: "✉️"; font-size: 16px; }
 
         .status-text { height: 40px; color: var(--neon); font-weight: bold; margin-top: 10px; }
+
+        /* Estilo de la Galería de Resultados */
+        .qsl-result-card {
+            background: rgba(255,255,255,0.05); padding: 15px; border-radius: 15px;
+            border: 1px solid var(--gold); margin-bottom: 20px;
+        }
+        .qsl-img { width: 100%; border-radius: 10px; margin-bottom: 10px; }
+        .btn-dl { 
+            display: inline-block; padding: 10px 20px; background: #4caf50; 
+            color: white; text-decoration: none; border-radius: 8px; font-weight: bold;
+        }
 
         .error-msg {
             background: rgba(255, 68, 68, 0.2); border: 1px solid #ff4444;
@@ -83,6 +94,16 @@
         }
 
         .fade-out { opacity: 0; }
+
+        /* Modal para ver las QSLs */
+        .modal { 
+            display: none; position: fixed; z-index: 100; left: 0; top: 0; 
+            width: 100%; height: 100%; background: rgba(0,0,0,0.9); overflow-y: auto;
+        }
+        .modal-content { 
+            background: var(--glass); margin: 5% auto; padding: 30px; 
+            border-radius: 20px; width: 85%; max-width: 800px; border: 2px solid var(--neon);
+        }
     </style>
 </head>
 <body>
@@ -92,7 +113,7 @@
         <p class="subtitle">CL7ADV - SANTA CRUZ DEL SUR</p>
 
         <div class="search-group">
-            <input type="text" id="indicativo" placeholder="CALLSIGN" maxlength="10">
+            <input type="text" id="indicativo" placeholder="INDICATIVO" maxlength="10">
             <button id="buscarBtn" onclick="buscarQSL()">BUSCAR QSL</button>
         </div>
 
@@ -103,97 +124,123 @@
 
         <div id="status" class="status-text"></div>
         <div id="resultado"></div>
+    </div>
 
-        <footer style="margin-top:40px; font-size:0.8rem; opacity:0.7;">
-            73's Cordiales - Alfred - 2026
-        </footer>
+    <div id="modalQSL" class="modal">
+        <div class="modal-content">
+            <h2 id="modalTitle" style="color: var(--gold);"></h2>
+            <div id="gridQSLs" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;"></div>
+            <button onclick="cerrarModal()" style="margin-top:30px; padding:10px 25px; border-radius:10px; cursor:pointer;">CERRAR</button>
+        </div>
     </div>
 
     <script>
-        // Función para generar sonido de estática de radio
         function playRadioSound() {
-            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            const bufferSize = 2 * audioCtx.sampleRate;
-            const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-            const output = noiseBuffer.getChannelData(0);
-            
-            for (let i = 0; i < bufferSize; i++) {
-                output[i] = Math.random() * 2 - 1; // Ruido blanco
-            }
-
-            const whiteNoise = audioCtx.createBufferSource();
-            whiteNoise.buffer = noiseBuffer;
-
-            const gainNode = audioCtx.createGain();
-            gainNode.gain.setValueAtTime(0.05, audioCtx.currentTime); // Volumen bajo
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 1.5);
-
-            whiteNoise.connect(gainNode);
-            gainNode.connect(audioCtx.destination);
-            whiteNoise.start();
-            whiteNoise.stop(audioCtx.currentTime + 1.5);
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const noiseBuffer = audioCtx.createBuffer(1, audioCtx.sampleRate * 1.5, audioCtx.sampleRate);
+                const output = noiseBuffer.getChannelData(0);
+                for (let i = 0; i < noiseBuffer.length; i++) output[i] = Math.random() * 2 - 1;
+                const whiteNoise = audioCtx.createBufferSource();
+                whiteNoise.buffer = noiseBuffer;
+                const gainNode = audioCtx.createGain();
+                gainNode.gain.setValueAtTime(0.04, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1.5);
+                whiteNoise.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                whiteNoise.start();
+            } catch(e) { console.log("Audio no soportado"); }
         }
 
-        function buscarQSL() {
+        async function buscarQSL() {
             const input = document.getElementById('indicativo');
             const call = input.value.trim().toUpperCase();
-            const pContainer = document.getElementById('pContainer');
-            const card = document.getElementById('card');
-            const fill = document.getElementById('fill');
-            const status = document.getElementById('status');
-            const res = document.getElementById('resultado');
-
             if (!call) return;
 
-            // Iniciar Audio y Visuales
             playRadioSound();
-            res.innerHTML = "";
+            document.getElementById('resultado').innerHTML = "";
+            const pContainer = document.getElementById('pContainer');
+            const fill = document.getElementById('fill');
+            const card = document.getElementById('card');
+            const status = document.getElementById('status');
+
             pContainer.style.display = "block";
             status.innerText = "SINTONIZANDO SEÑAL...";
             
+            // Animación visual de la carta
             let progreso = 0;
-            const anim = setInterval(() => {
-                progreso += 2;
+            const anim = setInterval(async () => {
+                progreso += 5;
                 fill.style.width = progreso + "%";
                 card.style.left = progreso + "%";
+                if(progreso == 50) status.innerText = "BUSCANDO EN CARPETA IMG...";
                 
-                if(progreso == 40) status.innerText = "BUSCANDO EN LOGS...";
-                if(progreso == 80) status.innerText = "FILTRANDO INDICATIVO...";
-
                 if (progreso >= 100) {
                     clearInterval(anim);
-                    finalizarBusqueda(call);
+                    verificarArchivosReales(call);
                 }
-            }, 30);
+            }, 50);
         }
 
-        function finalizarBusqueda(call) {
-            const res = document.getElementById('resultado');
-            const status = document.getElementById('status');
+        async function verificarArchivosReales(call) {
             const pContainer = document.getElementById('pContainer');
+            const status = document.getElementById('status');
+            const res = document.getElementById('resultado');
             const input = document.getElementById('indicativo');
 
-            status.innerText = "";
-            pContainer.style.display = "none";
-            
-            res.innerHTML = `
-                <div class="error-msg" id="msg">
-                    ❌ LA QSL PARA ${call} NO HA SIDO SUBIDA AÚN
-                </div>
-            `;
+            // Lista de nombres de archivos a probar en la carpeta img/
+            const archivosAProbar = [`img/${call}.jpg`];
+            for(let i=1; i<=10; i++) archivosAProbar.push(`img/${call}-${i}.jpg`);
 
-            // Auto-reinicio en 6 segundos con desvanecimiento
-            setTimeout(() => {
-                const msg = document.getElementById('msg');
-                if(msg) {
-                    msg.classList.add('fade-out');
-                    setTimeout(() => {
-                        res.innerHTML = "";
-                        input.value = "";
-                    }, 1000);
-                }
-            }, 6000);
+            let encontradas = [];
+
+            // ESTA ES LA PARTE QUE BUSCA REALMENTE
+            const promesas = archivosAProbar.map(ruta => {
+                return new Promise((resolve) => {
+                    const img = new Image();
+                    img.onload = () => { encontradas.push(ruta); resolve(); };
+                    img.onerror = () => resolve();
+                    img.src = ruta;
+                });
+            });
+
+            await Promise.all(promesas);
+
+            pContainer.style.display = "none";
+            status.innerText = "";
+
+            if (encontradas.length > 0) {
+                abrirModal(call, encontradas);
+            } else {
+                res.innerHTML = `<div class="error-msg" id="msgErr">❌ NO SE ENCONTRARON QSLs PARA ${call} EN EL SERVIDOR</div>`;
+                setTimeout(() => {
+                    const m = document.getElementById('msgErr');
+                    if(m) {
+                        m.classList.add('fade-out');
+                        setTimeout(() => { res.innerHTML = ""; input.value = ""; }, 1000);
+                    }
+                }, 6000);
+            }
         }
+
+        function abrirModal(call, fotos) {
+            const modal = document.getElementById('modalQSL');
+            const grid = document.getElementById('gridQSLs');
+            const title = document.getElementById('modalTitle');
+            
+            title.innerText = `QSLs ENCONTRADAS PARA ${call}`;
+            grid.innerHTML = "";
+            fotos.forEach(f => {
+                grid.innerHTML += `
+                    <div class="qsl-result-card">
+                        <img src="${f}" class="qsl-img">
+                        <a href="${f}" download class="btn-dl">⬇️ DESCARGAR</a>
+                    </div>`;
+            });
+            modal.style.display = "block";
+        }
+
+        function cerrarModal() { document.getElementById('modalQSL').style.display = "none"; }
     </script>
 </body>
 </html>
