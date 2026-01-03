@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>CL7ADV | QSL & Radio Club Santa Cruz</title>
+  <title>Radio Club Santa Cruz | Tools</title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <style>
     :root {
@@ -11,7 +11,6 @@
       --accent: #ff9800;
       --gold: #ffe082;
       --nav-bg: #1e3a47;
-      --glass: rgba(0, 0, 0, 0.4);
     }
 
     body { 
@@ -35,10 +34,6 @@
       z-index: 1000;
     }
 
-    .brand { font-weight: bold; font-size: 1.3rem; text-shadow: 0 0 10px var(--gold); }
-
-    .nav-buttons { display: flex; gap: 10px; }
-
     .nav-btn {
       background: rgba(255,255,255,0.1);
       border: 1px solid rgba(255,255,255,0.2);
@@ -47,124 +42,92 @@
       border-radius: 8px;
       cursor: pointer;
       font-weight: bold;
-      transition: 0.3s;
     }
 
-    .nav-btn:hover, .nav-btn.active { background: var(--accent); border-color: var(--accent); transform: translateY(-2px); }
+    .nav-btn.active { background: var(--accent); border-color: var(--accent); }
 
     .container { 
-      max-width: 950px; 
+      max-width: 900px; 
       margin: 30px auto; 
       padding: 30px; 
-      background: var(--glass);
+      background: rgba(0,0,0,0.4);
       backdrop-filter: blur(10px);
       border-radius: 20px; 
-      box-shadow: 0 15px 35px rgba(0,0,0,0.5);
     }
 
-    .section { display: none; animation: fadeIn 0.5s ease; }
+    .section { display: none; }
     .section.active { display: block; }
 
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
     .tool-box {
-      background: rgba(255,255,255,0.95);
-      padding: 25px;
+      background: #fff;
+      padding: 20px;
       border-radius: 15px;
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      gap: 15px;
-      margin: 20px 0;
+      gap: 10px;
+      margin-bottom: 20px;
     }
 
     .tool-box input {
-      padding: 12px;
-      border: 2px solid #ccc;
+      padding: 10px;
+      border: 2px solid #ddd;
       border-radius: 8px;
-      font-size: 1rem;
-      width: 200px;
-      color: #333;
-      outline: none;
+      width: 180px;
     }
 
     .action-btn {
-      padding: 12px 25px;
+      padding: 10px 25px;
       background: var(--accent);
       color: white;
       border: none;
       border-radius: 8px;
       cursor: pointer;
       font-weight: bold;
-      transition: 0.3s;
     }
 
-    .action-btn:hover { background: #f57c00; transform: scale(1.05); }
-
-    #canvasContainer { margin-top: 20px; display: inline-block; }
     canvas {
       max-width: 100%;
       height: auto;
       border-radius: 15px;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.7);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      background: white;
     }
 
-    .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); }
-    .modal-content { background: #fff; color: #333; margin: 5% auto; padding: 25px; border-radius: 15px; width: 90%; max-width: 900px; max-height: 85vh; overflow-y: auto; }
-
-    footer { margin-top: 50px; color: var(--gold); padding-bottom: 20px; font-weight: bold; }
+    footer { margin-top: 40px; color: var(--gold); padding: 20px; }
   </style>
 </head>
 <body>
 
   <nav class="top-nav">
-    <div class="brand">🌴 CL7ADV Radio Tools</div>
+    <div style="font-weight:bold">🌴 Radio Club Santa Cruz</div>
     <div class="nav-buttons">
-      <button class="nav-btn active" onclick="showSection('busqueda')">🔍 Buscar QSL</button>
-      <button class="nav-btn" onclick="showSection('escudos')">🛡️ Crear Escudo</button>
+      <button class="nav-btn active" onclick="showSection('busqueda')">QSL</button>
+      <button class="nav-btn" onclick="showSection('escudos')">ESCUDOS</button>
     </div>
   </nav>
 
   <div class="container">
-    
     <div id="busqueda" class="section active">
-      <h1>🌊 Buscador de Tarjetas QSL</h1>
+      <h1>🌊 Buscador QSL</h1>
       <div class="tool-box">
-        <input type="text" id="indicativo" placeholder="Ej: CL7ADV" autocomplete="off">
-        <button class="action-btn" onclick="iniciarBusqueda()">BUSCAR QSL</button>
+        <input type="text" id="indicativo" placeholder="Indicativo">
+        <button class="action-btn">Buscar</button>
       </div>
-      <div id="resultado"></div>
     </div>
 
     <div id="escudos" class="section">
-      <h1>🛡️ Generador Radio Club Santa Cruz</h1>
-      <p>Personaliza tu escudo oficial del Radio Club.</p>
-      
+      <h1>🛡️ Generador de Escudo</h1>
       <div class="tool-box">
-        <input type="text" id="inLicencia" placeholder="Licencia / Callsign" oninput="dibujarEscudo()">
-        <input type="text" id="inNombre" placeholder="Tu Nombre" oninput="dibujarEscudo()">
-        <input type="text" id="inLocator" placeholder="Grid Locator" oninput="dibujarEscudo()">
-        <button class="action-btn" onclick="descargarEscudo()" style="background: #2e7d32;">⬇️ GUARDAR PNG</button>
+        <input type="text" id="inLicencia" placeholder="Licencia" oninput="dibujarEscudo()">
+        <input type="text" id="inNombre" placeholder="Nombre" oninput="dibujarEscudo()">
+        <input type="text" id="inLocator" placeholder="Locator" oninput="dibujarEscudo()">
+        <button class="action-btn" onclick="descargarEscudo()" style="background:#2e7d32">Descargar PNG</button>
       </div>
-
-      <div id="canvasContainer">
-        <canvas id="escudoCanvas" width="800" height="800"></canvas>
-      </div>
+      <canvas id="escudoCanvas" width="600" height="700"></canvas>
     </div>
 
-    <footer>
-      <p>— Radio Club Santa Cruz Del Sur | CL7ADV —</p>
-    </footer>
-  </div>
-
-  <div id="ventanaQSL" class="modal">
-    <div class="modal-content">
-      <span onclick="cerrarModal()" style="float:right; cursor:pointer; font-size: 2.5rem;">&times;</span>
-      <h2 id="modalTitle">📡 QSLs Encontradas</h2>
-      <div id="listaQSLs" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 20px;"></div>
-      <br>
-      <button class="action-btn" onclick="descargarTodas()" style="background: #2e7d32;">⬇️ DESCARGAR TODAS</button>
-    </div>
+    <footer>— Motor del Proyecto: CL7ADV —</footer>
   </div>
 
   <script>
@@ -173,61 +136,75 @@
       document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
       document.getElementById(id).classList.add('active');
       event.currentTarget.classList.add('active');
+      if(id === 'escudos') dibujarEscudo();
     }
 
     const canvas = document.getElementById('escudoCanvas');
     const ctx = canvas.getContext('2d');
-    const escudoImg = new Image();
-    
-    // Imagen base
-    escudoImg.src = 'https://i.ibb.co/XfXvX0k/FRC-SHIELD-BASE.png'; 
-    escudoImg.crossOrigin = "anonymous";
-
-    escudoImg.onload = () => dibujarEscudo();
 
     function dibujarEscudo() {
+      const licencia = document.getElementById('inLicencia').value.toUpperCase() || "CALLSIGN";
+      const nombre = document.getElementById('inNombre').value.toUpperCase() || "TU NOMBRE";
+      const locator = document.getElementById('inLocator').value.toUpperCase() || "LOCATOR";
+
+      // 1. Limpiar Canvas
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(escudoImg, 0, 0, 800, 800);
 
-      // --- CAMBIO DE TEXTO CENTRAL ---
-      // Dibujamos un parche sobre el texto original "FRC CUB"
-      ctx.fillStyle = "#e8d5b5"; // Color pergamino
-      ctx.fillRect(250, 440, 500, 100); 
-
-      // Escribimos el nuevo nombre del Club
-      ctx.fillStyle = "#1e3a47"; 
-      ctx.textAlign = "center";
-      ctx.font = "bold 38px Arial";
-      ctx.fillText("RADIO CLUB SANTA CRUZ", 500, 505);
-
-      // Datos del usuario
-      const licencia = document.getElementById('inLicencia').value.toUpperCase();
-      const nombre = document.getElementById('inNombre').value;
-      const locator = document.getElementById('inLocator').value.toUpperCase();
-
-      ctx.font = "bold 32px Arial";
-      if(licencia) ctx.fillText(licencia, 335, 275); 
-      if(nombre) ctx.fillText(nombre, 665, 275);     
+      // 2. Dibujar la forma del escudo (Fondo azul marino)
+      ctx.beginPath();
+      ctx.moveTo(50, 50);
+      ctx.lineTo(550, 50);
+      ctx.lineTo(550, 400);
+      ctx.bezierCurveTo(550, 650, 300, 680, 300, 680);
+      ctx.bezierCurveTo(300, 680, 50, 650, 50, 400);
+      ctx.closePath();
       
-      ctx.font = "bold 40px Courier New";
-      if(locator) ctx.fillText(locator, 500, 730);   
+      ctx.fillStyle = "#1e3a47";
+      ctx.fill();
+      ctx.strokeStyle = "#ffe082";
+      ctx.lineWidth = 15;
+      ctx.stroke();
+
+      // 3. Estandarte Central (RADIO CLUB SANTA CRUZ)
+      ctx.fillStyle = "#ffe082";
+      ctx.fillRect(0, 320, 600, 80);
+      ctx.fillStyle = "#1e3a47";
+      ctx.font = "bold 32px Arial";
+      ctx.textAlign = "center";
+      ctx.fillText("RADIO CLUB SANTA CRUZ", 300, 372);
+
+      // 4. Dibujar recuadros para datos
+      ctx.fillStyle = "white";
+      ctx.fillRect(80, 100, 200, 100); // Licencia
+      ctx.fillRect(320, 100, 200, 100); // Nombre
+      ctx.fillRect(150, 480, 300, 100); // Locator
+
+      // 5. Escribir los datos
+      ctx.fillStyle = "#333";
+      ctx.font = "bold 24px Arial";
+      ctx.fillText(licencia, 180, 160);
+      ctx.font = "bold 18px Arial";
+      ctx.fillText(nombre, 420, 160);
+      ctx.font = "bold 35px Courier New";
+      ctx.fillText(locator, 300, 545);
+
+      // Etiquetas pequeñas
+      ctx.fillStyle = "#ffe082";
+      ctx.font = "bold 14px Arial";
+      ctx.fillText("CALLSIGN", 180, 120);
+      ctx.fillText("NAME", 420, 120);
+      ctx.fillText("GRID LOCATOR", 300, 500);
     }
 
     function descargarEscudo() {
       const link = document.createElement('a');
       link.download = 'Escudo_Santa_Cruz.png';
-      link.href = canvas.toDataURL('image/png');
+      link.href = canvas.toDataURL();
       link.click();
     }
 
-    function iniciarBusqueda() {
-      const ind = document.getElementById("indicativo").value.trim().toUpperCase();
-      if (!ind) return alert("Escribe un indicativo");
-      // Lógica de búsqueda simplificada
-      alert("Buscando tarjetas para: " + ind);
-    }
-
-    function cerrarModal() { document.getElementById('ventanaQSL').style.display = 'none'; }
+    // Inicializar
+    dibujarEscudo();
   </script>
 </body>
 </html>
