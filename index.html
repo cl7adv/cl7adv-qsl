@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>QSL Caribeño - CL7ADV</title>
+  <title>QSL Caribeño & Tools - CL7ADV</title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <style>
     :root {
@@ -10,7 +10,7 @@
       --primary-dark: #009688;
       --accent: #ff9800;
       --gold: #ffe082;
-      --glass: rgba(0, 0, 0, 0.4);
+      --nav-bg: #1e3a47;
     }
 
     body { 
@@ -22,291 +22,263 @@
       text-align: center;
     }
 
+    /* BARRA SUPERIOR */
+    .top-nav {
+      background: var(--nav-bg);
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .brand { font-weight: bold; font-size: 1.2rem; display: flex; align-items: center; gap: 10px; }
+
+    .nav-buttons { display: flex; gap: 10px; }
+
+    .nav-btn {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: white;
+      padding: 8px 15px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .nav-btn:hover, .nav-btn.active { background: var(--accent); border-color: var(--accent); }
+
+    /* CONTENEDORES PRINCIPALES */
     .container { 
-      max-width: 900px; 
-      margin: 40px auto; 
+      max-width: 950px; 
+      margin: 30px auto; 
       padding: 30px; 
-      background: var(--glass);
+      background: rgba(0, 0, 0, 0.4);
       backdrop-filter: blur(10px);
-      border: 1px solid rgba(255,255,255,0.1);
       border-radius: 20px; 
       box-shadow: 0 15px 35px rgba(0,0,0,0.5);
     }
 
-    h1 { 
-      font-size: 2.5rem; 
-      margin-bottom: 10px; 
-      text-shadow: 0 0 10px var(--gold);
-    }
+    .section { display: none; animation: fadeIn 0.5s ease; }
+    .section.active { display: block; }
 
-    .search-box {
-      margin: 25px 0;
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    /* FORMULARIOS */
+    .tool-box {
+      background: rgba(255,255,255,0.9);
+      padding: 25px;
+      border-radius: 15px;
       display: flex;
-      justify-content: center;
-      gap: 10px;
       flex-wrap: wrap;
+      justify-content: center;
+      gap: 15px;
+      margin: 20px 0;
     }
 
-    #indicativo { 
-      padding: 15px; 
-      font-size: 1.1rem; 
-      border: none; 
-      border-radius: 12px; 
-      width: 220px; 
-      background: #fff;
-      color: #333;
+    .tool-box input {
+      padding: 12px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      font-size: 1rem;
       outline: none;
     }
 
-    #buscarBtn { 
-      padding: 15px 30px; 
-      font-size: 1rem; 
-      background: var(--accent); 
-      color: #fff; 
-      border: none; 
-      border-radius: 12px; 
-      cursor: pointer; 
-      font-weight: bold; 
-      transition: 0.3s;
-    }
+    .tool-box input:focus { border-color: var(--primary); }
 
-    #buscarBtn:hover { background: #f57c00; transform: scale(1.05); }
-
-    /* Tarjetas QSL */
-    .qsl-card {
-      background: rgba(255,255,255,0.1);
-      padding: 15px;
-      border-radius: 15px;
-      border: 2px solid var(--gold);
-      transition: 0.3s;
-    }
-
-    .qsl-img { 
-      width: 100%;
-      max-width: 220px; 
-      border-radius: 8px; 
-      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-    }
-
-    /* Loader con tu barra especial */
-    .loader-wrap { 
-      display: none; 
-      margin: 20px 0; 
-      flex-direction: column;
-      align-items: center; 
-    }
-
-    .progress-bar { 
-      width: 300px;
-      height: 14px; 
-      background: rgba(255,224,130,0.2); 
-      border-radius: 10px; 
-      position: relative;
-      margin-top: 30px;
-      overflow: visible;
-    }
-
-    .progress-fill { 
-      height: 100%; 
-      background: linear-gradient(90deg, #ffd54f, var(--accent)); 
-      width: 0%; 
-      border-radius: 10px;
-      transition: width 0.2s;
-    }
-
-    .card-thumb { 
-      position: absolute; 
-      top: -32px; 
-      width: 50px;
-      height: 30px;
-      background: #fff;
-      color: #000; 
-      border: 2px solid var(--gold);
-      border-radius: 6px; 
-      font-weight: bold; 
-      font-size: 0.7rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transform: translateX(-50%);
-    }
-
-    /* Modal */
-    .modal { 
-      display: none; 
-      position: fixed; 
-      z-index: 1000; 
-      left: 0; top: 0; width: 100%; height: 100%; 
-      background: rgba(0,0,0,0.85); 
-    }
-
-    .modal-contenido { 
-      background: #fff; 
-      color: #333;
-      margin: 5% auto; 
-      padding: 30px; 
-      border-radius: 20px; 
-      width: 90%; 
-      max-width: 900px; 
-      max-height: 80vh;
-      overflow-y: auto;
-    }
-
-    .cerrar { float: right; font-size: 2rem; cursor: pointer; font-weight: bold; }
-
-    .descargar { 
-      display: inline-block;
-      margin-top: 10px;
-      padding: 10px 20px;
-      background: #4caf50;
+    .action-btn {
+      padding: 12px 25px;
+      background: var(--accent);
       color: white;
+      border: none;
       border-radius: 8px;
-      text-decoration: none;
+      cursor: pointer;
       font-weight: bold;
+      text-transform: uppercase;
     }
 
-    footer { margin-top: 40px; padding: 20px; color: var(--gold); }
-
-    @media (max-width: 480px) {
-      #indicativo { width: 100%; }
-      .progress-bar { width: 240px; }
+    /* LOADER PERSONALIZADO CL7ADV */
+    .loader-wrap { display: none; flex-direction: column; align-items: center; margin: 20px; }
+    .progress-bar { 
+      width: 300px; height: 14px; background: rgba(255,224,130,0.2); 
+      border-radius: 10px; position: relative; margin-top: 30px;
     }
+    .progress-fill { height: 100%; background: var(--gold); width: 0%; border-radius: 10px; transition: 0.2s; }
+    .card-thumb { 
+      position: absolute; top: -35px; width: 50px; height: 30px; 
+      background: #fff; color: #000; border: 2px solid var(--gold);
+      border-radius: 6px; font-weight: bold; font-size: 0.7rem;
+      display: flex; align-items: center; justify-content: center; transform: translateX(-50%);
+    }
+
+    /* MODAL Y QSLs */
+    .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); }
+    .modal-content { background: #fff; color: #333; margin: 5% auto; padding: 25px; border-radius: 15px; width: 90%; max-width: 900px; max-height: 80vh; overflow-y: auto; }
+    .qsl-card { background: #f9f9f9; padding: 10px; border: 3px solid var(--gold); border-radius: 12px; }
+    .qsl-img { width: 100%; max-width: 250px; border-radius: 8px; }
+
+    footer { margin-top: 50px; color: var(--gold); font-size: 0.9rem; padding-bottom: 20px;}
   </style>
 </head>
 <body>
 
+  <nav class="top-nav">
+    <div class="brand">
+      <span>🌴 CL7ADV Radio Tools</span>
+    </div>
+    <div class="nav-buttons">
+      <button class="nav-btn active" onclick="showSection('busqueda')">🔍 Buscar QSL</button>
+      <button class="nav-btn" onclick="showSection('escudos')">🛡️ Crear Escudo</button>
+    </div>
+  </nav>
+
   <div class="container">
-    <h1>🌴 QSL Caribeño 🌊</h1>
-    <p>Introduce tu indicativo para descargar tus tarjetas</p>
-
-    <div class="search-box">
-      <input type="text" id="indicativo" placeholder="Ej: CL7ADV" autocomplete="off">
-      <button id="buscarBtn">BUSCAR QSL</button>
-    </div>
-
-    <div id="loaderContainer" class="loader-wrap">
-      <div class="progress-bar">
-        <div id="progressFill" class="progress-fill"></div>
-        <div id="cardThumb" class="card-thumb" style="left:0%;">QSL</div>
+    
+    <div id="busqueda" class="section active">
+      <h1>🌊 Buscador de Tarjetas QSL</h1>
+      <p>Sintoniza tu indicativo para descargar tus contactos confirmados.</p>
+      
+      <div class="tool-box">
+        <input type="text" id="indicativo" placeholder="Ej: CL7ADV" autocomplete="off">
+        <button class="action-btn" onclick="iniciarBusqueda()">Buscar</button>
       </div>
-      <p id="progressText" style="margin-top:15px; color: var(--gold);"></p>
+
+      <div id="loaderContainer" class="loader-wrap">
+        <div class="progress-bar">
+          <div id="progressFill" class="progress-fill"></div>
+          <div id="cardThumb" class="card-thumb" style="left:0%;">TX...</div>
+        </div>
+        <p id="progressText" style="margin-top:15px; color: var(--gold);"></p>
+      </div>
+      <div id="resultado"></div>
     </div>
 
-    <div id="resultado"></div>
+    <div id="escudos" class="section">
+      <h1>🛡️ Generador de Patente y Escudo</h1>
+      <p>Personaliza tu insignia de radioaficionado GADTM.</p>
+      
+      <div class="tool-box">
+        <input type="text" id="licencia" placeholder="Licencia">
+        <input type="text" id="nombre" placeholder="Nombre">
+        <input type="text" id="locator" placeholder="Locator">
+        <button class="action-btn" style="background: var(--primary-dark);">Generar Escudo</button>
+      </div>
+
+      <div id="canvasPreview" style="margin-top:20px; border: 2px dashed var(--gold); padding: 50px; border-radius: 15px;">
+        <p>Previsualización del Escudo</p>
+      </div>
+    </div>
 
     <footer>
-      <p>— CL7ADV — Buenos DXs en este 2026</p>
+      <p>— Motor del Proyecto: Radio Club Santa Cruz Del Sur / Alfred —</p>
       <a href="https://info.flagcounter.com/qvMz" target="_blank">
-        <img src="https://s01.flagcounter.com/count2/qvMz/bg_57A8DE/txt_000000/border_F55B0F/columns_5/maxflags_20/viewers_0/labels_0/pageviews_0/flags_0/percent_0/" alt="Visitas" border="0">
+        <img src="https://s01.flagcounter.com/count2/qvMz/bg_57A8DE/txt_000000/border_F55B0F/columns_5/maxflags_20/viewers_0/labels_0/pageviews_0/flags_0/percent_0/" alt="Flag Counter" border="0">
       </a>
     </footer>
   </div>
 
   <div id="ventanaQSL" class="modal">
-    <div class="modal-contenido">
-      <span class="cerrar" id="cerrarBtn">&times;</span>
-      <h2 style="color: var(--primary-dark)">📡 Tarjetas Localizadas</h2>
-      <div id="contador" style="font-weight: bold; margin-bottom: 20px;"></div>
+    <div class="modal-content">
+      <span onclick="cerrarModal()" style="float:right; cursor:pointer; font-size: 2rem;">&times;</span>
+      <h2 style="color: var(--primary-dark)">📡 QSLs Encontradas</h2>
+      <div id="contador" style="margin-bottom: 20px; font-weight: bold;"></div>
       <div id="listaQSLs" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 20px;"></div>
       <br>
-      <button id="descargarTodasBtn" class="descargar" style="border:none; cursor:pointer; background: #2e7d32;">⬇️ Descargar Todas las QSL</button>
+      <button class="action-btn" onclick="descargarTodas()" style="background: #2e7d32; border:none;">⬇️ Descargar Galería</button>
     </div>
   </div>
 
   <script>
     const FORMATOS = ['jpg', 'png', 'webp', 'jpeg'];
     let encontradas = [];
-    let comprobadas = 0;
 
-    document.getElementById('buscarBtn').addEventListener('click', iniciarBusqueda);
-    document.getElementById('cerrarBtn').addEventListener('click', () => document.getElementById('ventanaQSL').style.display = 'none');
-    document.getElementById('descargarTodasBtn').addEventListener('click', descargarTodas);
+    // CAMBIAR SECCIONES (TABS)
+    function showSection(sectionId) {
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      
+      document.getElementById(sectionId).classList.add('active');
+      event.currentTarget.classList.add('active');
+    }
 
+    // LÓGICA DE BÚSQUEDA QSL (SIN DUPLICADOS)
     async function iniciarBusqueda() {
-      const indicativo = document.getElementById("indicativo").value.trim().toUpperCase();
-      if (!indicativo) return alert("Escribe un indicativo");
+      const ind = document.getElementById("indicativo").value.trim().toUpperCase();
+      if (!ind) return alert("Escribe un indicativo");
 
-      // Reset total
       encontradas = [];
-      comprobadas = 0;
       document.getElementById('listaQSLs').innerHTML = '';
       document.getElementById('resultado').innerHTML = '';
       document.getElementById('loaderContainer').style.display = 'flex';
       
-      const rutasPosibles = [];
+      let rutas = [];
       FORMATOS.forEach(ext => {
-        rutasPosibles.push(`img/${indicativo}.${ext}`);
-        for(let i=1; i<=25; i++) rutasPosibles.push(`img/${indicativo}-${i}.${ext}`);
+        rutas.push(`img/${ind}.${ext}`);
+        for(let i=1; i<=20; i++) rutas.push(`img/${ind}-${i}.${ext}`);
       });
 
-      const total = rutasPosibles.length;
+      let total = rutas.length;
+      let count = 0;
 
-      for (let ruta of rutasPosibles) {
-        verificarImagen(ruta).then(existe => {
-          comprobadas++;
-          
-          // LA CLAVE: Solo agregar si no existe ya en el array de encontradas
-          if (existe && !encontradas.includes(ruta)) {
-            encontradas.push(ruta);
-            agregarALista(ruta, indicativo);
+      for (let r of rutas) {
+        verificarImagen(r).then(existe => {
+          count++;
+          if (existe && !encontradas.includes(r)) {
+            encontradas.push(r);
+            renderizarQSL(r, ind);
             document.getElementById('ventanaQSL').style.display = 'block';
           }
-          
-          actualizarUI(comprobadas, total);
+          actualizarProgreso(count, total);
         });
       }
     }
 
     function verificarImagen(url) {
       return new Promise(resolve => {
-        const img = new Image();
-        img.onload = () => resolve(true);
-        img.onerror = () => resolve(false);
-        img.src = url;
+        const i = new Image();
+        i.onload = () => resolve(true);
+        i.onerror = () => resolve(false);
+        i.src = url;
       });
     }
 
-    function agregarALista(ruta, indicativo) {
+    function renderizarQSL(ruta, ind) {
       const container = document.getElementById('listaQSLs');
       const div = document.createElement('div');
       div.className = 'qsl-card';
-      div.innerHTML = `
-        <img src="${ruta}" class="qsl-img" alt="QSL">
-        <br>
-        <a href="${ruta}" download class="descargar">⬇️ Descargar</a>
-      `;
+      div.innerHTML = `<img src="${ruta}" class="qsl-img"><br><a href="${ruta}" download class="action-btn" style="padding:5px 10px; font-size:0.8rem; text-decoration:none; margin-top:5px; display:inline-block;">⬇️ Bajar</a>`;
       container.appendChild(div);
-      actualizarContador(indicativo);
+      document.getElementById('contador').textContent = `Hemos localizado ${encontradas.length} tarjetas para ${ind}`;
     }
 
-    function actualizarUI(actual, total) {
-      const pct = Math.round((actual / total) * 100);
-      document.getElementById('progressFill').style.width = pct + '%';
-      document.getElementById('cardThumb').style.left = pct + '%';
-      document.getElementById('progressText').textContent = `Buscando QSLs... ${pct}%`;
-      
-      if (actual === total) {
-        setTimeout(() => {
-          document.getElementById('loaderContainer').style.display = 'none';
-          if (encontradas.length === 0) {
-            document.getElementById('resultado').innerHTML = `<p style="color:var(--gold); font-weight:bold;">❌ No se encontraron QSL para este indicativo.</p>`;
-          }
-        }, 1000);
-      }
+    function actualizarProgreso(act, tot) {
+      const p = Math.round((act / tot) * 100);
+      document.getElementById('progressFill').style.width = p + '%';
+      document.getElementById('cardThumb').style.left = p + '%';
+      document.getElementById('progressText').textContent = `Escaneando frecuencias... ${p}%`;
+      if (act === tot) setTimeout(() => {
+        document.getElementById('loaderContainer').style.display = 'none';
+        if(encontradas.length === 0) document.getElementById('resultado').innerHTML = '❌ No se encontraron QSL.';
+      }, 1000);
     }
 
-    function actualizarContador(indicativo) {
-      document.getElementById('contador').textContent = `¡Hola ${indicativo}! Hemos encontrado ${encontradas.length} tarjetas.`;
-    }
+    function cerrarModal() { document.getElementById('ventanaQSL').style.display = 'none'; }
 
     function descargarTodas() {
-      encontradas.forEach((ruta, index) => {
+      encontradas.forEach((r, i) => {
         setTimeout(() => {
-          const link = document.createElement("a");
-          link.href = ruta;
-          link.download = ruta.split("/").pop();
-          link.click();
-        }, index * 400); 
+          const a = document.createElement("a");
+          a.href = r;
+          a.download = r.split("/").pop();
+          a.click();
+        }, i * 400);
       });
     }
   </script>
