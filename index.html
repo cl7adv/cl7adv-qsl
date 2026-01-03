@@ -25,22 +25,10 @@
     .top-nav {
       background: var(--nav-bg);
       padding: 15px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
       box-shadow: 0 4px 15px rgba(0,0,0,0.4);
       position: sticky;
       top: 0;
       z-index: 1000;
-    }
-
-    .visitor-counter {
-      background: rgba(0,0,0,0.3);
-      padding: 5px 12px;
-      border-radius: 20px;
-      font-size: 0.85rem;
-      border: 1px solid var(--gold);
-      color: var(--gold);
     }
 
     .container { 
@@ -95,7 +83,6 @@
       padding: 15px;
       border-radius: 12px;
       border: 1px solid rgba(255,255,255,0.2);
-      animation: fadeIn 0.5s;
     }
 
     .qsl-item img {
@@ -116,19 +103,25 @@
       font-weight: bold;
     }
 
-    .status-msg { grid-column: 1 / -1; padding: 20px; font-weight: bold; }
+    footer { 
+      margin-top: 40px; 
+      padding: 20px; 
+      color: var(--gold); 
+    }
 
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-    footer { margin-top: 40px; color: var(--gold); padding: 20px; }
+    .flag-counter-box {
+      margin-top: 15px;
+      background: rgba(255,255,255,0.1);
+      display: inline-block;
+      padding: 10px;
+      border-radius: 10px;
+    }
   </style>
 </head>
 <body>
 
   <nav class="top-nav">
-    <div style="font-weight:bold; font-size: 1.1rem;">🌴 RADIO CLUB SANTA CRUZ</div>
-    <div class="visitor-counter">
-      Visitas: <span id="count">...</span>
-    </div>
+    <div style="font-weight:bold; font-size: 1.2rem;">🌴 RADIO CLUB SANTA CRUZ</div>
   </nav>
 
   <div class="container">
@@ -141,46 +134,47 @@
     </div>
 
     <div id="result-display">
-      <div class="status-msg" id="status-text">Esperando indicativo...</div>
+      <div id="status-text">Esperando indicativo...</div>
     </div>
 
-    <footer>— Motor del Proyecto: CL7ADV —</footer>
+    <footer>
+      — CL7ADV — Buenos DXs en este 2026<br>
+      Motor del proyecto: Radio Club Santa Cruz Del Sur/Alfred
+      
+      <br><br>
+      
+      <div class="flag-counter-box">
+        <a href="https://info.flagcounter.com/qvMz" target="_blank" rel="noopener">
+          <img src="https://s01.flagcounter.com/count2/qvMz/bg_57A8DE/txt_000000/border_F55B0F/columns_5/maxflags_20/viewers_0/labels_0/pageviews_0/flags_0/percent_0/" alt="Flag Counter" border="0">
+        </a>
+      </div>
+    </footer>
   </div>
 
   <script>
-    // LÓGICA DEL CONTADOR (Usa CountAPI)
-    // Nota: El "namespace" debe ser único para tu sitio
-    function cb(response) {
-        document.getElementById('count').innerText = response.value;
-    }
-
-    // LÓGICA DE BÚSQUEDA
     function buscarTodo() {
       const indicativo = document.getElementById('qslInput').value.trim().toUpperCase();
       const display = document.getElementById('result-display');
       
       if (!indicativo) return;
 
-      display.innerHTML = '<div class="status-msg">🔍 Buscando todas las QSLs para ' + indicativo + '...</div>';
+      display.innerHTML = '<div>🔍 Buscando archivos para ' + indicativo + '...</div>';
 
       const extensiones = ['jpg', 'png', 'jpeg', 'JPG', 'PNG'];
       let encontrados = 0;
-      let totalPeticiones = 0;
       let peticionesFinalizadas = 0;
 
       const nombresAProbar = [];
 
-      // 1. Nombres base
+      // Nombres base
       extensiones.forEach(ext => nombresAProbar.push(`${indicativo}.${ext}`));
 
-      // 2. Nombres con guion (del 1 al 10)
+      // Nombres con guion (del 1 al 10)
       for (let i = 1; i <= 10; i++) {
         extensiones.forEach(ext => {
           nombresAProbar.push(`${indicativo}-${i}.${ext}`);
         });
       }
-
-      totalPeticiones = nombresAProbar.length;
 
       nombresAProbar.forEach(nombre => {
         const imgPath = `img/${nombre}`;
@@ -195,7 +189,7 @@
           div.className = 'qsl-item';
           div.innerHTML = `
             <img src="${imgPath}" alt="QSL">
-            <div style="margin-bottom:10px; font-size:0.8rem; font-family:monospace;">${nombre}</div>
+            <div style="margin-bottom:10px; font-size:0.8rem;">${nombre}</div>
             <a href="${imgPath}" download="${nombre}" class="btn-download">💾 DESCARGAR</a>
           `;
           display.appendChild(div);
@@ -211,14 +205,11 @@
 
       function verificarFin() {
         peticionesFinalizadas++;
-        if (peticionesFinalizadas === totalPeticiones && encontrados === 0) {
-          display.innerHTML = '<div class="status-msg" style="color:#ffcdd2;">❌ No se encontró ningún archivo para ' + indicativo + '</div>';
+        if (peticionesFinalizadas === nombresAProbar.length && encontrados === 0) {
+          display.innerHTML = '<div>❌ No se encontró ninguna QSL para ' + indicativo + '</div>';
         }
       }
     }
   </script>
-
-  <script async src="https://api.countapi.xyz/hit/radioclub-santacruz-qsl/visits?callback=cb"></script>
-
 </body>
 </html>
