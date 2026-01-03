@@ -7,189 +7,192 @@
     <style>
         :root {
             --primary: #00bcd4;
-            --primary-dark: #00838f;
             --accent: #ff9800;
             --gold: #ffe082;
-            --dark-panel: rgba(14, 36, 49, 0.92); /* Color de tu web con transparencia */
             --neon: #00ff99;
+            --glass: rgba(14, 36, 49, 0.96);
         }
 
         body { 
-            margin: 0; 
-            font-family: 'Verdana', sans-serif; 
-            background: radial-gradient(circle at center, #00acc1, #006064); 
-            background-attachment: fixed;
-            color: #fff; 
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
+            margin: 0; font-family: 'Segoe UI', sans-serif; 
+            background: radial-gradient(circle at center, #00acc1, #013d3e); 
+            background-attachment: fixed; color: #fff; 
+            display: flex; align-items: center; justify-content: center; min-height: 100vh;
         }
 
-        /* Contenedor Realista con efecto Glassmorphism */
         .container { 
-            max-width: 700px; 
-            width: 90%;
-            padding: 40px; 
-            background: var(--dark-panel); 
-            border-radius: 25px; 
-            box-shadow: 0 20px 60px rgba(0,0,0,0.7), inset 0 0 15px rgba(255,255,255,0.05); 
-            border: 2px solid rgba(0, 255, 153, 0.3); /* Borde sutil neón */
-            text-align: center;
-            animation: fadeIn 0.8s ease-out;
+            max-width: 650px; width: 90%; padding: 40px; 
+            background: var(--glass); border-radius: 30px; 
+            box-shadow: 0 30px 70px rgba(0,0,0,0.8); 
+            border: 1px solid rgba(0, 255, 153, 0.3); text-align: center;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        h1 { font-size: 2.2rem; margin-bottom: 5px; text-shadow: 0 0 15px var(--neon); }
+        .subtitle { color: var(--gold); margin-bottom: 30px; font-size: 0.9rem; letter-spacing: 2px; }
 
-        h1 { 
-            font-size: 2.2rem; 
-            margin-bottom: 10px; 
-            text-shadow: 0 0 15px var(--gold); 
-            color: #fff;
-        }
-
-        .subtitle { color: #e6faff; opacity: 0.8; margin-bottom: 30px; font-size: 0.9rem; }
-
-        .search-box {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
+        .search-group { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; }
 
         #indicativo { 
-            padding: 15px 20px; 
-            font-size: 1.2rem; 
-            border: 2px solid rgba(255,255,255,0.2); 
-            border-radius: 12px; 
-            width: 250px; 
-            background: rgba(255,255,255,0.9);
-            color: #0e2431;
-            font-weight: bold;
-            text-transform: uppercase;
-            transition: 0.3s;
-            outline: none;
+            padding: 15px; font-size: 1.3rem; border: 2px solid rgba(255,255,255,0.1); 
+            border-radius: 12px; width: 220px; background: #000;
+            color: var(--neon); font-weight: bold; text-transform: uppercase;
+            text-align: center; letter-spacing: 2px;
         }
-
-        #indicativo:focus { border-color: var(--neon); box-shadow: 0 0 12px var(--neon); }
 
         #buscarBtn { 
-            padding: 15px 30px; 
-            font-size: 1rem; 
-            background: linear-gradient(135deg, #ff9800, #f57c00); 
-            color: #fff; 
-            border: none; 
-            border-radius: 12px; 
-            cursor: pointer; 
-            font-weight: bold; 
-            box-shadow: 0 4px 15px rgba(255, 152, 0, 0.4);
-            transition: 0.3s;
+            padding: 15px 30px; font-size: 1rem; 
+            background: linear-gradient(145deg, #ffb74d, #f57c00); 
+            color: #fff; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; 
+            box-shadow: 0 5px 0 #b35900; transition: 0.1s;
         }
 
-        #buscarBtn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255, 152, 0, 0.6); }
+        #buscarBtn:active { transform: translateY(3px); box-shadow: 0 2px 0 #b35900; }
 
-        /* Mensaje de Error Realista */
+        /* Barra de Carga con Carta */
+        .progress-container {
+            width: 100%; max-width: 400px; height: 10px; 
+            background: rgba(255,255,255,0.1); border-radius: 20px;
+            margin: 50px auto 20px; position: relative; display: none;
+        }
+
+        .progress-fill { height: 100%; background: var(--neon); width: 0%; border-radius: 20px; transition: 0.2s; }
+
+        .card-icon {
+            position: absolute; top: -35px; left: 0%;
+            width: 45px; height: 30px; background: #fff;
+            border: 2px solid var(--gold); border-radius: 5px;
+            color: #333; font-weight: bold; font-size: 10px;
+            display: flex; align-items: center; justify-content: center;
+            transform: translateX(-50%); transition: 0.2s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        }
+        .card-icon::after { content: "✉️"; font-size: 16px; }
+
+        .status-text { height: 40px; color: var(--neon); font-weight: bold; margin-top: 10px; }
+
         .error-msg {
-            background: rgba(255, 68, 68, 0.15);
-            border: 1px solid #ff4444;
-            color: #ff8888;
-            padding: 15px;
-            border-radius: 12px;
-            margin-top: 20px;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            animation: shake 0.4s ease-in-out;
+            background: rgba(255, 68, 68, 0.2); border: 1px solid #ff4444;
+            color: #ffbaba; padding: 15px; border-radius: 12px;
+            margin-top: 20px; animation: shake 0.5s; transition: opacity 1s;
         }
 
         @keyframes shake {
             0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
         }
 
-        footer { 
-            margin-top: 40px; 
-            font-size: 0.85rem; 
-            color: var(--gold); 
-            text-shadow: 0 0 8px rgba(255, 224, 130, 0.5);
-            line-height: 1.6;
-        }
-
-        /* Estilo del Loader */
-        .loader-bar {
-            width: 100%;
-            height: 4px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 10px;
-            overflow: hidden;
-            margin-top: 20px;
-            display: none;
-        }
-        .loader-fill { height: 100%; background: var(--neon); width: 0%; transition: 0.3s; }
+        .fade-out { opacity: 0; }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h1>🌴 Buscador QSL Caribeño 🌊</h1>
-        <p class="subtitle">Ingresa tu indicativo para descargar tus tarjetas confirmadas.</p>
+        <h1>🌴 QSL Caribeña 🌊</h1>
+        <p class="subtitle">CL7ADV - SANTA CRUZ DEL SUR</p>
 
-        <div class="search-box">
-            <input type="text" id="indicativo" placeholder="Ej: CL7ADV" autocomplete="off">
+        <div class="search-group">
+            <input type="text" id="indicativo" placeholder="CALLSIGN" maxlength="10">
             <button id="buscarBtn" onclick="buscarQSL()">BUSCAR QSL</button>
         </div>
 
-        <div id="loader" class="loader-bar"><div id="fill" class="loader-fill"></div></div>
+        <div id="pContainer" class="progress-container">
+            <div id="card" class="card-icon">QSL</div>
+            <div id="fill" class="progress-fill"></div>
+        </div>
+
+        <div id="status" class="status-text"></div>
         <div id="resultado"></div>
 
-        <footer>
-            &mdash; CL7ADV &mdash; Radio Club Santa Cruz del Sur<br>
-            Buenos DXs en este 2026
+        <footer style="margin-top:40px; font-size:0.8rem; opacity:0.7;">
+            73's Cordiales - Alfred - 2026
         </footer>
     </div>
 
     <script>
+        // Función para generar sonido de estática de radio
+        function playRadioSound() {
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const bufferSize = 2 * audioCtx.sampleRate;
+            const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            const output = noiseBuffer.getChannelData(0);
+            
+            for (let i = 0; i < bufferSize; i++) {
+                output[i] = Math.random() * 2 - 1; // Ruido blanco
+            }
+
+            const whiteNoise = audioCtx.createBufferSource();
+            whiteNoise.buffer = noiseBuffer;
+
+            const gainNode = audioCtx.createGain();
+            gainNode.gain.setValueAtTime(0.05, audioCtx.currentTime); // Volumen bajo
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 1.5);
+
+            whiteNoise.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            whiteNoise.start();
+            whiteNoise.stop(audioCtx.currentTime + 1.5);
+        }
+
         function buscarQSL() {
             const input = document.getElementById('indicativo');
             const call = input.value.trim().toUpperCase();
-            const res = document.getElementById('resultado');
-            const loader = document.getElementById('loader');
+            const pContainer = document.getElementById('pContainer');
+            const card = document.getElementById('card');
             const fill = document.getElementById('fill');
+            const status = document.getElementById('status');
+            const res = document.getElementById('resultado');
 
             if (!call) return;
 
-            // Simular carga realista
+            // Iniciar Audio y Visuales
+            playRadioSound();
             res.innerHTML = "";
-            loader.style.display = "block";
-            fill.style.width = "0%";
+            pContainer.style.display = "block";
+            status.innerText = "SINTONIZANDO SEÑAL...";
             
-            setTimeout(() => { fill.style.width = "100%"; }, 100);
-
-            setTimeout(() => {
-                loader.style.display = "none";
+            let progreso = 0;
+            const anim = setInterval(() => {
+                progreso += 2;
+                fill.style.width = progreso + "%";
+                card.style.left = progreso + "%";
                 
-                // Simulación de "No encontrado"
-                res.innerHTML = `
-                    <div class="error-msg">
-                        ❌ No se encontraron tarjetas para ${call}.<br>
-                        Vuelve a intentarlo más tarde.
-                    </div>
-                `;
+                if(progreso == 40) status.innerText = "BUSCANDO EN LOGS...";
+                if(progreso == 80) status.innerText = "FILTRANDO INDICATIVO...";
 
-                // REINICIO AUTOMÁTICO EN 6 SEGUNDOS
-                setTimeout(() => {
-                    res.innerHTML = "";
-                    input.value = "";
-                }, 6000);
+                if (progreso >= 100) {
+                    clearInterval(anim);
+                    finalizarBusqueda(call);
+                }
+            }, 30);
+        }
 
-            }, 1500);
+        function finalizarBusqueda(call) {
+            const res = document.getElementById('resultado');
+            const status = document.getElementById('status');
+            const pContainer = document.getElementById('pContainer');
+            const input = document.getElementById('indicativo');
+
+            status.innerText = "";
+            pContainer.style.display = "none";
+            
+            res.innerHTML = `
+                <div class="error-msg" id="msg">
+                    ❌ LA QSL PARA ${call} NO HA SIDO SUBIDA AÚN
+                </div>
+            `;
+
+            // Auto-reinicio en 6 segundos con desvanecimiento
+            setTimeout(() => {
+                const msg = document.getElementById('msg');
+                if(msg) {
+                    msg.classList.add('fade-out');
+                    setTimeout(() => {
+                        res.innerHTML = "";
+                        input.value = "";
+                    }, 1000);
+                }
+            }, 6000);
         }
     </script>
 </body>
