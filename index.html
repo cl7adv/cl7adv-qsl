@@ -1,282 +1,116 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <title>Navegador QSL Caribeño - CL7ADV</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: "Trebuchet MS", Arial, sans-serif;
-      background: linear-gradient(to bottom, #00bcd4, #009688);
-      color: #fff;
-      text-align: center;
+<script>
+  let totalQSLs = 0;
+  let descargadas = 0;
+  let listaActual = [];
+  let imagenCargada = false; // 🔹 variable global para saber si alguna imagen se cargó
+
+  function buscarQSL() {
+    const indicativo = document.getElementById("indicativo").value.trim().toUpperCase();
+    const resultado = document.getElementById("resultado");
+
+    if (!indicativo) {
+      resultado.innerHTML = `<p class="mensaje">🌺 Por favor escribe un indicativo</p>`;
+      setTimeout(() => { resultado.innerHTML = ""; }, 5000);
+      return;
     }
 
-    .container {
-      max-width: 900px;
-      margin: 40px auto;
-      padding: 25px;
-      background: rgba(0,0,0,0.4);
-      border-radius: 15px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.6);
+    let posibles = [];
+    posibles.push(`img/${indicativo}.jpg`);
+    for (let i = 1; i <= 50; i++) {
+      posibles.push(`img/${indicativo}-${i}.jpg`);
     }
 
-    h1 {
-      font-size: 2.2rem;
-      margin-bottom: 15px;
-      text-shadow: 0 0 10px #ffe082;
-    }
+    let encontradas = [];
 
-    #indicativo {
-      padding: 12px;
-      font-size: 1rem;
-      border: none;
-      border-radius: 8px;
-      margin-right: 10px;
-      width: 220px;
-    }
+    posibles.forEach(ruta => {
+      const img = new Image();
+      img.onload = () => {
+        imagenCargada = true; // ✅ se cargó al menos una
+        encontradas.push(ruta);
+        mostrarQSLs(encontradas, indicativo);
+      };
+      img.onerror = () => {
+        // no hace nada, simplemente ignora si no existe
+      };
+      img.src = ruta;
+    });
 
-    #buscarBtn {
-      padding: 12px 20px;
-      font-size: 1rem;
-      background: #ff9800;
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: bold;
-      transition: 0.3s;
-    }
-
-    #buscarBtn:hover {
-      background: #f57c00;
-    }
-
-    #resultado {
-      margin-top: 25px;
-    }
-
-    .qsl-img {
-      max-width: 220px;
-      border: 4px solid #ffe082;
-      border-radius: 12px;
-      margin: 10px;
-      box-shadow: 0 0 15px #ffe082;
-    }
-
-    .descargar {
-      display: inline-block;
-      margin-top: 10px;
-      padding: 8px 16px;
-      background: #4caf50;
-      color: white;
-      border-radius: 8px;
-      text-decoration: none;
-      font-weight: bold;
-      transition: 0.3s;
-    }
-
-    .descargar:hover {
-      background: #388e3c;
-    }
-
-    .mensaje {
-      font-size: 1.3rem;
-      margin-top: 20px;
-      color: #ffe082;
-      text-shadow: 0 0 8px #ffeb3b;
-    }
-
-    footer {
-      margin-top: 40px;
-      font-size: 1.1rem;
-      color: #ffe082;
-      text-shadow: 0 0 8px #ffeb3b;
-    }
-
-    /* Estilos para la ventana emergente */
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 1000;
-      left: 0; top: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.7);
-    }
-
-    .modal-contenido {
-      background: #fff;
-      color: #000;
-      margin: 5% auto;
-      padding: 20px;
-      border-radius: 12px;
-      width: 80%;
-      max-width: 900px;
-      text-align: center;
-    }
-
-    .cerrar {
-      float: right;
-      font-size: 28px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    /* Galería en cuadrícula */
-    #listaQSLs {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 20px;
-      margin-top: 20px;
-    }
-  </style>
-</head>
-<body>
-
-  <div class="container">
-    <h1>🌴 Bienvenido al sitio QSL Caribeño 🌊</h1>
-    <p>Escribe tu indicativo para buscar tus tarjetas QSL</p>
-
-    <input type="text" id="indicativo" placeholder="Ej: CL7ADV">
-    <button id="buscarBtn" onclick="buscarQSL()">Buscar QSL</button>
-
-    <div id="resultado"></div>
-
-<footer>
-  — CL7ADV — Buenos DXs en este 2026<br>
-  Motor del proyecto: Radio Club Santa Cruz Del Sur/Alfred
-  <br><br>
-
-  <!-- Contador de visitas por países -->
-  <a href="https://info.flagcounter.com/qvMz">
-    <img src="https://s01.flagcounter.com/count2/qvMz/bg_57A8DE/txt_000000/border_F55B0F/columns_5/maxflags_20/viewers_0/labels_0/pageviews_0/flags_0/percent_0/" 
-         alt="Flag Counter" border="0">
-  </a>
-</footer>
-
-
-  </div>
-
-  <!-- Ventana emergente -->
-  <div id="ventanaQSL" class="modal">
-    <div class="modal-contenido">
-      <span class="cerrar" onclick="cerrarVentana()">&times;</span>
-      <h2>QSLs disponibles</h2>
-      <div id="contador"></div>
-      <div id="listaQSLs"></div>
-      <br>
-      <button class="descargar" onclick="descargarTodas()">⬇️ Descargar todas</button>
-    </div>
-  </div>
-
-  <script>
-    let totalQSLs = 0;
-    let descargadas = 0;
-    let listaActual = [];
-
-    function buscarQSL() {
-      const indicativo = document.getElementById("indicativo").value.trim().toUpperCase();
-      const resultado = document.getElementById("resultado");
-
-      if (!indicativo) {
-        resultado.innerHTML = `<p class="mensaje">🌺 Por favor escribe un indicativo</p>`;
-        setTimeout(() => { resultado.innerHTML = ""; }, 5000);
-        return;
+    // 🔹 Espera 10 segundos antes de mostrar mensaje de error
+    setTimeout(() => {
+      if (!imagenCargada) {
+        resultado.innerHTML = `<p class="mensaje">❌ No tenemos esa QSL, pero pronto estará lista. Gracias 🌺</p>`;
       }
-
-      let posibles = [];
-      posibles.push(`img/${indicativo}.jpg`);
-      for (let i = 1; i <= 50; i++) {
-        posibles.push(`img/${indicativo}-${i}.jpg`);
-      }
-
-      let encontradas = [];
-
-      posibles.forEach(ruta => {
-        const img = new Image();
-        img.src = ruta;
-        img.onload = () => {
-          encontradas.push(ruta);
-          mostrarQSLs(encontradas, indicativo);
-        };
-      });
-
-     setTimeout(() => {
-  if (!imagenCargada) {
-    mostrarMensaje("No tenemos esa QSL, pero pornto estara lista, gracias");
+    }, 10000);
   }
-}, 10000); // espera 10 segundos
 
-        }
-      }, 1500);
-    }
+  function mostrarQSLs(lista, indicativo) {
+    const ventana = document.getElementById("ventanaQSL");
+    const listaQSLs = document.getElementById("listaQSLs");
+    const contador = document.getElementById("contador");
 
-    function mostrarQSLs(lista, indicativo) {
-      const ventana = document.getElementById("ventanaQSL");
+    listaQSLs.innerHTML = `<p>📡 Se encontraron ${lista.length} QSL para <strong>${indicativo}</strong></p>`;
+    totalQSLs = lista.length;
+    descargadas = 0;
+    listaActual = lista;
+
+    actualizarContador();
+
+    lista.forEach(ruta => {
+      listaQSLs.innerHTML += `
+        <div>
+          <img src="${ruta}" alt="QSL de ${indicativo}" class="qsl-img">
+          <br>
+          <a href="${ruta}" download class="descargar" onclick="marcarDescarga()">⬇️ Descargar QSL</a>
+        </div>
+      `;
+    });
+
+    ventana.style.display = "block";
+  }
+
+  function actualizarContador() {
+    const contador = document.getElementById("contador");
+    contador.innerHTML = `<p class="mensaje">Has descargado ${descargadas} de ${totalQSLs} QSL</p>`;
+  }
+
+  function marcarDescarga() {
+    descargadas++;
+    actualizarContador();
+    if (descargadas >= totalQSLs) {
       const listaQSLs = document.getElementById("listaQSLs");
-      const contador = document.getElementById("contador");
-
-      listaQSLs.innerHTML = `<p>📡 Se encontraron ${lista.length} QSL para <strong>${indicativo}</strong></p>`;
-      totalQSLs = lista.length;
-      descargadas = 0;
-      listaActual = lista;
-
-      actualizarContador();
-
-      lista.forEach(ruta => {
-        listaQSLs.innerHTML += `
-          <div>
-            <img src="${ruta}" alt="QSL de ${indicativo}" class="qsl-img">
-            <br>
-            <a href="${ruta}" download class="descargar" onclick="marcarDescarga()">⬇️ Descargar QSL</a>
-          </div>
-        `;
-      });
-
-      ventana.style.display = "block";
+      listaQSLs.innerHTML = `<p class="mensaje">✅ Has descargado todas tus QSL, buenos DXs 🌺</p>`;
+      setTimeout(() => {
+        cerrarVentana();
+        document.getElementById("resultado").innerHTML = "";
+        document.getElementById("indicativo").value = "";
+      }, 2000);
     }
+  }
 
-    function actualizarContador() {
-      const contador = document.getElementById("contador");
-      contador.innerHTML = `<p class="mensaje">Has descargado ${descargadas} de ${totalQSLs} QSL</p>`;
-    }
-
-    function marcarDescarga() {
+  function descargarTodas() {
+    listaActual.forEach(ruta => {
+      const link = document.createElement("a");
+      link.href = ruta;
+      link.download = ruta.split("/").pop();
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
       descargadas++;
-      actualizarContador();
-      if (descargadas >= totalQSLs) {
-        const listaQSLs = document.getElementById("listaQSLs");
-        listaQSLs.innerHTML = `<p class="mensaje">✅ Has descargado todas tus QSL, buenos DXs 🌺</p>`;
-        setTimeout(() => {
-          cerrarVentana();
-          document.getElementById("resultado").innerHTML = "";
-          document.getElementById("indicativo").value = "";
-        }, 2000);
-      }
+    });
+    actualizarContador();
+    if (descargadas >= totalQSLs) {
+      const listaQSLs = document.getElementById("listaQSLs");
+      listaQSLs.innerHTML = `<p class="mensaje">✅ Has descargado todas tus QSL, buenos DXs 🌺</p>`;
+      setTimeout(() => {
+        cerrarVentana();
+        document.getElementById("resultado").innerHTML = "";
+        document.getElementById("indicativo").value = "";
+      }, 2000);
     }
+  }
 
-    function descargarTodas() {
-      listaActual.forEach(ruta => {
-        const link = document.createElement("a");
-        link.href = ruta;
-        link.download = ruta.split("/").pop();
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        descargadas++;
-      });
-      actualizarContador();
-      if (descargadas >= totalQSLs) {
-        const listaQSLs = document.getElementById("listaQSLs");
-        listaQSLs.innerHTML = `<p class="mensaje">✅ Has descargado todas tus QSL, buenos DXs 🌺</p>`;
-        setTimeout(() => {
-          cerrarVentana();
-          document.getElementById("resultado").innerHTML = "";
-          document.getElementById("indicativo").value = "";
-        }, 2000);
-      }
-    }
-
-    function cerrarVentana() {
-      const ventana = document.getElementById("ventanaQSL"); ventana.style.display = "none"; } </script>
+  function cerrarVentana() {
+    const ventana = document.getElementById("ventanaQSL");
+    ventana.style.display = "none";
+  }
+</script>
