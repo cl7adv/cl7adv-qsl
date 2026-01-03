@@ -1,153 +1,115 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="utf-8" />
-  <title>Navegador QSL Caribeño - CL7ADV</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Nunito:wght@300;600;800&display=swap" rel="stylesheet">
-  <style>
-    :root{
-      --sea-deep: #0b6b7a;
-      --sea-mid: #1aa3b8;
-      --sand: #f3d9b6;
-      --sun: #ffb74d;
-      --muted: #3f2b1f;
-      --card-bg: rgba(255,255,255,0.94);
-      --radius-lg: 16px;
-      --shadow-1: 0 14px 40px rgba(40,20,10,0.10);
-      --neon-color: #ffd86b;
-      --neon-accent: #7ef0ff;
+<script>
+  let totalQSLs = 0;
+  let descargadas = 0;
+  let listaActual = [];
+
+  function buscarQSL() {
+    const indicativo = document.getElementById("indicativo").value.trim().toUpperCase();
+    const resultado = document.getElementById("resultado");
+
+    if (!indicativo) {
+      resultado.innerHTML = `<p class="mensaje">🌺 Por favor escribe un indicativo 🕊️🕊️🕊️</p>`;
+      setTimeout(() => { resultado.innerHTML = ""; }, 5000);
+      return;
     }
 
-    body{
-      margin:0;
-      font-family:"Nunito",system-ui;
-      color:var(--muted);
-      background: linear-gradient(180deg,#fffaf0,#fff6ee);
-      line-height:1.45;
+    let posibles = [];
+    posibles.push(`img/${indicativo}.jpg`);
+    for (let i = 1; i <= 50; i++) {
+      posibles.push(`img/${indicativo}-${i}.jpg`);
     }
 
-    /* Hero con degradado caribeño */
-    .hero {
-      position: relative;
-      min-height: 48vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 36px 18px;
-      background: linear-gradient(135deg, var(--sea-mid), var(--sea-deep) 40%, var(--sun) 100%);
-      border-radius: 18px;
-      box-shadow: var(--shadow-1);
-    }
-    .hero-inner{position:relative; z-index:2; text-align:center;}
-    .hero-title {
-      color:#fff;
-      font-family:"Playfair Display",serif;
-      font-size:2.4rem;
-      text-shadow:
-        0 0 2px rgba(255,255,255,0.9),
-        0 0 6px var(--neon-color),
-        0 0 12px rgba(255,180,80,0.6),
-        0 6px 18px rgba(0,0,0,0.45);
-      margin:0;
-    }
-    .hero-sub {color:rgba(255,255,255,0.95); margin-top:8px;}
+    let encontradas = [];
 
-    /* Contenedor principal */
-    .container {
-      max-width:1100px; margin:-48px auto 28px; padding:24px;
-      background: var(--card-bg); border-radius:var(--radius-lg); box-shadow: var(--shadow-1);
-    }
+    posibles.forEach(ruta => {
+      const img = new Image();
+      img.src = ruta;
+      img.onload = () => {
+        encontradas.push(ruta);
+      };
+    });
 
-    .controls {display:flex; gap:12px; justify-content:center; flex-wrap:wrap;}
-    #indicativo {
-      padding:12px 14px; border-radius:12px; border:1px solid rgba(120,80,40,0.12);
-      width:260px; font-size:1rem; background:#fff; color:var(--muted);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.6);
-    }
-    #buscarBtn {
-      padding:12px 18px; border-radius:12px; border:none;
-      background: linear-gradient(180deg,var(--sea-mid), var(--sea-deep));
-      color:#fff; font-weight:800; cursor:pointer;
-      box-shadow: 0 0 16px var(--neon-accent), 0 10px 26px rgba(10,50,70,0.14);
-      transition: transform 160ms ease, box-shadow 160ms ease;
-    }
-    #buscarBtn:hover{transform:translateY(-3px);}
+    setTimeout(() => {
+      if (encontradas.length > 0) {
+        mostrarQSLs(encontradas, indicativo);
+      } else {
+        resultado.innerHTML = `<p class="mensaje">🌺 No tenemos QSL para <strong>${indicativo}</strong>, pero tu visita siempre es bienvenida 🕊️🕊️🕊️</p>`;
+        setTimeout(() => {
+          resultado.innerHTML = "";
+          document.getElementById("indicativo").value = "";
+        }, 5000);
+      }
+    }, 1500);
+  }
 
-    #resultado{margin-top:14px; text-align:center;}
-    .mensaje{color:var(--sea-deep);}
+  function mostrarQSLs(lista, indicativo) {
+    const ventana = document.getElementById("ventanaQSL");
+    const listaQSLs = document.getElementById("listaQSLs");
+    const contador = document.getElementById("contador");
 
-    /* Loader */
-    .loader-wrap{display:none; margin-top:12px; justify-content:center; gap:12px; align-items:center;}
-    .spinner{width:22px; height:22px; border:3px solid rgba(120,80,40,0.12); border-top-color:var(--sun); border-radius:50%; animation:spin 1s linear infinite;}
-    @keyframes spin{to{transform:rotate(360deg);}}
-    .progress-bar{position:relative; width:380px; height:14px; background:rgba(200,140,80,0.06); border-radius:10px;}
-    .progress-fill{height:100%; background:linear-gradient(90deg,#ffd89a,#ffb74d); width:0%;}
-    .card-thumb{position:absolute; top:-30px; width:64px; height:40px; background:#fff0df; border-radius:8px; display:flex; align-items:center; justify-content:center; font-weight:800; box-shadow:0 0 14px var(--neon-color); transform:translateX(-50%); left:0%;}
-    .progress-text{text-align:center; margin-top:8px; color:#7a5a44;}
+    listaQSLs.innerHTML = `<p>📡 Se encontraron ${lista.length} QSL para <strong>${indicativo}</strong></p>`;
+    totalQSLs = lista.length;
+    descargadas = 0;
+    listaActual = lista;
 
-    /* QSLs */
-    #listaQSLs { display:flex; flex-wrap:wrap; gap:18px; justify-content:center; margin-top:12px; }
-    .qsl-img{max-width:240px; border-radius:12px; box-shadow:0 0 12px var(--neon-accent);}
-    .descargar{display:inline-block; margin-top:10px; padding:9px 16px; border-radius:10px; background:var(--sun); color:#fff; font-weight:800; box-shadow:0 0 12px var(--neon-color);}
-    .descargar:hover{transform:translateY(-2px);}
+    actualizarContador();
 
-    /* Modal */
-    .modal{ display:none; position:fixed; inset:0; z-index:1200; background: rgba(20,12,8,0.45); align-items:center; justify-content:center; padding:20px; }
-    .modal-contenido{ width:100%; max-width:920px; background: linear-gradient(180deg,#fffaf0,#fff7ef); border-radius:14px; padding:18px; box-shadow: 0 20px 50px rgba(60,30,10,0.25); color:#3f2b1f; }
-    .cerrar{ float:right; font-size:26px; cursor:pointer; color:#7a5a44; }
-
-    footer{text-align:center; margin-top:28px; color:#7a5a44;}
-  </style>
-</head>
-<body>
-  <!-- Hero -->
-  <section class="hero">
-    <div class="hero-inner">
-      <h1 class="hero-title">Navegador QSL Caribeño</h1>
-      <p class="hero-sub">Busca y descarga tus QSL con estilo — buenos DXs desde la costa</p>
-    </div>
-  </section>
-
-  <!-- Main -->
-  <main class="container">
-    <div class="controls">
-      <input id="indicativo" type="text" placeholder="Ej: CL7ADV">
-      <button id="buscarBtn">Buscar QSL</button>
-    </div>
-
-    <!-- Loader -->
-    <div id="loaderContainer" class="loader-wrap">
-      <div class="spinner"></div>
-      <div>
-        <div class="progress-bar">
-          <div id="progressFill" class="progress-fill"></div>
-          <div id="cardThumb" class="card-thumb">QSL</div>
+    lista.forEach(ruta => {
+      listaQSLs.innerHTML += `
+        <div>
+          <img src="${ruta}" alt="QSL de ${indicativo}" class="qsl-img">
+          <br>
+          <a href="${ruta}" download class="descargar" onclick="marcarDescarga()">⬇️ Descargar QSL</a>
         </div>
-        <div id="progressText" class="progress-text">Iniciando búsqueda...</div>
-      </div>
-    </div>
+      `;
+    });
 
-    <div id="resultado"></div>
+    ventana.style.display = "block";
+  }
 
-    <footer>
-      — CL7ADV — Buenos DXs en este 2026 · Radio Club Santa Cruz Del Sur/Alfred
-    </footer>
-  </main>
+  function actualizarContador() {
+    const contador = document.getElementById("contador");
+    contador.innerHTML = `<p class="mensaje">Has descargado ${descargadas} de ${totalQSLs} QSL</p>`;
+  }
 
-  <!-- Modal QSLs -->
-  <div id="ventanaQSL" class="modal">
-    <div class="modal-contenido">
-      <span id="cerrarBtn" class="cerrar">&times;</span>
-      <h2>QSLs disponibles</h2>
-      <div id="contador"></div>
-      <div id="listaQSLs"></div>
-      <button class="descargar" id="descargarTodas
-            function cerrarVentana(){
-      const ventana = document.getElementById("ventanaQSL");
-      ventana.style.display = "none";
-      ventana.setAttribute('aria-hidden','true');
+  function marcarDescarga() {
+    descargadas++;
+    actualizarContador();
+    if (descargadas >= totalQSLs) {
+      const listaQSLs = document.getElementById("listaQSLs");
+      listaQSLs.innerHTML = `<p class="mensaje">✅ Has descargado todas tus QSL, buenos DXs 🌺 🕊️🕊️🕊️</p>`;
+      setTimeout(() => {
+        cerrarVentana();
+        document.getElementById("resultado").innerHTML = "";
+        document.getElementById("indicativo").value = "";
+      }, 2000);
     }
-  </script>
-</body>
-</html>
+  }
+
+  function descargarTodas() {
+    listaActual.forEach(ruta => {
+      const link = document.createElement("a");
+      link.href = ruta;
+      link.download = ruta.split("/").pop();
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    });
+    descargadas = totalQSLs;
+    actualizarContador();
+    if (descargadas >= totalQSLs) {
+      const listaQSLs = document.getElementById("listaQSLs");
+      listaQSLs.innerHTML = `<p class="mensaje">✅ Has descargado todas tus QSL, buenos DXs 🌺 🕊️🕊️🕊️</p>`;
+      setTimeout(() => {
+        cerrarVentana();
+        document.getElementById("resultado").innerHTML = "";
+        document.getElementById("indicativo").value = "";
+      }, 2000);
+    }
+  }
+
+  function cerrarVentana() {
+    const ventana = document.getElementById("ventanaQSL");
+    ventana.style.display = "none";
+  }
+</script>
