@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Radio Club Santa Cruz | Buscador QSL</title>
+  <title>Radio Club Santa Cruz | Buscador Multi-QSL</title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <style>
     :root {
@@ -25,9 +25,6 @@
     .top-nav {
       background: var(--nav-bg);
       padding: 15px 20px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
       box-shadow: 0 4px 15px rgba(0,0,0,0.4);
       position: sticky;
       top: 0;
@@ -35,177 +32,167 @@
     }
 
     .container { 
-      max-width: 900px; 
-      margin: 40px auto; 
-      padding: 30px; 
+      max-width: 1000px; 
+      margin: 30px auto; 
+      padding: 25px; 
       background: rgba(0,0,0,0.4);
       backdrop-filter: blur(10px);
-      border-radius: 25px; 
-      box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+      border-radius: 20px; 
     }
 
     .tool-box {
       background: #fff;
-      padding: 25px;
+      padding: 20px;
       border-radius: 15px;
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      gap: 15px;
-      margin-bottom: 30px;
+      gap: 10px;
+      margin-bottom: 20px;
     }
 
     .tool-box input {
       padding: 12px;
       border: 2px solid #ddd;
       border-radius: 8px;
-      width: 250px;
-      font-size: 1rem;
+      width: 220px;
+      font-size: 1.1rem;
       text-transform: uppercase;
-      outline: none;
       color: #333;
     }
 
     .action-btn {
-      padding: 12px 30px;
+      padding: 12px 25px;
       background: var(--accent);
       color: white;
       border: none;
       border-radius: 8px;
       cursor: pointer;
       font-weight: bold;
-      transition: 0.3s;
     }
 
-    .action-btn:hover {
-      background: #e68a00;
-      transform: scale(1.05);
-    }
-
-    /* ESTILO DE GALERÍA PARA MÚLTIPLES QSL */
     #result-display {
-      min-height: 200px;
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
       gap: 20px;
-      justify-items: center;
-      align-items: start;
-      border: 2px dashed rgba(255,255,255,0.3);
-      border-radius: 15px;
-      padding: 20px;
-      background: rgba(255,255,255,0.05);
+      margin-top: 20px;
     }
 
-    .qsl-card {
+    .qsl-item {
       background: rgba(255,255,255,0.1);
-      padding: 10px;
+      padding: 15px;
       border-radius: 12px;
       border: 1px solid rgba(255,255,255,0.2);
-      width: 100%;
-      max-width: 350px;
+      animation: fadeIn 0.5s;
     }
 
-    .qsl-card img {
-      max-width: 100%;
+    .qsl-item img {
+      width: 100%;
       height: auto;
       border-radius: 8px;
-      border: 2px solid white;
+      border: 2px solid #fff;
       margin-bottom: 10px;
     }
 
-    .download-link {
+    .btn-download {
+      display: inline-block;
       background: #2e7d32;
-      color: white;
+      color: #fff;
       padding: 8px 15px;
       text-decoration: none;
-      border-radius: 6px;
+      border-radius: 5px;
       font-weight: bold;
-      font-size: 0.9rem;
-      display: inline-block;
     }
 
-    .no-results { grid-column: 1 / -1; padding: 40px; }
+    .status-msg { grid-column: 1 / -1; padding: 20px; font-weight: bold; }
 
-    footer { margin-top: 50px; color: var(--gold); font-weight: bold; padding: 20px; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    footer { margin-top: 40px; color: var(--gold); padding: 20px; }
   </style>
 </head>
 <body>
 
   <nav class="top-nav">
-    <div style="font-size: 1.4rem; font-weight:bold;">🌴 RADIO CLUB SANTA CRUZ</div>
+    <div style="font-weight:bold; font-size: 1.2rem;">🌴 RADIO CLUB SANTA CRUZ</div>
   </nav>
 
   <div class="container">
-    <h1>🌊 Buscador Multi-QSL</h1>
-    <p style="margin-bottom: 25px;">Buscando coincidencias en: <code style="background: #000; padding: 2px 6px; border-radius: 4px;">img/</code></p>
+    <h1>🌊 Buscador de QSLs</h1>
+    <p>Buscando coincidencias en carpeta <code style="background:#000; padding:3px;">img/</code></p>
     
     <div class="tool-box">
-      <input type="text" id="qslInput" placeholder="INDICATIVO" onkeyup="if(event.key==='Enter') buscarQSL()">
-      <button class="action-btn" onclick="buscarQSL()">BUSCAR TODO</button>
+      <input type="text" id="qslInput" placeholder="INDICATIVO" onkeyup="if(event.key==='Enter') buscarTodo()">
+      <button class="action-btn" onclick="buscarTodo()">BUSCAR DISPONIBLES</button>
     </div>
 
     <div id="result-display">
-      <p class="no-results" id="status-text" style="opacity: 0.6;">Introduce un indicativo para ver los resultados.</p>
+      <div class="status-msg" id="status-text">Esperando indicativo...</div>
     </div>
 
     <footer>— Motor del Proyecto: CL7ADV —</footer>
   </div>
 
   <script>
-    function buscarQSL() {
-      const input = document.getElementById('qslInput').value.trim().toUpperCase();
+    function buscarTodo() {
+      const indicativo = document.getElementById('qslInput').value.trim().toUpperCase();
       const display = document.getElementById('result-display');
       
-      if (!input) return;
+      if (!indicativo) return;
 
-      display.innerHTML = '<p class="no-results">🔍 Escaneando formatos...</p>';
+      display.innerHTML = '<div class="status-msg">🔍 Buscando todas las QSLs para ' + indicativo + '...</div>';
 
-      const ext = ['jpg', 'png', 'jpeg', 'JPG', 'PNG'];
+      const extensiones = ['jpg', 'png', 'jpeg', 'JPG', 'PNG'];
       let encontrados = 0;
-      let procesados = 0;
+      let totalPeticiones = 0;
+      let peticionesFinalizadas = 0;
 
-      // Limpiamos el contenedor para empezar a añadir tarjetas
-      const contenedorTemporal = [];
+      // Creamos la lista de nombres a probar
+      const nombresAProbar = [];
 
-      ext.forEach((extension) => {
-        const nombreArchivo = `${input}.${extension}`;
-        const rutaFinal = `img/${nombreArchivo}`;
-        const img = new Image();
+      // 1. Añadir nombres base (ej: CO7ADV.jpg)
+      extensiones.forEach(ext => nombresAProbar.push(`${indicativo}.${ext}`));
 
-        img.onload = function() {
+      // 2. Añadir nombres con guion (ej: CO7ADV-1.jpg, CO7ADV-2.jpg... hasta 10)
+      for (let i = 1; i <= 10; i++) {
+        extensiones.forEach(ext => {
+          nombresAProbar.push(`${indicativo}-${i}.${ext}`);
+        });
+      }
+
+      totalPeticiones = nombresAProbar.length;
+
+      nombresAProbar.forEach(nombre => {
+        const imgPath = `img/${nombre}`;
+        const imgTest = new Image();
+
+        imgTest.onload = function() {
           encontrados++;
-          const card = `
-            <div class="qsl-card">
-              <img src="${rutaFinal}" alt="QSL ${input}">
-              <p style="font-size: 0.8rem; margin: 5px 0;">Archivo: ${nombreArchivo}</p>
-              <a href="${rutaFinal}" download="${nombreArchivo}" class="download-link">💾 DESCARGAR</a>
-            </div>
+          // Eliminar mensaje de espera si es la primera encontrada
+          const status = document.getElementById('status-text');
+          if (status) status.remove();
+
+          const div = document.createElement('div');
+          div.className = 'qsl-item';
+          div.innerHTML = `
+            <img src="${imgPath}" alt="QSL">
+            <div style="margin-bottom:10px; font-size:0.8rem; font-family:monospace;">${nombre}</div>
+            <a href="${imgPath}" download="${nombre}" class="btn-download">💾 DESCARGAR</a>
           `;
-          contenedorTemporal.push(card);
-          verificarFinalizacion();
+          display.appendChild(div);
+          verificarFin();
         };
 
-        img.onerror = function() {
-          verificarFinalizacion();
+        imgTest.onerror = function() {
+          verificarFin();
         };
 
-        img.src = rutaFinal;
+        imgTest.src = imgPath;
       });
 
-      function verificarFinalizacion() {
-        procesados++;
-        // Cuando hayamos probado todas las extensiones
-        if (procesados === ext.length) {
-          if (encontrados === 0) {
-            display.innerHTML = `
-              <div class="no-results">
-                <p style="color: #ffcdd2; font-size: 1.2rem;">❌ No se encontró ninguna QSL para <b>${input}</b></p>
-                <p style="font-size: 0.8rem; opacity: 0.7;">Verifique que los archivos estén en <b>img/</b></p>
-              </div>`;
-          } else {
-            // Mostramos todas las imágenes encontradas
-            display.innerHTML = contenedorTemporal.join('');
-          }
+      function verificarFin() {
+        peticionesFinalizadas++;
+        if (peticionesFinalizadas === totalPeticiones && encontrados === 0) {
+          display.innerHTML = '<div class="status-msg" style="color:#ffcdd2;">❌ No se encontró ningún archivo para ' + indicativo + '</div>';
         }
       }
     }
