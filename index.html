@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>QSL CARIBE v101 - CINEMATIC</title>
+    <title>QSL CARIBE v106 - DRIVE DEEP SEARCH</title>
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Inter:wght@300;800&display=swap" rel="stylesheet">
     
@@ -42,6 +42,8 @@
 
         .qsl-card { margin-top: 30px; border: 2px solid var(--cyan); border-radius: 20px; overflow: hidden; background: #000; animation: slideUp 0.8s forwards; }
         @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        
+        #results img { width: 100%; display: block; }
     </style>
 </head>
 <body onload="initCinematic()">
@@ -60,13 +62,13 @@
     <div id="main-ui">
         <div class="container">
             <div class="glass-panel">
-                <h2 style="font-family: 'Orbitron'; color: var(--cyan);">BUSCADOR DE SEÑAL</h2>
-                <input type="text" id="target-id" class="supreme-input" placeholder="INDICATIVO">
-                <button class="btn btn-cyan" onclick="startDeepSearch()">INICIAR ESCANEO</button>
+                <h2 style="font-family: 'Orbitron'; color: var(--cyan);">BUSCADOR DRIVE</h2>
+                <input type="text" id="target-id" class="supreme-input" placeholder="INDICATIVO" oninput="checkInput(this.value)">
+                <button class="btn btn-cyan" onclick="startCloudSearch()">INICIAR ESCANEO</button>
                 
                 <div id="radar-container">
                     <div class="radar"></div>
-                    <p style="color:var(--cyan); font-family: 'Orbitron'; margin-top:15px;">RASTREANDO BASE DE DATOS...</p>
+                    <p style="color:var(--cyan); font-family: 'Orbitron'; margin-top:15px;">RASTREANDO EN LA NUBE...</p>
                 </div>
                 
                 <div id="results"></div>
@@ -82,7 +84,7 @@
     </div>
 
     <div id="tutorial-box">
-        <p>📡 TUTORIAL: Escribe tu indicativo y espera el escaneo satelital para descargar tu QSL.</p>
+        <p>📡 TUTORIAL: Escribe tu indicativo y el sistema buscará en Google Drive.</p>
         <button onclick="closeTut()" style="background:#000; color:#fff; border:none; padding:10px 20px; border-radius:10px; cursor:pointer;">ENTENDIDO</button>
     </div>
 
@@ -111,7 +113,20 @@
 
         function closeTut() { document.getElementById('tutorial-box').style.display = 'none'; }
 
-        async function startDeepSearch() {
+        // --- LÓGICA DE RETORNO AL INICIO ---
+        function checkInput(val) {
+            if (val === "") {
+                clearSearch();
+            }
+        }
+
+        function clearSearch() {
+            document.getElementById('results').innerHTML = "";
+            document.getElementById('radar-container').style.display = "none";
+            // No se llama a tutorial-box, por lo que no vuelve a aparecer
+        }
+
+        async function startCloudSearch() {
             const id = document.getElementById('target-id').value.trim().toUpperCase();
             const results = document.getElementById('results');
             const radar = document.getElementById('radar-container');
@@ -125,53 +140,74 @@
             // CARGA LENTA DE 4 SEGUNDOS
             await new Promise(r => setTimeout(r, 4000));
 
-            radar.style.display = "none";
-            snd.pause();
-            snd.currentTime = 0;
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: "POST",
+                    body: JSON.stringify({ action: "search", name: id })
+                });
+                const data = await response.json();
 
-            // BUSQUEDA MULTI-RUTA (Arregla el error 404 probando carpetas)
-            const paths = [`img/${id}.png`, `IMG/${id}.png`, `img/${id}.jpg`, `IMG/${id}.jpg`];
-            const variations = [`img/${id}-1.png`, `IMG/${id}-1.png`, `img/${id}-2.png` ];
-            
-            const allToTry = [...paths, ...variations];
-            let foundCount = 0;
+                radar.style.display = "none";
+                snd.pause();
+                snd.currentTime = 0;
 
-            for(let p of allToTry) {
-                const exists = await verifyImage(p);
-                if(exists) {
-                    foundCount++;
-                    results.innerHTML += `
-                        <div class="qsl-card">
-                            <img src="${p}" style="width:100%">
-                            <button class="btn btn-cyan" style="width:100%; border-radius:0;" onclick="downloadImg('${p}')">DESCARGAR</button>
-                        </div>`;
+                if (data.result === "success" && data.images.length > 0) {
+                    document.getElementById('snd-success').play();
+                    data.images.forEach(imgBase64 => {
+                        results.innerHTML += `
+                            <div class="qsl-card">
+                                <img src="${imgBase64}">
+                                <button class="btn btn-cyan" style="width:100%; border-radius:0;" onclick="downloadAndReset('${imgBase64}', '${id}')">DESCARGAR Y SALIR</button>
+                            </div>`;
+                    });
+                } else {
+                    results.innerHTML = "<p style='color:var(--pink)'>SIN SEÑAL EN DRIVE</p>";
                 }
+            } catch (e) {
+                radar.style.display = "none";
+                snd.pause();
+                alert("Error de enlace con Drive");
             }
-
-            if(foundCount > 0) document.getElementById('snd-success').play();
-            else results.innerHTML = "<p style='color:var(--pink)'>ERROR: SEÑAL NO ENCONTRADA</p>";
         }
 
-        function verifyImage(url) {
-            return new Promise(res => {
-                const img = new Image();
-                img.onload = () => res(true);
-                img.onerror = () => res(false);
-                img.src = url;
-            });
-        }
-
-        function downloadImg(url) {
+        function downloadAndReset(base64, name) {
             const link = document.createElement('a');
-            link.href = url;
-            link.download = url.split('/').pop();
+            link.href = base64;
+            link.download = name + ".png";
             link.click();
+            
+            // Retorno al inicio: limpia input y resultados sin activar tutorial
+            document.getElementById('target-id').value = "";
+            clearSearch();
         }
 
         async function secureUpload() {
             const pass = prompt("LLAVE MAESTRA:");
             if(pass !== "Leila2026") return alert("BLOQUEADO");
-            // ... resto de lógica de subida ...
+            
+            const name = document.getElementById('up-name').value.trim().toUpperCase();
+            const fileEl = document.getElementById('up-file').files[0];
+            if(!name || !fileEl) return alert("FALTAN DATOS");
+
+            const reader = new FileReader();
+            reader.readAsDataURL(fileEl);
+            reader.onload = async function() {
+                const payload = { 
+                    base64: reader.result.split(',')[1], 
+                    type: fileEl.type, 
+                    name: name + ".png" 
+                };
+                try {
+                    const resp = await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify(payload) });
+                    const res = await resp.json();
+                    if(res.result === "success") {
+                        document.getElementById('snd-success').play();
+                        alert("✅ GUARDADO EN DRIVE");
+                        document.getElementById('up-name').value = "";
+                        document.getElementById('up-file').value = "";
+                    }
+                } catch (e) { alert("❌ ERROR"); }
+            };
         }
     </script>
 </body>
