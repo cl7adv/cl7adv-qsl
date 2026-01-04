@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>QSL CARIBE v106 - GLOBAL STATION</title>
+    <title>QSL CARIBE v108 - FULL WEB STATION</title>
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
     <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Outfit:wght@300;600;900&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
     
@@ -12,13 +12,13 @@
             --accent-coral: #ff4d6d; 
             --accent-sea: #00d4ff;   
             --bg-dark: #0f0a0a;      
-            --glass: rgba(25, 15, 15, 0.92);
+            --glass: rgba(25, 15, 15, 0.95);
         }
 
         body, html { margin: 0; padding: 0; background: radial-gradient(circle at top right, #2a1b1b, #0f0a0a); color: #fff1e6; font-family: 'Outfit', sans-serif; overflow-x: hidden; min-height: 100vh; }
 
-        /* --- RELOJ UTC ZULU --- */
-        #utc-clock { position: fixed; top: 20px; right: 20px; background: rgba(0,0,0,0.8); padding: 10px 18px; border-radius: 12px; border: 1px solid var(--accent-warm); font-family: 'JetBrains Mono', monospace; z-index: 9000; box-shadow: 0 0 20px rgba(255,157,0,0.3); text-align: right; }
+        /* --- RELOJ UTC --- */
+        #utc-clock { position: fixed; top: 20px; right: 20px; background: rgba(0,0,0,0.85); padding: 10px 18px; border-radius: 12px; border: 1px solid var(--accent-warm); font-family: 'JetBrains Mono', monospace; z-index: 9000; box-shadow: 0 0 20px rgba(255,157,0,0.3); text-align: right; }
         #utc-clock span { color: var(--accent-warm); font-weight: bold; display: block; font-size: 0.65rem; letter-spacing: 2px; }
         #utc-time { font-size: 1.3rem; color: #fff; text-shadow: 0 0 10px var(--accent-warm); }
 
@@ -36,13 +36,13 @@
         .btn { padding: 18px 30px; border-radius: 12px; border: none; font-weight: 700; font-family: 'Syncopate', sans-serif; cursor: pointer; transition: 0.3s; text-transform: uppercase; font-size: 0.75rem; display: inline-block; text-decoration: none; text-align: center; }
         .btn-warm { background: linear-gradient(45deg, var(--accent-warm), #ff6b00); color: #000; }
         .btn-coral { background: var(--accent-coral); color: #fff; }
-        .btn-sdr { background: #005f73; color: #fff; margin-top: 10px; border: 1px solid var(--accent-sea); }
+        .btn-sdr { background: #005f73; color: #fff; border: 1px solid var(--accent-sea); width: 100%; box-sizing: border-box; margin-top: 10px; }
 
         /* --- BOTONES FLOTANTES --- */
         .fab-container { position: fixed; bottom: 30px; right: 30px; display: flex; flex-direction: column; gap: 15px; z-index: 8000; }
-        .fab { width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 0 30px rgba(0,0,0,0.5); border: none; transition: 0.4s; font-size: 2rem; }
-        #school-btn { background: var(--accent-warm); }
-        #sdr-btn { background: #005f73; text-decoration: none; }
+        .fab { width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 0 30px rgba(0,0,0,0.5); border: none; transition: 0.4s; font-size: 2rem; text-decoration: none; }
+        #school-btn { background: var(--accent-warm); color: #000; }
+        #sdr-btn { background: #005f73; color: #fff; }
         .fab:hover { transform: scale(1.1) rotate(-10deg); }
 
         /* --- MODAL ESCUELA --- */
@@ -50,7 +50,8 @@
         .section-title { color: var(--accent-coral); font-family: 'Syncopate'; font-size: 1.1rem; margin-top: 35px; border-left: 4px solid var(--accent-warm); padding-left: 15px; }
         .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; margin-top: 20px; }
         .card-pro { background: #161111; border: 1px solid #2a1b1b; padding: 20px; border-radius: 18px; }
-        .card-pro h4 { color: var(--accent-warm); font-family: 'Syncopate'; font-size: 0.85rem; margin-top: 0; }
+        .card-pro h4 { color: var(--accent-warm); font-family: 'Syncopate'; font-size: 0.85rem; margin: 0 0 10px 0; }
+        .blueprint { background: #000; border: 1px dashed var(--accent-sea); padding: 15px; border-radius: 10px; font-family: 'JetBrains Mono'; color: var(--accent-sea); font-size: 0.75rem; margin-top: 10px; }
         
         /* --- RADAR Y RESULTADOS --- */
         #radar-container { display: none; margin: 20px 0; }
@@ -60,8 +61,8 @@
         .qsl-card { border: 1px solid #332222; border-radius: 15px; overflow: hidden; background: #000; }
         .qsl-card img { width: 100%; height: auto; display: block; }
 
-        /* FLAG COUNTER STYLING */
-        .visitor-box { background: rgba(0,0,0,0.3); padding: 20px; text-align: center; border-radius: 20px; margin-top: 20px; border: 1px solid rgba(255,255,255,0.05); }
+        /* CONTENEDOR FLAG COUNTER */
+        .flag-box { background: rgba(0,0,0,0.3); padding: 20px; text-align: center; border-radius: 25px; border: 1px solid rgba(255,255,255,0.05); }
     </style>
 </head>
 <body onload="initApp()">
@@ -71,110 +72,119 @@
     <audio id="snd-ok" src="https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3"></audio>
 
     <div id="utc-clock">
-        <span>STATION UTC</span>
+        <span>ESTACIÓN ZULU (UTC)</span>
         <div id="utc-time">00:00:00</div>
     </div>
 
     <div id="intro-overlay">
-        <h1 class="boot-text">CARIBE NODO<br><span style="font-size: 0.4em; opacity: 0.6;">V106 GLOBAL MASTER</span></h1>
-        <button class="btn btn-warm" id="connect-btn" style="display:none; margin-top:30px;" onclick="unlockUI()">ENTRAR AL NODO</button>
+        <h1 class="boot-text">CARIBE NODO<br><span style="font-size: 0.4em; opacity: 0.6;">v108 OPERATIONAL</span></h1>
+        <button class="btn btn-warm" id="connect-btn" style="display:none; margin-top:30px;" onclick="unlockUI()">INICIAR WEB</button>
     </div>
 
     <div id="main-ui">
         <div class="container">
+            
             <div class="glass-panel">
-                <h2 style="font-family: 'Syncopate'; color: var(--accent-warm); margin:0 0 20px 0;">BUSCADOR QSL</h2>
+                <h2 style="font-family: 'Syncopate'; color: var(--accent-warm); margin:0 0 20px 0;">BÚSQUEDA QSL</h2>
                 <input type="text" id="target-id" class="supreme-input" placeholder="INDICATIVO">
-                <button class="btn btn-warm" onclick="deepSearch()">INICIAR RASTREO</button>
+                <button class="btn btn-warm" style="width:100%" onclick="deepSearch()">RASTREAR INDICATIVO</button>
                 <div id="radar-container"><div class="radar"></div></div>
                 <div id="results"></div>
             </div>
 
             <div class="glass-panel" style="border-color: var(--accent-sea);">
-                <h3 style="font-family: 'Syncopate'; color: var(--accent-sea);">RECURSOS REMOTOS</h3>
-                <p>Escucha la banda en vivo desde Argentina:</p>
-                <a href="http://lu4ao.ddns.net:8073/" target="_blank" class="btn btn-sdr" style="width: 100%; box-sizing: border-box;">ABRIR WEBSDR ARGENTINA (LU4AO)</a>
+                <h3 style="font-family: 'Syncopate'; color: var(--accent-sea);">ESCUCHA EN VIVO</h3>
+                <p>Acceso directo al receptor WebSDR en Argentina para monitoreo de bandas:</p>
+                <a href="http://lu4ao.ddns.net:8073/" target="_blank" class="btn btn-sdr">📻 WEBSDR ARGENTINA (LU4AO)</a>
             </div>
 
-            <div class="visitor-box">
+            <div class="flag-box">
                 <div style="margin-bottom:15px">
                     <a href="https://info.flagcounter.com/ReMh" style="text-decoration: none;">
-                        <img alt="Flag Counter" border="0" src="https://s01.flagcounter.com/count2/ReMh/bg_0b1622/txt_ffffff/border_1a3a5a/columns_5/maxflags_15/viewers_0/labels_0/pageviews_0/flags_0/percent_0/" />
+                        <img alt="Flag Counter" border="0" src="https://s01.flagcounter.com/count2/ReMh/bg_0b1622/txt_ffffff/border_1a3a5a/columns_5/maxflags_15/viewers_0/labels_0/pageviews_0/flags_0/percent_0/" /> 
                     </a>
                 </div>
             </div>
+
         </div>
     </div>
 
     <div class="fab-container">
-        <a href="http://lu4ao.ddns.net:8073/" target="_blank" class="fab" id="sdr-btn" title="WebSDR Argentina">📻</a>
-        <button class="fab" id="school-btn" onclick="toggleSchool()" title="Escuela Técnica">🎓</button>
+        <a href="http://lu4ao.ddns.net:8073/" target="_blank" class="fab" id="sdr-btn" title="WebSDR Argentina">🇦🇷</a>
+        <button class="fab" id="school-btn" onclick="toggleSchool()" title="Academy">🎓</button>
     </div>
 
     <div id="school-modal">
         <div class="container">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px;">
-                <h1 style="font-family: 'Syncopate'; color: var(--accent-warm); margin:0;">ACADEMY PRO</h1>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; border-bottom:1px solid #333; padding-bottom:15px;">
+                <h1 style="font-family: 'Syncopate'; color: var(--accent-warm); margin:0;">ACADEMY v108</h1>
                 <button class="btn btn-coral" onclick="toggleSchool()">CERRAR</button>
             </div>
 
-            <div class="section-title">CONSEJOS DE ORO</div>
-            <div class="info-grid">
-                <div class="card-pro">
-                    <h4>CONEXIÓN A TIERRA</h4>
-                    <p>Una buena jabalina de cobre reduce el ruido de fondo y evita retornos de RF que "pican" los dedos al tocar el equipo.</p>
-                </div>
-                <div class="card-pro">
-                    <h4>TRUCO DEL NEÓN</h4>
-                    <p>Usa un foco de neón en las puntas del dipolo. Si brilla al hablar, ¡toda la energía está en la antena!</p>
-                </div>
-            </div>
-
-            <div class="section-title">PLANOS DE ANTENAS</div>
+            <div class="section-title">RADIO-TÉCNICA</div>
             <div class="info-grid">
                 <div class="card-pro">
                     <h4>ANTENA DIPOLO 40M</h4>
-                    <p>Longitud por brazo: 10.03 metros. Altura mínima recomendada: 6 metros.</p>
+                    <p>Calculado para 7.100 MHz. Largo de cada brazo: 10.03 metros.</p>
+                    <div class="blueprint">📐 Total: 20.06m</div>
                 </div>
                 <div class="card-pro">
-                    <h4>ANTENA "CAÑA DE PESCAR"</h4>
-                    <p>Ideal para DX portable. Usa 7 metros de cable unun 4:1 y una caña telescópica.</p>
+                    <h4>RESISTENCIA DE CARGA</h4>
+                    <p>Usa una resistencia de carbón de 50 ohms para probar tu equipo sin radiar interferencia.</p>
                 </div>
             </div>
+
+            <div class="section-title">CONSEJOS PRO</div>
+            <div class="info-grid">
+                <div class="card-pro">
+                    <h4>PROTECCIÓN CONTRA RAYOS</h4>
+                    <p>Desconecta siempre tus antenas cuando no las uses o ante tormentas eléctricas inminentes.</p>
+                </div>
+                <div class="card-pro">
+                    <h4>CÓDIGO Q BÁSICO</h4>
+                    <p>QSO: Comunicado | QSL: Acuse de recibo | QRZ: ¿Quién me llama? | QTH: Ubicación.</p>
+                </div>
+            </div>
+            <div style="height:50px;"></div>
         </div>
     </div>
 
     <script>
+        // Reloj en tiempo real
         function updateClock() {
             const now = new Date();
-            const time = now.getUTCHours().toString().padStart(2,'0') + ":" + 
-                         now.getUTCMinutes().toString().padStart(2,'0') + ":" + 
-                         now.getUTCSeconds().toString().padStart(2,'0');
-            document.getElementById('utc-time').innerText = time;
+            const h = now.getUTCHours().toString().padStart(2,'0');
+            const m = now.getUTCMinutes().toString().padStart(2,'0');
+            const s = now.getUTCSeconds().toString().padStart(2,'0');
+            document.getElementById('utc-time').innerText = `${h}:${m}:${s}`;
         }
         setInterval(updateClock, 1000);
 
+        // Inicio de aplicación
         function initApp() {
             setTimeout(() => {
                 document.getElementById('connect-btn').style.display = "block";
-                document.getElementById('snd-power').play();
-            }, 2000);
+                document.getElementById('snd-power').play().catch(()=>{});
+            }, 1500);
         }
 
+        // Desbloquear Interfaz
         function unlockUI() {
             document.getElementById('intro-overlay').style.opacity = "0";
             setTimeout(() => {
                 document.getElementById('intro-overlay').style.display = "none";
                 document.getElementById('main-ui').style.display = "block";
-                setTimeout(() => document.getElementById('main-ui').style.opacity = "1", 100);
+                setTimeout(() => document.getElementById('main-ui').style.opacity = "1", 50);
             }, 1000);
         }
 
+        // Abrir/Cerrar Escuela
         function toggleSchool() {
             const m = document.getElementById('school-modal');
             m.style.display = (m.style.display === 'block') ? 'none' : 'block';
         }
 
+        // Buscador de Imágenes QSL
         async function deepSearch() {
             const id = document.getElementById('target-id').value.trim().toUpperCase();
             if(!id) return;
@@ -184,14 +194,15 @@
 
             res.innerHTML = "";
             radar.style.display = "block";
-            snd.play();
+            snd.play().catch(()=>{});
 
-            await new Promise(r => setTimeout(r, 3000));
+            await new Promise(r => setTimeout(r, 2500));
             radar.style.display = "none";
             snd.pause();
 
-            const paths = [`img/${id}.png`, `img/${id}.jpg` ];
+            const paths = [`img/${id}.png`, `img/${id}.jpg`, `img/${id}.jpeg` ];
             let found = false;
+
             for(let p of paths) {
                 const ok = await new Promise(resolve => {
                     const i = new Image();
@@ -200,12 +211,13 @@
                     i.src = p;
                 });
                 if(ok) {
-                    res.innerHTML += `<div class="qsl-card"><img src="${p}"><button class="btn btn-warm" style="width:100%; border-radius:0;" onclick="window.open('${p}')">DESCARGAR</button></div>`;
+                    res.innerHTML += `<div class="qsl-card"><img src="${p}"><button class="btn btn-warm" style="width:100%; border-radius:0;" onclick="window.open('${p}')">DESCARGAR QSL</button></div>`;
                     found = true;
                 }
             }
-            if(found) document.getElementById('snd-ok').play();
-            else res.innerHTML = "<p style='color:var(--accent-coral)'>SEÑAL NO RECIBIDA</p>";
+
+            if(found) document.getElementById('snd-ok').play().catch(()=>{});
+            else res.innerHTML = "<p style='color:var(--accent-coral); font-weight:bold;'>ERROR: INDICATIVO NO ENCONTRADO</p>";
         }
     </script>
 </body>
