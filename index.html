@@ -2,64 +2,121 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>QSL CARIBE v101 - CINEMATIC</title>
+    <title>QSL CARIBE v102 - TROPICAL WARMTH</title>
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Inter:wght@300;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Outfit:wght@300;600;900&display=swap" rel="stylesheet">
     
     <style>
-        :root { --cyan: #00f2ff; --pink: #ff007b; --bg: #010409; }
-        body, html { margin: 0; padding: 0; background: var(--bg); color: white; font-family: 'Inter', sans-serif; overflow-x: hidden; }
+        :root { 
+            --accent-warm: #ff9d00; /* Ámbar atardecer */
+            --accent-coral: #ff4d6d; /* Coral caribeño */
+            --accent-sea: #00d4ff;   /* Turquesa mar */
+            --bg-dark: #0f0a0a;      /* Negro cálido */
+            --glass: rgba(30, 20, 20, 0.7);
+        }
 
-        /* --- CINEMÁTICA DE INICIO --- */
+        body, html { 
+            margin: 0; padding: 0; 
+            background: radial-gradient(circle at top right, #2a1b1b, #0f0a0a); 
+            color: #fff1e6; 
+            font-family: 'Outfit', sans-serif; 
+            overflow-x: hidden; 
+        }
+
+        /* --- CINEMÁTICA DE INICIO CALIDA --- */
         #intro-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #000; z-index: 10000; display: flex; flex-direction: column;
             align-items: center; justify-content: center; transition: 1.5s;
         }
-        .scan-line { width: 100%; height: 2px; background: var(--cyan); position: absolute; top: 0; animation: moveScan 2s linear infinite; box-shadow: 0 0 20px var(--cyan); }
+        .scan-line { 
+            width: 100%; height: 3px; 
+            background: linear-gradient(90deg, transparent, var(--accent-warm), transparent); 
+            position: absolute; top: 0; animation: moveScan 2.5s ease-in-out infinite; 
+            box-shadow: 0 0 30px var(--accent-warm); 
+        }
         @keyframes moveScan { 0% { top: 0; } 100% { top: 100%; } }
         
-        .boot-text { font-family: 'Orbitron', sans-serif; color: var(--cyan); text-shadow: 0 0 10px var(--cyan); letter-spacing: 5px; }
+        .boot-text { 
+            font-family: 'Syncopate', sans-serif; 
+            color: var(--accent-warm); 
+            text-shadow: 0 0 15px rgba(255, 157, 0, 0.6); 
+            letter-spacing: 8px; 
+            text-align: center;
+        }
 
         /* --- UI PRINCIPAL --- */
         #main-ui { opacity: 0; transition: 2s; display: none; }
-        .container { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
-        .glass-panel { background: rgba(13, 17, 23, 0.9); border-radius: 40px; padding: 40px; border: 1px solid rgba(0, 242, 255, 0.2); margin-bottom: 40px; text-align: center; }
+        .container { max-width: 900px; margin: 40px auto; padding: 0 20px; }
+        
+        .glass-panel { 
+            background: var(--glass); 
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 30px; 
+            padding: 40px; 
+            border: 1px solid rgba(255, 157, 0, 0.15); 
+            margin-bottom: 30px; 
+            text-align: center; 
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
 
-        .supreme-input { width: 100%; padding: 25px; border-radius: 20px; background: #000; border: 2px solid #1e293b; color: var(--cyan); font-size: 2rem; font-weight: 800; text-align: center; font-family: 'Orbitron', sans-serif; margin-bottom: 20px; box-sizing: border-box; }
+        .supreme-input { 
+            width: 100%; padding: 20px; border-radius: 15px; 
+            background: rgba(0,0,0,0.4); 
+            border: 2px solid #332222; 
+            color: var(--accent-warm); 
+            font-size: 1.8rem; font-weight: 900; 
+            text-align: center; font-family: 'Syncopate', sans-serif; 
+            margin-bottom: 20px; box-sizing: border-box;
+            transition: 0.3s;
+        }
+        .supreme-input:focus { border-color: var(--accent-warm); outline: none; box-shadow: 0 0 20px rgba(255, 157, 0, 0.2); }
 
-        .btn { padding: 20px 45px; border-radius: 50px; border: none; font-weight: 900; font-family: 'Orbitron', sans-serif; cursor: pointer; transition: 0.4s; text-transform: uppercase; letter-spacing: 2px; }
-        .btn-cyan { background: var(--cyan); color: #000; }
-        .btn-pink { background: var(--pink); color: #fff; }
+        .btn { 
+            padding: 18px 40px; border-radius: 15px; border: none; 
+            font-weight: 700; font-family: 'Syncopate', sans-serif; 
+            cursor: pointer; transition: 0.3s; text-transform: uppercase; 
+            letter-spacing: 1px; font-size: 0.9rem;
+        }
+        .btn-warm { background: linear-gradient(45deg, var(--accent-warm), #ff6b00); color: #000; }
+        .btn-coral { background: var(--accent-coral); color: #fff; }
+        .btn:hover { transform: scale(1.05); filter: brightness(1.2); }
 
-        /* --- RADAR LOADER --- */
+        /* --- RADAR CALIDO --- */
         #radar-container { display: none; margin: 20px auto; }
-        .radar { width: 80px; height: 80px; border: 4px solid var(--cyan); border-radius: 50%; border-top-color: transparent; animation: spin 1s linear infinite; margin: 0 auto; }
+        .radar { 
+            width: 70px; height: 70px; 
+            border: 4px solid var(--accent-warm); 
+            border-radius: 50%; border-top-color: transparent; 
+            animation: spin 0.8s linear infinite; margin: 0 auto; 
+        }
         @keyframes spin { to { transform: rotate(360deg); } }
 
         /* --- TUTORIAL --- */
-        #tutorial-box { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); width: 80%; max-width: 400px; background: var(--cyan); color: #000; padding: 20px; border-radius: 20px; font-weight: bold; z-index: 5000; display: none; text-align: center; box-shadow: 0 0 30px rgba(0,242,255,0.5); }
+        #tutorial-box { 
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); 
+            width: 85%; max-width: 450px; 
+            background: var(--accent-warm); color: #000; 
+            padding: 25px; border-radius: 25px; font-weight: bold; 
+            z-index: 5000; display: none; text-align: center; 
+            box-shadow: 0 15px 50px rgba(255,157,0,0.4); 
+        }
 
-        /* --- GALERÍA DE RESULTADOS --- */
+        /* --- RESULTADOS --- */
         #results { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
-            gap: 20px; 
-            margin-top: 30px; 
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+            gap: 25px; margin-top: 30px; 
         }
-
         .qsl-card { 
-            border: 2px solid var(--cyan); 
-            border-radius: 20px; 
-            overflow: hidden; 
-            background: #000; 
-            animation: slideUp 0.8s forwards; 
-            display: flex;
-            flex-direction: column;
+            border: 1px solid rgba(255, 157, 0, 0.3); 
+            border-radius: 20px; overflow: hidden; 
+            background: #1a1111; animation: slideUp 0.8s ease-out forwards; 
         }
-        @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        
-        .qsl-card img { width: 100%; height: auto; display: block; border-bottom: 1px solid #1e293b; }
+        @keyframes slideUp { from { transform: translateY(40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .qsl-card img { width: 100%; height: auto; display: block; filter: sepia(20%); }
+
+        ::placeholder { color: #554444; }
     </style>
 </head>
 <body onload="initCinematic()">
@@ -70,38 +127,42 @@
 
     <div id="intro-overlay">
         <div class="scan-line"></div>
-        <h1 class="boot-text">SISTEMA CARIBE</h1>
-        <p id="boot-status" style="font-family: monospace; color: #444;">INICIALIZANDO HARDWARE...</p>
-        <button class="btn btn-cyan" id="connect-btn" style="display:none; margin-top:30px;" onclick="unlockUI()">CONECTAR AL NODO</button>
+        <h1 class="boot-text">CARIBE<br><span style="font-size: 0.5em; color: #555;">NETWORK SYSTEM</span></h1>
+        <p id="boot-status" style="font-family: monospace; color: var(--accent-warm); opacity: 0.6; margin-top: 20px;">CALIBRANDO FRECUENCIAS...</p>
+        <button class="btn btn-warm" id="connect-btn" style="display:none; margin-top:30px;" onclick="unlockUI()">ENTRAR AL SISTEMA</button>
     </div>
 
     <div id="main-ui">
         <div class="container">
             <div class="glass-panel">
-                <h2 style="font-family: 'Orbitron'; color: var(--cyan);">BUSCADOR DE SEÑAL</h2>
+                <h2 style="font-family: 'Syncopate'; color: var(--accent-warm); font-size: 1.2rem;">RASTREADOR QSL</h2>
+                <p style="font-size: 0.9rem; opacity: 0.7; margin-bottom: 25px;">Sincronizado con el Nodo Central Caribe</p>
+                
                 <input type="text" id="target-id" class="supreme-input" placeholder="INDICATIVO" oninput="checkInput(this.value)">
-                <button class="btn btn-cyan" onclick="startDeepSearch()">INICIAR ESCANEO</button>
+                <button class="btn btn-warm" onclick="startDeepSearch()">ESCANEAR SEÑAL</button>
                 
                 <div id="radar-container">
                     <div class="radar"></div>
-                    <p style="color:var(--cyan); font-family: 'Orbitron'; margin-top:15px;">RASTREANDO BASE DE DATOS...</p>
+                    <p style="color:var(--accent-warm); font-size: 0.8rem; margin-top:15px; letter-spacing: 2px;">LOCALIZANDO ARCHIVOS...</p>
                 </div>
                 
                 <div id="results"></div>
             </div>
 
-            <div class="glass-panel" style="border-color: var(--pink);">
-                <h2 style="font-family: 'Orbitron'; color: var(--pink);">SISTEMA DE CARGA</h2>
-                <input type="text" id="up-name" class="supreme-input" placeholder="NOMBRE" style="font-size: 1.2rem; border-color: #333;">
-                <input type="file" id="up-file" style="margin: 20px 0;">
-                <button class="btn btn-pink" onclick="secureUpload()">SUBIR A DRIVE</button>
+            <div class="glass-panel" style="border-color: rgba(255, 77, 109, 0.3);">
+                <h2 style="font-family: 'Syncopate'; color: var(--accent-coral); font-size: 1.2rem;">ESTACIÓN DE CARGA</h2>
+                <input type="text" id="up-name" class="supreme-input" placeholder="NOMBRE DE ARCHIVO" style="font-size: 1rem; border-color: #2a1b1b;">
+                <input type="file" id="up-file" style="margin: 20px 0; font-family: 'Outfit';">
+                <br>
+                <button class="btn btn-coral" onclick="secureUpload()">TRANSMITIR A LA NUBE</button>
             </div>
         </div>
     </div>
 
     <div id="tutorial-box">
-        <p>📡 TUTORIAL: Escribe tu indicativo y espera el escaneo satelital para descargar tu QSL.</p>
-        <button onclick="closeTut()" style="background:#000; color:#fff; border:none; padding:10px 20px; border-radius:10px; cursor:pointer;">ENTENDIDO</button>
+        <p>☀️ BIENVENIDO AL SISTEMA QSL CARIBE</p>
+        <p style="font-size: 0.9rem; font-weight: normal;">Ingresa tu indicativo para recuperar tu tarjeta desde el satélite.</p>
+        <button onclick="closeTut()" style="background:#000; color:#fff; border:none; padding:12px 25px; border-radius:12px; cursor:pointer; font-weight:bold; margin-top:10px;">COMENZAR</button>
     </div>
 
     <script>
@@ -109,7 +170,7 @@
 
         function initCinematic() {
             setTimeout(() => {
-                document.getElementById('boot-status').innerText = "ENLACE SATELITAL LISTO";
+                document.getElementById('boot-status').innerText = "ENLACE ESTABLECIDO";
                 document.getElementById('connect-btn').style.display = "block";
                 document.getElementById('snd-power').play();
             }, 3000);
@@ -130,9 +191,7 @@
         function closeTut() { document.getElementById('tutorial-box').style.display = 'none'; }
 
         function checkInput(val) {
-            if (val === "") {
-                clearResults();
-            }
+            if (val === "") clearResults();
         }
 
         function clearResults() {
@@ -157,7 +216,6 @@
             snd.pause();
             snd.currentTime = 0;
 
-            // BÚSQUEDA ORIGINAL GITHUB
             const variations = [
                 `img/${id}.png`, `IMG/${id}.png`, `img/${id}.jpg`, 
                 `img/${id}-1.png`, `IMG/${id}-1.png`, 
@@ -165,7 +223,6 @@
             ];
             
             let foundCount = 0;
-
             for(let p of variations) {
                 const exists = await verifyImage(p);
                 if(exists) {
@@ -173,13 +230,13 @@
                     results.innerHTML += `
                         <div class="qsl-card">
                             <img src="${p}">
-                            <button class="btn btn-cyan" style="width:100%; border-radius:0; padding: 15px;" onclick="downloadAndBack('${p}')">DESCARGAR</button>
+                            <button class="btn btn-warm" style="width:100%; border-radius:0; padding: 15px;" onclick="downloadAndBack('${p}')">DESCARGAR QSL</button>
                         </div>`;
                 }
             }
 
             if(foundCount > 0) document.getElementById('snd-success').play();
-            else results.innerHTML = "<p style='color:var(--pink)'>ERROR: SEÑAL NO ENCONTRADA</p>";
+            else results.innerHTML = "<p style='color:var(--accent-coral); font-weight:bold;'>SEÑAL PERDIDA: VERIFIQUE INDICATIVO</p>";
         }
 
         function verifyImage(url) {
@@ -196,18 +253,17 @@
             link.href = url;
             link.download = url.split('/').pop();
             link.click();
-            
             document.getElementById('target-id').value = "";
             clearResults();
         }
 
         async function secureUpload() {
-            const pass = prompt("LLAVE MAESTRA:");
-            if(pass !== "Leila2026") return alert("BLOQUEADO");
+            const pass = prompt("LLAVE DE ACCESO:");
+            if(pass !== "Leila2026") return alert("ACCESO DENEGADO");
             
             const name = document.getElementById('up-name').value.trim().toUpperCase();
             const fileEl = document.getElementById('up-file').files[0];
-            if(!name || !fileEl) return alert("FALTAN DATOS");
+            if(!name || !fileEl) return alert("COMPLETE LOS DATOS");
 
             const reader = new FileReader();
             reader.readAsDataURL(fileEl);
@@ -222,11 +278,11 @@
                     const res = await resp.json();
                     if(res.result === "success") {
                         document.getElementById('snd-success').play();
-                        alert("✅ ENVIADO");
+                        alert("✅ TRANSMISIÓN EXITOSA");
                         document.getElementById('up-name').value = "";
                         document.getElementById('up-file').value = "";
                     }
-                } catch (e) { alert("❌ ERROR"); }
+                } catch (e) { alert("❌ FALLO EN LA CONEXIÓN"); }
             };
         }
     </script>
