@@ -1,234 +1,340 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>QSL CARIBE v101 - CINEMATIC</title>
-    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Inter:wght@300;800&display=swap" rel="stylesheet">
-    
-    <style>
-        :root { --cyan: #00f2ff; --pink: #ff007b; --bg: #010409; }
-        body, html { margin: 0; padding: 0; background: var(--bg); color: white; font-family: 'Inter', sans-serif; overflow-x: hidden; }
+  <meta charset="UTF-8">
+  <title>Navegador QSL Caribeño - CL7ADV</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
 
-        /* --- CINEMÁTICA DE INICIO --- */
-        #intro-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #000; z-index: 10000; display: flex; flex-direction: column;
-            align-items: center; justify-content: center; transition: 1.5s;
-        }
-        .scan-line { width: 100%; height: 2px; background: var(--cyan); position: absolute; top: 0; animation: moveScan 2s linear infinite; box-shadow: 0 0 20px var(--cyan); }
-        @keyframes moveScan { 0% { top: 0; } 100% { top: 100%; } }
-        
-        .boot-text { font-family: 'Orbitron', sans-serif; color: var(--cyan); text-shadow: 0 0 10px var(--cyan); letter-spacing: 5px; }
+  <style>
+    body {
+      margin: 0;
+      font-family: "Trebuchet MS", Arial, sans-serif;
+      background: linear-gradient(to bottom, #00bcd4, #009688);
+      color: #fff;
+      text-align: center;
+    }
 
-        /* --- UI PRINCIPAL --- */
-        #main-ui { opacity: 0; transition: 2s; display: none; }
-        .container { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
-        .glass-panel { background: rgba(13, 17, 23, 0.9); border-radius: 40px; padding: 40px; border: 1px solid rgba(0, 242, 255, 0.2); margin-bottom: 40px; text-align: center; }
+    .container {
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 25px;
+      background: rgba(0,0,0,0.4);
+      border-radius: 15px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.6);
+    }
 
-        .supreme-input { width: 100%; padding: 25px; border-radius: 20px; background: #000; border: 2px solid #1e293b; color: var(--cyan); font-size: 2rem; font-weight: 800; text-align: center; font-family: 'Orbitron', sans-serif; margin-bottom: 20px; box-sizing: border-box; }
+    h1 {
+      font-size: 2.2rem;
+      margin-bottom: 15px;
+      text-shadow: 0 0 10px #ffe082;
+    }
 
-        .btn { padding: 20px 45px; border-radius: 50px; border: none; font-weight: 900; font-family: 'Orbitron', sans-serif; cursor: pointer; transition: 0.4s; text-transform: uppercase; letter-spacing: 2px; }
-        .btn-cyan { background: var(--cyan); color: #000; }
-        .btn-pink { background: var(--pink); color: #fff; }
+    #indicativo {
+      padding: 12px;
+      font-size: 1.1rem;
+      border: none;
+      border-radius: 8px;
+      margin-right: 10px;
+      width: 220px;
+      text-transform: uppercase;
+      color: #333;
+      font-weight: bold;
+    }
 
-        /* --- RADAR LOADER --- */
-        #radar-container { display: none; margin: 20px auto; }
-        .radar { width: 80px; height: 80px; border: 4px solid var(--cyan); border-radius: 50%; border-top-color: transparent; animation: spin 1s linear infinite; margin: 0 auto; }
-        @keyframes spin { to { transform: rotate(360deg); } }
+    #buscarBtn {
+      padding: 12px 25px;
+      font-size: 1.1rem;
+      background: #ff9800;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.3s;
+    }
 
-        /* --- TUTORIAL --- */
-        #tutorial-box { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); width: 80%; max-width: 400px; background: var(--cyan); color: #000; padding: 20px; border-radius: 20px; font-weight: bold; z-index: 5000; display: none; text-align: center; box-shadow: 0 0 30px rgba(0,242,255,0.5); }
+    #buscarBtn:hover {
+      background: #f57c00;
+      transform: scale(1.05);
+    }
 
-        /* --- GALERÍA DE RESULTADOS --- */
-        #results { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
-            gap: 20px; 
-            margin-top: 30px; 
-        }
+    /* Loader y Barra de Progreso */
+    .loader-wrap {
+      display: none;
+      margin-top: 20px;
+      flex-direction: column;
+      align-items: center;
+    }
 
-        .qsl-card { 
-            border: 2px solid var(--cyan); 
-            border-radius: 20px; 
-            overflow: hidden; 
-            background: #000; 
-            animation: slideUp 0.8s forwards; 
-            display: flex;
-            flex-direction: column;
-        }
-        @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        
-        .qsl-card img { width: 100%; height: auto; display: block; border-bottom: 1px solid #1e293b; }
-    </style>
+    .progress-bar {
+      position: relative;
+      width: 80%;
+      max-width: 400px;
+      height: 16px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 10px;
+      margin: 25px 0;
+      overflow: visible;
+    }
+
+    #progressFill {
+      height: 100%;
+      background: #ffe082;
+      width: 0%;
+      border-radius: 10px;
+      transition: width 0.1s;
+    }
+
+    #cardThumb {
+      position: absolute;
+      top: -30px;
+      width: 45px;
+      height: 30px;
+      background: #fff;
+      border: 2px solid #ff9800;
+      border-radius: 4px;
+      color: #000;
+      font-size: 0.7rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      transform: translateX(-50%);
+      transition: left 0.1s;
+      left: 0%;
+    }
+
+    /* Modal de Resultados */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.9);
+      overflow-y: auto;
+      padding-top: 30px;
+    }
+
+    .modal-contenido {
+      background: #1a333d;
+      margin: auto;
+      padding: 25px;
+      border-radius: 15px;
+      width: 90%;
+      max-width: 850px;
+      border: 2px solid #ffe082;
+      position: relative;
+    }
+
+    .cerrar {
+      position: absolute;
+      right: 20px;
+      top: 10px;
+      font-size: 35px;
+      cursor: pointer;
+      color: #ffe082;
+    }
+
+    #listaQSLs {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .qsl-card {
+      background: rgba(255,255,255,0.05);
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,224,130,0.3);
+      width: 100%;
+      max-width: 350px;
+    }
+
+    .qsl-card img {
+      width: 100%;
+      border-radius: 8px;
+      border: 2px solid #fff;
+    }
+
+    .descargar-btn {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 10px 20px;
+      background: #2e7d32;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 5px;
+      font-weight: bold;
+    }
+
+    footer {
+      margin-top: 30px;
+      padding: 20px;
+      font-size: 0.9rem;
+    }
+
+    #mensajeError {
+      margin-top: 20px;
+      color: #ffe082;
+      font-weight: bold;
+    }
+  </style>
 </head>
-<body onload="initCinematic()">
+<body>
 
-    <audio id="snd-power" src="https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3"></audio>
-    <audio id="snd-scan" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3" loop></audio>
-    <audio id="snd-success" src="https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3"></audio>
+  <div class="container">
+    <h1>🌴 QSL Caribeño 🌊</h1>
+    <p>Introduce tu indicativo (Ej: CO7ADV)</p>
 
-    <div id="intro-overlay">
-        <div class="scan-line"></div>
-        <h1 class="boot-text">SISTEMA CARIBE</h1>
-        <p id="boot-status" style="font-family: monospace; color: #444;">INICIALIZANDO HARDWARE...</p>
-        <button class="btn btn-cyan" id="connect-btn" style="display:none; margin-top:30px;" onclick="unlockUI()">CONECTAR AL NODO</button>
+    <input
+      type="text"
+      id="indicativo"
+      placeholder="INDICATIVO"
+      onkeyup="if(event.key==='Enter') buscarQSL()"
+    >
+    <button id="buscarBtn" onclick="buscarQSL()">BUSCAR QSL</button>
+
+    <div id="loaderContainer" class="loader-wrap">
+      <div class="progress-bar">
+        <div id="cardThumb">QSL</div>
+        <div id="progressFill"></div>
+      </div>
+      <p id="progressText">Preparando escaneo…</p>
     </div>
 
-    <div id="main-ui">
-        <div class="container">
-            <div class="glass-panel">
-                <h2 style="font-family: 'Orbitron'; color: var(--cyan);">BUSCADOR DE SEÑAL</h2>
-                <input type="text" id="target-id" class="supreme-input" placeholder="INDICATIVO" oninput="checkInput(this.value)">
-                <button class="btn btn-cyan" onclick="startDeepSearch()">INICIAR ESCANEO</button>
-                
-                <div id="radar-container">
-                    <div class="radar"></div>
-                    <p style="color:var(--cyan); font-family: 'Orbitron'; margin-top:15px;">RASTREANDO BASE DE DATOS...</p>
-                </div>
-                
-                <div id="results"></div>
-            </div>
+    <div id="mensajeError"></div>
 
-            <div class="glass-panel" style="border-color: var(--pink);">
-                <h2 style="font-family: 'Orbitron'; color: var(--pink);">SISTEMA DE CARGA</h2>
-                <input type="text" id="up-name" class="supreme-input" placeholder="NOMBRE" style="font-size: 1.2rem; border-color: #333;">
-                <input type="file" id="up-file" style="margin: 20px 0;">
-                <button class="btn btn-pink" onclick="secureUpload()">SUBIR A DRIVE</button>
-            </div>
-        </div>
+    <footer>
+      — CL7ADV — Buenos DXs 2026<br>
+      Motor: Radio Club Santa Cruz Del Sur
+    </footer>
+  </div>
+
+  <!-- Ventana de resultados -->
+  <div id="ventanaQSL" class="modal">
+    <div class="modal-contenido">
+      <span class="cerrar" onclick="cerrarVentana()">&times;</span>
+      <h2 style="color:#ffe082;">Tarjetas Encontradas</h2>
+      <div id="listaQSLs"></div>
+      <br>
+      <button class="descargar-btn" id="dlAll" style="background:#ff9800;">
+        ⬇️ DESCARGAR TODO
+      </button>
     </div>
+  </div>
 
-    <div id="tutorial-box">
-        <p>📡 TUTORIAL: Escribe tu indicativo y espera el escaneo satelital para descargar tu QSL.</p>
-        <button onclick="closeTut()" style="background:#000; color:#fff; border:none; padding:10px 20px; border-radius:10px; cursor:pointer;">ENTENDIDO</button>
-    </div>
+  <script>
+    let encontradas = [];
 
-    <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwCs0GIz2_0jzlWbNXpoufBOUCPYOrkaUZCWGRolnUW4k8Nmuzs0TCRAKqOHhRUYF-i/exec";
+    function cerrarVentana() {
+      document.getElementById('ventanaQSL').style.display = "none";
+    }
 
-        function initCinematic() {
-            setTimeout(() => {
-                document.getElementById('boot-status').innerText = "ENLACE SATELITAL LISTO";
-                document.getElementById('connect-btn').style.display = "block";
-                document.getElementById('snd-power').play();
-            }, 3000);
+    function buscarQSL() {
+      const input = document.getElementById('indicativo').value.trim();
+      if (!input) return;
+
+      const loader = document.getElementById('loaderContainer');
+      const errorDiv = document.getElementById('mensajeError');
+      const fill = document.getElementById('progressFill');
+      const thumb = document.getElementById('cardThumb');
+      const progressText = document.getElementById('progressText');
+
+      // Reset
+      encontradas = [];
+      loader.style.display = 'flex';
+      errorDiv.textContent = "";
+      fill.style.width = "0%";
+      thumb.style.left = "0%";
+      progressText.textContent = "Escaneando servidor…";
+
+      // Generar lista de nombres posibles (Mayúsculas)
+      const base = input.toUpperCase();
+      const exts = ['jpg', 'png', 'jpeg'];
+      let listaPruebas = [];
+
+      exts.forEach(e => {
+        listaPruebas.push(`${base}.${e}`); // CO7ADV.jpg
+        for (let i = 1; i <= 10; i++) {   // hasta -10 para no demorar tanto
+          listaPruebas.push(`${base}-${i}.${e}`);
         }
+      });
 
-        function unlockUI() {
-            document.getElementById('intro-overlay').style.opacity = "0";
-            setTimeout(() => {
-                document.getElementById('intro-overlay').style.display = "none";
-                document.getElementById('main-ui').style.display = "block";
-                setTimeout(() => { 
-                    document.getElementById('main-ui').style.opacity = "1";
-                    document.getElementById('tutorial-box').style.display = "block";
-                }, 100);
-            }, 1500);
-        }
+      let procesados = 0;
+      const total = listaPruebas.length;
 
-        function closeTut() { document.getElementById('tutorial-box').style.display = 'none'; }
+      listaPruebas.forEach(archivo => {
+        const ruta = `img/${archivo}`;
 
-        function checkInput(val) {
-            if (val === "") {
-                clearResults();
+        // usamos HEAD para evitar que el navegador se quede colgado
+        fetch(ruta, { method: "HEAD" })
+          .then(res => {
+            if (res.ok) {
+              if (!encontradas.includes(ruta)) encontradas.push(ruta);
             }
+            verificarFin();
+          })
+          .catch(() => {
+            verificarFin();
+          });
+      });
+
+      function verificarFin() {
+        procesados++;
+        const pct = Math.round((procesados / total) * 100);
+        fill.style.width = pct + "%";
+        thumb.style.left = pct + "%";
+
+        if (pct < 100) {
+          progressText.textContent = "Escaneando " + pct + "%…";
+        } else {
+          progressText.textContent = "Escaneo completado.";
         }
 
-        function clearResults() {
-            document.getElementById('results').innerHTML = "";
-            document.getElementById('radar-container').style.display = "none";
+        if (procesados === total) {
+          loader.style.display = 'none';
+          if (encontradas.length > 0) {
+            mostrarResultados();
+          } else {
+            errorDiv.textContent =
+              "❌ No se encontró nada para " +
+              base +
+              ". Revisa si los nombres en la carpeta 'img/' son correctos.";
+          }
         }
+      }
+    }
 
-        async function startDeepSearch() {
-            const id = document.getElementById('target-id').value.trim().toUpperCase();
-            const results = document.getElementById('results');
-            const radar = document.getElementById('radar-container');
-            const snd = document.getElementById('snd-scan');
+    function mostrarResultados() {
+      const lista = document.getElementById('listaQSLs');
+      lista.innerHTML = "";
+      encontradas.forEach(url => {
+        const nombre = url.split('/').pop();
+        lista.innerHTML += `
+          <div class="qsl-card">
+            <img src="${url}">
+            <p style="font-size:0.8rem">${nombre}</p>
+            <a href="${url}" download="${nombre}" class="descargar-btn">💾 Descargar</a>
+          </div>`;
+      });
+      document.getElementById('ventanaQSL').style.display = "block";
+    }
 
-            if(!id) return;
-            results.innerHTML = "";
-            radar.style.display = "block";
-            snd.play();
-
-            await new Promise(r => setTimeout(r, 4000));
-
-            radar.style.display = "none";
-            snd.pause();
-            snd.currentTime = 0;
-
-            // BÚSQUEDA ORIGINAL GITHUB
-            const variations = [
-                `img/${id}.png`, `IMG/${id}.png`, `img/${id}.jpg`, 
-                `img/${id}-1.png`, `IMG/${id}-1.png`, 
-                `img/${id}-2.png`, `IMG/${id}-2.png`
-            ];
-            
-            let foundCount = 0;
-
-            for(let p of variations) {
-                const exists = await verifyImage(p);
-                if(exists) {
-                    foundCount++;
-                    results.innerHTML += `
-                        <div class="qsl-card">
-                            <img src="${p}">
-                            <button class="btn btn-cyan" style="width:100%; border-radius:0; padding: 15px;" onclick="downloadAndBack('${p}')">DESCARGAR</button>
-                        </div>`;
-                }
-            }
-
-            if(foundCount > 0) document.getElementById('snd-success').play();
-            else results.innerHTML = "<p style='color:var(--pink)'>ERROR: SEÑAL NO ENCONTRADA</p>";
-        }
-
-        function verifyImage(url) {
-            return new Promise(res => {
-                const img = new Image();
-                img.onload = () => res(true);
-                img.onerror = () => res(false);
-                img.src = url;
-            });
-        }
-
-        function downloadAndBack(url) {
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = url.split('/').pop();
-            link.click();
-            
-            document.getElementById('target-id').value = "";
-            clearResults();
-        }
-
-        async function secureUpload() {
-            const pass = prompt("LLAVE MAESTRA:");
-            if(pass !== "Leila2026") return alert("BLOQUEADO");
-            
-            const name = document.getElementById('up-name').value.trim().toUpperCase();
-            const fileEl = document.getElementById('up-file').files[0];
-            if(!name || !fileEl) return alert("FALTAN DATOS");
-
-            const reader = new FileReader();
-            reader.readAsDataURL(fileEl);
-            reader.onload = async function() {
-                const payload = { 
-                    base64: reader.result.split(',')[1], 
-                    type: fileEl.type, 
-                    name: name + ".png" 
-                };
-                try {
-                    const resp = await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify(payload) });
-                    const res = await resp.json();
-                    if(res.result === "success") {
-                        document.getElementById('snd-success').play();
-                        alert("✅ ENVIADO");
-                        document.getElementById('up-name').value = "";
-                        document.getElementById('up-file').value = "";
-                    }
-                } catch (e) { alert("❌ ERROR"); }
-            };
-        }
-    </script>
+    document.getElementById('dlAll').onclick = function() {
+      encontradas.forEach(url => {
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = url.split('/').pop();
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      });
+    };
+  </script>
 </body>
 </html>
