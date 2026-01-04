@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>QSL CARIBE v115 - HARMONY</title>
+    <title>QSL CARIBE v116 - MASTER COMMANDER</title>
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
     <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Outfit:wght@300;600;900&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
     
@@ -28,7 +28,7 @@
             box-shadow: 0 0 15px rgba(0, 119, 190, 0.3);
         }
 
-        /* --- UI --- */
+        /* --- UI PRINCIPAL --- */
         #main-ui { opacity: 0; transition: 2s; display: none; padding-top: 80px; padding-bottom: 100px; }
         .container { max-width: 700px; margin: 0 auto; padding: 0 25px; }
         
@@ -36,43 +36,30 @@
             background: var(--glass); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
             border-radius: 30px; padding: 40px; border: 1px solid rgba(255, 255, 255, 0.1); 
             margin-bottom: 30px; box-shadow: 0 25px 50px rgba(0,0,0,0.5);
-            transition: transform 0.5s;
         }
 
         .supreme-input { 
             width: 100%; padding: 22px; border-radius: 18px; background: rgba(0,0,0,0.2); 
             border: 2px solid var(--accent-ocean); color: #fff; font-size: 1.6rem; 
             text-align: center; font-family: 'Syncopate', sans-serif; margin-bottom: 20px; box-sizing: border-box;
-            box-shadow: inset 0 0 10px rgba(0, 119, 190, 0.2);
         }
         
         .btn { padding: 18px 30px; border-radius: 15px; border: none; font-weight: 700; font-family: 'Syncopate', sans-serif; cursor: pointer; text-transform: uppercase; font-size: 0.7rem; transition: 0.4s; text-align: center; display: block; width: 100%; text-decoration: none; margin-bottom: 12px; letter-spacing: 1px; }
         .btn-ocean { background: var(--accent-ocean); color: #fff; box-shadow: 0 4px 15px rgba(0, 119, 190, 0.4); }
         .btn-gold { background: var(--accent-gold); color: #000; }
         .btn-cloud { background: rgba(240, 244, 248, 0.1); color: #fff; border: 1px solid var(--accent-cloud); }
-        .btn:hover { transform: translateY(-3px) scale(1.02); filter: brightness(1.2); }
+        .btn:hover { transform: translateY(-3px); filter: brightness(1.2); }
 
-        /* --- ANIMACIONES --- */
+        /* --- ESCANEO --- */
         #radar-container { display: none; margin: 30px 0; }
-        .radar { width: 60px; height: 60px; border: 4px solid transparent; border-top: 4px solid var(--accent-gold); border-radius: 50%; animation: spin 1s cubic-bezier(0.68, -0.55, 0.27, 1.55) infinite; margin: 0 auto; }
+        .radar { width: 60px; height: 60px; border: 4px solid transparent; border-top: 4px solid var(--accent-gold); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        .qsl-card { 
-            animation: fadeInScale 0.8s ease-out forwards;
-            background: rgba(255, 255, 255, 0.03); border-radius: 20px; padding: 20px; 
-            margin-top: 20px; border: 1px solid var(--accent-gold);
-        }
+        .qsl-card { animation: fadeInScale 0.8s ease-out; background: rgba(255, 255, 255, 0.03); border-radius: 20px; padding: 20px; margin-top: 20px; border: 1px solid var(--accent-gold); }
         @keyframes fadeInScale { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
-
         .qsl-img { width: 100%; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); margin-bottom: 20px; }
 
-        /* --- MENSAJE VISITANTES --- */
-        .visitor-ticker {
-            position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(0, 119, 190, 0.15);
-            backdrop-filter: blur(10px); padding: 12px 0; font-size: 0.8rem; letter-spacing: 2px;
-            color: var(--accent-gold); text-align: center; border-top: 1px solid var(--accent-ocean);
-            font-family: 'Syncopate';
-        }
+        .visitor-ticker { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(0, 119, 190, 0.15); backdrop-filter: blur(10px); padding: 12px 0; font-size: 0.8rem; color: var(--accent-gold); text-align: center; border-top: 1px solid var(--accent-ocean); font-family: 'Syncopate'; }
 
         #intro-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-deep); z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 1.5s; }
     </style>
@@ -89,7 +76,7 @@
     </div>
 
     <div id="intro-overlay">
-        <h1 style="font-family:'Syncopate'; color:white; text-align: center; line-height: 1.5;">CARIBE NODO<br><span style="font-size: 0.4em; color: var(--accent-ocean); letter-spacing: 5px;">HARMONY EDITION</span></h1>
+        <h1 style="font-family:'Syncopate'; color:white; text-align: center; line-height: 1.5;">CARIBE NODO<br><span style="font-size: 0.4em; color: var(--accent-ocean); letter-spacing: 5px;">v116 - MASTER</span></h1>
         <button class="btn btn-ocean" id="connect-btn" style="display:none; max-width:250px; margin-top: 40px;" onclick="unlockUI()">INICIAR SISTEMA</button>
     </div>
 
@@ -97,21 +84,24 @@
         <div class="container">
             
             <div class="glass-panel" id="search-panel">
-                <h2 style="font-family: 'Syncopate'; color: var(--accent-cloud); margin:0 0 25px 0; font-size: 1rem; text-align: center; letter-spacing: 2px;">RASTREO DE COBERTURA</h2>
+                <h2 style="font-family: 'Syncopate'; color: var(--accent-cloud); margin:0 0 25px 0; font-size: 1rem; text-align: center;">RASTREO DE COBERTURA</h2>
                 <input type="text" id="target-id" class="supreme-input" placeholder="INDICATIVO">
                 <button class="btn btn-ocean" onclick="buscarQSL()">ESCANEAR FRECUENCIAS</button>
-                
                 <div id="radar-container"><div class="radar"></div></div>
-                <div id="status-msg" style="text-align:center; margin-top:15px; font-family:'JetBrains Mono'; font-size: 0.9rem;"></div>
+                <div id="status-msg" style="text-align:center; margin-top:15px; font-family:'JetBrains Mono';"></div>
                 <div id="results-area"></div>
             </div>
 
             <div class="glass-panel" style="padding: 25px;">
-                <h3 style="font-family: 'Syncopate'; color: var(--accent-ocean); font-size: 0.8rem; margin-bottom: 20px;">TRANSMISIÓN DE DATOS</h3>
-                <button class="btn btn-cloud" onclick="secureUpload()">SUBIR NUEVA QSL</button>
+                <h3 style="font-family: 'Syncopate'; color: var(--accent-ocean); font-size: 0.8rem; margin-bottom: 20px;">TRANSMISIÓN DE DATOS AL SERVIDOR</h3>
+                <form id="uploadForm" enctype="multipart/form-data">
+                    <input type="file" name="fileToUpload" id="fileToUpload" style="margin-bottom: 15px; color: white; display: block; font-family: 'JetBrains Mono';">
+                    <button type="button" class="btn btn-cloud" onclick="processUpload()">TRANSMITIR QSL</button>
+                </form>
+                <div id="uploadStatus" style="margin-top:10px; font-size:0.8rem; font-family:'JetBrains Mono'; text-align:center;"></div>
             </div>
 
-            <div style="text-align:center; opacity: 0.6;">
+            <div style="text-align:center;">
                 <a href="https://info.flagcounter.com/ReMh">
                     <img src="https://s01.flagcounter.com/count2/ReMh/bg_003049/txt_ffffff/border_0077be/columns_5/maxflags_15/viewers_0/labels_0/pageviews_0/flags_0/percent_0/" alt="Flag Counter" border="0">
                 </a>
@@ -125,24 +115,12 @@
         let inactividadTimer;
         let listaActual = [];
         const EXTENSIONES = ["jpg", "JPG", "png", "webp"];
-        const MENSAJES = [
-            "BIENVENIDO AL NODO CARIBE - 73 PARA TODOS LOS COLEGAS",
-            "SISTEMA ACTUALIZADO - ESCANEANDO 50 CANALES POR INDICATIVO",
-            "BUENOS DXS DESDE EL CARIBE - DISFRUTA TU ESTANCIA",
-            "VISITA NUESTRA ACADEMIA PARA MEJORAR TU ESTACIÓN"
-        ];
 
         function updateClock() {
             const now = new Date();
             document.getElementById('utc-time').innerText = now.getUTCHours().toString().padStart(2,'0') + ":" + now.getUTCMinutes().toString().padStart(2,'0') + ":" + now.getUTCSeconds().toString().padStart(2,'0');
         }
         setInterval(updateClock, 1000);
-
-        // Rotar mensajes del ticker cada 10 segundos
-        setInterval(() => {
-            const t = document.getElementById('ticker');
-            t.innerText = MENSAJES[Math.floor(Math.random() * MENSAJES.length)];
-        }, 10000);
 
         function initApp() {
             setTimeout(() => { 
@@ -164,7 +142,6 @@
         async function buscarQSL() {
             const id = document.getElementById('target-id').value.trim().toUpperCase();
             if(!id) return;
-
             resetInactividad();
             const resArea = document.getElementById('results-area');
             const status = document.getElementById('status-msg');
@@ -172,7 +149,7 @@
             const snd = document.getElementById('snd-scan');
 
             resArea.innerHTML = "";
-            status.innerHTML = "<span style='color:var(--accent-ocean)'>SINCRONIZANDO CON SATÉLITE...</span>";
+            status.innerHTML = "SINCRONIZANDO...";
             radar.style.display = "block";
             snd.play().catch(()=>{});
 
@@ -188,47 +165,51 @@
                         i.onerror = () => r(false);
                         i.src = ruta;
                     });
-                    if (existe) {
-                        encontradas.push(ruta);
-                        break; 
-                    }
+                    if (existe) { encontradas.push(ruta); break; }
                 }
             });
 
             await Promise.all(escaneos);
-
             radar.style.display = "none";
             snd.pause();
 
             if (encontradas.length > 0) {
                 document.getElementById('snd-ok').play().catch(()=>{});
-                status.innerHTML = `<span style="color:var(--accent-gold)">CAPTADAS ${encontradas.length} IMÁGENES</span>`;
+                status.innerHTML = `<span style="color:var(--accent-gold)">CAPTURADAS: ${encontradas.length} IMÁGENES</span>`;
                 listaActual = encontradas;
 
-                if(encontradas.length > 1) {
-                    resArea.innerHTML += `<button class="btn btn-gold" onclick="descargarTodas()">DESCARGAR PACK COMPLETO</button>`;
-                }
-
+                if(encontradas.length > 1) resArea.innerHTML += `<button class="btn btn-gold" onclick="descargarTodas()">DESCARGAR PACK</button>`;
                 encontradas.forEach(ruta => {
-                    resArea.innerHTML += `
-                        <div class="qsl-card">
-                            <img src="${ruta}" class="qsl-img">
-                            <a href="${ruta}" download class="btn btn-ocean" onclick="finalizarYReiniciar()">DESCARGAR QSL</a>
-                        </div>
-                    `;
+                    resArea.innerHTML += `<div class="qsl-card"><img src="${ruta}" class="qsl-img"><a href="${ruta}" download class="btn btn-ocean" onclick="finalizarYReiniciar()">DESCARGAR ESTA</a></div>`;
                 });
             } else {
-                status.innerHTML = "<span style='color:#ff4d4d'>SIN SEÑAL EN LA BASE DE DATOS</span>";
-                setTimeout(retornarAlInicio, 3000);
+                status.innerHTML = "<span style='color:#ff4d4d'>SIN SEÑAL</span>";
+                setTimeout(retornarAlInicio, 2000);
             }
         }
 
-        function finalizarYReiniciar() {
-            const status = document.getElementById('status-msg');
-            status.innerHTML = "<span style='color:var(--accent-gold)'>¡GRACIAS POR TU VISITA! REINICIANDO...</span>";
-            setTimeout(retornarAlInicio, 2500);
+        async function processUpload() {
+            const fileInput = document.getElementById('fileToUpload');
+            const status = document.getElementById('uploadStatus');
+            if (fileInput.files.length === 0) { alert("ELIGE ARCHIVO"); return; }
+            const pass = prompt("PASSWORD:");
+            if (pass !== "Leila2026") { alert("ERROR"); return; }
+
+            status.innerHTML = "TRANSMITIENDO...";
+            const formData = new FormData();
+            formData.append("fileToUpload", fileInput.files[0]);
+
+            try {
+                const response = await fetch('upload.php', { method: 'POST', body: formData });
+                const result = await response.text();
+                status.innerHTML = result;
+                fileInput.value = "";
+                setTimeout(retornarAlInicio, 3000);
+            } catch (e) { status.innerHTML = "ERROR SERVIDOR"; }
         }
 
+        function finalizarYReiniciar() { setTimeout(retornarAlInicio, 3000); }
+        
         function descargarTodas() {
             listaActual.forEach(ruta => {
                 const link = document.createElement("a");
@@ -245,24 +226,14 @@
             document.getElementById('target-id').value = "";
             document.getElementById('results-area').innerHTML = "";
             document.getElementById('status-msg').innerHTML = "";
-            // Pequeña animación de parpadeo para indicar el reset
-            document.getElementById('search-panel').style.opacity = "0.5";
-            setTimeout(() => document.getElementById('search-panel').style.opacity = "1", 300);
+            document.getElementById('uploadStatus').innerHTML = "";
         }
 
-        // Sistema de inactividad: Si no hay clics en 2 minutos, limpia todo
         function resetInactividad() {
             clearTimeout(inactividadTimer);
             inactividadTimer = setTimeout(retornarAlInicio, 120000); 
         }
         window.onclick = resetInactividad;
-        window.onkeypress = resetInactividad;
-
-        function secureUpload() {
-            const pass = prompt("ACCESO RESTRINGIDO - PASSWORD:");
-            if(pass === "Leila2026") alert("ACCESO AUTORIZADO - LISTO PARA TRANSMITIR.");
-            else alert("ERROR: CREDENCIALES INVÁLIDAS");
-        }
     </script>
 </body>
 </html>
