@@ -2,293 +2,252 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>QSL CARIBEÑA v29.0 - ZMR SUPREMO</title>
-    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+    <title>QSL Caribeña v28.7 - ULTIMATE</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
     <style>
         :root {
-            --n-blue: #00eaff;
-            --n-pink: #ff00ff;
-            --n-gold: #ffcc00;
-            --cuba-red: #ff3131;
-            --bg: #010409;
-            --glass: rgba(13, 17, 23, 0.95);
+            --neon-blue: #00eaff;
+            --neon-pink: #ff00ff;
+            --cuba-red: #d40000;
+            --cuba-blue: #002a8f;
+            --bg-dark: #080d1a; 
+            --bg-darker: #010409;
         }
 
-        /* --- SUPER INTRO GIGANTE --- */
-        #boot-screen {
-            position: fixed; top:0; left:0; width:100%; height:100%;
-            background: #000; z-index: 10000; display: flex; flex-direction: column;
-            justify-content: center; align-items: center; font-family: 'Courier New', monospace;
-        }
-        .boot-log { color: var(--n-blue); font-size: 0.8rem; height: 150px; overflow: hidden; width: 80%; max-width: 500px; margin-bottom: 20px; }
-        .radar { width: 100px; height: 100px; border: 2px solid var(--n-blue); border-radius: 50%; position: relative; animation: pulse 2s infinite; }
-        .radar::after { content: ''; position: absolute; width: 50%; height: 2px; background: var(--n-blue); top: 50%; left: 50%; transform-origin: left; animation: rotate 2s linear infinite; }
-        
-        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(0, 234, 255, 0.4); } 70% { box-shadow: 0 0 0 20px rgba(0, 234, 255, 0); } 100% { box-shadow: 0 0 0 0 rgba(0, 234, 255, 0); } }
-
-        /* --- ESTRUCTURA AGRANDADA --- */
         body { 
-            margin: 0; background: var(--bg); color: white; 
-            font-family: 'Segoe UI', sans-serif; overflow-x: hidden;
-            background-image: linear-gradient(rgba(0, 234, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 234, 255, 0.03) 1px, transparent 1px);
-            background-size: 30px 30px;
+            margin: 0; font-family: 'Segoe UI', sans-serif;
+            background: var(--bg-darker);
+            color: white; display: flex; flex-direction: column; align-items: center;
+            min-height: 100vh; overflow-x: hidden;
         }
 
-        #clock-v3 {
-            position: fixed; top: 20px; right: 20px; background: var(--glass);
-            padding: 15px 25px; border-radius: 10px; border: 2px solid var(--n-blue);
-            box-shadow: 0 0 20px rgba(0, 234, 255, 0.2); z-index: 1000; text-align: right;
-        }
-        #clock-v3 div { font-family: monospace; font-weight: 900; font-size: 1.5rem; color: var(--n-blue); }
-        #clock-v3 span { font-size: 0.7rem; color: var(--n-pink); text-transform: uppercase; letter-spacing: 2px; }
-
-        .main-console {
-            width: 95%; max-width: 1000px; margin: 120px auto; 
-            background: var(--glass); border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 40px; position: relative; padding-bottom: 50px;
-            box-shadow: 0 50px 100px rgba(0,0,0,0.8);
+        /* RELOJ UTC FLOTANTE */
+        #utc-clock {
+            position: fixed; top: 20px; right: 20px; background: rgba(0,0,0,0.8);
+            padding: 12px 25px; border-radius: 12px; border: 2px solid var(--neon-blue);
+            color: var(--neon-blue); font-family: 'Courier New', monospace;
+            font-weight: bold; font-size: 1.2rem; z-index: 1001;
+            box-shadow: 0 0 20px rgba(0, 234, 255, 0.3); backdrop-filter: blur(10px);
         }
 
-        .header-deco {
-            height: 60px; background: linear-gradient(90deg, var(--n-blue), var(--n-pink));
-            border-radius: 40px 40px 0 0; display: flex; align-items: center; padding: 0 30px;
-            font-weight: 900; color: black; font-size: 0.9rem; letter-spacing: 2px;
+        /* CONTENEDOR ALARGADO PROFESIONAL */
+        .main-frame {
+            width: 90%; max-width: 800px; background: rgba(13, 17, 23, 0.95);
+            border-radius: 50px; border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 60px; text-align: center; margin: 80px 0;
+            position: relative; overflow: hidden; box-shadow: 0 40px 100px rgba(0,0,0,0.7);
         }
 
-        /* --- ÁREA DE TRANSMISIÓN --- */
-        .radio-ui { padding: 50px 20px; text-align: center; }
-        h1 { font-size: 4rem; margin: 0; color: #fff; text-shadow: 0 0 30px var(--n-blue); letter-spacing: -2px; }
-        
-        .oscillos { width: 100%; height: 60px; margin: 30px 0; display: flex; justify-content: center; align-items: center; gap: 5px; }
-        .bar { width: 4px; background: var(--n-blue); animation: bounce 0.5s infinite alternate; }
-        @keyframes bounce { from { height: 10px; opacity: 0.3; } to { height: 50px; opacity: 1; } }
+        h1 { font-size: 3rem; margin: 0; color: var(--neon-blue); text-shadow: 0 0 30px var(--neon-blue); }
+        .version-tag { background: var(--neon-pink); color: black; padding: 2px 10px; border-radius: 5px; font-size: 0.8rem; font-weight: 900; vertical-align: middle; }
+        .subtitle { color: #888; letter-spacing: 5px; text-transform: uppercase; font-size: 0.9rem; margin-top: 10px; }
 
-        .search-pod {
-            background: rgba(0,0,0,0.4); padding: 50px; border-radius: 30px;
-            border: 1px solid rgba(255,255,255,0.05); margin: 0 20px;
+        /* QSL VIAJERA */
+        #traveling-qsl {
+            position: absolute; width: 60px; height: 40px; background: white;
+            border: 2px solid var(--neon-blue); border-radius: 5px; display: none;
+            top: 50%; left: -100px; z-index: 100; align-items: center; justify-content: center;
+            color: black; font-weight: 900; font-size: 10px; box-shadow: 0 0 20px var(--neon-blue);
         }
 
+        @keyframes fly {
+            0% { left: -100px; transform: rotate(0deg) translateY(0); }
+            50% { transform: rotate(180deg) translateY(-50px); }
+            100% { left: 110%; transform: rotate(360deg) translateY(0); }
+        }
+
+        /* BUSCADOR */
+        .search-area { margin-top: 50px; background: rgba(255,255,255,0.03); padding: 40px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.05); }
         input { 
-            width: 90%; max-width: 500px; padding: 25px; background: #000;
-            border: 3px solid #222; border-radius: 20px; font-size: 2.5rem;
-            color: var(--n-blue); text-align: center; font-weight: 900; outline: none;
-            transition: 0.4s; text-transform: uppercase; font-family: 'Courier New', Courier, monospace;
+            padding: 20px; width: 85%; border: 3px solid #222; 
+            border-radius: 15px; font-size: 2rem; font-weight: 900; text-align: center;
+            text-transform: uppercase; color: var(--neon-blue); background: #000;
+            outline: none; transition: 0.3s;
         }
-        input:focus { border-color: var(--n-pink); box-shadow: 0 0 50px rgba(255,0,255,0.3); }
+        input:focus { border-color: var(--neon-pink); box-shadow: 0 0 30px rgba(255,0,255,0.2); }
 
-        .btn-mega {
-            margin-top: 40px; padding: 25px 80px; border-radius: 100px;
-            background: linear-gradient(90deg, #002a8f, #d40000);
-            color: white; font-weight: 900; font-size: 1.5rem; border: none;
-            cursor: pointer; text-transform: uppercase; transition: 0.3s;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        .btn-search {
+            margin-top: 30px; padding: 20px 60px; background: linear-gradient(90deg, var(--cuba-blue), var(--cuba-red));
+            color: white; border: none; border-radius: 15px; font-weight: 900;
+            cursor: pointer; font-size: 1.3rem; text-transform: uppercase; transition: 0.3s;
         }
-        .btn-mega:hover { transform: scale(1.05) translateY(-5px); box-shadow: 0 20px 40px rgba(0,234,255,0.3); }
+        .btn-search:hover { transform: scale(1.05); filter: brightness(1.2); }
 
-        /* --- MODAL AGRANDADO --- */
-        .full-modal {
-            display: none; position: fixed; top: 0; left:0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.98); z-index: 9000; overflow-y: auto;
-            backdrop-filter: blur(20px);
-        }
-        .qsl-display { max-width: 900px; margin: 40px auto; padding: 20px; }
-        .card-frame {
-            background: #111; border-radius: 30px; border: 2px solid var(--n-blue);
-            padding: 20px; margin-bottom: 50px; position: relative;
-        }
-        .card-frame img { width: 100%; border-radius: 20px; }
+        /* BARRA DE PROGRESO Y LOG */
+        .loader-wrap { width: 100%; height: 15px; background: #000; border-radius: 20px; margin-top: 30px; display: none; overflow: hidden; border: 1px solid #333; }
+        .loader-bar { width: 0%; height: 100%; background: linear-gradient(90deg, var(--neon-blue), var(--neon-pink)); transition: width 0.2s; }
+        #status-log { margin-top: 15px; font-family: monospace; font-size: 0.8rem; color: var(--neon-pink); height: 20px; }
 
-        /* --- MENÚ DE ACCIONES FLOTANTE (REPARA ZONA MUERTA) --- */
-        .action-hub {
-            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
-            background: rgba(255,255,255,0.1); backdrop-filter: blur(20px);
-            padding: 15px 30px; border-radius: 100px; border: 1px solid rgba(255,255,255,0.2);
-            display: flex; gap: 20px; z-index: 9999; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-        }
-        .hub-btn {
-            background: white; color: black; padding: 15px 25px; border-radius: 50px;
-            font-weight: 900; text-decoration: none; border: none; cursor: pointer;
-            font-size: 0.9rem; text-transform: uppercase;
-        }
+        /* SECCIÓN INFORMATIVA (LARGA) */
+        .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 50px; text-align: left; }
+        .info-card { background: rgba(255,255,255,0.02); padding: 20px; border-radius: 15px; border-left: 3px solid var(--neon-blue); }
+        .info-card h4 { margin: 0 0 10px 0; color: var(--neon-blue); font-size: 0.9rem; }
+        .info-card p { margin: 0; font-size: 0.8rem; color: #777; line-height: 1.4; }
 
-        .loader-line { width: 100%; height: 4px; background: #000; margin-top: 40px; border-radius: 10px; display: none; overflow: hidden; }
-        .fill-line { width: 0%; height: 100%; background: var(--n-blue); transition: 0.2s; }
+        /* MODAL */
+        .modal { display: none; position: fixed; z-index: 3000; left:0; top:0; width:100%; height:100%; background: rgba(0,0,0,0.98); overflow-y: auto; }
+        .modal-content { max-width: 900px; margin: 50px auto; padding: 20px; text-align: center; }
+        .qsl-result { background: #111; padding: 30px; border-radius: 30px; border: 1px solid var(--neon-blue); margin-bottom: 40px; }
+        .qsl-result img { width: 100%; border-radius: 15px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); margin-bottom: 25px; }
 
-        footer { text-align: center; padding: 50px; color: #444; font-size: 0.8rem; letter-spacing: 2px; }
+        .actions { display: flex; gap: 15px; justify-content: center; }
+        .btn-act { flex: 1; padding: 15px; border-radius: 10px; border: none; color: white; font-weight: bold; cursor: pointer; text-decoration: none; font-size: 1rem; }
+
+        footer { margin-top: 60px; font-size: 0.8rem; color: #444; padding-bottom: 40px; }
     </style>
 </head>
 <body>
 
-    <div id="boot-screen">
-        <div class="radar"></div>
-        <div class="boot-log" id="bootLog"></div>
-        <div style="color:white; font-size: 1.2rem; font-weight: 900;">INICIANDO ZMR CORE...</div>
-    </div>
+    <div id="utc-clock">UTC 00:00:00</div>
 
-    <div id="clock-v3">
-        <span id="date-label">ENERO 03, 2026</span>
-        <div id="time-val">00:00:00</div>
-        <span>UTC SYSTEM TIME</span>
-    </div>
+    <div class="main-frame">
+        <div id="traveling-qsl">QSL</div>
 
-    <div class="main-console">
-        <div class="header-deco">RADIO CLUB SANTA CRUZ DEL SUR // FREQUENCY: 144.000 MHZ</div>
-        
-        <div class="radio-ui">
-            <h1>QSL CARIBEÑA</h1>
-            <div style="color:var(--n-pink); font-weight: 900; letter-spacing: 10px;">PRO VERSION 29.0</div>
+        <h1>🌴 QSL CARIBEÑA <span class="version-tag">V28.7</span></h1>
+        <div class="subtitle">Radio Club Santa Cruz del Sur &bull; ZMR</div>
 
-            <div class="oscillos">
-                <div class="bar" style="animation-delay: 0.1s"></div>
-                <div class="bar" style="animation-delay: 0.3s"></div>
-                <div class="bar" style="animation-delay: 0.5s"></div>
-                <div class="bar" style="animation-delay: 0.2s"></div>
-                <div class="bar" style="animation-delay: 0.4s"></div>
+        <div class="search-area">
+            <input type="text" id="callsign" placeholder="INGRESAR INDICATIVO" spellcheck="false" autocomplete="off">
+            <br>
+            <button class="btn-search" onclick="iniciarEscaneo()">ESCANEAR BANDAS</button>
+            
+            <div class="loader-wrap" id="lWrap"><div class="loader-bar" id="lBar"></div></div>
+            <div id="status-log"></div>
+        </div>
+
+        <div class="info-grid">
+            <div class="info-card">
+                <h4>📡 MULTI-FORMATO</h4>
+                <p>Escaneo profundo de archivos PNG, JPG y JPEG en base de datos local.</p>
             </div>
-
-            <div class="search-pod">
-                <input type="text" id="callsign" placeholder="CALLSIGN" autocomplete="off" maxlength="12">
-                <br>
-                <button class="btn-mega" onclick="runProScan()">ESCANEAR BASE DE DATOS</button>
-                
-                <div class="loader-line" id="lLine"><div class="fill-line" id="fLine"></div></div>
-                <div id="status" style="margin-top:20px; font-family: monospace; color:var(--n-pink);"></div>
+            <div class="info-card">
+                <h4>⏱️ TIEMPO REAL</h4>
+                <p>Reloj UTC integrado para sincronización de Logbooks mundiales.</p>
+            </div>
+            <div class="info-card">
+                <h4>🚀 COMPARTIR</h4>
+                <p>Exportación directa a redes sociales y WhatsApp con un solo clic.</p>
             </div>
         </div>
 
-        <div style="margin-top: 30px; text-align: center;">
-            <a href="https://info.flagcounter.com/QJOS"><img src="https://s01.flagcounter.com/count2/QJOS/bg_FFFFFF/txt_000000/border_CC0A65/columns_4/maxflags_20/viewers_0/labels_0/pageviews_0/flags_0/percent_0/" alt="Flag Counter" border="0" style="border-radius: 10px;"></a>
+        <div style="margin-top: 50px;">
+            <a href="https://info.flagcounter.com/QJOS"><img src="https://s01.flagcounter.com/count2/QJOS/bg_FFFFFF/txt_000000/border_CC0A65/columns_4/maxflags_20/viewers_0/labels_0/pageviews_0/flags_0/percent_0/" alt="Flag Counter" border="0"></a>
         </div>
+
+        <footer>
+            CL7ADV &bull; ALFRED &bull; 2026 &bull; CAMAGÜEY, CUBA
+        </footer>
     </div>
 
-    <footer>
-        DESIGNED BY CL7ADV &bull; ALFRED &bull; 2026 &bull; CAMAGÜEY, CUBA
-    </footer>
-
-    <div id="resModal" class="full-modal">
-        <div class="qsl-display">
-            <h2 id="resTitle" style="color:var(--n-blue); font-size: 3rem; text-align: center;"></h2>
-            <div id="resList"></div>
-            <div style="height: 150px;"></div> </div>
-
-        <div class="action-hub">
-            <button class="hub-btn" style="background:var(--cuba-red); color:white;" onclick="forceDownload()">⬇️ GUARDAR</button>
-            <button class="hub-btn" style="background:var(--cuba-blue); color:white;" onclick="share()">🔗 COMPARTIR</button>
-            <button class="hub-btn" style="background:#333; color:white;" onclick="closeM()">✖ SALIR</button>
+    <div id="qslModal" class="modal">
+        <div class="modal-content">
+            <h2 id="resTitle" style="color:var(--neon-blue); font-size: 2.5rem; margin-bottom: 40px;"></h2>
+            <div id="resContainer"></div>
+            <button class="btn-search" onclick="closeModal()" style="background:#222; margin-top:30px;">CERRAR ESTACIÓN</button>
         </div>
     </div>
 
     <script>
-        // --- RELOJ Y FECHA ---
-        function updateClock() {
-            const now = new Date();
-            const timeStr = now.getUTCHours().toString().padStart(2,'0') + ":" + now.getUTCMinutes().toString().padStart(2,'0') + ":" + now.getUTCSeconds().toString().padStart(2,'0');
-            document.getElementById('time-val').innerText = timeStr;
-            const options = { year: 'numeric', month: 'long', day: 'numeric' };
-            document.getElementById('date-label').innerText = now.toLocaleDateString('es-ES', options).toUpperCase();
+        // RELOJ UTC
+        function clock() {
+            const d = new Date();
+            document.getElementById('utc-clock').innerText = `UTC ${d.getUTCHours().toString().padStart(2,'0')}:${d.getUTCMinutes().toString().padStart(2,'0')}:${d.getUTCSeconds().toString().padStart(2,'0')}`;
         }
-        setInterval(updateClock, 1000); updateClock();
+        setInterval(clock, 1000); clock();
 
-        // --- ANIMACIÓN BOOT ---
-        window.onload = () => {
-            const logs = [
-                "> INITIALIZING CORE...",
-                "> MOUNTING ASSETS/IMG...",
-                "> CONNECTING TO REPEATER...",
-                "> SSL ENCRYPTION: ACTIVE",
-                "> CL7ADV NODE: ONLINE",
-                "> SYSTEM READY."
-            ];
-            let i = 0;
-            const logBox = document.getElementById('bootLog');
-            const itv = setInterval(() => {
-                logBox.innerHTML += logs[i] + "<br>";
-                i++;
-                if(i >= logs.length) {
-                    clearInterval(itv);
-                    setTimeout(() => document.getElementById('boot-screen').style.display='none', 800);
-                }
-            }, 400);
-        };
-
-        // --- AUDIO CW ---
+        // AUDIO MORSE (CW)
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        function cw() {
-            const o = audioCtx.createOscillator();
-            const g = audioCtx.createGain();
-            o.connect(g); g.connect(audioCtx.destination);
-            o.frequency.value = 750; g.gain.value = 0.05;
-            o.start(); o.stop(audioCtx.currentTime + 0.1);
+        function beep(freq, dur) {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.frequency.value = freq;
+            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            osc.start();
+            osc.stop(audioCtx.currentTime + dur);
         }
 
-        // --- BUSCADOR PRO ---
-        let latestImg = "";
-        async function runProScan() {
+        function playMorse() {
+            const now = audioCtx.currentTime;
+            [0, 0.2, 0.4, 0.7].forEach(t => {
+                setTimeout(() => beep(750, 0.1), t * 1000);
+            });
+        }
+
+        // MOTOR DE BÚSQUEDA v28.7
+        async function iniciarEscaneo() {
             const call = document.getElementById('callsign').value.trim().toUpperCase();
             if(!call) return;
 
-            cw();
-            const lLine = document.getElementById('lLine');
-            const fLine = document.getElementById('fLine');
-            const status = document.getElementById('status');
-            lLine.style.display = 'block';
+            playMorse();
+            const qsl = document.getElementById('traveling-qsl');
+            const lWrap = document.getElementById('lWrap');
+            const lBar = document.getElementById('lBar');
+            const log = document.getElementById('status-log');
+
+            qsl.style.display = 'flex';
+            qsl.style.animation = 'fly 2.5s linear infinite';
+            lWrap.style.display = 'block';
             
             const exts = ['png', 'PNG', 'jpg', 'JPG', 'jpeg', 'JPEG'];
             let found = [];
             let tasks = [];
-            exts.forEach(e => {
-                tasks.push(`img/${call}.${e}`);
-                for(let i=1; i<=4; i++) tasks.push(`img/${call}-${i}.${e}`);
+            exts.forEach(ext => {
+                tasks.push(`img/${call}.${ext}`);
+                for(let i=1; i<=3; i++) tasks.push(`img/${call}-${i}.${ext}`);
             });
 
-            for(let i=0; i<tasks.length; i++) {
-                fLine.style.width = ((i+1)/tasks.length*100) + '%';
-                status.innerText = `ESCANEANDO: ${tasks[i].replace('img/','')}`;
-                const ok = await new Promise(r => {
+            for(let i=0; i < tasks.length; i++) {
+                lBar.style.width = ((i+1)/tasks.length*100) + '%';
+                log.innerText = `SINTONIZANDO: ${tasks[i].replace('img/','')}`;
+                
+                const ok = await new Promise(res => {
                     const img = new Image();
-                    img.onload = () => r(true);
-                    img.onerror = () => r(false);
+                    img.onload = () => res(true);
+                    img.onerror = () => res(false);
                     img.src = tasks[i] + "?v=" + Date.now();
                 });
                 if(ok) found.push(tasks[i]);
             }
 
-            lLine.style.display = 'none';
+            qsl.style.display = 'none';
+            lWrap.style.display = 'none';
+
             if(found.length > 0) {
-                latestImg = found[0];
-                show(call, found);
+                render(call, found);
             } else {
-                status.innerText = "⚠️ SEÑAL NO LOCALIZADA";
-                setTimeout(() => status.innerText = "", 4000);
+                log.innerText = '⚠️ INDICATIVO NO ENCONTRADO EN ESTA BANDA';
+                setTimeout(() => log.innerText = '', 5000);
             }
         }
 
-        function show(call, imgs) {
-            const list = document.getElementById('resList');
-            document.getElementById('resTitle').innerText = call;
-            list.innerHTML = "";
-            imgs.forEach(s => {
-                list.innerHTML += `<div class="card-frame"><img src="${s}"></div>`;
+        function render(call, list) {
+            const container = document.getElementById('resContainer');
+            document.getElementById('resTitle').innerText = `QSL DETECTADA: ${call}`;
+            container.innerHTML = '';
+            list.forEach(src => {
+                container.innerHTML += `
+                    <div class="qsl-result">
+                        <img src="${src}">
+                        <div class="actions">
+                            <a href="${src}" download class="btn-act" style="background:var(--cuba-red)">DESCARGAR PNG/JPG</a>
+                            <button onclick="shareLink('${call}')" class="btn-act" style="background:var(--cuba-blue)">COMPARTIR</button>
+                        </div>
+                    </div>`;
             });
-            document.getElementById('resModal').style.display = 'block';
+            document.getElementById('qslModal').style.display = 'block';
         }
 
-        function forceDownload() {
-            if(!latestImg) return;
-            const a = document.createElement('a');
-            a.href = latestImg;
-            a.download = latestImg.split('/').pop();
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
+        function shareLink(call) {
+            if(navigator.share) {
+                navigator.share({title:'Mi QSL', text:'Contacto radial con '+call, url:window.location.href});
+            } else {
+                alert("Enlace copiado al portapapeles.");
+            }
         }
 
-        function share() {
-            if(navigator.share) navigator.share({title:'Mi QSL Caribeña', text:'Confirmación de contacto radial.', url:window.location.href});
-        }
-
-        function closeM() { document.getElementById('resModal').style.display = 'none'; }
+        function closeModal() { document.getElementById('qslModal').style.display = 'none'; }
+        document.getElementById('callsign').addEventListener('keypress', (e) => { if(e.key==='Enter') iniciarEscaneo(); });
     </script>
 </body>
 </html>
