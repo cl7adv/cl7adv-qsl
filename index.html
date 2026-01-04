@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>QSL CARIBE v104 - ACADEMY PRO</title>
+    <title>QSL CARIBE v105 - ULTIMATE ACADEMY</title>
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
     <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Outfit:wght@300;600;900&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
     
@@ -12,71 +12,88 @@
             --accent-coral: #ff4d6d; 
             --accent-sea: #00d4ff;   
             --bg-dark: #0f0a0a;      
-            --glass: rgba(30, 20, 20, 0.9);
+            --glass: rgba(25, 15, 15, 0.92);
         }
 
         body, html { margin: 0; padding: 0; background: radial-gradient(circle at top right, #2a1b1b, #0f0a0a); color: #fff1e6; font-family: 'Outfit', sans-serif; overflow-x: hidden; min-height: 100vh; }
 
-        /* --- RELOJ UTC --- */
-        #utc-clock { position: fixed; top: 20px; right: 20px; background: rgba(0,0,0,0.8); padding: 10px 15px; border-radius: 12px; border: 1px solid var(--accent-warm); font-family: 'JetBrains Mono', monospace; z-index: 9000; box-shadow: 0 0 20px rgba(255,157,0,0.2); }
-        #utc-clock span { color: var(--accent-warm); font-weight: bold; display: block; font-size: 0.6rem; letter-spacing: 2px; }
-        #utc-time { font-size: 1.2rem; color: #fff; }
+        /* --- RELOJ UTC ZULU --- */
+        #utc-clock { position: fixed; top: 20px; right: 20px; background: rgba(0,0,0,0.8); padding: 10px 18px; border-radius: 12px; border: 1px solid var(--accent-warm); font-family: 'JetBrains Mono', monospace; z-index: 9000; box-shadow: 0 0 20px rgba(255,157,0,0.3); text-align: right; }
+        #utc-clock span { color: var(--accent-warm); font-weight: bold; display: block; font-size: 0.65rem; letter-spacing: 2px; }
+        #utc-time { font-size: 1.3rem; color: #fff; text-shadow: 0 0 10px var(--accent-warm); }
+
+        /* --- INTRO / BOOT --- */
+        #intro-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 1.5s; }
+        .boot-text { font-family: 'Syncopate', sans-serif; color: var(--accent-warm); text-align: center; letter-spacing: 5px; }
 
         /* --- UI PRINCIPAL --- */
-        #main-ui { opacity: 0; transition: 1.5s; display: none; padding-top: 100px; padding-bottom: 100px; }
+        #main-ui { opacity: 0; transition: 2s; display: none; padding-top: 100px; padding-bottom: 50px; }
         .container { max-width: 900px; margin: 0 auto; padding: 0 20px; }
-        .glass-panel { background: var(--glass); backdrop-filter: blur(15px); border-radius: 30px; padding: 35px; border: 1px solid rgba(255, 157, 0, 0.1); margin-bottom: 30px; text-align: center; }
+        .glass-panel { background: var(--glass); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-radius: 25px; padding: 30px; border: 1px solid rgba(255, 157, 0, 0.1); margin-bottom: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.6); }
 
-        .supreme-input { width: 100%; padding: 20px; border-radius: 15px; background: rgba(0,0,0,0.5); border: 2px solid #332222; color: var(--accent-warm); font-size: 1.8rem; font-weight: 900; text-align: center; font-family: 'Syncopate', sans-serif; margin-bottom: 20px; box-sizing: border-box; }
+        .supreme-input { width: 100%; padding: 20px; border-radius: 15px; background: rgba(0,0,0,0.5); border: 2px solid #332222; color: var(--accent-warm); font-size: 1.5rem; font-weight: 900; text-align: center; font-family: 'Syncopate', sans-serif; margin-bottom: 15px; box-sizing: border-box; }
         
-        .btn { padding: 18px 40px; border-radius: 15px; border: none; font-weight: 700; font-family: 'Syncopate', sans-serif; cursor: pointer; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; }
+        .btn { padding: 18px 30px; border-radius: 12px; border: none; font-weight: 700; font-family: 'Syncopate', sans-serif; cursor: pointer; transition: 0.3s; text-transform: uppercase; font-size: 0.75rem; }
         .btn-warm { background: linear-gradient(45deg, var(--accent-warm), #ff6b00); color: #000; }
+        .btn-coral { background: var(--accent-coral); color: #fff; }
+
+        /* --- RADAR --- */
+        #radar-container { display: none; margin: 20px 0; }
+        .radar { width: 50px; height: 50px; border: 3px solid var(--accent-warm); border-radius: 50%; border-top-color: transparent; animation: spin 0.8s linear infinite; margin: 0 auto; }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
         /* --- BOTÓN ESCUELA --- */
-        #school-btn { position: fixed; bottom: 30px; right: 30px; width: 70px; height: 70px; background: var(--accent-warm); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 0 30px rgba(255,157,0,0.4); z-index: 8000; border: none; transition: 0.4s; font-size: 2rem; }
-        #school-btn:hover { transform: scale(1.1) rotate(-10deg); }
+        #school-btn { position: fixed; bottom: 30px; right: 30px; width: 75px; height: 75px; background: var(--accent-warm); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 0 30px rgba(255,157,0,0.4); z-index: 8000; border: none; transition: 0.4s; font-size: 2.2rem; }
+        #school-btn:hover { transform: scale(1.1) rotate(-15deg); }
 
-        /* --- VENTANA ESCUELA (MODAL) --- */
-        #school-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0a0707; z-index: 11000; display: none; overflow-y: auto; padding: 40px 20px; }
-        .school-header { border-bottom: 2px solid var(--accent-warm); margin-bottom: 30px; padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
-        .section-title { color: var(--accent-coral); font-family: 'Syncopate'; font-size: 1.2rem; margin-top: 40px; border-left: 4px solid var(--accent-warm); padding-left: 15px; }
+        /* --- MODAL ESCUELA --- */
+        #school-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0a0707; z-index: 11000; display: none; overflow-y: auto; padding: 40px 15px; }
+        .section-title { color: var(--accent-coral); font-family: 'Syncopate'; font-size: 1.1rem; margin-top: 35px; border-left: 4px solid var(--accent-warm); padding-left: 15px; text-transform: uppercase; }
+        .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; margin-top: 20px; }
+        .card-pro { background: #161111; border: 1px solid #2a1b1b; padding: 20px; border-radius: 18px; position: relative; }
+        .card-pro h4 { color: var(--accent-warm); margin: 0 0 10px 0; font-family: 'Syncopate'; font-size: 0.85rem; }
+        .card-pro p { font-size: 0.85rem; line-height: 1.5; opacity: 0.8; margin: 0; }
         
-        /* TRUCOS Y MATERIAL */
-        .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 20px; }
-        .card-pro { background: #161111; border: 1px solid #2a1b1b; padding: 25px; border-radius: 20px; position: relative; overflow: hidden; }
-        .card-pro::before { content: "TOP SECRET"; position: absolute; top: 10px; right: -20px; background: var(--accent-warm); color: #000; font-size: 0.6rem; font-weight: 900; padding: 5px 30px; transform: rotate(45deg); }
-        .card-pro h4 { color: var(--accent-warm); margin-top: 0; font-family: 'Syncopate'; font-size: 0.9rem; }
-        .card-pro p { font-size: 0.9rem; line-height: 1.6; opacity: 0.8; }
-        
-        .antenna-blueprint { background: #000; border: 1px dashed var(--accent-sea); padding: 20px; border-radius: 15px; font-family: 'JetBrains Mono'; color: var(--accent-sea); font-size: 0.8rem; margin-top: 15px; }
+        .blueprint { background: #000; border: 1px dashed var(--accent-sea); padding: 15px; border-radius: 10px; font-family: 'JetBrains Mono'; color: var(--accent-sea); font-size: 0.75rem; margin-top: 10px; }
 
-        .close-btn { background: var(--accent-coral); border: none; color: white; padding: 10px 20px; border-radius: 10px; cursor: pointer; font-family: 'Syncopate'; font-size: 0.7rem; }
+        .close-bar { position: sticky; top: -40px; background: #0a0707; padding: 20px 0; z-index: 100; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; }
 
-        #intro-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 1.5s; }
+        /* --- RESULTADOS QSL --- */
+        #results { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-top: 20px; }
+        .qsl-card { border: 1px solid #332222; border-radius: 15px; overflow: hidden; background: #000; }
+        .qsl-card img { width: 100%; height: auto; display: block; }
     </style>
 </head>
-<body onload="initCinematic()">
+<body onload="initApp()">
 
     <audio id="snd-power" src="https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3"></audio>
     <audio id="snd-scan" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3" loop></audio>
+    <audio id="snd-ok" src="https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3"></audio>
 
     <div id="utc-clock">
-        <span>UTC / ZULU TIME</span>
+        <span>ESTACIÓN ZULU (UTC)</span>
         <div id="utc-time">00:00:00</div>
     </div>
 
     <div id="intro-overlay">
-        <h1 style="font-family: 'Syncopate'; color: var(--accent-warm); text-align: center;">CARIBE NODO<br><span style="font-size: 0.5em; opacity: 0.5;">v104 ACADEMY</span></h1>
-        <button class="btn btn-warm" id="connect-btn" style="display:none; margin-top:20px;" onclick="unlockUI()">ENTRAR</button>
+        <h1 class="boot-text">CARIBE NODO<br><span style="font-size: 0.4em; opacity: 0.6;">V105 FUSION SYSTEM</span></h1>
+        <button class="btn btn-warm" id="connect-btn" style="display:none; margin-top:30px;" onclick="unlockUI()">INICIAR SISTEMA</button>
     </div>
 
     <div id="main-ui">
         <div class="container">
             <div class="glass-panel">
-                <h2 style="font-family: 'Syncopate'; color: var(--accent-warm);">SISTEMA QSL</h2>
-                <input type="text" id="target-id" class="supreme-input" placeholder="INDICATIVO">
-                <button class="btn btn-warm" onclick="startSearch()">BUSCAR EN DB</button>
-                <div id="results" style="margin-top:20px;"></div>
+                <h2 style="font-family: 'Syncopate'; color: var(--accent-warm); margin-top:0;">BUSCADOR QSL</h2>
+                <input type="text" id="target-id" class="supreme-input" placeholder="INDICATIVO (EJ: CO2RR)">
+                <button class="btn btn-warm" onclick="deepSearch()">RASTREAR SEÑAL</button>
+                <div id="radar-container"><div class="radar"></div></div>
+                <div id="results"></div>
+            </div>
+
+            <div class="glass-panel" style="border-color: rgba(255, 77, 109, 0.2);">
+                <h3 style="font-family: 'Syncopate'; color: var(--accent-coral);">DATA UPLOAD</h3>
+                <input type="file" id="up-file" style="margin-bottom:15px; display:block; width:100%;">
+                <button class="btn btn-coral" onclick="secureUpload()">SUBIR AL SERVIDOR</button>
             </div>
         </div>
     </div>
@@ -85,84 +102,72 @@
 
     <div id="school-modal">
         <div class="container">
-            <div class="school-header">
-                <h1 style="font-family: 'Syncopate'; color: var(--accent-warm); margin: 0;">ESCUELA TÉCNICA</h1>
-                <button class="close-btn" onclick="toggleSchool()">CERRAR [X]</button>
+            <div class="close-bar">
+                <h2 style="font-family: 'Syncopate'; color: var(--accent-warm); margin:0;">ACADEMY v105</h2>
+                <button class="btn btn-coral" style="padding:10px 15px;" onclick="toggleSchool()">CERRAR</button>
             </div>
 
-            <p style="opacity: 0.7;">Bienvenido, colega. Aquí tienes material de alta calidad para mejorar tu estación.</p>
-
-            <div class="section-title">TRUCOS DE "VIEJO LOBO"</div>
+            <div class="section-title">ANTENAS Y PLANOS</div>
             <div class="info-grid">
                 <div class="card-pro">
-                    <h4>EL TRUCO DEL NEÓN</h4>
-                    <p>Si no tienes vatímetro, una pequeña bombilla de neón cerca del cable de la antena (en el aislador central) brillará al transmitir si hay RF. ¡Si brilla, estás saliendo!</p>
+                    <h4>DIPOLO MULTIBANDA</h4>
+                    <p>Corta dos hilos de 10.03m para la banda de 40m. Usa un Balun 1:1 en el centro para mejores resultados.</p>
+                    <div class="blueprint">📐 L = 142.5 / F(MHz)</div>
                 </div>
                 <div class="card-pro">
-                    <h4>CABLE COAXIAL</h4>
-                    <p>Nunca dobles el cable coaxial en ángulos rectos (90°). Crea "cuellos de botella" que aumentan la ROE. Siempre usa curvas suaves como las del Caribe.</p>
-                </div>
-                <div class="card-pro">
-                    <h4>LIMPIEZA DE CONTACTOS</h4>
-                    <p>Usa una goma de borrar (borrador) para limpiar los contactos oxidados de los conectores PL-259. Es mejor que cualquier químico abrasivo.</p>
+                    <h4>SLIM JIM (VHF)</h4>
+                    <p>Excelente para ciudades. Usa cable de 300 ohms (plano). Es omnidireccional y tiene ganancia extra.</p>
                 </div>
             </div>
+            
 
-            <div class="section-title">PLANOS DE CONSTRUCCIÓN</div>
+            <div class="section-title">TRUCOS DE TALLER</div>
             <div class="info-grid">
                 <div class="card-pro">
-                    <h4>DIPOLO DE MEDIA ONDA (HF)</h4>
-                    <p>La antena más confiable. El corte perfecto se calcula así:</p>
-                    <div class="antenna-blueprint">
-                        Largo Total (metros) = 142.5 / Frecuencia (MHz)<br>
-                        Ejemplo para 40m (7.1 MHz): 20.07 metros total.<br>
-                        (10.03 metros por cada brazo).
-                    </div>
+                    <h4>CÓDIGO DE COLORES</h4>
+                    <p style="font-family:'JetBrains Mono'; font-size:0.75rem;">
+                        0: Negro | 1: Café | 2: Rojo<br>
+                        3: Naranja | 4: Amar. | 5: Verde<br>
+                        6: Azul | 7: Viol. | 8: Gris | 9: Blan.
+                    </p>
                 </div>
                 <div class="card-pro">
-                    <h4>ANTENA "COBRA" PARA EMERGENCIAS</h4>
-                    <p>Usa cable paralelo de corriente (el de las lámparas). Es una antena fantástica para situaciones de desastre en el Caribe porque se enrolla y no ocupa espacio.</p>
+                    <h4>EVITAR INTERFERENCIAS</h4>
+                    <p>Enrolla 5-6 vueltas de tu cable coaxial cerca de la antena en un tubo de PVC de 4 pulgadas. Actuará como un choque de RF barato y efectivo.</p>
                 </div>
             </div>
 
-            <div class="section-title">MATERIAL DE ESTUDIO</div>
-            <div class="info-grid">
-                <div class="card-pro" style="border-color: var(--accent-sea);">
-                    <h4>CÓDIGO Q ESENCIAL</h4>
-                    <p><strong>QRM:</strong> Interferencia humana.<br>
-                       <strong>QRN:</strong> Interferencia atmosférica (Ruidos de estática).<br>
-                       <strong>QSY:</strong> Cambiar de frecuencia.<br>
-                       <strong>QTH:</strong> Ubicación geográfica.</p>
-                </div>
-                <div class="card-pro" style="border-color: var(--accent-sea);">
-                    <h4>TABLA DE RESISTENCIAS</h4>
-                    <p>Negro: 0 | Marrón: 1 | Rojo: 2 | Naranja: 3 | Amarillo: 4 | Verde: 5 | Azul: 6 | Violeta: 7 | Gris: 8 | Blanco: 9</p>
-                    <p style="font-size: 0.7rem; color: var(--accent-warm);">Mnemotecnia: "Nunca Mañana Recordaré Nada..."</p>
-                </div>
+            <div class="section-title">ALFABETO FONÉTICO</div>
+            <div class="card-pro" style="margin-top:15px; font-family:'JetBrains Mono'; font-size:0.8rem;">
+                A: Alpha | B: Bravo | C: Charlie | D: Delta | E: Echo | F: Foxtrot | G: Golf | H: Hotel | I: India | J: Juliett | K: Kilo | L: Lima | M: Mike...
             </div>
 
-            <div style="height: 100px;"></div> </div>
+            <div style="height: 50px;"></div>
+        </div>
     </div>
 
     <script>
-        // Reloj UTC
-        function updateUTC() {
+        // RELOJ UTC
+        function updateClock() {
             const now = new Date();
             const time = now.getUTCHours().toString().padStart(2,'0') + ":" + 
                          now.getUTCMinutes().toString().padStart(2,'0') + ":" + 
                          now.getUTCSeconds().toString().padStart(2,'0');
             document.getElementById('utc-time').innerText = time;
         }
-        setInterval(updateUTC, 1000);
+        setInterval(updateClock, 1000);
 
-        function initCinematic() {
-            setTimeout(() => { document.getElementById('connect-btn').style.display = "block"; document.getElementById('snd-power').play(); }, 2000);
+        function initApp() {
+            setTimeout(() => {
+                document.getElementById('connect-btn').style.display = "block";
+                document.getElementById('snd-power').play();
+            }, 2000);
         }
 
         function unlockUI() {
             document.getElementById('intro-overlay').style.opacity = "0";
-            setTimeout(() => { 
-                document.getElementById('intro-overlay').style.display = "none"; 
+            setTimeout(() => {
+                document.getElementById('intro-overlay').style.display = "none";
                 document.getElementById('main-ui').style.display = "block";
                 setTimeout(() => document.getElementById('main-ui').style.opacity = "1", 100);
             }, 1000);
@@ -173,12 +178,46 @@
             m.style.display = (m.style.display === 'block') ? 'none' : 'block';
         }
 
-        async function startSearch() {
-            const id = document.getElementById('target-id').value.toUpperCase();
+        async function deepSearch() {
+            const id = document.getElementById('target-id').value.trim().toUpperCase();
             if(!id) return;
             const res = document.getElementById('results');
-            res.innerHTML = "<p style='color:var(--accent-warm)'>Rastreando satélite...</p>";
-            // Aquí iría tu lógica de búsqueda de imágenes
+            const radar = document.getElementById('radar-container');
+            const snd = document.getElementById('snd-scan');
+
+            res.innerHTML = "";
+            radar.style.display = "block";
+            snd.play();
+
+            // Simulación de rastreo
+            await new Promise(r => setTimeout(r, 3000));
+            radar.style.display = "none";
+            snd.pause();
+
+            const paths = [`img/${id}.png`, `img/${id}.jpg`];
+            let found = false;
+
+            for(let p of paths) {
+                const ok = await new Promise(resolve => {
+                    const i = new Image();
+                    i.onload = () => resolve(true);
+                    i.onerror = () => resolve(false);
+                    i.src = p;
+                });
+                if(ok) {
+                    res.innerHTML += `<div class="qsl-card"><img src="${p}"><button class="btn btn-warm" style="width:100%; border-radius:0;" onclick="window.open('${p}')">DESCARGAR</button></div>`;
+                    found = true;
+                }
+            }
+
+            if(found) document.getElementById('snd-ok').play();
+            else res.innerHTML = "<p style='color:var(--accent-coral)'>SIN SEÑAL EN BASE DE DATOS</p>";
+        }
+
+        function secureUpload() {
+            const p = prompt("ACCESS CODE:");
+            if(p === "Leila2026") alert("Subida autorizada. Selecciona el archivo.");
+            else alert("ACCESO DENEGADO");
         }
     </script>
 </body>
