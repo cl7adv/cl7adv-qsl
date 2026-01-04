@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>QSL CARIBE v111 - SDR LIVE</title>
+    <title>QSL CARIBE v112 - MASTER OCEAN & SDR</title>
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
     <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Outfit:wght@300;600;900&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
     
@@ -14,21 +14,26 @@
         }
 
         body, html { 
-            margin: 0; padding: 0; background: linear-gradient(135deg, #001219 0%, #003049 50%, #005f73 100%); 
-            color: var(--accent-cloud); font-family: 'Outfit', sans-serif; min-height: 100vh; 
+            margin: 0; padding: 0; 
+            background: linear-gradient(135deg, #001219 0%, #003049 50%, #005f73 100%); 
+            color: var(--accent-cloud); font-family: 'Outfit', sans-serif; 
+            min-height: 100vh; overflow-x: hidden;
         }
 
+        /* --- RELOJ UTC --- */
         #utc-clock { 
             position: fixed; top: 20px; right: 20px; background: rgba(0, 18, 25, 0.8); 
             padding: 10px 18px; border-radius: 12px; border: 1px solid var(--accent-ocean); 
             font-family: 'JetBrains Mono', monospace; z-index: 9000; text-align: right; 
+            box-shadow: 0 0 20px rgba(0, 119, 190, 0.4);
         }
 
-        #main-ui { padding-top: 100px; padding-bottom: 50px; }
+        /* --- UI PRINCIPAL --- */
+        #main-ui { opacity: 0; transition: 1.5s; display: none; padding-top: 100px; padding-bottom: 50px; }
         .container { max-width: 950px; margin: 0 auto; padding: 0 20px; }
         
         .glass-panel { 
-            background: var(--glass); backdrop-filter: blur(25px); 
+            background: var(--glass); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
             border-radius: 25px; padding: 30px; border: 1px solid rgba(255, 255, 255, 0.15); 
             margin-bottom: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.4); 
         }
@@ -39,172 +44,31 @@
             text-align: center; font-family: 'Syncopate', sans-serif; margin-bottom: 15px; box-sizing: border-box; 
         }
         
-        .btn { padding: 18px 30px; border-radius: 12px; border: none; font-weight: 700; font-family: 'Syncopate', sans-serif; cursor: pointer; text-transform: uppercase; font-size: 0.75rem; text-decoration: none; text-align: center; }
-        .btn-ocean { background: var(--accent-ocean); color: #fff; width: 100%; }
-
-        /* ESTILO PARA EL SDR */
-        .sdr-frame {
-            width: 100%; height: 500px; border-radius: 15px; border: 3px solid #000;
-            background: #000; box-shadow: inset 0 0 20px var(--accent-ocean);
-        }
-
-        /* INTRO */
-        #intro-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-deep); z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 1s; }
-    </style>
-</head>
-<body onload="initApp()">
-
-    <div id="utc-clock">
-        <span>UTC CARIBE</span>
-        <div id="utc-time" style="font-size:1.3rem; color:#fff;">00:00:00</div>
-    </div>
-
-    <div id="intro-overlay">
-        <h1 style="font-family:'Syncopate'; color:white;">CARIBE NODO v111</h1>
-        <button class="btn btn-ocean" id="connect-btn" style="display:none; max-width:250px;" onclick="unlockUI()">CONECTAR SDR</button>
-    </div>
-
-    <div id="main-ui" style="display:none; opacity:0; transition: 1s;">
-        <div class="container">
-            
-            <div class="glass-panel">
-                <h2 style="font-family: 'Syncopate'; color: var(--accent-cloud); margin:0 0 20px 0;">BÚSQUEDA QSL</h2>
-                <input type="text" id="target-id" class="supreme-input" placeholder="INDICATIVO">
-                <button class="btn btn-ocean" onclick="deepSearch()">RASTREAR</button>
-                <div id="results" style="margin-top:20px;"></div>
-            </div>
-
-            <div class="glass-panel" style="border-color: var(--accent-gold);">
-                <h3 style="font-family: 'Syncopate'; color: var(--accent-gold); margin:0 0 15px 0;">RADIO ESCUCHA EN VIVO (SSDR)</h3>
-                <iframe src="http://lu4ao.ddns.net:8073/" class="sdr-frame"></iframe>
-                <p style="font-size: 0.7rem; color: var(--accent-gold); margin-top:10px;">TIP: Haz clic dentro de la radio para sintonizar frecuencias.</p>
-            </div>
-
-            <div style="text-align:center; padding: 20px;">
-                <a href="https://info.flagcounter.com/ReMh">
-                    <img src="https://s01.flagcounter.com/count2/ReMh/bg_003049/txt_ffffff/border_0077be/columns_5/maxflags_15/viewers_0/labels_0/pageviews_0/flags_0/percent_0/" alt="Flag Counter" border="0">
-                </a>
-            </div>
-
-        </div>
-    </div>
-
-    <script>
-        function updateClock() {
-            const now = new Date();
-            document.getElementById('utc-time').innerText = now.getUTCHours().toString().padStart(2,'0') + ":" + now.getUTCMinutes().toString().padStart(2,'0') + ":" + now.getUTCSeconds().toString().padStart(2,'0');
-        }
-        setInterval(updateClock, 1000);
-
-        function initApp() {
-            setTimeout(() => { document.getElementById('connect-btn').style.display = "block"; }, 1000);
-        }
-
-        function unlockUI() {
-            document.getElementById('intro-overlay').style.opacity = "0";
-            setTimeout(() => { 
-                document.getElementById('intro-overlay').style.display = "none"; 
-                document.getElementById('main-ui').style.display = "block"; 
-                setTimeout(() => document.getElementById('main-ui').style.opacity = "1", 50); 
-            }, 800);
-        }
-
-        async function deepSearch() {
-            const id = document.getElementById('target-id').value.trim().toUpperCase();
-            if(!id) return;
-            const res = document.getElementById('results');
-            res.innerHTML = "Buscando...";
-            const paths = [`img/${id}.png`, `img/${id}.jpg` ];
-            let found = false;
-            for(let p of paths) {
-                const ok = await new Promise(resolve => { const i = new Image(); i.onload = () => resolve(true); i.onerror = () => resolve(false); i.src = p; });
-                if(ok) {
-                    res.innerHTML = `<img src="${p}" style="width:100%; border-radius:15px; border:1px solid gold;">`;
-                    found = true; break;
-                }
-            }
-            if(!found) res.innerHTML = "No se encontró QSL.";
-        }
-    </script>
-</body>
-</html>        #utc-time { font-size: 1.3rem; color: #fff; text-shadow: 0 0 10px var(--accent-ocean); }
-
-        /* --- INTRO / BOOT --- */
-        #intro-overlay { 
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: var(--bg-deep); z-index: 10000; 
-            display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 1.5s; 
-        }
-        .boot-text { font-family: 'Syncopate', sans-serif; color: var(--accent-cloud); text-align: center; letter-spacing: 5px; }
-
-        /* --- UI PRINCIPAL --- */
-        #main-ui { opacity: 0; transition: 2s; display: none; padding-top: 100px; padding-bottom: 50px; }
-        .container { max-width: 900px; margin: 0 auto; padding: 0 20px; }
-        
-        .glass-panel { 
-            background: var(--glass); 
-            backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); 
-            border-radius: 25px; padding: 30px; 
-            border: 1px solid rgba(255, 255, 255, 0.15); 
-            margin-bottom: 30px; 
-            box-shadow: 0 20px 50px rgba(0,0,0,0.4); 
-        }
-
-        .supreme-input { 
-            width: 100%; padding: 20px; border-radius: 15px; 
-            background: rgba(255, 255, 255, 0.05); 
-            border: 2px solid var(--accent-ocean); 
-            color: #fff; font-size: 1.5rem; font-weight: 900; 
-            text-align: center; font-family: 'Syncopate', sans-serif; 
-            margin-bottom: 15px; box-sizing: border-box; 
-        }
-        
-        .btn { 
-            padding: 18px 30px; border-radius: 12px; border: none; 
-            font-weight: 700; font-family: 'Syncopate', sans-serif; 
-            cursor: pointer; transition: 0.3s; text-transform: uppercase; 
-            font-size: 0.75rem; display: inline-block; text-decoration: none; text-align: center; 
-        }
-        .btn-ocean { background: var(--accent-ocean); color: #fff; box-shadow: 0 5px 15px rgba(0,119,190,0.4); }
-        .btn-ocean:hover { background: #0096ff; transform: translateY(-2px); }
+        .btn { padding: 18px 30px; border-radius: 12px; border: none; font-weight: 700; font-family: 'Syncopate', sans-serif; cursor: pointer; text-transform: uppercase; font-size: 0.75rem; transition: 0.3s; text-align: center; display: block; width: 100%; text-decoration: none; }
+        .btn-ocean { background: var(--accent-ocean); color: #fff; }
         .btn-cloud { background: var(--accent-cloud); color: var(--bg-deep); }
+        .btn:hover { transform: translateY(-2px); filter: brightness(1.2); }
+
+        /* --- SDR FRAME --- */
+        .sdr-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 15px; background: #000; border: 2px solid var(--accent-gold); }
+        .sdr-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
 
         /* --- BOTONES FLOTANTES --- */
         .fab-container { position: fixed; bottom: 30px; right: 30px; display: flex; flex-direction: column; gap: 15px; z-index: 8000; }
-        .fab { 
-            width: 70px; height: 70px; border-radius: 50%; 
-            display: flex; align-items: center; justify-content: center; 
-            cursor: pointer; box-shadow: 0 10px 30px rgba(0,0,0,0.3); 
-            border: 1px solid rgba(255,255,255,0.2); transition: 0.4s; 
-            font-size: 2rem; text-decoration: none; 
-        }
+        .fab { width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 10px 30px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.2); transition: 0.4s; font-size: 2rem; text-decoration: none; }
         #school-btn { background: var(--accent-cloud); color: var(--bg-deep); }
-        #sdr-btn { background: var(--accent-ocean); color: #fff; }
 
-        /* --- MODAL ESCUELA --- */
-        #school-modal { 
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(0, 18, 25, 0.98); z-index: 11000; 
-            display: none; overflow-y: auto; padding: 40px 15px; 
-        }
-        .section-title { color: var(--accent-ocean); font-family: 'Syncopate'; font-size: 1.1rem; margin-top: 35px; border-left: 4px solid var(--accent-cloud); padding-left: 15px; }
+        /* --- INTRO --- */
+        #intro-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-deep); z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 1s; }
         
-        .card-pro { 
-            background: rgba(255,255,255,0.03); border: 1px solid rgba(0,119,190,0.3); 
-            padding: 20px; border-radius: 18px; margin-top: 15px;
-        }
-
         #radar-container { display: none; margin: 20px 0; }
-        .radar { 
-            width: 50px; height: 50px; border: 3px solid var(--accent-cloud); 
-            border-radius: 50%; border-top-color: var(--accent-ocean); 
-            animation: spin 0.8s linear infinite; margin: 0 auto; 
-        }
+        .radar { width: 50px; height: 50px; border: 3px solid var(--accent-cloud); border-radius: 50%; border-top-color: var(--accent-ocean); animation: spin 0.8s linear infinite; margin: 0 auto; }
         @keyframes spin { to { transform: rotate(360deg); } }
         
-        #results { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-top: 20px; }
-        .qsl-card { border-radius: 15px; overflow: hidden; background: rgba(0,0,0,0.3); border: 1px solid var(--accent-ocean); }
-        .qsl-card img { width: 100%; height: auto; display: block; }
+        #results img { width: 100%; border-radius: 15px; border: 2px solid var(--accent-gold); margin-top: 15px; }
+
+        /* --- MODAL --- */
+        #school-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 18, 25, 0.98); z-index: 11000; display: none; overflow-y: auto; padding: 40px 15px; }
     </style>
 </head>
 <body onload="initApp()">
@@ -216,30 +80,40 @@
     <audio id="snd-ok" src="https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3"></audio>
 
     <div id="utc-clock">
-        <span>UTC CARIBE</span>
-        <div id="utc-time">00:00:00</div>
+        <span style="color:var(--accent-ocean); font-size: 0.7rem; font-weight: bold;">UTC CARIBE</span>
+        <div id="utc-time" style="font-size:1.3rem; color:#fff;">00:00:00</div>
     </div>
 
     <div id="intro-overlay">
-        <h1 class="boot-text">CARIBE NODO<br><span style="font-size: 0.4em; opacity: 0.6; color: var(--accent-ocean);">v110 OCEAN WAVE</span></h1>
-        <button class="btn btn-ocean" id="connect-btn" style="display:none; margin-top:30px;" onclick="unlockUI()">ESTABLECER CONEXIÓN</button>
+        <h1 style="font-family:'Syncopate'; color:white; text-align: center;">CARIBE NODO<br><span style="font-size: 0.5em; color: var(--accent-ocean);">v112 - MASTER EDITION</span></h1>
+        <button class="btn btn-ocean" id="connect-btn" style="display:none; max-width:280px; margin-top: 30px;" onclick="unlockUI()">ESTABLECER CONEXIÓN</button>
     </div>
 
     <div id="main-ui">
         <div class="container">
             
             <div class="glass-panel">
-                <h2 style="font-family: 'Syncopate'; color: var(--accent-cloud); margin:0 0 20px 0;">RASTREO DE SEÑAL</h2>
+                <h2 style="font-family: 'Syncopate'; color: var(--accent-cloud); margin:0 0 20px 0;">RASTREO QSL</h2>
                 <input type="text" id="target-id" class="supreme-input" placeholder="INDICATIVO">
-                <button class="btn btn-ocean" style="width:100%" onclick="deepSearch()">BUSCAR EN LA RED</button>
+                <button class="btn btn-ocean" onclick="deepSearch()">INICIAR RASTREO</button>
                 <div id="radar-container"><div class="radar"></div></div>
                 <div id="results"></div>
             </div>
 
+            <div class="glass-panel" style="border-color: var(--accent-gold);">
+                <h3 style="font-family: 'Syncopate'; color: var(--accent-gold); margin:0 0 15px 0;">CONSOLA SDR EN VIVO</h3>
+                <div class="sdr-container">
+                    <iframe src="http://lu4ao.ddns.net:8073/"></iframe>
+                </div>
+                <p style="font-size: 0.75rem; margin-top: 12px; color: var(--accent-cloud); opacity: 0.8;">
+                    * Recepción activa. Haz clic en la cascada para sintonizar.
+                </p>
+            </div>
+
             <div class="glass-panel">
-                <h3 style="font-family: 'Syncopate'; color: var(--accent-ocean);">SUBIR A SATÉLITE</h3>
-                <input type="file" id="up-file" style="margin-bottom: 15px; color: white;">
-                <button class="btn btn-cloud" style="width:100%" onclick="secureUpload()">TRANSMITIR DATOS</button>
+                <h3 style="font-family: 'Syncopate'; color: var(--accent-ocean);">SISTEMA DE SUBIDA</h3>
+                <input type="file" id="up-file" style="margin-bottom: 15px; color: white; display: block;">
+                <button class="btn btn-cloud" onclick="secureUpload()">TRANSMITIR DATOS</button>
             </div>
 
             <div style="text-align:center; padding: 20px; background: rgba(0,0,0,0.2); border-radius: 20px;">
@@ -247,31 +121,23 @@
                     <img src="https://s01.flagcounter.com/count2/ReMh/bg_003049/txt_ffffff/border_0077be/columns_5/maxflags_15/viewers_0/labels_0/pageviews_0/flags_0/percent_0/" alt="Flag Counter" border="0">
                 </a>
             </div>
-
         </div>
     </div>
 
     <div class="fab-container">
-        <a href="http://lu4ao.ddns.net:8073/" target="_blank" class="fab" id="sdr-btn">📻</a>
         <button class="fab" id="school-btn" onclick="toggleSchool()">🎓</button>
     </div>
 
     <div id="school-modal">
         <div class="container">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-                <h1 style="font-family: 'Syncopate'; color: var(--accent-cloud); margin:0;">CARIBE ACADEMY</h1>
-                <button class="btn btn-ocean" onclick="toggleSchool()">X</button>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h1 style="font-family: 'Syncopate'; color: var(--accent-cloud);">CARIBE ACADEMY</h1>
+                <button class="btn btn-ocean" style="width:auto;" onclick="toggleSchool()">CERRAR</button>
             </div>
-
-            <div class="section-title">ANTENAS MARÍTIMAS</div>
-            <div class="card-pro">
-                <h4 style="color:var(--accent-ocean); font-family:'Syncopate'; margin-top:0;">DIPOLO HF</h4>
-                <p>Para máxima propagación sobre el mar. Cálculo: 142.5 / Frecuencia.</p>
-            </div>
-            
-            <div class="section-title">SEGURIDAD</div>
-            <div class="card-pro">
-                <p>Mantén tus conectores limpios de salitre para evitar pérdidas de señal y ROE alta.</p>
+            <div class="glass-panel" style="margin-top:20px;">
+                <h4 style="color:var(--accent-gold); font-family: 'Syncopate';">ANTENAS Y SEGURIDAD</h4>
+                <p>Dipolo HF: 142.5 / Frecuencia.</p>
+                <p>Protege tus conectores del salitre marino para mantener la ROE baja.</p>
             </div>
         </div>
     </div>
@@ -290,7 +156,7 @@
             setTimeout(() => { 
                 document.getElementById('connect-btn').style.display = "block"; 
                 document.getElementById('snd-power').play().catch(()=>{});
-            }, 1500);
+            }, 1000);
         }
 
         function unlockUI() {
@@ -299,7 +165,7 @@
                 document.getElementById('intro-overlay').style.display = "none"; 
                 document.getElementById('main-ui').style.display = "block"; 
                 setTimeout(() => document.getElementById('main-ui').style.opacity = "1", 50); 
-            }, 1000);
+            }, 800);
         }
 
         function toggleSchool() {
@@ -330,21 +196,18 @@
                     i.src = p;
                 });
                 if(ok) {
-                    res.innerHTML += `<div class="qsl-card"><img src="${p}"><button class="btn btn-ocean" style="width:100%; border-radius:0;" onclick="window.open('${p}')">VER QSL</button></div>`;
-                    found = true;
+                    res.innerHTML = `<img src="${p}"><button class="btn btn-ocean" style="margin-top:10px;" onclick="window.open('${p}')">DESCARGAR QSL</button>`;
+                    found = true; break;
                 }
             }
             if(found) document.getElementById('snd-ok').play().catch(()=>{});
-            else res.innerHTML = "<p style='color:var(--accent-gold); font-weight:bold;'>SEÑAL NO ENCONTRADA</p>";
+            else res.innerHTML = "<p style='color:var(--accent-gold); text-align:center;'>SEÑAL NO ENCONTRADA</p>";
         }
 
         function secureUpload() {
             const pass = prompt("PASSWORD:");
-            if(pass === "Leila2026") {
-                alert("CONEXIÓN ESTABLECIDA - SUBIENDO...");
-            } else {
-                alert("ACCESO DENEGADO");
-            }
+            if(pass === "Leila2026") alert("ACCESO AUTORIZADO - TRANSMITIENDO...");
+            else alert("ERROR DE CREDENCIALES");
         }
     </script>
 </body>
