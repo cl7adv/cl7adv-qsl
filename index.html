@@ -12,6 +12,7 @@
       background: linear-gradient(to bottom, #00bcd4, #009688);
       color: #fff;
       text-align: center;
+      min-height: 100vh;
     }
 
     .container {
@@ -39,6 +40,7 @@
       text-transform: uppercase;
       color: #333;
       font-weight: bold;
+      outline: none;
     }
 
     #buscarBtn {
@@ -83,6 +85,7 @@
       width: 0%;
       border-radius: 10px;
       transition: width 0.1s;
+      box-shadow: 0 0 10px #ffe082;
     }
 
     #cardThumb {
@@ -102,6 +105,12 @@
       transform: translateX(-50%);
       transition: left 0.1s;
       left: 0%;
+      animation: pulse 1s infinite alternate;
+    }
+
+    @keyframes pulse {
+      from { transform: translateX(-50%) scale(1); }
+      to { transform: translateX(-50%) scale(1.1); }
     }
 
     /* Modal de Resultados */
@@ -127,6 +136,7 @@
       max-width: 850px;
       border: 2px solid #ffe082;
       position: relative;
+      box-shadow: 0 0 30px rgba(255, 224, 130, 0.2);
     }
 
     .cerrar {
@@ -136,7 +146,10 @@
       font-size: 35px;
       cursor: pointer;
       color: #ffe082;
+      transition: 0.3s;
     }
+
+    .cerrar:hover { color: #fff; }
 
     #listaQSLs {
       display: flex;
@@ -148,11 +161,17 @@
 
     .qsl-card {
       background: rgba(255,255,255,0.05);
-      padding: 10px;
+      padding: 15px;
       border-radius: 10px;
       border: 1px solid rgba(255,224,130,0.3);
       width: 100%;
       max-width: 350px;
+      transition: 0.3s;
+    }
+
+    .qsl-card:hover {
+      background: rgba(255,255,255,0.1);
+      transform: translateY(-5px);
     }
 
     .qsl-card img {
@@ -170,12 +189,18 @@
       text-decoration: none;
       border-radius: 5px;
       font-weight: bold;
+      transition: 0.3s;
+      border: none;
+      cursor: pointer;
     }
+
+    .descargar-btn:hover { background: #388e3c; }
 
     footer {
       margin-top: 30px;
       padding: 20px;
       font-size: 0.9rem;
+      border-top: 1px solid rgba(255,255,255,0.1);
     }
 
     #mensajeError {
@@ -215,7 +240,6 @@
     </footer>
   </div>
 
-  <!-- Ventana de resultados -->
   <div id="ventanaQSL" class="modal">
     <div class="modal-contenido">
       <span class="cerrar" onclick="cerrarVentana()">&times;</span>
@@ -253,15 +277,19 @@
       thumb.style.left = "0%";
       progressText.textContent = "Escaneando servidor…";
 
-      // Generar lista de nombres posibles (Mayúsculas)
       const base = input.toUpperCase();
+      const baseLower = input.toLowerCase();
       const exts = ['jpg', 'png', 'jpeg'];
       let listaPruebas = [];
 
       exts.forEach(e => {
-        listaPruebas.push(`${base}.${e}`); // CO7ADV.jpg
-        for (let i = 1; i <= 10; i++) {   // hasta -10 para no demorar tanto
+        // Añade búsqueda en mayúsculas y minúsculas
+        listaPruebas.push(`${base}.${e}`); 
+        listaPruebas.push(`${baseLower}.${e}`); 
+        
+        for (let i = 1; i <= 10; i++) {
           listaPruebas.push(`${base}-${i}.${e}`);
+          listaPruebas.push(`${baseLower}-${i}.${e}`);
         }
       });
 
@@ -271,7 +299,6 @@
       listaPruebas.forEach(archivo => {
         const ruta = `img/${archivo}`;
 
-        // usamos HEAD para evitar que el navegador se quede colgado
         fetch(ruta, { method: "HEAD" })
           .then(res => {
             if (res.ok) {
@@ -317,8 +344,8 @@
         const nombre = url.split('/').pop();
         lista.innerHTML += `
           <div class="qsl-card">
-            <img src="${url}">
-            <p style="font-size:0.8rem">${nombre}</p>
+            <img src="${url}" alt="${nombre}">
+            <p style="font-size:0.9rem; margin-top:10px;">${nombre}</p>
             <a href="${url}" download="${nombre}" class="descargar-btn">💾 Descargar</a>
           </div>`;
       });
@@ -326,13 +353,16 @@
     }
 
     document.getElementById('dlAll').onclick = function() {
-      encontradas.forEach(url => {
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = url.split('/').pop();
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
+      encontradas.forEach((url, index) => {
+        // Pequeño retraso para que el navegador no bloquee las descargas múltiples
+        setTimeout(() => {
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = url.split('/').pop();
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+        }, index * 300);
       });
     };
   </script>
