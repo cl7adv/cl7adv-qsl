@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>QSL CARIBE v108 - FULL WEB STATION</title>
+    <title>QSL CARIBE v109 - SHIELD EDITION</title>
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
     <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Outfit:wght@300;600;900&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
     
@@ -38,186 +38,126 @@
         .btn-coral { background: var(--accent-coral); color: #fff; }
         .btn-sdr { background: #005f73; color: #fff; border: 1px solid var(--accent-sea); width: 100%; box-sizing: border-box; margin-top: 10px; }
 
-        /* --- BOTONES FLOTANTES --- */
         .fab-container { position: fixed; bottom: 30px; right: 30px; display: flex; flex-direction: column; gap: 15px; z-index: 8000; }
         .fab { width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 0 30px rgba(0,0,0,0.5); border: none; transition: 0.4s; font-size: 2rem; text-decoration: none; }
         #school-btn { background: var(--accent-warm); color: #000; }
         #sdr-btn { background: #005f73; color: #fff; }
         .fab:hover { transform: scale(1.1) rotate(-10deg); }
 
-        /* --- MODAL ESCUELA --- */
         #school-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0a0707; z-index: 11000; display: none; overflow-y: auto; padding: 40px 15px; }
         .section-title { color: var(--accent-coral); font-family: 'Syncopate'; font-size: 1.1rem; margin-top: 35px; border-left: 4px solid var(--accent-warm); padding-left: 15px; }
         .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; margin-top: 20px; }
         .card-pro { background: #161111; border: 1px solid #2a1b1b; padding: 20px; border-radius: 18px; }
         .card-pro h4 { color: var(--accent-warm); font-family: 'Syncopate'; font-size: 0.85rem; margin: 0 0 10px 0; }
-        .blueprint { background: #000; border: 1px dashed var(--accent-sea); padding: 15px; border-radius: 10px; font-family: 'JetBrains Mono'; color: var(--accent-sea); font-size: 0.75rem; margin-top: 10px; }
         
-        /* --- RADAR Y RESULTADOS --- */
         #radar-container { display: none; margin: 20px 0; }
         .radar { width: 50px; height: 50px; border: 3px solid var(--accent-warm); border-radius: 50%; border-top-color: transparent; animation: spin 0.8s linear infinite; margin: 0 auto; }
         @keyframes spin { to { transform: rotate(360deg); } }
         #results { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-top: 20px; }
         .qsl-card { border: 1px solid #332222; border-radius: 15px; overflow: hidden; background: #000; }
         .qsl-card img { width: 100%; height: auto; display: block; }
-
-        /* CONTENEDOR FLAG COUNTER */
-        .flag-box { background: rgba(0,0,0,0.3); padding: 20px; text-align: center; border-radius: 25px; border: 1px solid rgba(255,255,255,0.05); }
     </style>
 </head>
 <body onload="initApp()">
+
+    <script>window._G = window._G || {};</script>
 
     <audio id="snd-power" src="https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3"></audio>
     <audio id="snd-scan" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3" loop></audio>
     <audio id="snd-ok" src="https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3"></audio>
 
     <div id="utc-clock">
-        <span>ESTACIÓN ZULU (UTC)</span>
+        <span>ZULU TIME (UTC)</span>
         <div id="utc-time">00:00:00</div>
     </div>
 
     <div id="intro-overlay">
-        <h1 class="boot-text">CARIBE NODO<br><span style="font-size: 0.4em; opacity: 0.6;">v108 OPERATIONAL</span></h1>
-        <button class="btn btn-warm" id="connect-btn" style="display:none; margin-top:30px;" onclick="unlockUI()">INICIAR WEB</button>
+        <h1 class="boot-text">CARIBE NODO<br><span style="font-size: 0.4em; opacity: 0.6;">v109 STABLE</span></h1>
+        <button class="btn btn-warm" id="connect-btn" style="display:none; margin-top:30px;" onclick="unlockUI()">INICIAR SISTEMA</button>
     </div>
 
     <div id="main-ui">
         <div class="container">
-            
             <div class="glass-panel">
                 <h2 style="font-family: 'Syncopate'; color: var(--accent-warm); margin:0 0 20px 0;">BÚSQUEDA QSL</h2>
                 <input type="text" id="target-id" class="supreme-input" placeholder="INDICATIVO">
-                <button class="btn btn-warm" style="width:100%" onclick="deepSearch()">RASTREAR INDICATIVO</button>
+                <button class="btn btn-warm" style="width:100%" onclick="deepSearch()">RASTREAR</button>
                 <div id="radar-container"><div class="radar"></div></div>
                 <div id="results"></div>
             </div>
 
             <div class="glass-panel" style="border-color: var(--accent-sea);">
-                <h3 style="font-family: 'Syncopate'; color: var(--accent-sea);">ESCUCHA EN VIVO</h3>
-                <p>Acceso directo al receptor WebSDR en Argentina para monitoreo de bandas:</p>
-                <a href="http://lu4ao.ddns.net:8073/" target="_blank" class="btn btn-sdr">📻 WEBSDR ARGENTINA (LU4AO)</a>
+                <h3 style="font-family: 'Syncopate'; color: var(--accent-sea);">WEBSDR ARGENTINA</h3>
+                <a href="http://lu4ao.ddns.net:8073/" target="_blank" class="btn btn-sdr">📻 CONECTAR CON LU4AO</a>
             </div>
 
-            <div class="flag-box">
-                <div style="margin-bottom:15px">
-                    <a href="https://info.flagcounter.com/ReMh" style="text-decoration: none;">
-                        <img alt="Flag Counter" border="0" src="https://s01.flagcounter.com/count2/ReMh/bg_0b1622/txt_ffffff/border_1a3a5a/columns_5/maxflags_15/viewers_0/labels_0/pageviews_0/flags_0/percent_0/" /> 
-                    </a>
-                </div>
+            <div style="background:rgba(0,0,0,0.3); padding:20px; text-align:center; border-radius:25px; border: 1px solid rgba(255,255,255,0.05);">
+                <a href="https://info.flagcounter.com/ReMh" style="text-decoration: none;">
+                    <img alt="Flag Counter" border="0" src="https://s01.flagcounter.com/count2/ReMh/bg_0b1622/txt_ffffff/border_1a3a5a/columns_5/maxflags_15/viewers_0/labels_0/pageviews_0/flags_0/percent_0/" /> 
+                </a>
             </div>
-
         </div>
     </div>
 
     <div class="fab-container">
-        <a href="http://lu4ao.ddns.net:8073/" target="_blank" class="fab" id="sdr-btn" title="WebSDR Argentina">🇦🇷</a>
-        <button class="fab" id="school-btn" onclick="toggleSchool()" title="Academy">🎓</button>
+        <a href="http://lu4ao.ddns.net:8073/" target="_blank" class="fab" id="sdr-btn">🇦🇷</a>
+        <button class="fab" id="school-btn" onclick="toggleSchool()">🎓</button>
     </div>
 
     <div id="school-modal">
         <div class="container">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; border-bottom:1px solid #333; padding-bottom:15px;">
-                <h1 style="font-family: 'Syncopate'; color: var(--accent-warm); margin:0;">ACADEMY v108</h1>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h1 style="font-family: 'Syncopate'; color: var(--accent-warm); margin:0;">ACADEMY PRO</h1>
                 <button class="btn btn-coral" onclick="toggleSchool()">CERRAR</button>
             </div>
-
             <div class="section-title">RADIO-TÉCNICA</div>
             <div class="info-grid">
                 <div class="card-pro">
-                    <h4>ANTENA DIPOLO 40M</h4>
-                    <p>Calculado para 7.100 MHz. Largo de cada brazo: 10.03 metros.</p>
-                    <div class="blueprint">📐 Total: 20.06m</div>
-                </div>
-                <div class="card-pro">
-                    <h4>RESISTENCIA DE CARGA</h4>
-                    <p>Usa una resistencia de carbón de 50 ohms para probar tu equipo sin radiar interferencia.</p>
+                    <h4>CONEXIÓN A TIERRA</h4>
+                    <p>Reduce el ruido de RF y protege tus equipos de descargas.</p>
                 </div>
             </div>
-
-            <div class="section-title">CONSEJOS PRO</div>
-            <div class="info-grid">
-                <div class="card-pro">
-                    <h4>PROTECCIÓN CONTRA RAYOS</h4>
-                    <p>Desconecta siempre tus antenas cuando no las uses o ante tormentas eléctricas inminentes.</p>
-                </div>
-                <div class="card-pro">
-                    <h4>CÓDIGO Q BÁSICO</h4>
-                    <p>QSO: Comunicado | QSL: Acuse de recibo | QRZ: ¿Quién me llama? | QTH: Ubicación.</p>
-                </div>
-            </div>
-            <div style="height:50px;"></div>
         </div>
     </div>
 
     <script>
-        // Reloj en tiempo real
         function updateClock() {
             const now = new Date();
-            const h = now.getUTCHours().toString().padStart(2,'0');
-            const m = now.getUTCMinutes().toString().padStart(2,'0');
-            const s = now.getUTCSeconds().toString().padStart(2,'0');
-            document.getElementById('utc-time').innerText = `${h}:${m}:${s}`;
+            document.getElementById('utc-time').innerText = now.getUTCHours().toString().padStart(2,'0') + ":" + now.getUTCMinutes().toString().padStart(2,'0') + ":" + now.getUTCSeconds().toString().padStart(2,'0');
         }
         setInterval(updateClock, 1000);
 
-        // Inicio de aplicación
         function initApp() {
-            setTimeout(() => {
-                document.getElementById('connect-btn').style.display = "block";
-                document.getElementById('snd-power').play().catch(()=>{});
-            }, 1500);
+            setTimeout(() => { document.getElementById('connect-btn').style.display = "block"; document.getElementById('snd-power').play().catch(()=>{}); }, 1500);
         }
 
-        // Desbloquear Interfaz
         function unlockUI() {
             document.getElementById('intro-overlay').style.opacity = "0";
-            setTimeout(() => {
-                document.getElementById('intro-overlay').style.display = "none";
-                document.getElementById('main-ui').style.display = "block";
-                setTimeout(() => document.getElementById('main-ui').style.opacity = "1", 50);
-            }, 1000);
+            setTimeout(() => { document.getElementById('intro-overlay').style.display = "none"; document.getElementById('main-ui').style.display = "block"; setTimeout(() => document.getElementById('main-ui').style.opacity = "1", 50); }, 1000);
         }
 
-        // Abrir/Cerrar Escuela
         function toggleSchool() {
             const m = document.getElementById('school-modal');
             m.style.display = (m.style.display === 'block') ? 'none' : 'block';
         }
 
-        // Buscador de Imágenes QSL
         async function deepSearch() {
             const id = document.getElementById('target-id').value.trim().toUpperCase();
             if(!id) return;
             const res = document.getElementById('results');
             const radar = document.getElementById('radar-container');
             const snd = document.getElementById('snd-scan');
-
-            res.innerHTML = "";
-            radar.style.display = "block";
-            snd.play().catch(()=>{});
-
-            await new Promise(r => setTimeout(r, 2500));
-            radar.style.display = "none";
-            snd.pause();
-
-            const paths = [`img/${id}.png`, `img/${id}.jpg`, `img/${id}.jpeg` ];
+            res.innerHTML = ""; radar.style.display = "block"; snd.play().catch(()=>{});
+            await new Promise(r => setTimeout(r, 2000));
+            radar.style.display = "none"; snd.pause();
+            const paths = [`img/${id}.png`, `img/${id}.jpg` ];
             let found = false;
-
             for(let p of paths) {
-                const ok = await new Promise(resolve => {
-                    const i = new Image();
-                    i.onload = () => resolve(true);
-                    i.onerror = () => resolve(false);
-                    i.src = p;
-                });
-                if(ok) {
-                    res.innerHTML += `<div class="qsl-card"><img src="${p}"><button class="btn btn-warm" style="width:100%; border-radius:0;" onclick="window.open('${p}')">DESCARGAR QSL</button></div>`;
-                    found = true;
-                }
+                const ok = await new Promise(resolve => { const i = new Image(); i.onload = () => resolve(true); i.onerror = () => resolve(false); i.src = p; });
+                if(ok) { res.innerHTML += `<div class="qsl-card"><img src="${p}"><button class="btn btn-warm" style="width:100%; border-radius:0;" onclick="window.open('${p}')">DESCARGAR</button></div>`; found = true; }
             }
-
             if(found) document.getElementById('snd-ok').play().catch(()=>{});
-            else res.innerHTML = "<p style='color:var(--accent-coral); font-weight:bold;'>ERROR: INDICATIVO NO ENCONTRADO</p>";
+            else res.innerHTML = "<p style='color:var(--accent-coral)'>NO ENCONTRADO</p>";
         }
     </script>
 </body>
