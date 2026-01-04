@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>QSL CARIBE v112 - MASTER OCEAN & SDR</title>
+    <title>QSL CARIBE v113 - MASTER OCEAN</title>
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
     <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Outfit:wght@300;600;900&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
     
@@ -20,7 +20,7 @@
             min-height: 100vh; overflow-x: hidden;
         }
 
-        /* --- RELOJ UTC --- */
+        /* RELOJ UTC */
         #utc-clock { 
             position: fixed; top: 20px; right: 20px; background: rgba(0, 18, 25, 0.8); 
             padding: 10px 18px; border-radius: 12px; border: 1px solid var(--accent-ocean); 
@@ -28,7 +28,7 @@
             box-shadow: 0 0 20px rgba(0, 119, 190, 0.4);
         }
 
-        /* --- UI PRINCIPAL --- */
+        /* UI PRINCIPAL */
         #main-ui { opacity: 0; transition: 1.5s; display: none; padding-top: 100px; padding-bottom: 50px; }
         .container { max-width: 950px; margin: 0 auto; padding: 0 20px; }
         
@@ -44,36 +44,30 @@
             text-align: center; font-family: 'Syncopate', sans-serif; margin-bottom: 15px; box-sizing: border-box; 
         }
         
-        .btn { padding: 18px 30px; border-radius: 12px; border: none; font-weight: 700; font-family: 'Syncopate', sans-serif; cursor: pointer; text-transform: uppercase; font-size: 0.75rem; transition: 0.3s; text-align: center; display: block; width: 100%; text-decoration: none; }
+        .btn { padding: 18px 30px; border-radius: 12px; border: none; font-weight: 700; font-family: 'Syncopate', sans-serif; cursor: pointer; text-transform: uppercase; font-size: 0.75rem; transition: 0.3s; text-align: center; display: block; width: 100%; text-decoration: none; margin-bottom: 10px; }
         .btn-ocean { background: var(--accent-ocean); color: #fff; }
-        .btn-cloud { background: var(--accent-cloud); color: var(--bg-deep); }
+        .btn-gold { background: var(--accent-gold); color: #000; }
         .btn:hover { transform: translateY(-2px); filter: brightness(1.2); }
 
-        /* --- SDR FRAME --- */
+        /* SDR */
         .sdr-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 15px; background: #000; border: 2px solid var(--accent-gold); }
         .sdr-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
 
-        /* --- BOTONES FLOTANTES --- */
-        .fab-container { position: fixed; bottom: 30px; right: 30px; display: flex; flex-direction: column; gap: 15px; z-index: 8000; }
-        .fab { width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 10px 30px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.2); transition: 0.4s; font-size: 2rem; text-decoration: none; }
-        #school-btn { background: var(--accent-cloud); color: var(--bg-deep); }
-
-        /* --- INTRO --- */
-        #intro-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-deep); z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 1s; }
-        
+        /* RADAR SCANNER ANIMATION */
         #radar-container { display: none; margin: 20px 0; }
-        .radar { width: 50px; height: 50px; border: 3px solid var(--accent-cloud); border-radius: 50%; border-top-color: var(--accent-ocean); animation: spin 0.8s linear infinite; margin: 0 auto; }
+        .radar { width: 60px; height: 60px; border: 4px solid var(--accent-cloud); border-radius: 50%; border-top-color: var(--accent-ocean); animation: spin 0.8s linear infinite; margin: 0 auto; }
         @keyframes spin { to { transform: rotate(360deg); } }
-        
-        #results img { width: 100%; border-radius: 15px; border: 2px solid var(--accent-gold); margin-top: 15px; }
 
-        /* --- MODAL --- */
+        /* GALERÍA DE RESULTADOS */
+        .qsl-card { background: rgba(255,255,255,0.05); border-radius: 15px; padding: 15px; margin-top: 15px; border: 1px solid var(--accent-ocean); text-align: center; }
+        .qsl-card img { width: 100%; border-radius: 10px; border: 1px solid var(--accent-gold); margin-bottom: 10px; }
+
+        /* INTRO & MODAL */
+        #intro-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-deep); z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 1s; }
         #school-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 18, 25, 0.98); z-index: 11000; display: none; overflow-y: auto; padding: 40px 15px; }
     </style>
 </head>
 <body onload="initApp()">
-
-    <script>window._G = window._G || {};</script>
 
     <audio id="snd-power" src="https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3"></audio>
     <audio id="snd-scan" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3" loop></audio>
@@ -85,7 +79,7 @@
     </div>
 
     <div id="intro-overlay">
-        <h1 style="font-family:'Syncopate'; color:white; text-align: center;">CARIBE NODO<br><span style="font-size: 0.5em; color: var(--accent-ocean);">v112 - MASTER EDITION</span></h1>
+        <h1 style="font-family:'Syncopate'; color:white; text-align: center;">CARIBE NODO<br><span style="font-size: 0.5em; color: var(--accent-ocean);">v113 - MASTER EDITION</span></h1>
         <button class="btn btn-ocean" id="connect-btn" style="display:none; max-width:280px; margin-top: 30px;" onclick="unlockUI()">ESTABLECER CONEXIÓN</button>
     </div>
 
@@ -93,11 +87,12 @@
         <div class="container">
             
             <div class="glass-panel">
-                <h2 style="font-family: 'Syncopate'; color: var(--accent-cloud); margin:0 0 20px 0;">RASTREO QSL</h2>
+                <h2 style="font-family: 'Syncopate'; color: var(--accent-cloud); margin:0 0 20px 0;">RASTREO QSL MULTI-FRECUENCIA</h2>
                 <input type="text" id="target-id" class="supreme-input" placeholder="INDICATIVO">
-                <button class="btn btn-ocean" onclick="deepSearch()">INICIAR RASTREO</button>
+                <button class="btn btn-ocean" onclick="buscarQSL()">INICIAR RASTREO</button>
                 <div id="radar-container"><div class="radar"></div></div>
-                <div id="results"></div>
+                <div id="resultado-texto" style="text-align:center; margin: 10px 0;"></div>
+                <div id="results-gallery"></div>
             </div>
 
             <div class="glass-panel" style="border-color: var(--accent-gold);">
@@ -105,12 +100,116 @@
                 <div class="sdr-container">
                     <iframe src="http://lu4ao.ddns.net:8073/"></iframe>
                 </div>
-                <p style="font-size: 0.75rem; margin-top: 12px; color: var(--accent-cloud); opacity: 0.8;">
-                    * Recepción activa. Haz clic en la cascada para sintonizar.
-                </p>
             </div>
 
-            <div class="glass-panel">
+            <div style="text-align:center; padding: 20px;">
+                <a href="https://info.flagcounter.com/ReMh"><img src="https://s01.flagcounter.com/count2/ReMh/bg_003049/txt_ffffff/border_0077be/columns_5/maxflags_15/viewers_0/labels_0/pageviews_0/flags_0/percent_0/" alt="Flag Counter" border="0"></a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let listaActual = [];
+        const EXTENSIONES = ["jpg", "JPG", "png", "webp"];
+
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('utc-time').innerText = now.getUTCHours().toString().padStart(2,'0') + ":" + now.getUTCMinutes().toString().padStart(2,'0') + ":" + now.getUTCSeconds().toString().padStart(2,'0');
+        }
+        setInterval(updateClock, 1000);
+
+        function initApp() {
+            setTimeout(() => { 
+                document.getElementById('connect-btn').style.display = "block"; 
+                document.getElementById('snd-power').play().catch(()=>{});
+            }, 1000);
+        }
+
+        function unlockUI() {
+            document.getElementById('intro-overlay').style.opacity = "0";
+            setTimeout(() => { 
+                document.getElementById('intro-overlay').style.display = "none"; 
+                document.getElementById('main-ui').style.display = "block"; 
+                setTimeout(() => document.getElementById('main-ui').style.opacity = "1", 50); 
+            }, 800);
+        }
+
+        async function buscarQSL() {
+            const id = document.getElementById('target-id').value.trim().toUpperCase();
+            if(!id) return;
+
+            const gallery = document.getElementById('results-gallery');
+            const texto = document.getElementById('resultado-texto');
+            const radar = document.getElementById('radar-container');
+            const snd = document.getElementById('snd-scan');
+
+            // Reset UI
+            gallery.innerHTML = "";
+            texto.innerHTML = "<p style='color:var(--accent-ocean)'>ESCANEANDO REPETIDORES...</p>";
+            radar.style.display = "block";
+            snd.play().catch(()=>{});
+
+            // Generar 50 posibles nombres de archivo
+            const nombresPosibles = [id, ...Array.from({ length: 50 }, (_, i) => `${id}-${i + 1}`)];
+            const encontradas = [];
+
+            // Escaneo asíncrono
+            const promesas = nombresPosibles.map(async (nombre) => {
+                for (let ext of EXTENSIONES) {
+                    const ruta = `./img/${nombre}.${ext}`;
+                    const existe = await new Promise(res => {
+                        const img = new Image();
+                        img.onload = () => res(true);
+                        img.onerror = () => res(false);
+                        img.src = ruta;
+                    });
+                    if (existe) {
+                        encontradas.push(ruta);
+                        break; 
+                    }
+                }
+            });
+
+            await Promise.all(promesas);
+
+            radar.style.display = "none";
+            snd.pause();
+
+            if (encontradas.length > 0) {
+                document.getElementById('snd-ok').play().catch(()=>{});
+                texto.innerHTML = `<p style='color:var(--accent-gold)'>¡SEÑAL CAPTADA! ${encontradas.length} QSL ENCONTRADAS</p>`;
+                listaActual = encontradas;
+
+                encontradas.forEach(ruta => {
+                    gallery.innerHTML += `
+                        <div class="qsl-card">
+                            <img src="${ruta}">
+                            <a href="${ruta}" download class="btn btn-ocean">DESCARGAR ESTA</a>
+                        </div>
+                    `;
+                });
+
+                if(encontradas.length > 1) {
+                    gallery.innerHTML = `<button class="btn btn-gold" onclick="descargarTodas()">⬇️ DESCARGAR PACK COMPLETO</button>` + gallery.innerHTML;
+                }
+            } else {
+                texto.innerHTML = "<p style='color:#ff4d4d'>FUERA DE RANGO: NO HAY QSL</p>";
+            }
+        }
+
+        function descargarTodas() {
+            listaActual.forEach(ruta => {
+                const link = document.createElement("a");
+                link.href = ruta;
+                link.download = ruta.split("/").pop();
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            });
+        }
+    </script>
+</body>
+</html>            <div class="glass-panel">
                 <h3 style="font-family: 'Syncopate'; color: var(--accent-ocean);">SISTEMA DE SUBIDA</h3>
                 <input type="file" id="up-file" style="margin-bottom: 15px; color: white; display: block;">
                 <button class="btn btn-cloud" onclick="secureUpload()">TRANSMITIR DATOS</button>
