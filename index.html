@@ -2,272 +2,325 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>QSL Caribeña v34.0 - FILE MANAGER</title>
+    <title>QSL Caribeña v41.0 - DRIVE AUTOMATION</title>
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
     <style>
         :root {
             --n-blue: #00eaff;
             --n-pink: #ff00ff;
             --bg: #010409;
+            --glass: rgba(13, 17, 23, 0.95);
         }
 
         body { 
             margin: 0; background: var(--bg); color: white; 
             font-family: 'Segoe UI', sans-serif;
+            overflow-x: hidden;
             background-image: radial-gradient(circle at 50% 50%, #0a1120 0%, #010409 100%);
         }
 
         /* --- NAVEGACIÓN --- */
-        .top-nav {
-            background: #000; border-bottom: 2px solid var(--n-blue);
-            display: flex; justify-content: space-between; align-items: center; padding: 15px 25px;
+        .navbar {
             position: sticky; top: 0; z-index: 1000;
+            background: rgba(0,0,0,0.9); border-bottom: 2px solid var(--n-blue);
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 12px 20px; backdrop-filter: blur(10px);
         }
 
-        .tab-box { display: flex; justify-content: center; gap: 5px; margin: 20px 0; }
-        .tab-btn {
-            padding: 12px 20px; border: none; background: #111; color: #666;
-            cursor: pointer; border-radius: 8px; font-weight: 900;
+        .nav-links { display: flex; gap: 8px; overflow-x: auto; }
+        .nav-btn {
+            background: #111; border: 1px solid #333; color: #888;
+            padding: 10px 18px; border-radius: 10px; cursor: pointer;
+            font-weight: 900; white-space: nowrap; transition: 0.3s;
+            text-transform: uppercase; font-size: 0.75rem;
         }
-        .tab-btn.active { background: var(--n-blue); color: #000; }
+        .nav-btn.active { background: var(--n-blue); color: black; border-color: var(--n-blue); box-shadow: 0 0 15px rgba(0,234,255,0.3); }
 
-        /* --- CARPETAS --- */
-        .folder-bar {
-            display: flex; gap: 10px; overflow-x: auto; padding: 10px;
-            background: rgba(255,255,255,0.03); border-radius: 10px; margin-bottom: 20px;
-        }
-        .folder {
-            padding: 10px 20px; background: #222; border-radius: 5px;
-            cursor: pointer; white-space: nowrap; border: 1px solid #333;
-        }
-        .folder.active { border-color: var(--n-pink); color: var(--n-pink); }
+        /* --- CONTENEDORES --- */
+        .container { max-width: 1000px; margin: 20px auto; padding: 20px; animation: fadeIn 0.6s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- PANEL ADMIN --- */
-        #admin-controls {
-            display: none; background: #111; border: 1px solid var(--n-pink);
-            padding: 20px; border-radius: 15px; margin-bottom: 20px; text-align: left;
+        .section { display: none; }
+        .section.active { display: block; }
+
+        .glass-card {
+            background: var(--glass); border-radius: 30px;
+            padding: 40px 20px; border: 1px solid rgba(255,255,255,0.1);
+            text-align: center;
         }
 
-        /* --- GRILLA --- */
-        .grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 15px; margin-top: 20px;
-        }
-        .card {
-            aspect-ratio: 3/2; background: #000; border: 2px solid #222;
-            border-radius: 12px; position: relative; overflow: hidden; cursor: pointer;
-        }
-        .card.selected { border-color: var(--n-blue); box-shadow: 0 0 15px var(--n-blue); }
-        .card img { width: 100%; height: 100%; object-fit: cover; }
-        
-        .card-tools {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.7); display: none; flex-direction: column;
-            justify-content: center; align-items: center; gap: 5px;
-        }
-        .card:hover .card-tools { display: flex; }
-
-        /* --- ESTILOS GENERALES --- */
-        .page { display: none; width: 95%; max-width: 900px; margin: 0 auto; text-align: center; }
-        .page.active { display: block; }
+        /* --- COMPONENTES --- */
         input[type="text"] {
-            width: 80%; padding: 15px; background: #000; border: 2px solid var(--n-blue);
-            border-radius: 10px; color: white; font-size: 1.5rem; text-align: center; font-weight: 900;
+            width: 85%; max-width: 450px; padding: 20px; border-radius: 15px;
+            background: #000; border: 2px solid var(--n-blue); color: white;
+            font-size: 2.2rem; text-align: center; font-weight: 900;
+            text-transform: uppercase; outline: none; margin-bottom: 20px;
         }
+
         .btn-action {
-            padding: 15px 30px; border-radius: 30px; border: none; font-weight: 900;
-            cursor: pointer; margin-top: 20px; text-transform: uppercase;
+            padding: 18px 45px; border-radius: 50px; border: none; font-weight: 900;
+            cursor: pointer; text-transform: uppercase; transition: 0.3s;
+            font-size: 1rem; letter-spacing: 1px;
         }
+        .btn-blue { background: var(--n-blue); color: black; box-shadow: 0 5px 20px rgba(0,234,255,0.2); }
+        .btn-pink { background: var(--n-pink); color: white; box-shadow: 0 5px 20px rgba(255,0,255,0.2); }
+
+        /* --- GRILLAS --- */
+        .qsl-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 20px; margin-top: 30px;
+        }
+        .qsl-card {
+            aspect-ratio: 3/2; border-radius: 15px; border: 2px solid #222;
+            overflow: hidden; cursor: pointer; position: relative; transition: 0.3s;
+        }
+        .qsl-card.selected { border: 3px solid var(--n-blue); transform: scale(1.03); }
+        .qsl-card img { width: 100%; height: 100%; object-fit: cover; }
+        .admin-del { position: absolute; top: 5px; right: 5px; background: red; border-radius: 50%; width: 22px; height: 22px; display: none; justify-content: center; align-items: center; font-weight: bold; font-size: 12px; }
+
+        .folder-bar { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding: 10px 0; }
+        .folder-tag { padding: 8px 18px; background: #111; border-radius: 50px; border: 1px solid #333; cursor: pointer; white-space: nowrap; font-size: 0.8rem; }
+        .folder-tag.active { background: var(--n-pink); border-color: white; }
 
         /* --- MODAL --- */
-        .modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:#000; z-index:9000; }
-        canvas { max-width: 90%; display: block; margin: 40px auto; border: 2px solid var(--n-blue); }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 5000; overflow-y: auto; text-align: center; }
+        canvas { max-width: 95%; width: 850px; margin-top: 40px; border-radius: 15px; border: 3px solid var(--n-blue); }
+
+        footer { padding: 50px; text-align: center; opacity: 0.3; font-size: 0.8rem; }
     </style>
 </head>
 <body onload="init()">
 
-    <div class="top-nav">
-        <div id="clock" style="color: var(--n-blue); font-family: monospace; font-weight: bold;">00:00:00 UTC</div>
-        <button onclick="authAdmin()" style="background:none; border: 1px solid #333; color: #444; cursor:pointer;">MODERAR</button>
-    </div>
-
-    <div class="tab-box">
-        <button class="tab-btn active" onclick="switchTab('search')">🔍 BUSCAR</button>
-        <button class="tab-btn" onclick="switchTab('act')">📡 ACTIVIDADES</button>
-    </div>
-
-    <div id="p-search" class="page active">
-        <h2 style="color: var(--n-blue);">CENTRO DE DESCARGAS</h2>
-        <input type="text" id="s-call" placeholder="TU INDICATIVO">
-        <br>
-        <button class="btn-action" style="background: var(--n-blue);" onclick="doSearch()">ESCANEAR</button>
-        <div id="results" style="margin-top: 30px;"></div>
-    </div>
-
-    <div id="p-act" class="page">
-        <div id="admin-controls">
-            <h4 style="margin:0; color: var(--n-pink);">PANEL DE CARPETAS</h4>
-            <input type="text" id="new-folder-name" placeholder="Nombre Carpeta" style="font-size: 1rem; width: 150px; padding: 5px;">
-            <button onclick="addFolder()" style="padding: 5px 10px;">CREAR CARPETA</button>
-            <hr style="border: 0.5px solid #222; margin: 15px 0;">
-            <p style="font-size: 0.7rem;">Mover seleccionadas a: 
-                <select id="move-target"></select> 
-                <button onclick="moveImages()">MOVER</button>
-            </p>
+    <nav class="navbar">
+        <div id="clock" style="color: var(--n-blue); font-weight: bold; font-family: monospace;">00:00:00 UTC</div>
+        <div class="nav-links">
+            <button class="nav-btn active" onclick="nav('search')">Buscador</button>
+            <button class="nav-btn" onclick="nav('act')">Actividades</button>
+            <button class="nav-btn" onclick="nav('unir')">Unir QSL</button>
+            <button class="nav-btn" onclick="authAdmin()" id="adminBtn">Admin</button>
         </div>
+    </nav>
 
-        <div class="folder-bar" id="folderBar"></div>
+    <div class="container">
 
-        <input type="text" id="g-call" placeholder="INDICATIVO">
-        <br>
-        <button class="btn-action" style="background: var(--n-pink); color: white;" onclick="generate()">GENERAR TARJETA</button>
+        <section id="sec-search" class="section active">
+            <div class="glass-card">
+                <h1 style="color: var(--n-blue); margin: 0;">RECEPTOR DE QSL</h1>
+                <p style="color: #666; margin-bottom: 30px;">Consulta las tarjetas registradas en el servidor</p>
+                <input type="text" id="in-search" placeholder="INDICATIVO">
+                <br>
+                <button class="btn-action btn-blue" onclick="serverScan()">Escanear Servidor</button>
+                <div id="search-status" style="margin-top: 20px; color: var(--n-pink); font-family: monospace;"></div>
+                <div id="search-results" class="qsl-grid"></div>
+            </div>
+        </section>
 
-        <div class="grid" id="mainGrid"></div>
+        <section id="sec-act" class="section">
+            <div class="glass-card">
+                <h2 style="color: var(--n-pink); margin: 0;">GENERADOR & SUBIDA</h2>
+                <p style="font-size: 0.8rem; color: #666; margin-bottom: 25px;">Sube tu diseño o genera una QSL de la galería</p>
+                
+                <div id="admin-panel" style="display: none; background: #000; padding: 15px; border-radius: 15px; margin-bottom: 20px; border: 1px solid var(--n-pink);">
+                    <input type="text" id="new-f" placeholder="Nombre Carpeta" style="font-size: 1rem; width: 180px; padding: 10px;">
+                    <button onclick="addFolder()" style="padding: 10px;">Crear Carpeta</button>
+                </div>
 
-        <div style="margin-top: 30px; border: 2px dashed #333; padding: 20px; border-radius: 15px;">
-            <p style="font-size: 0.7rem; color: #888;">SUBIR A CARPETA ACTUAL:</p>
-            <input type="file" id="fileIn" multiple accept="image/*">
-        </div>
+                <div class="folder-bar" id="folderBar"></div>
+
+                <input type="text" id="in-gen" placeholder="TU INDICATIVO">
+                <br>
+                <div style="display:flex; gap:10px; justify-content: center; flex-wrap: wrap;">
+                    <button class="btn-action btn-pink" onclick="processLocal()">Generar QSL</button>
+                    <button class="btn-action" style="background: #222; color: white; border: 1px solid #444;" onclick="uploadToDrive()">Subir a Drive</button>
+                </div>
+
+                <div class="qsl-grid" id="actGrid"></div>
+
+                <div style="margin-top: 40px; padding: 25px; border: 2px dashed #333; border-radius: 20px;">
+                    <p style="font-size: 0.75rem; margin-bottom: 15px; color: var(--n-blue);">PROPUESTAS / DISEÑOS (Selecciona archivo):</p>
+                    <input type="file" id="fileIn" accept="image/*" style="font-size: 0.8rem;">
+                </div>
+            </div>
+        </section>
+
+        <section id="sec-unir" class="section">
+            <div class="glass-card">
+                <h2 style="margin-bottom: 30px;">GESTIÓN EXTERNA</h2>
+                <a href="https://cl7adv.github.io/tu-otro-proyecto" target="_blank" style="text-decoration: none;">
+                    <div style="background: linear-gradient(45deg, #121212, #1a1a1a); padding: 50px; border-radius: 25px; border: 1px solid var(--n-blue);">
+                        <h1 style="color: var(--n-blue); margin: 0;">PROYECTO UNIR →</h1>
+                        <p style="color: #666;">Haz clic para ir a la plataforma de unión masiva.</p>
+                    </div>
+                </a>
+            </div>
+        </section>
+
     </div>
 
     <div id="modal" class="modal">
         <canvas id="cvs"></canvas>
-        <div style="text-align: center;">
-            <button class="btn-action" style="background:red; color:white;" onclick="download()">GUARDAR</button>
-            <button class="btn-action" style="background:#333; color:white; margin-left:10px;" onclick="closeM()">CERRAR</button>
+        <div style="margin: 30px 0;">
+            <button class="btn-action btn-pink" onclick="download()">Descargar Archivo</button>
+            <button class="btn-action" style="background:#222; color:white; margin-left:10px;" onclick="closeM()">Cerrar</button>
         </div>
     </div>
 
+    <footer>CL7ADV &bull; ALFRED &bull; 2026</footer>
+
     <script>
-        let folders = JSON.parse(localStorage.getItem('zmr_folders')) || { "General": [] };
-        let currentFolder = "General";
+        // --- CONFIGURACIÓN DRIVE ---
+        const GOOGLE_SCRIPT_URL = "TU_URL_DE_SCRIPT_GOOGLE_AQUI"; 
+
         let isAdmin = false;
         let selectedIdx = -1;
+        let currentFolder = "General";
+        let db = JSON.parse(localStorage.getItem('zmr_v41_data')) || { "General": [] };
 
         function init() {
             renderFolders();
             renderGrid();
             setInterval(() => {
-                document.getElementById('clock').innerText = new Date().toUTCString().split(' ')[4];
+                const d = new Date();
+                document.getElementById('clock').innerText = d.getUTCHours().toString().padStart(2,'0') + ":" + d.getUTCMinutes().toString().padStart(2,'0') + ":" + d.getUTCSeconds().toString().padStart(2,'0') + " UTC";
             }, 1000);
         }
 
-        function authAdmin() {
-            if(prompt("CLAVE:") === "Leila2026") {
-                isAdmin = !isAdmin;
-                document.getElementById('admin-controls').style.display = isAdmin ? 'block' : 'none';
-                renderGrid();
-                renderFolders();
-            }
+        function nav(id) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('sec-'+id).classList.add('active');
+            event.target.classList.add('active');
         }
 
+        // --- BUSCADOR ---
+        async function serverScan() {
+            const call = document.getElementById('in-search').value.trim().toUpperCase();
+            if(!call) return;
+            const resDiv = document.getElementById('search-results');
+            const status = document.getElementById('search-status');
+            resDiv.innerHTML = ""; status.innerText = "ESCANEANDO DIRECTORIO...";
+
+            const exts = ['png', 'jpg', 'jpeg'];
+            const vars = [call, `${call}-1`, `${call}-2`];
+            let found = 0;
+
+            for(let v of vars) {
+                for(let e of exts) {
+                    const path = `img/${v}.${e}`;
+                    const ok = await new Promise(r => {
+                        const i = new Image();
+                        i.onload = () => r(true);
+                        i.onerror = () => r(false);
+                        i.src = path;
+                    });
+                    if(ok) {
+                        found++;
+                        resDiv.innerHTML += `<div class="qsl-card"><img src="${path}" onclick="window.open('${path}')"></div>`;
+                    }
+                }
+            }
+            status.innerText = found > 0 ? `SE ENCONTRARON ${found} REGISTROS` : "NO HAY RESULTADOS EN EL SERVIDOR";
+        }
+
+        // --- ACTIVIDADES ---
         function renderFolders() {
             const bar = document.getElementById('folderBar');
-            const select = document.getElementById('move-target');
             bar.innerHTML = "";
-            select.innerHTML = "";
-            
-            Object.keys(folders).forEach(f => {
-                const div = document.createElement('div');
-                div.className = `folder ${currentFolder === f ? 'active' : ''}`;
-                div.innerHTML = `📁 ${f} ${isAdmin && f !== 'General' ? `<span onclick="delFolder('${f}')" style="color:red; margin-left:10px;">×</span>` : ''}`;
-                div.onclick = (e) => { if(e.target.tagName !== 'SPAN') { currentFolder = f; renderFolders(); renderGrid(); } };
-                bar.appendChild(div);
-
-                select.innerHTML += `<option value="${f}">${f}</option>`;
+            Object.keys(db).forEach(f => {
+                const d = document.createElement('div');
+                d.className = `folder-tag ${currentFolder === f ? 'active' : ''}`;
+                d.innerHTML = `📁 ${f} ${isAdmin && f !== 'General' ? `<span onclick="delFolder('${f}')" style="margin-left:8px; color:red;">×</span>` : ''}`;
+                d.onclick = (e) => { if(e.target.tagName !== 'SPAN') { currentFolder = f; renderFolders(); renderGrid(); } };
+                bar.appendChild(d);
             });
         }
 
-        function addFolder() {
-            const name = document.getElementById('new-folder-name').value.trim();
-            if(name && !folders[name]) {
-                folders[name] = [];
-                save();
-                renderFolders();
-            }
-        }
-
-        function delFolder(f) {
-            if(confirm("¿Borrar carpeta y mover fotos a General?")) {
-                folders["General"] = folders["General"].concat(folders[f]);
-                delete folders[f];
-                currentFolder = "General";
-                save(); renderFolders(); renderGrid();
-            }
-        }
-
         function renderGrid() {
-            const grid = document.getElementById('mainGrid');
+            const grid = document.getElementById('actGrid');
             grid.innerHTML = "";
-            const currentData = folders[currentFolder] || [];
-
-            currentData.forEach((img, i) => {
-                const div = document.createElement('div');
-                div.className = `card ${selectedIdx === i ? 'selected' : ''}`;
-                div.innerHTML = `<img src="${img}">`;
-                
-                if(isAdmin) {
-                    const tools = document.createElement('div');
-                    tools.className = "card-tools";
-                    tools.innerHTML = `<button onclick="deleteImg(${i})" style="background:red; color:white; border:none; padding:5px 10px; border-radius:5px; cursor:pointer;">BORRAR</button>`;
-                    div.appendChild(tools);
-                }
-
-                div.onclick = (e) => { if(e.target.tagName !== 'BUTTON') { selectedIdx = i; renderGrid(); } };
-                grid.appendChild(div);
+            (db[currentFolder] || []).forEach((img, i) => {
+                const card = document.createElement('div');
+                card.className = `qsl-card ${selectedIdx === i ? 'selected' : ''}`;
+                card.innerHTML = `<img src="${img}"><div class="admin-del" style="display:${isAdmin?'flex':'none'}" onclick="delImg(${i})">×</div>`;
+                card.onclick = (e) => { if(e.target.className !== 'admin-del') { selectedIdx = i; renderGrid(); } };
+                grid.appendChild(card);
             });
         }
 
         document.getElementById('fileIn').onchange = function(e) {
-            Array.from(e.target.files).forEach(file => {
-                const reader = new FileReader();
-                reader.onload = function() {
-                    folders[currentFolder].push(reader.result);
-                    save();
-                    renderGrid();
-                };
-                reader.readAsDataURL(file);
+            Array.from(e.target.files).forEach(f => {
+                const r = new FileReader();
+                r.onload = () => { db[currentFolder].push(r.result); save(); renderGrid(); };
+                r.readAsDataURL(f);
             });
         };
 
-        function deleteImg(i) {
-            folders[currentFolder].splice(i, 1);
-            save(); renderGrid();
-        }
-
-        function save() { localStorage.setItem('zmr_folders', JSON.stringify(folders)); }
-
-        function switchTab(t) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById('p-'+t).classList.add('active');
-            event.target.classList.add('active');
-        }
-
-        // GENERADOR
-        function generate() {
-            const call = document.getElementById('g-call').value.trim().toUpperCase();
-            if(!call || selectedIdx === -1) return alert("Elige una tarjeta e indicativo");
-            const canvas = document.getElementById('cvs');
-            const ctx = canvas.getContext('2d');
-            const img = new Image();
-            img.onload = () => {
-                canvas.width = img.width; canvas.height = img.height;
-                ctx.drawImage(img, 0, 0);
+        function processLocal() {
+            const call = document.getElementById('in-gen').value.trim().toUpperCase();
+            if(!call || selectedIdx === -1) return alert("Selecciona tarjeta e indicativo");
+            const cvs = document.getElementById('cvs');
+            const ctx = cvs.getContext('2d');
+            const i = new Image();
+            i.onload = () => {
+                cvs.width = i.width; cvs.height = i.height;
+                ctx.drawImage(i, 0, 0);
                 ctx.fillStyle = "white"; ctx.strokeStyle = "black";
-                ctx.lineWidth = canvas.width * 0.01; ctx.font = `italic 900 ${canvas.width * 0.08}px Arial`;
+                ctx.lineWidth = cvs.width * 0.01; ctx.font = `italic 900 ${cvs.width * 0.08}px Arial`;
                 ctx.textAlign = "center";
-                ctx.strokeText(call, canvas.width / 2, canvas.height * 0.85);
-                ctx.fillText(call, canvas.width / 2, canvas.height * 0.85);
+                ctx.strokeText(call, cvs.width/2, cvs.height*0.85);
+                ctx.fillText(call, cvs.width/2, cvs.height*0.85);
                 document.getElementById('modal').style.display = 'block';
             };
-            img.src = folders[currentFolder][selectedIdx];
+            i.src = db[currentFolder][selectedIdx];
         }
 
+        // --- CONEXIÓN GOOGLE DRIVE ---
+        async function uploadToDrive() {
+            const call = document.getElementById('in-gen').value.trim().toUpperCase();
+            const file = document.getElementById('fileIn').files[0];
+            
+            if(!call || !file) return alert("Escribe el indicativo y elige el archivo para subir a Drive.");
+            if(GOOGLE_SCRIPT_URL === "AKfycbwCs0GIz2_0jzlWbNXpoufBOUCPYOrkaUZCWGRolnUW4k8Nmuzs0TCRAKqOHhRUYF-i") return alert("Admin: Falta configurar la URL de Google Script.");
+
+            alert("Conectando con Google Drive... por favor espera.");
+            
+            const r = new FileReader();
+            r.readAsDataURL(file);
+            r.onload = async function() {
+                const payload = {
+                    base64: r.result.split(',')[1],
+                    type: file.type,
+                    name: call + ".png"
+                };
+                try {
+                    const resp = await fetch(GOOGLE_SCRIPT_URL, { method: "POST", body: JSON.stringify(payload) });
+                    const res = await resp.json();
+                    if(res.result === "success") alert("✅ ¡Éxito! Guardada en Drive como " + call + ".png");
+                    else alert("❌ Error: " + res.error);
+                } catch(e) { alert("❌ Error de conexión con el servidor de Google."); }
+            };
+        }
+
+        // --- UTILIDADES ---
+        function authAdmin() {
+            if(prompt("CLAVE:") === "Leila2026") {
+                isAdmin = !isAdmin;
+                document.getElementById('admin-panel').style.display = isAdmin ? 'block' : 'none';
+                document.getElementById('adminBtn').classList.toggle('active');
+                renderFolders(); renderGrid();
+            }
+        }
+        function addFolder() {
+            const n = document.getElementById('new-f').value.trim();
+            if(n && !db[n]) { db[n] = []; save(); renderFolders(); }
+        }
+        function delFolder(f) { if(confirm("¿Borrar?")) { delete db[f]; currentFolder="General"; save(); renderFolders(); renderGrid(); } }
+        function delImg(i) { db[currentFolder].splice(i, 1); save(); renderGrid(); }
+        function save() { localStorage.setItem('zmr_v41_data', JSON.stringify(db)); }
         function closeM() { document.getElementById('modal').style.display = 'none'; }
         function download() {
             const a = document.createElement('a');
-            a.download = "QSL_CARIBE.png";
+            a.download = `QSL_${document.getElementById('in-gen').value}.png`;
             a.href = document.getElementById('cvs').toDataURL();
             a.click();
         }
