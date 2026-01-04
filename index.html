@@ -2,120 +2,183 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>QSL CARIBE v101 - CINEMATIC</title>
+    <title>QSL CARIBE - EPIC EDITION</title>
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Inter:wght@300;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
     
     <style>
-        :root { --cyan: #00f2ff; --pink: #ff007b; --bg: #010409; }
-        body, html { margin: 0; padding: 0; background: var(--bg); color: white; font-family: 'Inter', sans-serif; overflow-x: hidden; }
+        :root { --cyan: #00f2ff; --yellow: #f9ff00; --bg: #050505; }
+        body, html { margin: 0; padding: 0; background: var(--bg); color: white; font-family: 'Rajdhani', sans-serif; overflow-x: hidden; height: 100%; }
 
-        /* --- CINEMÁTICA DE INICIO --- */
+        /* --- CINEMÁTICA ÉPICA --- */
         #intro-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #000; z-index: 10000; display: flex; flex-direction: column;
-            align-items: center; justify-content: center; transition: 1.5s;
+            align-items: center; justify-content: center; transition: 1.5s cubic-bezier(0.7, 0, 0.3, 1);
         }
-        .scan-line { width: 100%; height: 2px; background: var(--cyan); position: absolute; top: 0; animation: moveScan 2s linear infinite; box-shadow: 0 0 20px var(--cyan); }
-        @keyframes moveScan { 0% { top: 0; } 100% { top: 100%; } }
+
+        .flag-box {
+            width: 120px; height: 80px; position: relative; margin-bottom: 20px;
+            box-shadow: 0 0 30px rgba(255,255,255,0.1); overflow: hidden;
+            border: 2px solid #fff; animation: flagPulse 2s infinite;
+        }
         
-        .boot-text { font-family: 'Orbitron', sans-serif; color: var(--cyan); text-shadow: 0 0 10px var(--cyan); letter-spacing: 5px; }
+        @keyframes flagPulse { 0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(0,242,255,0.2); } 50% { transform: scale(1.1); box-shadow: 0 0 40px rgba(249,255,0,0.4); } }
 
-        /* --- UI PRINCIPAL --- */
-        #main-ui { opacity: 0; transition: 2s; display: none; }
-        .container { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
-        .glass-panel { background: rgba(13, 17, 23, 0.9); border-radius: 40px; padding: 40px; border: 1px solid rgba(0, 242, 255, 0.2); margin-bottom: 40px; text-align: center; }
+        .system-title { font-family: 'Orbitron'; font-size: 1.5rem; color: #fff; letter-spacing: 8px; transition: 0.5s; }
+        
+        /* Efecto de "comerse" el nombre */
+        .eating { animation: eat 1s forwards cubic-bezier(0.6, -0.28, 0.735, 0.045); }
+        @keyframes eat { 
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.5) rotate(5deg); filter: blur(2px); }
+            100% { transform: scale(0); opacity: 0; }
+        }
 
-        .supreme-input { width: 100%; padding: 25px; border-radius: 20px; background: #000; border: 2px solid #1e293b; color: var(--cyan); font-size: 2rem; font-weight: 800; text-align: center; font-family: 'Orbitron', sans-serif; margin-bottom: 20px; box-sizing: border-box; }
+        .yellow-credits {
+            color: var(--yellow); font-family: 'Orbitron'; font-weight: 900;
+            opacity: 0; transform: translateY(20px); transition: 1s;
+            text-shadow: 0 0 15px var(--yellow); letter-spacing: 3px; text-align: center;
+        }
 
-        .btn { padding: 20px 45px; border-radius: 50px; border: none; font-weight: 900; font-family: 'Orbitron', sans-serif; cursor: pointer; transition: 0.4s; text-transform: uppercase; letter-spacing: 2px; }
-        .btn-cyan { background: var(--cyan); color: #000; }
-        .btn-pink { background: var(--pink); color: #fff; }
+        /* --- UI MEJORADA --- */
+        #main-ui { opacity: 0; display: none; transition: 2s; }
+        .container { max-width: 1100px; margin: 40px auto; padding: 0 20px; }
+        
+        /* Formas Hexagonales/Futuristas */
+        .glass-panel { 
+            background: rgba(10, 15, 25, 0.8); 
+            border-radius: 20px 60px 20px 60px; 
+            padding: 40px; 
+            border-left: 5px solid var(--cyan);
+            border-right: 5px solid var(--yellow);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            backdrop-filter: blur(10px);
+        }
 
-        /* --- RADAR LOADER --- */
-        #radar-container { display: none; margin: 20px auto; }
-        .radar { width: 80px; height: 80px; border: 4px solid var(--cyan); border-radius: 50%; border-top-color: transparent; animation: spin 1s linear infinite; margin: 0 auto; }
+        .supreme-input { 
+            width: 100%; padding: 25px; border-radius: 15px; background: rgba(0,0,0,0.7); 
+            border: 1px solid #333; color: var(--cyan); font-size: 2.2rem; 
+            font-weight: 900; text-align: center; font-family: 'Orbitron'; 
+            margin-bottom: 25px; box-sizing: border-box; outline: none;
+            transition: 0.3s; box-shadow: inset 0 0 15px rgba(0,0,0,1);
+        }
+        .supreme-input:focus { border-color: var(--cyan); box-shadow: 0 0 20px rgba(0,242,255,0.3); }
+
+        .btn-scan { 
+            width: 100%; padding: 25px; border-radius: 15px 40px; border: none; 
+            background: linear-gradient(90deg, var(--cyan), #00a2ff); color: #000;
+            font-weight: 900; font-family: 'Orbitron'; cursor: pointer; 
+            font-size: 1.2rem; letter-spacing: 4px; transition: 0.4s;
+        }
+        .btn-scan:hover { transform: scale(1.02); filter: brightness(1.2); box-shadow: 0 0 30px var(--cyan); }
+
+        /* --- RADAR ÉPICO --- */
+        #radar-container { display: none; margin: 40px auto; position: relative; width: 150px; height: 150px; }
+        .radar-circle { 
+            width: 100%; height: 100%; border: 2px solid var(--cyan); border-radius: 50%;
+            position: absolute; animation: pulseRadar 2s infinite; opacity: 0.5;
+        }
+        .radar-sweep {
+            width: 100%; height: 100%; background: conic-gradient(from 0deg, transparent, var(--cyan));
+            border-radius: 50%; animation: spin 2s linear infinite; opacity: 0.3;
+        }
+        @keyframes pulseRadar { 0% { transform: scale(1); opacity: 0.5; } 100% { transform: scale(1.5); opacity: 0; } }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* --- TUTORIAL --- */
-        #tutorial-box { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); width: 80%; max-width: 400px; background: var(--cyan); color: #000; padding: 20px; border-radius: 20px; font-weight: bold; z-index: 5000; display: none; text-align: center; box-shadow: 0 0 30px rgba(0,242,255,0.5); }
-
-        /* --- GALERÍA DE RESULTADOS --- */
-        #results { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
-            gap: 20px; 
-            margin-top: 30px; 
-        }
-
+        /* --- RESULTADOS --- */
+        #results { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-top: 40px; }
         .qsl-card { 
-            border: 2px solid var(--cyan); 
-            border-radius: 20px; 
-            overflow: hidden; 
-            background: #000; 
-            animation: slideUp 0.8s forwards; 
-            display: flex;
-            flex-direction: column;
+            background: #000; border: 1px solid #222; border-radius: 15px; overflow: hidden; 
+            transition: 0.5s; position: relative;
         }
-        @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        
-        .qsl-card img { width: 100%; height: auto; display: block; border-bottom: 1px solid #1e293b; }
+        .qsl-card:hover { border-color: var(--yellow); transform: translateY(-10px); }
+        .qsl-card img { width: 100%; display: block; filter: grayscale(20%); transition: 0.5s; }
+        .qsl-card:hover img { filter: grayscale(0%); }
+
+        .btn-dl { 
+            background: var(--yellow); color: #000; border: none; width: 100%; 
+            padding: 15px; font-weight: 900; font-family: 'Orbitron'; cursor: pointer;
+        }
+
+        #tutorial-box { 
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); 
+            background: var(--cyan); color: #000; padding: 15px 30px; border-radius: 50px; 
+            font-weight: 900; font-size: 0.9rem; z-index: 5000; display: none; 
+            box-shadow: 0 10px 40px rgba(0,242,255,0.4); border: 2px solid #fff;
+        }
     </style>
 </head>
-<body onload="initCinematic()">
+<body onload="initEpicIntro()">
 
     <audio id="snd-power" src="https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3"></audio>
     <audio id="snd-scan" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3" loop></audio>
     <audio id="snd-success" src="https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3"></audio>
 
     <div id="intro-overlay">
-        <div class="scan-line"></div>
-        <h1 class="boot-text">SISTEMA CARIBE</h1>
-        <p id="boot-status" style="font-family: monospace; color: #444;">INICIALIZANDO HARDWARE...</p>
-        <button class="btn btn-cyan" id="connect-btn" style="display:none; margin-top:30px;" onclick="unlockUI()">CONECTAR AL NODO</button>
+        <div class="flag-box" id="cuba-flag">
+            <div style="width:100%; height:100%; background:#002a8f; position:relative;">
+                <div style="width:100%; height:20%; background:#fff; position:absolute; top:20%;"></div>
+                <div style="width:100%; height:20%; background:#fff; position:absolute; top:60%;"></div>
+                <div style="width:0; height:0; border-top:40px solid transparent; border-bottom:40px solid transparent; border-left:60px solid #cf142b; position:absolute; z-index:2;"></div>
+                <div style="color:#fff; position:absolute; left:10px; top:22px; z-index:3; font-size:25px;">★</div>
+            </div>
+        </div>
+        <h1 class="system-title" id="txt-system">SISTEMA CARIBE</h1>
+        
+        <div class="yellow-credits" id="credits">
+            RADIO CLUB <br> <span style="font-size: 2.5rem;">CL7ADV</span>
+        </div>
+
+        <button class="btn-scan" id="btn-enter" style="display:none; width:auto; margin-top:40px; padding: 15px 40px;" onclick="startApp()">ENTRAR AL NODO</button>
     </div>
 
     <div id="main-ui">
         <div class="container">
             <div class="glass-panel">
-                <h2 style="font-family: 'Orbitron'; color: var(--cyan);">BUSCADOR DE SEÑAL</h2>
-                <input type="text" id="target-id" class="supreme-input" placeholder="INDICATIVO" oninput="checkInput(this.value)">
-                <button class="btn btn-cyan" onclick="startDeepSearch()">INICIAR ESCANEO</button>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                    <span style="color:var(--yellow); font-weight:900; letter-spacing:2px;">RADIO CLUB CL7ADV</span>
+                    <span style="color:var(--cyan); font-weight:bold;">v108.0</span>
+                </div>
+                
+                <input type="text" id="target-id" class="supreme-input" placeholder="INDICATIVO" oninput="checkEmpty(this.value)">
+                <button class="btn-scan" onclick="runEpicSearch()">INICIAR ESCANEO SATELITAL</button>
                 
                 <div id="radar-container">
-                    <div class="radar"></div>
-                    <p style="color:var(--cyan); font-family: 'Orbitron'; margin-top:15px;">RASTREANDO BASE DE DATOS...</p>
+                    <div class="radar-circle"></div>
+                    <div class="radar-sweep"></div>
                 </div>
                 
                 <div id="results"></div>
             </div>
-
-            <div class="glass-panel" style="border-color: var(--pink);">
-                <h2 style="font-family: 'Orbitron'; color: var(--pink);">SISTEMA DE CARGA</h2>
-                <input type="text" id="up-name" class="supreme-input" placeholder="NOMBRE" style="font-size: 1.2rem; border-color: #333;">
-                <input type="file" id="up-file" style="margin: 20px 0;">
-                <button class="btn btn-pink" onclick="secureUpload()">SUBIR A DRIVE</button>
-            </div>
         </div>
     </div>
 
-    <div id="tutorial-box">
-        <p>📡 TUTORIAL: Escribe tu indicativo y espera el escaneo satelital para descargar tu QSL.</p>
-        <button onclick="closeTut()" style="background:#000; color:#fff; border:none; padding:10px 20px; border-radius:10px; cursor:pointer;">ENTENDIDO</button>
+    <div id="tutorial-box" id="tut">
+        📡 SISTEMA LISTO. ESCRIBA SU SEÑAL.
     </div>
 
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwCs0GIz2_0jzlWbNXpoufBOUCPYOrkaUZCWGRolnUW4k8Nmuzs0TCRAKqOHhRUYF-i/exec";
-
-        function initCinematic() {
+        function initEpicIntro() {
             setTimeout(() => {
-                document.getElementById('boot-status').innerText = "ENLACE SATELITAL LISTO";
-                document.getElementById('connect-btn').style.display = "block";
+                const title = document.getElementById('txt-system');
+                const credits = document.getElementById('credits');
+                const btn = document.getElementById('btn-enter');
+                
+                // Animación de "comerse" el nombre
+                title.classList.add('eating');
                 document.getElementById('snd-power').play();
-            }, 3000);
+                
+                setTimeout(() => {
+                    title.style.display = "none";
+                    credits.style.opacity = "1";
+                    credits.style.transform = "translateY(0)";
+                    setTimeout(() => { btn.style.display = "block"; }, 500);
+                }, 1000);
+            }, 2500);
         }
 
-        function unlockUI() {
+        function startApp() {
             document.getElementById('intro-overlay').style.opacity = "0";
             setTimeout(() => {
                 document.getElementById('intro-overlay').style.display = "none";
@@ -123,111 +186,59 @@
                 setTimeout(() => { 
                     document.getElementById('main-ui').style.opacity = "1";
                     document.getElementById('tutorial-box').style.display = "block";
+                    setTimeout(() => { document.getElementById('tutorial-box').style.display = "none"; }, 5000);
                 }, 100);
-            }, 1500);
+            }, 1000);
         }
 
-        function closeTut() { document.getElementById('tutorial-box').style.display = 'none'; }
+        function checkEmpty(v) { if(v==="") { document.getElementById('results').innerHTML = ""; document.getElementById('radar-container').style.display="none"; } }
 
-        function checkInput(val) {
-            if (val === "") {
-                clearResults();
-            }
-        }
-
-        function clearResults() {
-            document.getElementById('results').innerHTML = "";
-            document.getElementById('radar-container').style.display = "none";
-        }
-
-        async function startDeepSearch() {
+        async function runEpicSearch() {
             const id = document.getElementById('target-id').value.trim().toUpperCase();
-            const results = document.getElementById('results');
+            if(!id) return;
+
+            const res = document.getElementById('results');
             const radar = document.getElementById('radar-container');
             const snd = document.getElementById('snd-scan');
 
-            if(!id) return;
-            results.innerHTML = "";
+            res.innerHTML = "";
             radar.style.display = "block";
             snd.play();
 
+            // 4 SEGUNDOS DE "ESCANEO"
             await new Promise(r => setTimeout(r, 4000));
 
             radar.style.display = "none";
             snd.pause();
             snd.currentTime = 0;
 
-            // BÚSQUEDA ORIGINAL GITHUB
-            const variations = [
-                `img/${id}.png`, `IMG/${id}.png`, `img/${id}.jpg`, 
-                `img/${id}-1.png`, `IMG/${id}-1.png`, 
-                `img/${id}-2.png`, `IMG/${id}-2.png`
-            ];
-            
-            let foundCount = 0;
+            // Búsqueda en rutas GitHub
+            const paths = [`img/${id}.png`, `IMG/${id}.png`, `img/${id}-1.png`, `img/${id}-2.png`, `IMG/${id}-1.png` ];
+            let found = 0;
 
-            for(let p of variations) {
-                const exists = await verifyImage(p);
-                if(exists) {
-                    foundCount++;
-                    results.innerHTML += `
+            for(let p of paths) {
+                const ok = await verify(p);
+                if(ok) {
+                    found++;
+                    res.innerHTML += `
                         <div class="qsl-card">
                             <img src="${p}">
-                            <button class="btn btn-cyan" style="width:100%; border-radius:0; padding: 15px;" onclick="downloadAndBack('${p}')">DESCARGAR</button>
+                            <button class="btn-dl" onclick="dlReset('${p}')">DESCARGAR QSL</button>
                         </div>`;
                 }
             }
 
-            if(foundCount > 0) document.getElementById('snd-success').play();
-            else results.innerHTML = "<p style='color:var(--pink)'>ERROR: SEÑAL NO ENCONTRADA</p>";
+            if(found > 0) document.getElementById('snd-success').play();
+            else res.innerHTML = `<p style="color:var(--yellow); font-weight:bold; width:100%; text-align:center;">SIN SEÑAL REGISTRADA PARA: ${id}</p>`;
         }
 
-        function verifyImage(url) {
-            return new Promise(res => {
-                const img = new Image();
-                img.onload = () => res(true);
-                img.onerror = () => res(false);
-                img.src = url;
-            });
-        }
+        function verify(u) { return new Promise(r => { const i=new Image(); i.onload=()=>r(true); i.onerror=()=>r(false); i.src=u; }); }
 
-        function downloadAndBack(url) {
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = url.split('/').pop();
-            link.click();
-            
+        function dlReset(u) {
+            const l = document.createElement('a');
+            l.href = u; l.download = u.split('/').pop(); l.click();
             document.getElementById('target-id').value = "";
-            clearResults();
-        }
-
-        async function secureUpload() {
-            const pass = prompt("LLAVE MAESTRA:");
-            if(pass !== "Leila2026") return alert("BLOQUEADO");
-            
-            const name = document.getElementById('up-name').value.trim().toUpperCase();
-            const fileEl = document.getElementById('up-file').files[0];
-            if(!name || !fileEl) return alert("FALTAN DATOS");
-
-            const reader = new FileReader();
-            reader.readAsDataURL(fileEl);
-            reader.onload = async function() {
-                const payload = { 
-                    base64: reader.result.split(',')[1], 
-                    type: fileEl.type, 
-                    name: name + ".png" 
-                };
-                try {
-                    const resp = await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify(payload) });
-                    const res = await resp.json();
-                    if(res.result === "success") {
-                        document.getElementById('snd-success').play();
-                        alert("✅ ENVIADO");
-                        document.getElementById('up-name').value = "";
-                        document.getElementById('up-file').value = "";
-                    }
-                } catch (e) { alert("❌ ERROR"); }
-            };
+            document.getElementById('results').innerHTML = "";
         }
     </script>
 </body>
