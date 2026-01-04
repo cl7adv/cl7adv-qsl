@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>QSL CARIBE v105 - ULTIMATE ACADEMY</title>
+    <title>QSL CARIBE v106 - GLOBAL STATION</title>
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
     <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Outfit:wght@300;600;900&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
     
@@ -33,35 +33,35 @@
 
         .supreme-input { width: 100%; padding: 20px; border-radius: 15px; background: rgba(0,0,0,0.5); border: 2px solid #332222; color: var(--accent-warm); font-size: 1.5rem; font-weight: 900; text-align: center; font-family: 'Syncopate', sans-serif; margin-bottom: 15px; box-sizing: border-box; }
         
-        .btn { padding: 18px 30px; border-radius: 12px; border: none; font-weight: 700; font-family: 'Syncopate', sans-serif; cursor: pointer; transition: 0.3s; text-transform: uppercase; font-size: 0.75rem; }
+        .btn { padding: 18px 30px; border-radius: 12px; border: none; font-weight: 700; font-family: 'Syncopate', sans-serif; cursor: pointer; transition: 0.3s; text-transform: uppercase; font-size: 0.75rem; display: inline-block; text-decoration: none; text-align: center; }
         .btn-warm { background: linear-gradient(45deg, var(--accent-warm), #ff6b00); color: #000; }
         .btn-coral { background: var(--accent-coral); color: #fff; }
+        .btn-sdr { background: #005f73; color: #fff; margin-top: 10px; border: 1px solid var(--accent-sea); }
 
-        /* --- RADAR --- */
-        #radar-container { display: none; margin: 20px 0; }
-        .radar { width: 50px; height: 50px; border: 3px solid var(--accent-warm); border-radius: 50%; border-top-color: transparent; animation: spin 0.8s linear infinite; margin: 0 auto; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        /* --- BOTÓN ESCUELA --- */
-        #school-btn { position: fixed; bottom: 30px; right: 30px; width: 75px; height: 75px; background: var(--accent-warm); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 0 30px rgba(255,157,0,0.4); z-index: 8000; border: none; transition: 0.4s; font-size: 2.2rem; }
-        #school-btn:hover { transform: scale(1.1) rotate(-15deg); }
+        /* --- BOTONES FLOTANTES --- */
+        .fab-container { position: fixed; bottom: 30px; right: 30px; display: flex; flex-direction: column; gap: 15px; z-index: 8000; }
+        .fab { width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 0 30px rgba(0,0,0,0.5); border: none; transition: 0.4s; font-size: 2rem; }
+        #school-btn { background: var(--accent-warm); }
+        #sdr-btn { background: #005f73; text-decoration: none; }
+        .fab:hover { transform: scale(1.1) rotate(-10deg); }
 
         /* --- MODAL ESCUELA --- */
         #school-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0a0707; z-index: 11000; display: none; overflow-y: auto; padding: 40px 15px; }
-        .section-title { color: var(--accent-coral); font-family: 'Syncopate'; font-size: 1.1rem; margin-top: 35px; border-left: 4px solid var(--accent-warm); padding-left: 15px; text-transform: uppercase; }
+        .section-title { color: var(--accent-coral); font-family: 'Syncopate'; font-size: 1.1rem; margin-top: 35px; border-left: 4px solid var(--accent-warm); padding-left: 15px; }
         .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; margin-top: 20px; }
-        .card-pro { background: #161111; border: 1px solid #2a1b1b; padding: 20px; border-radius: 18px; position: relative; }
-        .card-pro h4 { color: var(--accent-warm); margin: 0 0 10px 0; font-family: 'Syncopate'; font-size: 0.85rem; }
-        .card-pro p { font-size: 0.85rem; line-height: 1.5; opacity: 0.8; margin: 0; }
+        .card-pro { background: #161111; border: 1px solid #2a1b1b; padding: 20px; border-radius: 18px; }
+        .card-pro h4 { color: var(--accent-warm); font-family: 'Syncopate'; font-size: 0.85rem; margin-top: 0; }
         
-        .blueprint { background: #000; border: 1px dashed var(--accent-sea); padding: 15px; border-radius: 10px; font-family: 'JetBrains Mono'; color: var(--accent-sea); font-size: 0.75rem; margin-top: 10px; }
-
-        .close-bar { position: sticky; top: -40px; background: #0a0707; padding: 20px 0; z-index: 100; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; }
-
-        /* --- RESULTADOS QSL --- */
+        /* --- RADAR Y RESULTADOS --- */
+        #radar-container { display: none; margin: 20px 0; }
+        .radar { width: 50px; height: 50px; border: 3px solid var(--accent-warm); border-radius: 50%; border-top-color: transparent; animation: spin 0.8s linear infinite; margin: 0 auto; }
+        @keyframes spin { to { transform: rotate(360deg); } }
         #results { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-top: 20px; }
         .qsl-card { border: 1px solid #332222; border-radius: 15px; overflow: hidden; background: #000; }
         .qsl-card img { width: 100%; height: auto; display: block; }
+
+        /* FLAG COUNTER STYLING */
+        .visitor-box { background: rgba(0,0,0,0.3); padding: 20px; text-align: center; border-radius: 20px; margin-top: 20px; border: 1px solid rgba(255,255,255,0.05); }
     </style>
 </head>
 <body onload="initApp()">
@@ -71,83 +71,80 @@
     <audio id="snd-ok" src="https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3"></audio>
 
     <div id="utc-clock">
-        <span>ESTACIÓN ZULU (UTC)</span>
+        <span>STATION UTC</span>
         <div id="utc-time">00:00:00</div>
     </div>
 
     <div id="intro-overlay">
-        <h1 class="boot-text">CARIBE NODO<br><span style="font-size: 0.4em; opacity: 0.6;">V105 FUSION SYSTEM</span></h1>
-        <button class="btn btn-warm" id="connect-btn" style="display:none; margin-top:30px;" onclick="unlockUI()">INICIAR SISTEMA</button>
+        <h1 class="boot-text">CARIBE NODO<br><span style="font-size: 0.4em; opacity: 0.6;">V106 GLOBAL MASTER</span></h1>
+        <button class="btn btn-warm" id="connect-btn" style="display:none; margin-top:30px;" onclick="unlockUI()">ENTRAR AL NODO</button>
     </div>
 
     <div id="main-ui">
         <div class="container">
             <div class="glass-panel">
-                <h2 style="font-family: 'Syncopate'; color: var(--accent-warm); margin-top:0;">BUSCADOR QSL</h2>
-                <input type="text" id="target-id" class="supreme-input" placeholder="INDICATIVO (EJ: CO2RR)">
-                <button class="btn btn-warm" onclick="deepSearch()">RASTREAR SEÑAL</button>
+                <h2 style="font-family: 'Syncopate'; color: var(--accent-warm); margin:0 0 20px 0;">BUSCADOR QSL</h2>
+                <input type="text" id="target-id" class="supreme-input" placeholder="INDICATIVO">
+                <button class="btn btn-warm" onclick="deepSearch()">INICIAR RASTREO</button>
                 <div id="radar-container"><div class="radar"></div></div>
                 <div id="results"></div>
             </div>
 
-            <div class="glass-panel" style="border-color: rgba(255, 77, 109, 0.2);">
-                <h3 style="font-family: 'Syncopate'; color: var(--accent-coral);">DATA UPLOAD</h3>
-                <input type="file" id="up-file" style="margin-bottom:15px; display:block; width:100%;">
-                <button class="btn btn-coral" onclick="secureUpload()">SUBIR AL SERVIDOR</button>
+            <div class="glass-panel" style="border-color: var(--accent-sea);">
+                <h3 style="font-family: 'Syncopate'; color: var(--accent-sea);">RECURSOS REMOTOS</h3>
+                <p>Escucha la banda en vivo desde Argentina:</p>
+                <a href="http://lu4ao.ddns.net:8073/" target="_blank" class="btn btn-sdr" style="width: 100%; box-sizing: border-box;">ABRIR WEBSDR ARGENTINA (LU4AO)</a>
+            </div>
+
+            <div class="visitor-box">
+                <div style="margin-bottom:15px">
+                    <a href="https://info.flagcounter.com/ReMh" style="text-decoration: none;">
+                        <img alt="Flag Counter" border="0" src="https://s01.flagcounter.com/count2/ReMh/bg_0b1622/txt_ffffff/border_1a3a5a/columns_5/maxflags_15/viewers_0/labels_0/pageviews_0/flags_0/percent_0/" />
+                    </a>
+                </div>
             </div>
         </div>
     </div>
 
-    <button id="school-btn" onclick="toggleSchool()">🎓</button>
+    <div class="fab-container">
+        <a href="http://lu4ao.ddns.net:8073/" target="_blank" class="fab" id="sdr-btn" title="WebSDR Argentina">📻</a>
+        <button class="fab" id="school-btn" onclick="toggleSchool()" title="Escuela Técnica">🎓</button>
+    </div>
 
     <div id="school-modal">
         <div class="container">
-            <div class="close-bar">
-                <h2 style="font-family: 'Syncopate'; color: var(--accent-warm); margin:0;">ACADEMY v105</h2>
-                <button class="btn btn-coral" style="padding:10px 15px;" onclick="toggleSchool()">CERRAR</button>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px;">
+                <h1 style="font-family: 'Syncopate'; color: var(--accent-warm); margin:0;">ACADEMY PRO</h1>
+                <button class="btn btn-coral" onclick="toggleSchool()">CERRAR</button>
             </div>
 
-            <div class="section-title">ANTENAS Y PLANOS</div>
+            <div class="section-title">CONSEJOS DE ORO</div>
             <div class="info-grid">
                 <div class="card-pro">
-                    <h4>DIPOLO MULTIBANDA</h4>
-                    <p>Corta dos hilos de 10.03m para la banda de 40m. Usa un Balun 1:1 en el centro para mejores resultados.</p>
-                    <div class="blueprint">📐 L = 142.5 / F(MHz)</div>
+                    <h4>CONEXIÓN A TIERRA</h4>
+                    <p>Una buena jabalina de cobre reduce el ruido de fondo y evita retornos de RF que "pican" los dedos al tocar el equipo.</p>
                 </div>
                 <div class="card-pro">
-                    <h4>SLIM JIM (VHF)</h4>
-                    <p>Excelente para ciudades. Usa cable de 300 ohms (plano). Es omnidireccional y tiene ganancia extra.</p>
+                    <h4>TRUCO DEL NEÓN</h4>
+                    <p>Usa un foco de neón en las puntas del dipolo. Si brilla al hablar, ¡toda la energía está en la antena!</p>
                 </div>
             </div>
-            
 
-            <div class="section-title">TRUCOS DE TALLER</div>
+            <div class="section-title">PLANOS DE ANTENAS</div>
             <div class="info-grid">
                 <div class="card-pro">
-                    <h4>CÓDIGO DE COLORES</h4>
-                    <p style="font-family:'JetBrains Mono'; font-size:0.75rem;">
-                        0: Negro | 1: Café | 2: Rojo<br>
-                        3: Naranja | 4: Amar. | 5: Verde<br>
-                        6: Azul | 7: Viol. | 8: Gris | 9: Blan.
-                    </p>
+                    <h4>ANTENA DIPOLO 40M</h4>
+                    <p>Longitud por brazo: 10.03 metros. Altura mínima recomendada: 6 metros.</p>
                 </div>
                 <div class="card-pro">
-                    <h4>EVITAR INTERFERENCIAS</h4>
-                    <p>Enrolla 5-6 vueltas de tu cable coaxial cerca de la antena en un tubo de PVC de 4 pulgadas. Actuará como un choque de RF barato y efectivo.</p>
+                    <h4>ANTENA "CAÑA DE PESCAR"</h4>
+                    <p>Ideal para DX portable. Usa 7 metros de cable unun 4:1 y una caña telescópica.</p>
                 </div>
             </div>
-
-            <div class="section-title">ALFABETO FONÉTICO</div>
-            <div class="card-pro" style="margin-top:15px; font-family:'JetBrains Mono'; font-size:0.8rem;">
-                A: Alpha | B: Bravo | C: Charlie | D: Delta | E: Echo | F: Foxtrot | G: Golf | H: Hotel | I: India | J: Juliett | K: Kilo | L: Lima | M: Mike...
-            </div>
-
-            <div style="height: 50px;"></div>
         </div>
     </div>
 
     <script>
-        // RELOJ UTC
         function updateClock() {
             const now = new Date();
             const time = now.getUTCHours().toString().padStart(2,'0') + ":" + 
@@ -189,14 +186,12 @@
             radar.style.display = "block";
             snd.play();
 
-            // Simulación de rastreo
             await new Promise(r => setTimeout(r, 3000));
             radar.style.display = "none";
             snd.pause();
 
-            const paths = [`img/${id}.png`, `img/${id}.jpg`];
+            const paths = [`img/${id}.png`, `img/${id}.jpg` ];
             let found = false;
-
             for(let p of paths) {
                 const ok = await new Promise(resolve => {
                     const i = new Image();
@@ -209,15 +204,8 @@
                     found = true;
                 }
             }
-
             if(found) document.getElementById('snd-ok').play();
-            else res.innerHTML = "<p style='color:var(--accent-coral)'>SIN SEÑAL EN BASE DE DATOS</p>";
-        }
-
-        function secureUpload() {
-            const p = prompt("ACCESS CODE:");
-            if(p === "Leila2026") alert("Subida autorizada. Selecciona el archivo.");
-            else alert("ACCESO DENEGADO");
+            else res.innerHTML = "<p style='color:var(--accent-coral)'>SEÑAL NO RECIBIDA</p>";
         }
     </script>
 </body>
