@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>QSL Caribeña v32.6 - SECURE ADMIN</title>
+    <title>QSL Caribeña v34.0 - FILE MANAGER</title>
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
     <style>
         :root {
@@ -14,217 +14,263 @@
         body { 
             margin: 0; background: var(--bg); color: white; 
             font-family: 'Segoe UI', sans-serif;
-            background-image: radial-gradient(circle at 2px 2px, rgba(0, 234, 255, 0.1) 1px, transparent 0);
-            background-size: 24px 24px;
+            background-image: radial-gradient(circle at 50% 50%, #0a1120 0%, #010409 100%);
         }
 
         /* --- NAVEGACIÓN --- */
         .top-nav {
-            background: rgba(0,0,0,0.95); height: 70px; display: flex;
-            justify-content: space-between; align-items: center; padding: 0 25px;
-            border-bottom: 2px solid var(--n-blue); position: sticky; top: 0; z-index: 1000;
+            background: #000; border-bottom: 2px solid var(--n-blue);
+            display: flex; justify-content: space-between; align-items: center; padding: 15px 25px;
+            position: sticky; top: 0; z-index: 1000;
         }
 
-        .btn-admin {
-            background: #222; color: var(--n-blue); border: 1px solid var(--n-blue);
-            padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold;
+        .tab-box { display: flex; justify-content: center; gap: 5px; margin: 20px 0; }
+        .tab-btn {
+            padding: 12px 20px; border: none; background: #111; color: #666;
+            cursor: pointer; border-radius: 8px; font-weight: 900;
         }
-        .btn-admin.active { background: var(--n-pink); color: white; border-color: white; }
+        .tab-btn.active { background: var(--n-blue); color: #000; }
 
-        /* --- INTERFAZ PRINCIPAL --- */
-        .wrapper { width: 95%; max-width: 900px; margin: 40px auto; text-align: center; }
-
-        .glass-card {
-            background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 40px; padding: 40px 20px; backdrop-filter: blur(10px);
+        /* --- CARPETAS --- */
+        .folder-bar {
+            display: flex; gap: 10px; overflow-x: auto; padding: 10px;
+            background: rgba(255,255,255,0.03); border-radius: 10px; margin-bottom: 20px;
         }
-
-        input#callsign {
-            width: 85%; max-width: 400px; padding: 20px; border-radius: 20px;
-            background: #000; border: 3px solid var(--n-blue); color: #fff;
-            font-size: 2.5rem; text-align: center; font-weight: 900; text-transform: uppercase;
-            box-shadow: 0 0 20px rgba(0, 234, 255, 0.2); outline: none;
+        .folder {
+            padding: 10px 20px; background: #222; border-radius: 5px;
+            cursor: pointer; white-space: nowrap; border: 1px solid #333;
         }
+        .folder.active { border-color: var(--n-pink); color: var(--n-pink); }
 
-        .btn-generate {
-            margin-top: 30px; padding: 20px 60px; border-radius: 50px;
-            background: linear-gradient(90deg, #0051ff, #ff3131);
-            color: white; font-weight: 900; border: none; cursor: pointer;
-            font-size: 1.3rem; text-transform: uppercase; transition: 0.3s;
+        /* --- PANEL ADMIN --- */
+        #admin-controls {
+            display: none; background: #111; border: 1px solid var(--n-pink);
+            padding: 20px; border-radius: 15px; margin-bottom: 20px; text-align: left;
         }
 
-        /* --- GALERÍA DE TARJETAS --- */
-        .gallery-container { margin-top: 50px; text-align: left; }
-        .gallery-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-            gap: 20px; margin-top: 20px;
+        /* --- GRILLA --- */
+        .grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px; margin-top: 20px;
         }
-
-        .qsl-box {
-            position: relative; aspect-ratio: 3/2; background: #000;
-            border-radius: 15px; border: 2px solid #333; cursor: pointer;
-            overflow: hidden; transition: 0.3s;
+        .card {
+            aspect-ratio: 3/2; background: #000; border: 2px solid #222;
+            border-radius: 12px; position: relative; overflow: hidden; cursor: pointer;
         }
-        .qsl-box.selected { border-color: var(--n-blue); box-shadow: 0 0 20px var(--n-blue); }
-        .qsl-box img { width: 100%; height: 100%; object-fit: cover; }
-
-        .delete-overlay {
-            position: absolute; top: 5px; right: 5px; background: red;
-            color: white; width: 25px; height: 25px; border-radius: 50%;
-            display: none; justify-content: center; align-items: center;
-            font-weight: bold; font-size: 12px; z-index: 10;
+        .card.selected { border-color: var(--n-blue); box-shadow: 0 0 15px var(--n-blue); }
+        .card img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .card-tools {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); display: none; flex-direction: column;
+            justify-content: center; align-items: center; gap: 5px;
         }
+        .card:hover .card-tools { display: flex; }
 
-        .upload-zone {
-            margin-top: 30px; padding: 30px; border: 2px dashed #444;
-            border-radius: 20px; background: rgba(255,255,255,0.02);
+        /* --- ESTILOS GENERALES --- */
+        .page { display: none; width: 95%; max-width: 900px; margin: 0 auto; text-align: center; }
+        .page.active { display: block; }
+        input[type="text"] {
+            width: 80%; padding: 15px; background: #000; border: 2px solid var(--n-blue);
+            border-radius: 10px; color: white; font-size: 1.5rem; text-align: center; font-weight: 900;
+        }
+        .btn-action {
+            padding: 15px 30px; border-radius: 30px; border: none; font-weight: 900;
+            cursor: pointer; margin-top: 20px; text-transform: uppercase;
         }
 
         /* --- MODAL --- */
-        .modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: #000; z-index: 5000; overflow-y: auto; }
-        canvas { max-width: 95%; width: 850px; display: block; margin: 40px auto; border-radius: 20px; }
-
-        .btn-group { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); display: flex; gap: 15px; }
-        .btn-small { padding: 15px 30px; border-radius: 50px; border: none; color: white; font-weight: bold; cursor: pointer; }
-
-        footer { padding: 50px; text-align: center; opacity: 0.3; font-size: 0.8rem; }
+        .modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:#000; z-index:9000; }
+        canvas { max-width: 90%; display: block; margin: 40px auto; border: 2px solid var(--n-blue); }
     </style>
 </head>
 <body onload="init()">
 
     <div class="top-nav">
-        <div id="utc-clock" style="font-family: monospace; color: var(--n-blue); font-weight: bold; font-size: 1.2rem;">00:00:00 UTC</div>
-        <button id="adminBtn" class="btn-admin" onclick="authAdmin()">MODO CREADOR</button>
+        <div id="clock" style="color: var(--n-blue); font-family: monospace; font-weight: bold;">00:00:00 UTC</div>
+        <button onclick="authAdmin()" style="background:none; border: 1px solid #333; color: #444; cursor:pointer;">MODERAR</button>
     </div>
 
-    <div class="wrapper">
-        <div class="glass-card">
-            <h1 style="margin:0; font-size: 2.8rem; letter-spacing: -1px;">QSL CARIBEÑA <span style="font-size: 0.8rem; vertical-align: middle; color: var(--n-pink);">v32.6</span></h1>
-            <p style="color: #666; font-weight: bold; letter-spacing: 5px; margin-bottom: 30px;">ZMR REPEATER NETWORK</p>
+    <div class="tab-box">
+        <button class="tab-btn active" onclick="switchTab('search')">🔍 BUSCAR</button>
+        <button class="tab-btn" onclick="switchTab('act')">📡 ACTIVIDADES</button>
+    </div>
 
-            <input type="text" id="callsign" placeholder="TU INDICATIVO" maxlength="12">
-            <br>
-            <button class="btn-generate" onclick="generate()">GENERAR TARJETA</button>
+    <div id="p-search" class="page active">
+        <h2 style="color: var(--n-blue);">CENTRO DE DESCARGAS</h2>
+        <input type="text" id="s-call" placeholder="TU INDICATIVO">
+        <br>
+        <button class="btn-action" style="background: var(--n-blue);" onclick="doSearch()">ESCANEAR</button>
+        <div id="results" style="margin-top: 30px;"></div>
+    </div>
+
+    <div id="p-act" class="page">
+        <div id="admin-controls">
+            <h4 style="margin:0; color: var(--n-pink);">PANEL DE CARPETAS</h4>
+            <input type="text" id="new-folder-name" placeholder="Nombre Carpeta" style="font-size: 1rem; width: 150px; padding: 5px;">
+            <button onclick="addFolder()" style="padding: 5px 10px;">CREAR CARPETA</button>
+            <hr style="border: 0.5px solid #222; margin: 15px 0;">
+            <p style="font-size: 0.7rem;">Mover seleccionadas a: 
+                <select id="move-target"></select> 
+                <button onclick="moveImages()">MOVER</button>
+            </p>
         </div>
 
-        <div class="gallery-container">
-            <h3 style="color: var(--n-blue); border-left: 4px solid var(--n-pink); padding-left: 15px;">BIBLIOTECA DE ACTIVIDADES</h3>
-            <div class="gallery-grid" id="mainGrid"></div>
+        <div class="folder-bar" id="folderBar"></div>
 
-            <div class="upload-zone">
-                <p style="font-size: 0.8rem; color: #888; margin-bottom: 15px;">¿TIENES UNA PROPUESTA? SUBE TU IMAGEN AQUÍ:</p>
-                <input type="file" id="fIn" accept="image/*">
-            </div>
+        <input type="text" id="g-call" placeholder="INDICATIVO">
+        <br>
+        <button class="btn-action" style="background: var(--n-pink); color: white;" onclick="generate()">GENERAR TARJETA</button>
+
+        <div class="grid" id="mainGrid"></div>
+
+        <div style="margin-top: 30px; border: 2px dashed #333; padding: 20px; border-radius: 15px;">
+            <p style="font-size: 0.7rem; color: #888;">SUBIR A CARPETA ACTUAL:</p>
+            <input type="file" id="fileIn" multiple accept="image/*">
         </div>
     </div>
 
     <div id="modal" class="modal">
-        <canvas id="output"></canvas>
-        <div class="btn-group">
-            <button class="btn-small" style="background:#ff3131;" onclick="saveImg()">DESCARGAR</button>
-            <button class="btn-small" style="background:#333;" onclick="closeM()">VOLVER</button>
+        <canvas id="cvs"></canvas>
+        <div style="text-align: center;">
+            <button class="btn-action" style="background:red; color:white;" onclick="download()">GUARDAR</button>
+            <button class="btn-action" style="background:#333; color:white; margin-left:10px;" onclick="closeM()">CERRAR</button>
         </div>
     </div>
 
-    <footer>CL7ADV &bull; ALFRED &bull; 2026 &bull; CUBA</footer>
-
     <script>
+        let folders = JSON.parse(localStorage.getItem('zmr_folders')) || { "General": [] };
+        let currentFolder = "General";
         let isAdmin = false;
-        let selectedIdx = 0;
-        let db = JSON.parse(localStorage.getItem('zmr_v32_db')) || [
-            "https://via.placeholder.com/800x500/010409/00eaff?text=PLANTILLA+OFICIAL+ZMR"
-        ];
+        let selectedIdx = -1;
 
         function init() {
-            render();
+            renderFolders();
+            renderGrid();
             setInterval(() => {
-                const d = new Date();
-                document.getElementById('utc-clock').innerText = d.getUTCHours().toString().padStart(2,'0') + ":" + d.getUTCMinutes().toString().padStart(2,'0') + ":" + d.getUTCSeconds().toString().padStart(2,'0') + " UTC";
+                document.getElementById('clock').innerText = new Date().toUTCString().split(' ')[4];
             }, 1000);
         }
 
-        function render() {
+        function authAdmin() {
+            if(prompt("CLAVE:") === "Leila2026") {
+                isAdmin = !isAdmin;
+                document.getElementById('admin-controls').style.display = isAdmin ? 'block' : 'none';
+                renderGrid();
+                renderFolders();
+            }
+        }
+
+        function renderFolders() {
+            const bar = document.getElementById('folderBar');
+            const select = document.getElementById('move-target');
+            bar.innerHTML = "";
+            select.innerHTML = "";
+            
+            Object.keys(folders).forEach(f => {
+                const div = document.createElement('div');
+                div.className = `folder ${currentFolder === f ? 'active' : ''}`;
+                div.innerHTML = `📁 ${f} ${isAdmin && f !== 'General' ? `<span onclick="delFolder('${f}')" style="color:red; margin-left:10px;">×</span>` : ''}`;
+                div.onclick = (e) => { if(e.target.tagName !== 'SPAN') { currentFolder = f; renderFolders(); renderGrid(); } };
+                bar.appendChild(div);
+
+                select.innerHTML += `<option value="${f}">${f}</option>`;
+            });
+        }
+
+        function addFolder() {
+            const name = document.getElementById('new-folder-name').value.trim();
+            if(name && !folders[name]) {
+                folders[name] = [];
+                save();
+                renderFolders();
+            }
+        }
+
+        function delFolder(f) {
+            if(confirm("¿Borrar carpeta y mover fotos a General?")) {
+                folders["General"] = folders["General"].concat(folders[f]);
+                delete folders[f];
+                currentFolder = "General";
+                save(); renderFolders(); renderGrid();
+            }
+        }
+
+        function renderGrid() {
             const grid = document.getElementById('mainGrid');
             grid.innerHTML = "";
-            db.forEach((img, i) => {
+            const currentData = folders[currentFolder] || [];
+
+            currentData.forEach((img, i) => {
                 const div = document.createElement('div');
-                div.className = `qsl-box ${selectedIdx === i ? 'selected' : ''}`;
-                div.onclick = () => { if(!isAdmin) { selectedIdx = i; render(); } };
+                div.className = `card ${selectedIdx === i ? 'selected' : ''}`;
+                div.innerHTML = `<img src="${img}">`;
                 
-                div.innerHTML = `
-                    <div class="delete-overlay" style="display: ${isAdmin ? 'flex' : 'none'}" onclick="deleteImg(${i})">X</div>
-                    <img src="${img}">
-                `;
+                if(isAdmin) {
+                    const tools = document.createElement('div');
+                    tools.className = "card-tools";
+                    tools.innerHTML = `<button onclick="deleteImg(${i})" style="background:red; color:white; border:none; padding:5px 10px; border-radius:5px; cursor:pointer;">BORRAR</button>`;
+                    div.appendChild(tools);
+                }
+
+                div.onclick = (e) => { if(e.target.tagName !== 'BUTTON') { selectedIdx = i; renderGrid(); } };
                 grid.appendChild(div);
             });
         }
 
-        document.getElementById('fIn').onchange = function(e) {
-            const reader = new FileReader();
-            reader.onload = function() {
-                db.push(reader.result);
-                localStorage.setItem('zmr_v32_db', JSON.stringify(db));
-                render();
-            };
-            reader.readAsDataURL(e.target.files[0]);
+        document.getElementById('fileIn').onchange = function(e) {
+            Array.from(e.target.files).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function() {
+                    folders[currentFolder].push(reader.result);
+                    save();
+                    renderGrid();
+                };
+                reader.readAsDataURL(file);
+            });
         };
 
-        function generate() {
-            const call = document.getElementById('callsign').value.trim().toUpperCase();
-            if(!call) return alert("Ingresa un indicativo");
+        function deleteImg(i) {
+            folders[currentFolder].splice(i, 1);
+            save(); renderGrid();
+        }
 
-            const canvas = document.getElementById('output');
+        function save() { localStorage.setItem('zmr_folders', JSON.stringify(folders)); }
+
+        function switchTab(t) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('p-'+t).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // GENERADOR
+        function generate() {
+            const call = document.getElementById('g-call').value.trim().toUpperCase();
+            if(!call || selectedIdx === -1) return alert("Elige una tarjeta e indicativo");
+            const canvas = document.getElementById('cvs');
             const ctx = canvas.getContext('2d');
             const img = new Image();
-            img.onload = function() {
-                canvas.width = img.width;
-                canvas.height = img.height;
+            img.onload = () => {
+                canvas.width = img.width; canvas.height = img.height;
                 ctx.drawImage(img, 0, 0);
-
-                ctx.fillStyle = "white";
-                ctx.strokeStyle = "black";
-                ctx.lineWidth = canvas.width * 0.01;
-                ctx.font = `italic 900 ${canvas.width * 0.08}px Arial`;
+                ctx.fillStyle = "white"; ctx.strokeStyle = "black";
+                ctx.lineWidth = canvas.width * 0.01; ctx.font = `italic 900 ${canvas.width * 0.08}px Arial`;
                 ctx.textAlign = "center";
-                
                 ctx.strokeText(call, canvas.width / 2, canvas.height * 0.85);
                 ctx.fillText(call, canvas.width / 2, canvas.height * 0.85);
-
                 document.getElementById('modal').style.display = 'block';
             };
-            img.src = db[selectedIdx];
-        }
-
-        // FUNCIONES DE ADMINISTRADOR CON NUEVA CLAVE
-        function authAdmin() {
-            const p = prompt("CLAVE DE CREADOR:");
-            if(p === "Leila2026") { // <--- Clave actualizada aquí
-                isAdmin = !isAdmin;
-                document.getElementById('adminBtn').classList.toggle('active');
-                document.getElementById('adminBtn').innerText = isAdmin ? "SALIR MODO EDICIÓN" : "MODO CREADOR";
-                render();
-            } else {
-                alert("Clave incorrecta. Acceso denegado.");
-            }
-        }
-
-        function deleteImg(index) {
-            if(confirm("¿Seguro que quieres eliminar esta tarjeta?")) {
-                db.splice(index, 1);
-                localStorage.setItem('zmr_v32_db', JSON.stringify(db));
-                if(selectedIdx >= db.length) selectedIdx = 0;
-                render();
-            }
-        }
-
-        function saveImg() {
-            const l = document.createElement('a');
-            l.download = `QSL_${document.getElementById('callsign').value}.png`;
-            l.href = document.getElementById('output').toDataURL();
-            l.click();
+            img.src = folders[currentFolder][selectedIdx];
         }
 
         function closeM() { document.getElementById('modal').style.display = 'none'; }
+        function download() {
+            const a = document.createElement('a');
+            a.download = "QSL_CARIBE.png";
+            a.href = document.getElementById('cvs').toDataURL();
+            a.click();
+        }
     </script>
 </body>
 </html>
