@@ -2,191 +2,240 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>QSL CARIBE NEÓN - 2026</title>
+    <title>QSL CARIBE SUPREME - NEÓN 2026</title>
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Inter:wght@300;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --caribe-cyan: #00f2ff;
-            --caribe-pink: #ff007b;
-            --caribe-orange: #ff8c00;
-            --bg: #050a15;
-            --glass: rgba(10, 20, 40, 0.85);
+            --cyan: #00f2ff;
+            --pink: #ff007b;
+            --deep: #020617;
+            --glass: rgba(15, 23, 42, 0.85);
+            --neon-shadow: 0 0 15px rgba(0, 242, 255, 0.4);
         }
 
+        * { box-sizing: border-box; }
+
         body { 
-            margin: 0; background: var(--bg); color: white; 
-            font-family: 'Inter', 'Segoe UI', sans-serif;
-            background-image: 
-                linear-gradient(rgba(5, 10, 21, 0.8), rgba(5, 10, 21, 0.8)),
-                url('https://images.unsplash.com/photo-1544945582-3b466d874eac?auto=format&fit=crop&w=1920&q=80'); /* Palmeras nocturnas */
+            margin: 0; background: var(--deep); color: white; 
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            /* Fondo Caribeño Neón */
+            background: 
+                linear-gradient(rgba(2, 6, 23, 0.8), rgba(2, 6, 23, 0.8)),
+                url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1920&q=80');
             background-size: cover;
             background-attachment: fixed;
             background-position: center;
         }
 
-        /* --- ANIMACIÓN NEÓN --- */
-        .neon-text {
-            color: #fff;
-            text-shadow: 0 0 10px var(--caribe-cyan), 0 0 20px var(--caribe-cyan), 0 0 40px var(--caribe-cyan);
-            letter-spacing: 5px; text-transform: uppercase; font-weight: 900;
+        /* --- EFECTOS VISUALES --- */
+        .neon-title {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900; letter-spacing: 8px;
+            color: #fff; text-shadow: 0 0 10px var(--cyan), 0 0 20px var(--cyan);
+            margin: 0; font-size: 2.5rem; text-align: center;
         }
 
-        /* --- NAVBAR --- */
+        .palm-decor {
+            position: fixed; bottom: -50px; right: -50px;
+            font-size: 15rem; opacity: 0.05; transform: rotate(-20deg);
+            pointer-events: none; z-index: 0;
+        }
+
+        /* --- LAYOUT --- */
         .navbar {
-            padding: 20px 40px; background: rgba(0,0,0,0.6); backdrop-filter: blur(15px);
-            border-bottom: 2px solid var(--caribe-cyan); display: flex; justify-content: space-between; align-items: center;
-            box-shadow: 0 0 20px rgba(0, 242, 255, 0.2);
+            padding: 25px; background: rgba(0,0,0,0.8); backdrop-filter: blur(20px);
+            border-bottom: 2px solid var(--cyan); display: flex;
+            justify-content: space-between; align-items: center;
+            box-shadow: 0 0 30px rgba(0, 242, 255, 0.2);
         }
 
-        .container { max-width: 800px; margin: 40px auto; padding: 0 20px; }
+        .container { max-width: 900px; margin: 40px auto; padding: 0 20px; position: relative; z-index: 1; }
 
-        /* --- TARJETAS CARIBEÑAS --- */
-        .tropical-card {
-            background: var(--glass); border-radius: 40px; padding: 50px 30px;
-            border: 1px solid rgba(0, 242, 255, 0.3);
-            box-shadow: 0 25px 60px rgba(0,0,0,0.8);
-            text-align: center; position: relative; overflow: hidden;
-            margin-bottom: 50px;
+        .glass-panel {
+            background: var(--glass); border-radius: 40px; padding: 60px 40px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.6);
+            backdrop-filter: blur(10px); margin-bottom: 40px;
+            transition: 0.4s;
         }
 
-        /* Decoración palmeras neón */
-        .tropical-card::after {
-            content: "🌴"; position: absolute; bottom: -20px; right: -10px;
-            font-size: 8rem; opacity: 0.1; transform: rotate(-15deg);
+        /* --- FORMULARIOS --- */
+        .input-group { margin-bottom: 30px; }
+
+        .supreme-input {
+            width: 100%; max-width: 500px; padding: 25px; border-radius: 20px;
+            background: rgba(0,0,0,0.8); border: 2px solid #1e293b;
+            color: var(--cyan); font-size: 2.2rem; font-weight: 800;
+            text-align: center; font-family: 'Orbitron', sans-serif;
+            transition: 0.3s; margin-bottom: 20px;
         }
 
-        /* --- INPUTS ESTILO SCANNER --- */
-        .scanner-input {
-            width: 90%; max-width: 450px; padding: 25px; border-radius: 20px;
-            background: rgba(0,0,0,0.7); border: 2px solid #1e293b; color: var(--caribe-cyan);
-            font-size: 2.5rem; text-align: center; font-weight: 900; margin-bottom: 25px;
-            transition: 0.4s; font-family: 'Courier New', monospace;
-        }
-        .scanner-input:focus { 
-            border-color: var(--caribe-cyan); 
-            box-shadow: 0 0 30px rgba(0, 242, 255, 0.4); outline: none;
+        .supreme-input:focus {
+            border-color: var(--cyan); outline: none;
+            box-shadow: 0 0 30px rgba(0, 242, 255, 0.3);
             transform: scale(1.02);
         }
 
-        .btn-caribe {
-            padding: 22px 50px; border-radius: 100px; border: none; font-weight: 900;
-            cursor: pointer; text-transform: uppercase; font-size: 1.1rem;
-            transition: 0.4s; letter-spacing: 2px;
+        .btn-supreme {
+            padding: 20px 60px; border-radius: 100px; border: none;
+            font-weight: 900; font-family: 'Orbitron', sans-serif;
+            text-transform: uppercase; cursor: pointer; transition: 0.4s;
+            letter-spacing: 2px; font-size: 1.1rem;
         }
-        .btn-cyan { background: var(--caribe-cyan); color: #000; box-shadow: 0 10px 30px rgba(0, 242, 255, 0.3); }
-        .btn-pink { background: var(--caribe-pink); color: #fff; box-shadow: 0 10px 30px rgba(255, 0, 123, 0.3); }
-        .btn-caribe:hover { transform: translateY(-5px) scale(1.05); filter: brightness(1.2); }
+
+        .btn-cyan { background: var(--cyan); color: #000; box-shadow: 0 0 20px rgba(0, 242, 255, 0.4); }
+        .btn-pink { background: var(--pink); color: #fff; box-shadow: 0 0 20px rgba(255, 0, 123, 0.4); }
+
+        .btn-supreme:hover { transform: translateY(-5px); filter: brightness(1.2); }
 
         /* --- RESULTADOS --- */
-        #results-grid { 
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); 
-            gap: 20px; margin-top: 40px; 
+        #display-zone {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px; margin-top: 40px;
         }
-        .qsl-preview { 
-            width: 100%; border-radius: 20px; border: 2px solid var(--caribe-cyan); 
-            transition: 0.4s; cursor: pointer; background: #000;
-        }
-        .qsl-preview:hover { transform: rotate(2deg) scale(1.1); box-shadow: 0 0 40px var(--caribe-cyan); }
 
-        footer { text-align: center; padding: 50px; color: rgba(255,255,255,0.3); font-size: 0.8rem; letter-spacing: 5px; }
+        .qsl-frame {
+            background: #000; border-radius: 20px; border: 2px solid var(--cyan);
+            overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transition: 0.4s; cursor: pointer;
+        }
+
+        .qsl-frame:hover { transform: scale(1.05) rotate(1deg); border-color: #fff; }
+
+        .qsl-frame img { width: 100%; height: auto; display: block; }
+
+        /* --- FOOTER --- */
+        footer { 
+            text-align: center; padding: 60px; color: #475569; 
+            font-size: 0.8rem; font-family: 'Orbitron', sans-serif;
+            letter-spacing: 5px; opacity: 0.6;
+        }
+
+        .clock-cyan { color: var(--cyan); font-family: 'Orbitron'; font-weight: bold; }
+
     </style>
 </head>
 <body>
 
+    <div class="palm-decor">🌴</div>
+
     <nav class="navbar">
-        <div class="neon-text" style="font-size: 1.5rem;">CARIBE QSL</div>
-        <div id="utc-clock" style="color: var(--caribe-cyan); font-weight: 900; letter-spacing: 2px; font-family: monospace;">00:00:00 UTC</div>
+        <div class="neon-title" style="font-size: 1.2rem; letter-spacing: 2px;">CARIBE NET</div>
+        <div id="clock" class="clock-cyan">00:00:00 UTC</div>
     </nav>
 
     <div class="container">
         
-        <div class="tropical-card">
-            <h1 class="neon-text" style="font-size: 2.2rem; margin-bottom: 40px;">Buscador de Radio</h1>
-            <input type="text" id="scan-id" class="scanner-input" placeholder="LLAMADA">
-            <br>
-            <button class="btn-caribe btn-cyan" onclick="startScan()">Escanear Nodo</button>
-            <div id="results-grid"></div>
+        <div class="glass-panel" style="border-top: 4px solid var(--cyan);">
+            <h2 class="neon-title" style="margin-bottom: 40px;">Buscador QSL</h2>
+            <div class="input-group">
+                <input type="text" id="call-search" class="supreme-input" placeholder="TU CALLSIGN">
+            </div>
+            <button class="btn-supreme btn-cyan" onclick="searchQSL()">Escanear Red</button>
+            <div id="display-zone"></div>
         </div>
 
-        <div class="tropical-card" style="border-color: var(--caribe-pink);">
-            <h2 style="color: var(--caribe-pink); text-transform: uppercase;">Central de Almacén</h2>
-            <p style="color: #64748b; font-size: 0.8rem;">Solo administración autorizada</p>
+        <div class="glass-panel" style="border-top: 4px solid var(--pink);">
+            <h2 class="neon-title" style="color: var(--pink); text-shadow: 0 0 10px var(--pink); margin-bottom: 30px;">Cloud Storage</h2>
+            <p style="color: #94a3b8; margin-bottom: 30px;">Acceso restringido para carga de archivos a Google Drive</p>
             
-            <input type="text" id="up-name" class="scanner-input" placeholder="NOMBRE" style="font-size: 1.2rem; border-color: #334155; padding: 15px;">
+            <input type="text" id="file-name" class="supreme-input" placeholder="NOMBRE QSL" style="font-size: 1.2rem; border-color: #334155;">
             <br>
-            <input type="file" id="up-file" style="margin-bottom: 25px; color: var(--caribe-pink);"><br>
-            <button class="btn-caribe btn-pink" onclick="adminUpload()">Subir a Drive</button>
+            <input type="file" id="file-input" style="margin-bottom: 30px; color: var(--pink); font-weight: bold;">
+            <br>
+            <button class="btn-supreme btn-pink" onclick="executeUpload()">Subir a Drive</button>
         </div>
 
     </div>
 
-    <footer>CL7ADV • RED CARIBE • 2026</footer>
+    <footer>CL7ADV • CARIBBEAN NETWORK • 2026</footer>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbwCs0GIz2_0jzlWbNXpoufBOUCPYOrkaUZCWGRolnUW4k8Nmuzs0TCRAKqOHhRUYF-i/exec";
-        const PASSCODE = "Leila2026";
+        // --- CONFIGURACIÓN CRÍTICA ---
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwCs0GIz2_0jzlWbNXpoufBOUCPYOrkaUZCWGRolnUW4k8Nmuzs0TCRAKqOHhRUYF-i/exec";
+        const MASTER_PASS = "Leila2026";
 
-        // Reloj Dinámico
+        // Reloj UTC
         setInterval(() => {
-            const d = new Date();
-            document.getElementById('utc-clock').innerText = d.getUTCHours().toString().padStart(2,'0') + ":" + d.getUTCMinutes().toString().padStart(2,'0') + ":" + d.getUTCSeconds().toString().padStart(2,'0') + " UTC";
+            const now = new Date();
+            document.getElementById('clock').innerText = now.getUTCHours().toString().padStart(2,'0') + ":" + now.getUTCMinutes().toString().padStart(2,'0') + ":" + now.getUTCSeconds().toString().padStart(2,'0') + " UTC";
         }, 1000);
 
-        // Lógica de Búsqueda
-        async function startScan() {
-            const call = document.getElementById('scan-id').value.trim().toUpperCase();
-            const grid = document.getElementById('results-grid');
+        // Lógica de Búsqueda de Imágenes en GitHub
+        function searchQSL() {
+            const call = document.getElementById('call-search').value.trim().toUpperCase();
+            const zone = document.getElementById('display-zone');
             if(!call) return;
+
+            zone.innerHTML = "<p style='color:var(--cyan)'>Buscando en servidor...</p>";
             
-            grid.innerHTML = "<p style='color:var(--caribe-cyan)'>Sincronizando con el servidor...</p>";
-            const exts = ['png', 'jpg', 'jpeg'];
+            // Probamos formatos comunes
+            const formats = ['png', 'jpg', 'jpeg'];
             let found = false;
 
-            for(let e of exts) {
-                const url = `img/${call}.${e}`;
-                const i = new Image();
-                i.onload = () => {
-                    grid.innerHTML = `<img src="${url}" class="qsl-preview" onclick="window.open(this.src)">`;
+            formats.forEach(ext => {
+                const imgPath = `img/${call}.${ext}`;
+                const testImg = new Image();
+                testImg.onload = () => {
+                    zone.innerHTML = `<div class="qsl-frame"><img src="${imgPath}" onclick="window.open(this.src)"></div>`;
                     found = true;
                 };
-                i.src = url;
-            }
-            setTimeout(() => { if(!found) grid.innerHTML = "<p style='color:var(--caribe-pink)'>SIN REGISTROS EN LA BASE DE DATOS</p>"; }, 2000);
+                testImg.src = imgPath;
+            });
+
+            setTimeout(() => {
+                if(!found) zone.innerHTML = "<p style='color:var(--pink)'>NO SE ENCONTRARON QSL PARA ESTE INDICATIVO</p>";
+            }, 2500);
         }
 
-        // Lógica de Subida con Contraseña
-        async function adminUpload() {
-            const name = document.getElementById('up-name').value.trim().toUpperCase();
-            const fileIn = document.getElementById('up-file').files[0];
+        // Lógica de Subida a Google Drive Funcional
+        async function executeUpload() {
+            const name = document.getElementById('file-name').value.trim().toUpperCase();
+            const fileEl = document.getElementById('file-input').files[0];
 
-            if(!name || !fileIn) return alert("Error: Faltan datos del archivo.");
+            if(!name || !fileEl) {
+                alert("Error: Introduce el nombre y selecciona un archivo.");
+                return;
+            }
 
-            // El prompt que pediste
-            const key = prompt("🔒 ACCESO RESTRINGIDO\nIntroduce la contraseña Maestra:");
+            // Verificación de contraseña
+            const challenge = prompt("SISTEMA PROTEGIDO\nIntroduce la contraseña Maestra:");
 
-            if(key === PASSCODE) {
-                alert("⚡ Llave aceptada. Subiendo imagen...");
+            if(challenge === MASTER_PASS) {
+                alert("🚀 Autorizado. Procesando archivo...");
                 
                 const reader = new FileReader();
-                reader.readAsDataURL(fileIn);
+                reader.readAsDataURL(fileEl);
                 reader.onload = async function() {
-                    const data = {
-                        base64: reader.result.split(',')[1],
-                        type: fileIn.type,
+                    const base64Content = reader.result.split(',')[1];
+                    const payload = {
+                        base64: base64Content,
+                        type: fileEl.type,
                         name: name + ".png"
                     };
+
                     try {
-                        const response = await fetch(API_URL, { method: "POST", body: JSON.stringify(data) });
-                        const res = await response.json();
-                        if(res.result === "success") {
-                            alert("✅ ¡ÉXITO! El archivo ya está seguro en Google Drive.");
+                        const response = await fetch(GOOGLE_SCRIPT_URL, {
+                            method: "POST",
+                            body: JSON.stringify(payload)
+                        });
+                        
+                        const result = await response.json();
+                        
+                        if(result.result === "success") {
+                            alert("✅ ¡ÉXITO! Archivo guardado correctamente en tu Google Drive.");
+                        } else {
+                            alert("❌ Error de Google: " + result.error);
                         }
-                    } catch(err) {
-                        alert("❌ Fallo de conexión con el servidor.");
+                    } catch (error) {
+                        alert("❌ Error de Conexión: Verifica tu URL de Google Script o tu conexión.");
+                        console.error(error);
                     }
                 };
             } else {
-                alert("🚫 ERROR: Llave no autorizada.");
+                alert("🚫 Acceso Denegado: Contraseña Incorrecta.");
             }
         }
     </script>
