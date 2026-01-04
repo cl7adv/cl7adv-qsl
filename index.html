@@ -2,39 +2,132 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>QSL CARIBE v110 - OCEAN EDITION</title>
+    <title>QSL CARIBE v111 - SDR LIVE</title>
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
     <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Outfit:wght@300;600;900&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
     
     <style>
         :root { 
-            --accent-ocean: #0077be;   /* Azul Marino */
-            --accent-cloud: #f0f4f8;   /* Nubes Claras */
-            --accent-gold: #ffcc33;    /* Sol Caribe */
-            --bg-deep: #001219;        /* Abismo Marino */
+            --accent-ocean: #0077be;   --accent-cloud: #f0f4f8;   
+            --accent-gold: #ffcc33;    --bg-deep: #001219;        
             --glass: rgba(255, 255, 255, 0.1);
         }
 
         body, html { 
-            margin: 0; padding: 0; 
-            background: linear-gradient(135deg, #001219 0%, #003049 50%, #005f73 100%); 
-            color: var(--accent-cloud); 
-            font-family: 'Outfit', sans-serif; 
-            overflow-x: hidden; 
-            min-height: 100vh; 
+            margin: 0; padding: 0; background: linear-gradient(135deg, #001219 0%, #003049 50%, #005f73 100%); 
+            color: var(--accent-cloud); font-family: 'Outfit', sans-serif; min-height: 100vh; 
         }
 
-        /* --- RELOJ UTC --- */
         #utc-clock { 
-            position: fixed; top: 20px; right: 20px; 
-            background: rgba(0, 18, 25, 0.8); 
-            padding: 10px 18px; border-radius: 12px; 
-            border: 1px solid var(--accent-ocean); 
-            font-family: 'JetBrains Mono', monospace; z-index: 9000; 
-            box-shadow: 0 0 20px rgba(0, 119, 190, 0.4); text-align: right; 
+            position: fixed; top: 20px; right: 20px; background: rgba(0, 18, 25, 0.8); 
+            padding: 10px 18px; border-radius: 12px; border: 1px solid var(--accent-ocean); 
+            font-family: 'JetBrains Mono', monospace; z-index: 9000; text-align: right; 
         }
-        #utc-clock span { color: var(--accent-ocean); font-weight: bold; display: block; font-size: 0.65rem; letter-spacing: 2px; }
-        #utc-time { font-size: 1.3rem; color: #fff; text-shadow: 0 0 10px var(--accent-ocean); }
+
+        #main-ui { padding-top: 100px; padding-bottom: 50px; }
+        .container { max-width: 950px; margin: 0 auto; padding: 0 20px; }
+        
+        .glass-panel { 
+            background: var(--glass); backdrop-filter: blur(25px); 
+            border-radius: 25px; padding: 30px; border: 1px solid rgba(255, 255, 255, 0.15); 
+            margin-bottom: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.4); 
+        }
+
+        .supreme-input { 
+            width: 100%; padding: 20px; border-radius: 15px; background: rgba(255, 255, 255, 0.05); 
+            border: 2px solid var(--accent-ocean); color: #fff; font-size: 1.5rem; 
+            text-align: center; font-family: 'Syncopate', sans-serif; margin-bottom: 15px; box-sizing: border-box; 
+        }
+        
+        .btn { padding: 18px 30px; border-radius: 12px; border: none; font-weight: 700; font-family: 'Syncopate', sans-serif; cursor: pointer; text-transform: uppercase; font-size: 0.75rem; text-decoration: none; text-align: center; }
+        .btn-ocean { background: var(--accent-ocean); color: #fff; width: 100%; }
+
+        /* ESTILO PARA EL SDR */
+        .sdr-frame {
+            width: 100%; height: 500px; border-radius: 15px; border: 3px solid #000;
+            background: #000; box-shadow: inset 0 0 20px var(--accent-ocean);
+        }
+
+        /* INTRO */
+        #intro-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-deep); z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 1s; }
+    </style>
+</head>
+<body onload="initApp()">
+
+    <div id="utc-clock">
+        <span>UTC CARIBE</span>
+        <div id="utc-time" style="font-size:1.3rem; color:#fff;">00:00:00</div>
+    </div>
+
+    <div id="intro-overlay">
+        <h1 style="font-family:'Syncopate'; color:white;">CARIBE NODO v111</h1>
+        <button class="btn btn-ocean" id="connect-btn" style="display:none; max-width:250px;" onclick="unlockUI()">CONECTAR SDR</button>
+    </div>
+
+    <div id="main-ui" style="display:none; opacity:0; transition: 1s;">
+        <div class="container">
+            
+            <div class="glass-panel">
+                <h2 style="font-family: 'Syncopate'; color: var(--accent-cloud); margin:0 0 20px 0;">BÚSQUEDA QSL</h2>
+                <input type="text" id="target-id" class="supreme-input" placeholder="INDICATIVO">
+                <button class="btn btn-ocean" onclick="deepSearch()">RASTREAR</button>
+                <div id="results" style="margin-top:20px;"></div>
+            </div>
+
+            <div class="glass-panel" style="border-color: var(--accent-gold);">
+                <h3 style="font-family: 'Syncopate'; color: var(--accent-gold); margin:0 0 15px 0;">RADIO ESCUCHA EN VIVO (SSDR)</h3>
+                <iframe src="http://lu4ao.ddns.net:8073/" class="sdr-frame"></iframe>
+                <p style="font-size: 0.7rem; color: var(--accent-gold); margin-top:10px;">TIP: Haz clic dentro de la radio para sintonizar frecuencias.</p>
+            </div>
+
+            <div style="text-align:center; padding: 20px;">
+                <a href="https://info.flagcounter.com/ReMh">
+                    <img src="https://s01.flagcounter.com/count2/ReMh/bg_003049/txt_ffffff/border_0077be/columns_5/maxflags_15/viewers_0/labels_0/pageviews_0/flags_0/percent_0/" alt="Flag Counter" border="0">
+                </a>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('utc-time').innerText = now.getUTCHours().toString().padStart(2,'0') + ":" + now.getUTCMinutes().toString().padStart(2,'0') + ":" + now.getUTCSeconds().toString().padStart(2,'0');
+        }
+        setInterval(updateClock, 1000);
+
+        function initApp() {
+            setTimeout(() => { document.getElementById('connect-btn').style.display = "block"; }, 1000);
+        }
+
+        function unlockUI() {
+            document.getElementById('intro-overlay').style.opacity = "0";
+            setTimeout(() => { 
+                document.getElementById('intro-overlay').style.display = "none"; 
+                document.getElementById('main-ui').style.display = "block"; 
+                setTimeout(() => document.getElementById('main-ui').style.opacity = "1", 50); 
+            }, 800);
+        }
+
+        async function deepSearch() {
+            const id = document.getElementById('target-id').value.trim().toUpperCase();
+            if(!id) return;
+            const res = document.getElementById('results');
+            res.innerHTML = "Buscando...";
+            const paths = [`img/${id}.png`, `img/${id}.jpg` ];
+            let found = false;
+            for(let p of paths) {
+                const ok = await new Promise(resolve => { const i = new Image(); i.onload = () => resolve(true); i.onerror = () => resolve(false); i.src = p; });
+                if(ok) {
+                    res.innerHTML = `<img src="${p}" style="width:100%; border-radius:15px; border:1px solid gold;">`;
+                    found = true; break;
+                }
+            }
+            if(!found) res.innerHTML = "No se encontró QSL.";
+        }
+    </script>
+</body>
+</html>        #utc-time { font-size: 1.3rem; color: #fff; text-shadow: 0 0 10px var(--accent-ocean); }
 
         /* --- INTRO / BOOT --- */
         #intro-overlay { 
