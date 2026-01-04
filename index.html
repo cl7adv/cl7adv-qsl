@@ -2,241 +2,240 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>QSL CARIBE SUPREME - NEÓN 2026</title>
+    <title>QSL CARIBE SUPREME v100 - CINEMATIC</title>
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Inter:wght@300;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    
     <style>
         :root {
             --cyan: #00f2ff;
             --pink: #ff007b;
-            --deep: #020617;
-            --glass: rgba(15, 23, 42, 0.85);
-            --neon-shadow: 0 0 15px rgba(0, 242, 255, 0.4);
+            --bg: #010409;
         }
 
-        * { box-sizing: border-box; }
-
-        body { 
-            margin: 0; background: var(--deep); color: white; 
-            font-family: 'Inter', sans-serif;
-            overflow-x: hidden;
-            /* Fondo Caribeño Neón */
-            background: 
-                linear-gradient(rgba(2, 6, 23, 0.8), rgba(2, 6, 23, 0.8)),
-                url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1920&q=80');
-            background-size: cover;
-            background-attachment: fixed;
-            background-position: center;
+        body, html { 
+            margin: 0; padding: 0; background: var(--bg); color: white; 
+            font-family: 'Inter', sans-serif; overflow-x: hidden;
         }
 
-        /* --- EFECTOS VISUALES --- */
-        .neon-title {
-            font-family: 'Orbitron', sans-serif;
-            font-weight: 900; letter-spacing: 8px;
-            color: #fff; text-shadow: 0 0 10px var(--cyan), 0 0 20px var(--cyan);
-            margin: 0; font-size: 2.5rem; text-align: center;
+        /* --- PANTALLA DE INICIO (CINEMÁTICA) --- */
+        #intro-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; z-index: 10000; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; transition: 1.5s;
         }
 
-        .palm-decor {
-            position: fixed; bottom: -50px; right: -50px;
-            font-size: 15rem; opacity: 0.05; transform: rotate(-20deg);
-            pointer-events: none; z-index: 0;
+        .scan-line {
+            width: 100%; height: 2px; background: var(--cyan);
+            position: absolute; top: 0; left: 0;
+            box-shadow: 0 0 20px var(--cyan);
+            animation: moveScan 2s linear infinite;
         }
 
-        /* --- LAYOUT --- */
-        .navbar {
-            padding: 25px; background: rgba(0,0,0,0.8); backdrop-filter: blur(20px);
-            border-bottom: 2px solid var(--cyan); display: flex;
-            justify-content: space-between; align-items: center;
-            box-shadow: 0 0 30px rgba(0, 242, 255, 0.2);
+        @keyframes moveScan {
+            0% { top: 0; } 100% { top: 100%; }
         }
 
-        .container { max-width: 900px; margin: 40px auto; padding: 0 20px; position: relative; z-index: 1; }
+        .boot-text {
+            font-family: 'Orbitron', sans-serif; color: var(--cyan);
+            text-shadow: 0 0 10px var(--cyan); letter-spacing: 5px;
+            animation: flicker 0.1s infinite;
+        }
+
+        @keyframes flicker {
+            0% { opacity: 0.8; } 50% { opacity: 1; } 100% { opacity: 0.9; }
+        }
+
+        /* --- UI PRINCIPAL --- */
+        #main-ui { opacity: 0; transition: 2s; }
+
+        .container { max-width: 900px; margin: 40px auto; padding: 0 20px; }
 
         .glass-panel {
-            background: var(--glass); border-radius: 40px; padding: 60px 40px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 25px 50px rgba(0,0,0,0.6);
-            backdrop-filter: blur(10px); margin-bottom: 40px;
-            transition: 0.4s;
+            background: rgba(13, 17, 23, 0.9); border-radius: 40px; padding: 40px;
+            border: 1px solid rgba(0, 242, 255, 0.2); margin-bottom: 40px;
+            position: relative; overflow: hidden;
         }
-
-        /* --- FORMULARIOS --- */
-        .input-group { margin-bottom: 30px; }
 
         .supreme-input {
-            width: 100%; max-width: 500px; padding: 25px; border-radius: 20px;
-            background: rgba(0,0,0,0.8); border: 2px solid #1e293b;
-            color: var(--cyan); font-size: 2.2rem; font-weight: 800;
-            text-align: center; font-family: 'Orbitron', sans-serif;
-            transition: 0.3s; margin-bottom: 20px;
+            width: 100%; padding: 25px; border-radius: 20px;
+            background: #000; border: 2px solid #1e293b; color: var(--cyan);
+            font-size: 2rem; font-weight: 800; text-align: center;
+            font-family: 'Orbitron', sans-serif; margin-bottom: 20px;
         }
 
-        .supreme-input:focus {
-            border-color: var(--cyan); outline: none;
-            box-shadow: 0 0 30px rgba(0, 242, 255, 0.3);
-            transform: scale(1.02);
+        .btn {
+            padding: 20px 45px; border-radius: 50px; border: none; font-weight: 900;
+            font-family: 'Orbitron', sans-serif; cursor: pointer; transition: 0.4s;
+            text-transform: uppercase; letter-spacing: 2px;
+        }
+        .btn-cyan { background: var(--cyan); color: #000; box-shadow: 0 0 20px rgba(0,242,255,0.3); }
+        .btn-pink { background: var(--pink); color: #fff; box-shadow: 0 0 20px rgba(255,0,123,0.3); }
+
+        /* --- LOADER DE BÚSQUEDA --- */
+        #radar-loader { display: none; margin: 30px auto; width: 100px; height: 100px; border: 4px solid var(--cyan); border-radius: 50%; border-top-color: transparent; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* --- TUTORIAL --- */
+        #tutorial {
+            position: fixed; bottom: 20px; right: 20px; width: 250px;
+            background: var(--cyan); color: #000; padding: 20px;
+            border-radius: 20px; font-size: 0.8rem; font-weight: bold;
+            display: none; z-index: 5000;
         }
 
-        .btn-supreme {
-            padding: 20px 60px; border-radius: 100px; border: none;
-            font-weight: 900; font-family: 'Orbitron', sans-serif;
-            text-transform: uppercase; cursor: pointer; transition: 0.4s;
-            letter-spacing: 2px; font-size: 1.1rem;
+        .qsl-card {
+            width: 100%; margin-top: 30px; border: 2px solid var(--cyan);
+            border-radius: 20px; overflow: hidden; background: #000;
+            animation: slideUp 1s forwards;
         }
-
-        .btn-cyan { background: var(--cyan); color: #000; box-shadow: 0 0 20px rgba(0, 242, 255, 0.4); }
-        .btn-pink { background: var(--pink); color: #fff; box-shadow: 0 0 20px rgba(255, 0, 123, 0.4); }
-
-        .btn-supreme:hover { transform: translateY(-5px); filter: brightness(1.2); }
-
-        /* --- RESULTADOS --- */
-        #display-zone {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 25px; margin-top: 40px;
-        }
-
-        .qsl-frame {
-            background: #000; border-radius: 20px; border: 2px solid var(--cyan);
-            overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            transition: 0.4s; cursor: pointer;
-        }
-
-        .qsl-frame:hover { transform: scale(1.05) rotate(1deg); border-color: #fff; }
-
-        .qsl-frame img { width: 100%; height: auto; display: block; }
-
-        /* --- FOOTER --- */
-        footer { 
-            text-align: center; padding: 60px; color: #475569; 
-            font-size: 0.8rem; font-family: 'Orbitron', sans-serif;
-            letter-spacing: 5px; opacity: 0.6;
-        }
-
-        .clock-cyan { color: var(--cyan); font-family: 'Orbitron'; font-weight: bold; }
+        @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
     </style>
 </head>
-<body>
+<body onload="startCinematic()">
 
-    <div class="palm-decor">🌴</div>
+    <audio id="snd-power" src="https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3"></audio>
+    <audio id="snd-scan" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3" loop></audio>
+    <audio id="snd-success" src="https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3"></audio>
 
-    <nav class="navbar">
-        <div class="neon-title" style="font-size: 1.2rem; letter-spacing: 2px;">CARIBE NET</div>
-        <div id="clock" class="clock-cyan">00:00:00 UTC</div>
-    </nav>
-
-    <div class="container">
-        
-        <div class="glass-panel" style="border-top: 4px solid var(--cyan);">
-            <h2 class="neon-title" style="margin-bottom: 40px;">Buscador QSL</h2>
-            <div class="input-group">
-                <input type="text" id="call-search" class="supreme-input" placeholder="TU CALLSIGN">
-            </div>
-            <button class="btn-supreme btn-cyan" onclick="searchQSL()">Escanear Red</button>
-            <div id="display-zone"></div>
-        </div>
-
-        <div class="glass-panel" style="border-top: 4px solid var(--pink);">
-            <h2 class="neon-title" style="color: var(--pink); text-shadow: 0 0 10px var(--pink); margin-bottom: 30px;">Cloud Storage</h2>
-            <p style="color: #94a3b8; margin-bottom: 30px;">Acceso restringido para carga de archivos a Google Drive</p>
-            
-            <input type="text" id="file-name" class="supreme-input" placeholder="NOMBRE QSL" style="font-size: 1.2rem; border-color: #334155;">
-            <br>
-            <input type="file" id="file-input" style="margin-bottom: 30px; color: var(--pink); font-weight: bold;">
-            <br>
-            <button class="btn-supreme btn-pink" onclick="executeUpload()">Subir a Drive</button>
-        </div>
-
+    <div id="intro-overlay">
+        <div class="scan-line"></div>
+        <h1 class="boot-text">SISTEMA QSL CARIBE</h1>
+        <p style="color: #444; font-family: monospace;">ESTABLECIENDO ENLACE SATELITAL...</p>
+        <button class="btn btn-cyan" id="start-btn" style="margin-top: 40px; display: none;" onclick="enterSystem()">CONECTAR</button>
     </div>
 
-    <footer>CL7ADV • CARIBBEAN NETWORK • 2026</footer>
+    <div id="main-ui">
+        <nav style="padding: 20px; border-bottom: 1px solid rgba(0,242,255,0.2); display: flex; justify-content: space-between; align-items: center;">
+            <div style="font-family: 'Orbitron'; color: var(--cyan); font-weight: 900;">REDE CARIBE v100</div>
+            <button onclick="showTutorial()" style="background:none; color:var(--cyan); border:1px solid var(--cyan); padding:5px 15px; border-radius:20px; cursor:pointer;">?</button>
+        </nav>
+
+        <div class="container">
+            <div class="glass-panel">
+                <h2 style="font-family: 'Orbitron'; letter-spacing: 3px;">CENTRO DE BÚSQUEDA</h2>
+                <input type="text" id="call-id" class="supreme-input" placeholder="INDICATIVO">
+                <br>
+                <button class="btn btn-cyan" onclick="slowSearch()">ESCANEAR BASE DE DATOS</button>
+                
+                <div id="radar-loader"></div>
+                <div id="results"></div>
+            </div>
+
+            <div class="glass-panel" style="border-color: var(--pink);">
+                <h2 style="font-family: 'Orbitron'; color: var(--pink);">NUBE PRIVADA</h2>
+                <input type="text" id="up-name" class="supreme-input" placeholder="NOMBRE" style="font-size: 1.2rem;">
+                <input type="file" id="up-file" style="margin: 20px 0; color: var(--pink);">
+                <br>
+                <button class="btn btn-pink" onclick="uploadAction()">SUBIR A DRIVE</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="tutorial">
+        <p id="tut-text">¡Bienvenido! Escribe un indicativo (ej: CO2KK) y presiona escanear para buscar tus QSL.</p>
+        <button onclick="this.parentElement.style.display='none'" style="width:100%; border:none; background:#000; color:#fff; padding:5px; border-radius:10px;">Entendido</button>
+    </div>
 
     <script>
-        // --- CONFIGURACIÓN CRÍTICA ---
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwCs0GIz2_0jzlWbNXpoufBOUCPYOrkaUZCWGRolnUW4k8Nmuzs0TCRAKqOHhRUYF-i/exec";
-        const MASTER_PASS = "Leila2026";
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwCs0GIz2_0jzlWbNXpoufBOUCPYOrkaUZCWGRolnUW4k8Nmuzs0TCRAKqOHhRUYF-i/exec";
 
-        // Reloj UTC
-        setInterval(() => {
-            const now = new Date();
-            document.getElementById('clock').innerText = now.getUTCHours().toString().padStart(2,'0') + ":" + now.getUTCMinutes().toString().padStart(2,'0') + ":" + now.getUTCSeconds().toString().padStart(2,'0') + " UTC";
-        }, 1000);
-
-        // Lógica de Búsqueda de Imágenes en GitHub
-        function searchQSL() {
-            const call = document.getElementById('call-search').value.trim().toUpperCase();
-            const zone = document.getElementById('display-zone');
-            if(!call) return;
-
-            zone.innerHTML = "<p style='color:var(--cyan)'>Buscando en servidor...</p>";
-            
-            // Probamos formatos comunes
-            const formats = ['png', 'jpg', 'jpeg'];
-            let found = false;
-
-            formats.forEach(ext => {
-                const imgPath = `img/${call}.${ext}`;
-                const testImg = new Image();
-                testImg.onload = () => {
-                    zone.innerHTML = `<div class="qsl-frame"><img src="${imgPath}" onclick="window.open(this.src)"></div>`;
-                    found = true;
-                };
-                testImg.src = imgPath;
-            });
-
+        // --- CINEMÁTICA ---
+        function startCinematic() {
             setTimeout(() => {
-                if(!found) zone.innerHTML = "<p style='color:var(--pink)'>NO SE ENCONTRARON QSL PARA ESTE INDICATIVO</p>";
-            }, 2500);
+                document.getElementById('start-btn').style.display = 'block';
+                document.getElementById('snd-power').play();
+            }, 3000);
         }
 
-        // Lógica de Subida a Google Drive Funcional
-        async function executeUpload() {
-            const name = document.getElementById('file-name').value.trim().toUpperCase();
-            const fileEl = document.getElementById('file-input').files[0];
+        function enterSystem() {
+            document.getElementById('intro-overlay').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('intro-overlay').style.display = 'none';
+                document.getElementById('main-ui').style.opacity = '1';
+                showTutorial();
+            }, 1500);
+        }
 
-            if(!name || !fileEl) {
-                alert("Error: Introduce el nombre y selecciona un archivo.");
-                return;
+        function showTutorial() {
+            const tut = document.getElementById('tutorial');
+            tut.style.display = 'block';
+        }
+
+        // --- BÚSQUEDA LENTA ---
+        async function slowSearch() {
+            const id = document.getElementById('call-id').value.toUpperCase();
+            const res = document.getElementById('results');
+            const loader = document.getElementById('radar-loader');
+            const snd = document.getElementById('snd-scan');
+
+            if(!id) return;
+
+            res.innerHTML = "";
+            loader.style.display = "block";
+            snd.play();
+
+            // Simulamos carga lenta de 4 segundos
+            await new Promise(r => setTimeout(r, 4000));
+
+            loader.style.display = "none";
+            snd.pause();
+            snd.currentTime = 0;
+
+            const variations = [id, `${id}-1`, `${id}-2`];
+            let found = 0;
+
+            for(let v of variations) {
+                const path = `img/${v}.png`;
+                const ok = await checkImg(path);
+                if(ok) {
+                    found++;
+                    res.innerHTML += `<div class="qsl-card"><img src="${path}" style="width:100%"><button class="btn btn-cyan" style="width:100%; border-radius:0" onclick="download('${path}')">DESCARGAR</button></div>`;
+                }
             }
 
-            // Verificación de contraseña
-            const challenge = prompt("SISTEMA PROTEGIDO\nIntroduce la contraseña Maestra:");
+            if(found > 0) document.getElementById('snd-success').play();
+            else res.innerHTML = "<p>SIN SEÑAL: No se encontraron archivos.</p>";
+        }
 
-            if(challenge === MASTER_PASS) {
-                alert("🚀 Autorizado. Procesando archivo...");
-                
-                const reader = new FileReader();
-                reader.readAsDataURL(fileEl);
-                reader.onload = async function() {
-                    const base64Content = reader.result.split(',')[1];
-                    const payload = {
-                        base64: base64Content,
-                        type: fileEl.type,
-                        name: name + ".png"
-                    };
+        function checkImg(url) {
+            return new Promise(res => {
+                const i = new Image();
+                i.onload = () => res(true);
+                i.onerror = () => res(false);
+                i.src = url;
+            });
+        }
 
-                    try {
-                        const response = await fetch(GOOGLE_SCRIPT_URL, {
-                            method: "POST",
-                            body: JSON.stringify(payload)
-                        });
-                        
-                        const result = await response.json();
-                        
-                        if(result.result === "success") {
-                            alert("✅ ¡ÉXITO! Archivo guardado correctamente en tu Google Drive.");
-                        } else {
-                            alert("❌ Error de Google: " + result.error);
-                        }
-                    } catch (error) {
-                        alert("❌ Error de Conexión: Verifica tu URL de Google Script o tu conexión.");
-                        console.error(error);
-                    }
-                };
-            } else {
-                alert("🚫 Acceso Denegado: Contraseña Incorrecta.");
-            }
+        function download(url) {
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = "QSL-Caribe.png";
+            a.click();
+        }
+
+        async function uploadAction() {
+            const pass = prompt("CONTRASEÑA MAESTRA:");
+            if(pass !== "Leila2026") return alert("ACCESO DENEGADO");
+            
+            const name = document.getElementById('up-name').value;
+            const file = document.getElementById('up-file').files[0];
+            if(!name || !file) return alert("FALTAN DATOS");
+
+            const r = new FileReader();
+            r.readAsDataURL(file);
+            r.onload = async function() {
+                const data = { base64: r.result.split(',')[1], type: file.type, name: name + ".png" };
+                const resp = await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify(data) });
+                const json = await resp.json();
+                if(json.result === "success") {
+                    document.getElementById('snd-success').play();
+                    alert("ARCHIVO ASEGURADO EN LA NUBE");
+                }
+            };
         }
     </script>
 </body>
