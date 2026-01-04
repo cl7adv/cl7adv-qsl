@@ -2,205 +2,233 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>QSL CARIBE v120 - SUPREME DRIVE</title>
+    <title>QSL CARIBE v101 - CINEMATIC</title>
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Outfit:wght@300;600;900&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Inter:wght@300;800&display=swap" rel="stylesheet">
     
     <style>
-        :root { 
-            --accent-ocean: #0077be;   --accent-gold: #ffcc33;    --bg-deep: #001219;        
-            --glass: rgba(255, 255, 255, 0.08);
-        }
+        :root { --cyan: #00f2ff; --pink: #ff007b; --bg: #010409; }
+        body, html { margin: 0; padding: 0; background: var(--bg); color: white; font-family: 'Inter', sans-serif; overflow-x: hidden; }
 
-        body, html { 
-            margin: 0; padding: 0; 
-            background: radial-gradient(circle at center, #003049 0%, #001219 100%); 
-            color: #f0f4f8; font-family: 'Outfit', sans-serif; 
-            min-height: 100vh; overflow-x: hidden;
+        /* --- CINEMÁTICA DE INICIO --- */
+        #intro-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; z-index: 10000; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; transition: 1.5s;
         }
-
-        /* --- RELOJ UTC --- */
-        #utc-clock { 
-            position: fixed; top: 20px; right: 20px; background: rgba(0, 18, 25, 0.9); 
-            padding: 10px 18px; border-radius: 12px; border: 1px solid var(--accent-ocean); 
-            font-family: 'JetBrains Mono', monospace; z-index: 9000;
-            box-shadow: 0 0 20px rgba(0, 119, 190, 0.3);
-        }
+        .scan-line { width: 100%; height: 2px; background: var(--cyan); position: absolute; top: 0; animation: moveScan 2s linear infinite; box-shadow: 0 0 20px var(--cyan); }
+        @keyframes moveScan { 0% { top: 0; } 100% { top: 100%; } }
+        
+        .boot-text { font-family: 'Orbitron', sans-serif; color: var(--cyan); text-shadow: 0 0 10px var(--cyan); letter-spacing: 5px; }
 
         /* --- UI PRINCIPAL --- */
-        #main-ui { opacity: 0; transition: 1.5s; display: none; padding-top: 80px; padding-bottom: 120px; }
-        .container { max-width: 700px; margin: 0 auto; padding: 0 25px; }
-        
-        .glass-panel { 
-            background: var(--glass); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
-            border-radius: 30px; padding: 35px; border: 1px solid rgba(255, 255, 255, 0.15); 
-            margin-bottom: 30px; box-shadow: 0 25px 50px rgba(0,0,0,0.5);
-            transition: 0.5s;
+        #main-ui { opacity: 0; transition: 2s; display: none; }
+        .container { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
+        .glass-panel { background: rgba(13, 17, 23, 0.9); border-radius: 40px; padding: 40px; border: 1px solid rgba(0, 242, 255, 0.2); margin-bottom: 40px; text-align: center; }
+
+        .supreme-input { width: 100%; padding: 25px; border-radius: 20px; background: #000; border: 2px solid #1e293b; color: var(--cyan); font-size: 2rem; font-weight: 800; text-align: center; font-family: 'Orbitron', sans-serif; margin-bottom: 20px; box-sizing: border-box; }
+
+        .btn { padding: 20px 45px; border-radius: 50px; border: none; font-weight: 900; font-family: 'Orbitron', sans-serif; cursor: pointer; transition: 0.4s; text-transform: uppercase; letter-spacing: 2px; }
+        .btn-cyan { background: var(--cyan); color: #000; }
+        .btn-pink { background: var(--pink); color: #fff; }
+
+        /* --- RADAR LOADER --- */
+        #radar-container { display: none; margin: 20px auto; }
+        .radar { width: 80px; height: 80px; border: 4px solid var(--cyan); border-radius: 50%; border-top-color: transparent; animation: spin 1s linear infinite; margin: 0 auto; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* --- TUTORIAL --- */
+        #tutorial-box { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); width: 80%; max-width: 400px; background: var(--cyan); color: #000; padding: 20px; border-radius: 20px; font-weight: bold; z-index: 5000; display: none; text-align: center; box-shadow: 0 0 30px rgba(0,242,255,0.5); }
+
+        /* --- GALERÍA DE RESULTADOS --- */
+        #results { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+            gap: 20px; 
+            margin-top: 30px; 
         }
 
-        .supreme-input { 
-            width: 100%; padding: 22px; border-radius: 18px; background: rgba(0,0,0,0.3); 
-            border: 2px solid var(--accent-ocean); color: #fff; font-size: 1.6rem; 
-            text-align: center; font-family: 'Syncopate', sans-serif; margin-bottom: 20px; box-sizing: border-box;
-            outline: none; transition: 0.3s;
+        .qsl-card { 
+            border: 2px solid var(--cyan); 
+            border-radius: 20px; 
+            overflow: hidden; 
+            background: #000; 
+            animation: slideUp 0.8s forwards; 
+            display: flex;
+            flex-direction: column;
         }
-        .supreme-input:focus { border-color: var(--accent-gold); box-shadow: 0 0 15px rgba(255,204,51,0.2); }
+        @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         
-        .btn { padding: 18px 30px; border-radius: 15px; border: none; font-weight: 700; font-family: 'Syncopate', sans-serif; cursor: pointer; text-transform: uppercase; font-size: 0.7rem; transition: 0.4s; text-align: center; display: block; width: 100%; text-decoration: none; margin-bottom: 12px; letter-spacing: 1px; }
-        .btn-ocean { background: var(--accent-ocean); color: #fff; box-shadow: 0 5px 15px rgba(0,119,190,0.4); }
-        .btn-gold { background: var(--accent-gold); color: #000; box-shadow: 0 5px 15px rgba(255,204,51,0.3); }
-        .btn:hover { transform: translateY(-3px); filter: brightness(1.2); }
-
-        /* --- RESULTADOS --- */
-        .qsl-card { animation: zoomIn 0.5s ease-out; background: rgba(255, 255, 255, 0.03); border-radius: 20px; padding: 20px; margin-top: 20px; border: 1px solid var(--accent-gold); text-align: center; }
-        @keyframes zoomIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
-        .qsl-img { width: 100%; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-
-        /* --- TICKER / MENSAJE --- */
-        .visitor-ticker { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(0, 119, 190, 0.2); backdrop-filter: blur(10px); padding: 15px 0; font-size: 0.75rem; color: var(--accent-gold); text-align: center; border-top: 1px solid var(--accent-ocean); font-family: 'Syncopate'; z-index: 999; }
-
-        #intro-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-deep); z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 1s; }
+        .qsl-card img { width: 100%; height: auto; display: block; border-bottom: 1px solid #1e293b; }
     </style>
 </head>
-<body onload="initApp()">
+<body onload="initCinematic()">
 
-    <div id="utc-clock">
-        <div id="utc-time" style="font-size:1.4rem; color:#fff; font-weight: 900;">00:00:00</div>
-        <div style="color:var(--accent-ocean); font-size: 0.6rem; text-align: center; font-weight: bold;">UTC CARIBE</div>
-    </div>
+    <audio id="snd-power" src="https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3"></audio>
+    <audio id="snd-scan" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3" loop></audio>
+    <audio id="snd-success" src="https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3"></audio>
 
     <div id="intro-overlay">
-        <h1 style="font-family:'Syncopate'; color:white; text-align: center; line-height: 1.5;">CARIBE NODO<br><span style="font-size: 0.4em; color: var(--accent-ocean); letter-spacing: 5px;">v120 - SUPREME</span></h1>
-        <button class="btn btn-ocean" id="connect-btn" style="display:none; max-width:250px; margin-top: 40px;" onclick="unlockUI()">INICIAR SISTEMA</button>
+        <div class="scan-line"></div>
+        <h1 class="boot-text">SISTEMA CARIBE</h1>
+        <p id="boot-status" style="font-family: monospace; color: #444;">INICIALIZANDO HARDWARE...</p>
+        <button class="btn btn-cyan" id="connect-btn" style="display:none; margin-top:30px;" onclick="unlockUI()">CONECTAR AL NODO</button>
     </div>
 
     <div id="main-ui">
         <div class="container">
-            
-            <div class="glass-panel" id="search-box">
-                <h2 style="font-family: 'Syncopate'; font-size: 0.8rem; text-align: center; letter-spacing: 2px; margin-bottom: 20px;">RASTREO DE QSL AUTOMÁTICAS</h2>
-                <input type="text" id="target-id" class="supreme-input" placeholder="INDICATIVO">
-                <button class="btn btn-ocean" onclick="buscarQSL()">ESCANEAR NUBE</button>
-                <div id="status-msg" style="text-align:center; margin-top:15px; font-family:'JetBrains Mono'; color: var(--accent-gold); min-height: 20px;"></div>
-                <div id="results-area"></div>
-            </div>
-
             <div class="glass-panel">
-                <h3 style="font-family: 'Syncopate'; color: var(--accent-ocean); font-size: 0.7rem; margin-bottom: 20px;">ADMINISTRACIÓN DE CARPETA DRIVE</h3>
-                <button class="btn btn-gold" onclick="abrirDrive()">SUBIR QSL A DRIVE</button>
+                <h2 style="font-family: 'Orbitron'; color: var(--cyan);">BUSCADOR DE SEÑAL</h2>
+                <input type="text" id="target-id" class="supreme-input" placeholder="INDICATIVO" oninput="checkInput(this.value)">
+                <button class="btn btn-cyan" onclick="startDeepSearch()">INICIAR ESCANEO</button>
+                
+                <div id="radar-container">
+                    <div class="radar"></div>
+                    <p style="color:var(--cyan); font-family: 'Orbitron'; margin-top:15px;">RASTREANDO BASE DE DATOS...</p>
+                </div>
+                
+                <div id="results"></div>
             </div>
 
+            <div class="glass-panel" style="border-color: var(--pink);">
+                <h2 style="font-family: 'Orbitron'; color: var(--pink);">SISTEMA DE CARGA</h2>
+                <input type="text" id="up-name" class="supreme-input" placeholder="NOMBRE" style="font-size: 1.2rem; border-color: #333;">
+                <input type="file" id="up-file" style="margin: 20px 0;">
+                <button class="btn btn-pink" onclick="secureUpload()">SUBIR A DRIVE</button>
+            </div>
         </div>
     </div>
 
-    <div class="visitor-ticker">BIENVENIDO COLEGA - SISTEMA AUTOMÁTICO DE DESCARGA QSL</div>
+    <div id="tutorial-box">
+        <p>📡 TUTORIAL: Escribe tu indicativo y espera el escaneo satelital para descargar tu QSL.</p>
+        <button onclick="closeTut()" style="background:#000; color:#fff; border:none; padding:10px 20px; border-radius:10px; cursor:pointer;">ENTENDIDO</button>
+    </div>
 
     <script>
-        let resetTimer;
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwCs0GIz2_0jzlWbNXpoufBOUCPYOrkaUZCWGRolnUW4k8Nmuzs0TCRAKqOHhRUYF-i/exec";
 
-        // Reloj Dinámico
-        setInterval(() => {
-            const now = new Date();
-            document.getElementById('utc-time').innerText = now.getUTCHours().toString().padStart(2,'0') + ":" + now.getUTCMinutes().toString().padStart(2,'0') + ":" + now.getUTCSeconds().toString().padStart(2,'0');
-        }, 1000);
-
-        function initApp() {
-            setTimeout(() => { document.getElementById('connect-btn').style.display = "block"; }, 1000);
+        function initCinematic() {
+            setTimeout(() => {
+                document.getElementById('boot-status').innerText = "ENLACE SATELITAL LISTO";
+                document.getElementById('connect-btn').style.display = "block";
+                document.getElementById('snd-power').play();
+            }, 3000);
         }
 
         function unlockUI() {
             document.getElementById('intro-overlay').style.opacity = "0";
-            setTimeout(() => { 
-                document.getElementById('intro-overlay').style.display = "none"; 
-                document.getElementById('main-ui').style.display = "block"; 
-                setTimeout(() => document.getElementById('main-ui').style.opacity = "1", 50); 
-                iniciarTemporizadorReset();
-            }, 800);
+            setTimeout(() => {
+                document.getElementById('intro-overlay').style.display = "none";
+                document.getElementById('main-ui').style.display = "block";
+                setTimeout(() => { 
+                    document.getElementById('main-ui').style.opacity = "1";
+                    document.getElementById('tutorial-box').style.display = "block";
+                }, 100);
+            }, 1500);
         }
 
-        async function buscarQSL() {
+        function closeTut() { document.getElementById('tutorial-box').style.display = 'none'; }
+
+        function checkInput(val) {
+            if (val === "") {
+                clearResults();
+            }
+        }
+
+        function clearResults() {
+            document.getElementById('results').innerHTML = "";
+            document.getElementById('radar-container').style.display = "none";
+        }
+
+        async function startDeepSearch() {
             const id = document.getElementById('target-id').value.trim().toUpperCase();
+            const results = document.getElementById('results');
+            const radar = document.getElementById('radar-container');
+            const snd = document.getElementById('snd-scan');
+
             if(!id) return;
-            
-            reiniciarTemporizador();
-            const resArea = document.getElementById('results-area');
-            const status = document.getElementById('status-msg');
-            
-            resArea.innerHTML = "";
-            status.innerHTML = "BUSCANDO EN 50 CANALES...";
+            results.innerHTML = "";
+            radar.style.display = "block";
+            snd.play();
 
-            // Ruta donde tienes tus fotos (img/)
-            const baseServer = "./img/"; 
-            const formatos = ["jpg", "png", "JPG", "webp"];
-            
-            // Generar nombres posibles: ID, ID-1, ID-2...
-            const nombresProbables = [id, ...Array.from({length: 50}, (_, i) => `${id}-${i+1}`)];
-            let encontradas = [];
+            await new Promise(r => setTimeout(r, 4000));
 
-            for (let n of nombresProbables) {
-                for (let f of formatos) {
-                    const ruta = `${baseServer}${n}.${f}`;
-                    const existe = await new Promise(r => {
-                        const img = new Image();
-                        img.onload = () => r(true);
-                        img.onerror = () => r(false);
-                        img.src = ruta;
-                    });
-                    if (existe) { encontradas.push(ruta); break; }
+            radar.style.display = "none";
+            snd.pause();
+            snd.currentTime = 0;
+
+            // BÚSQUEDA ORIGINAL GITHUB
+            const variations = [
+                `img/${id}.png`, `IMG/${id}.png`, `img/${id}.jpg`, 
+                `img/${id}-1.png`, `IMG/${id}-1.png`, 
+                `img/${id}-2.png`, `IMG/${id}-2.png`
+            ];
+            
+            let foundCount = 0;
+
+            for(let p of variations) {
+                const exists = await verifyImage(p);
+                if(exists) {
+                    foundCount++;
+                    results.innerHTML += `
+                        <div class="qsl-card">
+                            <img src="${p}">
+                            <button class="btn btn-cyan" style="width:100%; border-radius:0; padding: 15px;" onclick="downloadAndBack('${p}')">DESCARGAR</button>
+                        </div>`;
                 }
             }
 
-            if (encontradas.length > 0) {
-                status.innerHTML = `CAPTURADAS ${encontradas.length} IMÁGENES`;
-                encontradas.forEach(ruta => {
-                    resArea.innerHTML += `
-                        <div class="qsl-card">
-                            <img src="${ruta}" class="qsl-img">
-                            <a href="${ruta}" download class="btn btn-gold" onclick="finalizarYLimpiar()">DESCARGAR AHORA</a>
-                        </div>
-                    `;
-                });
-            } else {
-                status.innerHTML = "SIN SEÑAL EN LA BASE DE DATOS";
-                setTimeout(() => { status.innerHTML = ""; }, 3000);
-            }
+            if(foundCount > 0) document.getElementById('snd-success').play();
+            else results.innerHTML = "<p style='color:var(--pink)'>ERROR: SEÑAL NO ENCONTRADA</p>";
         }
 
-        function finalizarYLimpiar() {
-            document.getElementById('status-msg').innerHTML = "¡GRACIAS POR TU VISITA! REINICIANDO...";
-            setTimeout(retornarAlInicio, 2000);
+        function verifyImage(url) {
+            return new Promise(res => {
+                const img = new Image();
+                img.onload = () => res(true);
+                img.onerror = () => res(false);
+                img.src = url;
+            });
         }
 
-        function abrirDrive() {
-            const pass = prompt("ACCESO PROTEGIDO (LEILA2026):");
-            if (pass === "Leila2026") {
-                // AQUÍ PEGA TU LINK DE GOOGLE DRIVE:
-                window.open("https://drive.google.com/drive/folders/TU_CARPETA_AQUI", "_blank");
-            } else { alert("PASSWORD INCORRECTO"); }
-        }
-
-        // --- SISTEMA DE CONTROL DE INACTIVIDAD ---
-        function retornarAlInicio() {
+        function downloadAndBack(url) {
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = url.split('/').pop();
+            link.click();
+            
             document.getElementById('target-id').value = "";
-            document.getElementById('results-area').innerHTML = "";
-            document.getElementById('status-msg').innerHTML = "";
-            // Efecto visual de reset
-            const box = document.getElementById('search-box');
-            box.style.opacity = "0.5";
-            setTimeout(() => box.style.opacity = "1", 300);
+            clearResults();
         }
 
-        function iniciarTemporizadorReset() {
-            clearTimeout(resetTimer);
-            resetTimer = setTimeout(retornarAlInicio, 120000); // 2 minutos
-        }
+        async function secureUpload() {
+            const pass = prompt("LLAVE MAESTRA:");
+            if(pass !== "Leila2026") return alert("BLOQUEADO");
+            
+            const name = document.getElementById('up-name').value.trim().toUpperCase();
+            const fileEl = document.getElementById('up-file').files[0];
+            if(!name || !fileEl) return alert("FALTAN DATOS");
 
-        function reiniciarTemporizador() {
-            iniciarTemporizadorReset();
+            const reader = new FileReader();
+            reader.readAsDataURL(fileEl);
+            reader.onload = async function() {
+                const payload = { 
+                    base64: reader.result.split(',')[1], 
+                    type: fileEl.type, 
+                    name: name + ".png" 
+                };
+                try {
+                    const resp = await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify(payload) });
+                    const res = await resp.json();
+                    if(res.result === "success") {
+                        document.getElementById('snd-success').play();
+                        alert("✅ ENVIADO");
+                        document.getElementById('up-name').value = "";
+                        document.getElementById('up-file').value = "";
+                    }
+                } catch (e) { alert("❌ ERROR"); }
+            };
         }
-
-        // Detectar cualquier clic para evitar el reset si el usuario está activo
-        window.onclick = reiniciarTemporizador;
     </script>
 </body>
 </html>
