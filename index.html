@@ -3,30 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Servidor de QSL - Radioaficionados</title>
+    <title>Servidor QSL - Estación Cubana</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; background: #eef2f3; padding: 20px; color: #333; }
-        .container { background: white; padding: 30px; border-radius: 15px; max-width: 600px; margin: auto; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        h1 { color: #0052d4; margin-bottom: 5px; }
-        .busqueda-caja { margin: 25px 0; padding: 20px; border: 2px dashed #0052d4; border-radius: 10px; }
-        input { padding: 12px; width: 70%; border: 1px solid #ccc; border-radius: 5px; font-size: 16px; text-transform: uppercase; }
-        button { padding: 12px 25px; background: #0052d4; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
-        button:hover { background: #002f86; }
-        #resultado { margin-top: 20px; display: none; }
-        .qsl-img { width: 100%; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); margin-top: 15px; }
-        footer { margin-top: 40px; font-size: 0.8em; color: #777; }
+        /* Estilo con colores de la bandera cubana */
+        body { font-family: 'Trebuchet MS', sans-serif; text-align: center; background: #f0f0f0; padding: 20px; color: #333; }
+        .container { background: white; padding: 30px; border-radius: 10px; max-width: 600px; margin: auto; border-top: 8px solid #D21034; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        
+        h1 { color: #002A8F; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
+        .subtitulo { font-style: italic; color: #555; margin-bottom: 20px; }
+        
+        .busqueda-caja { margin: 25px 0; padding: 25px; background: #002A8F; border-radius: 8px; color: white; }
+        input { padding: 12px; width: 80%; border: none; border-radius: 4px; font-size: 18px; text-transform: uppercase; text-align: center; font-weight: bold; }
+        
+        .btn-buscar { margin-top: 15px; padding: 12px 30px; background: #D21034; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 16px; width: 85%; }
+        .btn-buscar:hover { background: #a00d27; }
+        
+        #resultado { margin-top: 25px; display: none; padding: 15px; border: 1px solid #ddd; border-radius: 8px; }
+        .qsl-img { width: 100%; border-radius: 5px; border: 2px solid #002A8F; margin-top: 15px; }
+        
+        .btn-descargar { background: #28a745; color: white; padding: 12px 25px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; text-decoration: none; display: inline-block; margin-top: 10px; }
+        
+        footer { margin-top: 40px; font-size: 0.9em; color: #444; border-top: 1px solid #ccc; padding-top: 15px; }
+        .frase { font-weight: bold; color: #D21034; }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h1>📻 Servidor de QSL</h1>
-        <p>Introduce tu indicativo para descargar tu tarjeta de contacto.</p>
+        <h1>🇨🇺 Confirmación QSL</h1>
+        <p class="subtitulo">Sistema de Descarga para Radioaficionados</p>
 
         <div class="busqueda-caja">
-            <input type="text" id="indicativo" placeholder="EJ: LU1ABC" onkeyup="if(event.keyCode===13) buscarQSL()">
-            <br><br>
-            <button onclick="buscarQSL()">BUSCAR MI TARJETA</button>
+            <p>Escriba su indicativo (CO, CM, CL, etc.)</p>
+            <input type="text" id="indicativo" placeholder="EJ: CO2ABC" onkeyup="if(event.keyCode===13) buscarQSL()">
+            <button class="btn-buscar" onclick="buscarQSL()">VER MI TARJETA QSL</button>
         </div>
 
         <div id="resultado">
@@ -35,7 +45,8 @@
         </div>
 
         <footer>
-            Confirmación de comunicados - Argentina 73's
+            <p>Intercambio de Tarjetas QSL vía Electrónica</p>
+            <p class="frase">¡Saludos cordiales y un fuerte 73 desde Cuba!</p>
         </footer>
     </div>
 
@@ -46,34 +57,37 @@
             const status = document.getElementById('status-msg');
             const resDiv = document.getElementById('resultado');
 
-            if (indicativo === "") return;
+            if (indicativo === "") {
+                alert("Por favor, introduce un indicativo válido.");
+                return;
+            }
 
-            // Ruta donde estarán las fotos en tu GitHub
+            // Ruta de la carpeta en tu repositorio de GitHub
             const urlImagen = `tarjetas/${indicativo}.jpg`;
 
-            // Limpiamos pantalla
             resDiv.style.display = "block";
             container.innerHTML = "";
-            status.innerText = "Buscando...";
+            status.innerText = "Localizando en el log...";
 
-            // Probamos si la imagen existe
             const img = new Image();
             img.src = urlImagen;
             
             img.onload = function() {
-                status.innerText = "¡Tarjeta Encontrada!";
+                status.style.color = "#002A8F";
+                status.innerText = "¡Confirmación encontrada para " + indicativo + "!";
                 container.innerHTML = `
                     <img src="${urlImagen}" class="qsl-img">
                     <br><br>
-                    <a href="${urlImagen}" download="${indicativo}_QSL.jpg">
-                        <button style="background: #28a745;">DESCARGAR AHORA</button>
+                    <a href="${urlImagen}" download="${indicativo}_QSL_Cuba.jpg" class="btn-descargar">
+                        DESCARGAR TARJETA
                     </a>
                 `;
             };
 
             img.onerror = function() {
-                status.innerText = "No se encontró QSL para: " + indicativo;
-                container.innerHTML = "<p>Asegúrate de que el indicativo sea correcto o inténtalo más tarde.</p>";
+                status.style.color = "#D21034";
+                status.innerText = "No se encontró el indicativo: " + indicativo;
+                container.innerHTML = "<p>Si el contacto fue reciente, por favor espere a que el operador suba el log.</p>";
             };
         }
     </script>
