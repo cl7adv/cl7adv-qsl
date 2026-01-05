@@ -3,121 +3,121 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Servidor QSL Nube - CL7ADV</title>
+    <title>Servidor QSL - CL7ADV</title>
     <style>
-        :root { --azul: #002A8F; --rojo: #D21034; --verde: #28a745; }
+        :root { --azul: #002A8F; --rojo: #D21034; --fondo: #0a0a0a; }
         body { 
-            font-family: 'Segoe UI', Tahoma, sans-serif; 
-            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
-            margin: 0; padding: 20px; min-height: 100vh; color: #333;
+            font-family: 'Segoe UI', sans-serif; background-color: var(--fondo);
+            background-image: radial-gradient(circle, #1a2a6c 0%, #0a0a0a 100%);
+            color: white; margin: 0; padding: 20px; min-height: 100vh; display: flex; align-items: center;
         }
         .container { 
-            max-width: 500px; margin: auto; background: rgba(255, 255, 255, 0.95); 
-            padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            border-top: 10px solid var(--rojo); position: relative;
+            max-width: 450px; margin: auto; background: rgba(255, 255, 255, 0.05); 
+            padding: 30px; border-radius: 20px; box-shadow: 0 0 30px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(10px); text-align: center;
         }
-        .firma-esquina { position: absolute; top: 10px; right: 20px; font-weight: bold; color: var(--azul); opacity: 0.7; font-size: 1.2em; }
-        h1 { color: var(--azul); text-transform: uppercase; font-size: 1.8em; margin-bottom: 5px; }
+        .firma { color: var(--rojo); font-weight: bold; letter-spacing: 3px; font-size: 1.5em; margin-bottom: 5px; }
+        h1 { font-size: 1.2em; text-transform: uppercase; color: #ccc; margin-bottom: 25px; border-bottom: 1px solid var(--rojo); display: inline-block; padding-bottom: 5px; }
         
-        .btn-menu { 
-            display: block; width: 100%; padding: 15px; margin: 10px 0;
-            border: none; border-radius: 10px; font-weight: bold; cursor: pointer;
-            font-size: 16px; transition: 0.3s; text-decoration: none;
+        .caja-entrada { margin-bottom: 20px; }
+        input { 
+            width: 80%; padding: 15px; border-radius: 10px; border: none; 
+            font-size: 20px; text-transform: uppercase; text-align: center; 
+            background: rgba(255,255,255,0.9); color: #000; font-weight: bold;
         }
-        .btn-buscar { background: var(--azul); color: white; }
-        .btn-admin { background: #333; color: white; }
         
-        .panel { display: none; background: #fff; padding: 20px; border-radius: 15px; border: 1px solid #ddd; margin-top: 15px; }
-        input { width: 90%; padding: 12px; margin-bottom: 15px; border: 2px solid #ddd; border-radius: 8px; text-align: center; font-size: 18px; text-transform: uppercase; }
-        
-        .btn-accion { background: var(--rojo); color: white; width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
-        
-        #resultado-qsl img { width: 100%; border-radius: 10px; border: 3px solid var(--azul); margin-top: 15px; background: #eee; }
-        .btn-descarga-nube { background: var(--verde); color: white; display: block; padding: 15px; border-radius: 8px; margin-top: 10px; font-weight: bold; text-decoration: none; }
-        
-        footer { margin-top: 30px; font-size: 0.8em; color: #555; border-top: 1px solid #ccc; padding-top: 15px; }
-        .f-cl { color: var(--rojo); font-weight: bold; }
+        .btn-buscar { 
+            background: var(--rojo); color: white; width: 85%; padding: 15px; 
+            border: none; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 16px; transition: 0.3s;
+        }
+        .btn-buscar:hover { background: #ff1a1a; transform: scale(1.05); }
+
+        .btn-admin { 
+            background: transparent; color: #666; border: none; margin-top: 40px; 
+            cursor: pointer; font-size: 0.8em; text-decoration: underline;
+        }
+
+        /* Ventana de Resultado (Modal) */
+        .resultado-pantalla {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); z-index: 1000; justify-content: center; align-items: center; flex-direction: column;
+        }
+        .qsl-img { max-width: 90%; max-height: 70%; border: 5px solid white; border-radius: 10px; }
+        .controles { margin-top: 20px; display: flex; gap: 10px; }
+        .btn-descarga { background: #28a745; color: white; padding: 15px 30px; border-radius: 5px; text-decoration: none; font-weight: bold; }
+        .btn-cerrar { background: #555; color: white; padding: 15px 30px; border-radius: 5px; cursor: pointer; border: none; }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <div class="firma-esquina">CL7ADV</div>
-        <h1>Portal QSL Cuba</h1>
-        <p>Descarga Automática desde la Nube</p>
+        <div class="firma">CL7ADV</div>
+        <h1>Servidor de QSL Automático</h1>
 
-        <button class="btn-menu btn-buscar" onclick="abrir('buscar')">🔎 BUSCAR MI INDICATIVO</button>
-        <button class="btn-menu btn-admin" onclick="abrir('admin')">☁️ SUBIR A LA NUBE (AUTORIZADOS)</button>
-
-        <div id="p-buscar" class="panel">
-            <h3>Buscador en la Nube</h3>
-            <input type="text" id="target-indicativo" placeholder="EJ: CO2ABC">
-            <button class="btn-accion" onclick="buscarEnNube()">BUSCAR EN SERVIDOR</button>
-            <div id="resultado-qsl"></div>
+        <div class="caja-entrada">
+            <p>Escriba su Indicativo:</p>
+            <input type="text" id="indicativo" placeholder="EJ: CO2ABC" onkeyup="if(event.keyCode===13) buscar()">
         </div>
+        <button class="btn-buscar" onclick="buscar()">GENERAR DESCARGA</button>
 
-        <div id="p-admin" class="panel">
-            <h3>Acceso Autorizado</h3>
-            <div id="login">
-                <input type="password" id="p-clave" placeholder="CLAVE DE ACCESO" style="text-transform: none;">
-                <button class="btn-accion" onclick="entrar()">ENTRAR</button>
-            </div>
-            <div id="nube-link" style="display:none;">
-                <p>✅ Acceso concedido por <b>CL7ADV</b></p>
-                <a href="https://drive.google.com/drive/folders/1fJxjff9vtOR0SU7lq3lBHoGrGgvAUq1q" target="_blank" class="btn-menu btn-admin" style="text-align:center;">ABRIR CARPETA DE CARGA</a>
-            </div>
+        <button class="btn-admin" onclick="accesoAdmin()">Acceso Colaboradores</button>
+    </div>
+
+    <div id="pantalla-qsl" class="resultado-pantalla">
+        <h2 id="msg-status">Generando Tarjeta...</h2>
+        <div id="contenedor-foto"></div>
+        <div class="controles">
+            <div id="btn-descarga-capa"></div>
+            <button class="btn-cerrar" onclick="cerrar()">VOLVER</button>
         </div>
-
-        <footer>
-            Operado y Supervisado por <span class="f-cl">CL7ADV</span><br>
-            Santa Cruz del Sur, Camagüey. 73's
-        </footer>
     </div>
 
     <script>
-        const CLAVE_SEC = "CUBA73"; 
-        // ID de la carpeta de Google Drive que me diste
-        const DRIVE_FOLDER_ID = "1fJxjff9vtOR0SU7lq3lBHoGrGgvAUq1q";
+        const CLAVE_ADMIN = "CUBA73";
+        const LINK_NUBE = "https://drive.google.com/drive/folders/1fJxjff9vtOR0SU7lq3lBHoGrGgvAUq1q?usp=sharing";
 
-        function abrir(id) {
-            document.getElementById('p-buscar').style.display = 'none';
-            document.getElementById('p-admin').style.display = 'none';
-            document.getElementById('p-' + id).style.display = 'block';
-        }
-
-        function buscarEnNube() {
-            const ind = document.getElementById('target-indicativo').value.toUpperCase().trim();
-            const res = document.getElementById('resultado-qsl');
+        function buscar() {
+            const ind = document.getElementById('indicativo').value.toUpperCase().trim();
             if(!ind) return;
 
-            res.innerHTML = "Conectando con la nube de CL7ADV...";
+            const pantalla = document.getElementById('pantalla-qsl');
+            const fotoDiv = document.getElementById('contenedor-foto');
+            const status = document.getElementById('msg-status');
+            const btnDiv = document.getElementById('btn-descarga-capa');
 
-            /* NOTA: Google Drive no permite buscar archivos directamente por nombre sin API, 
-               pero podemos intentar cargar la imagen si conocemos su nombre en la carpeta pública.
-               Para que esto funcione 100%, las imágenes deben estar en la carpeta compartida como "Cualquier persona con el enlace".
-            */
-            
-            // Intentamos cargar la imagen desde el buscador de Google Drive (truco de previsualización)
-            // IMPORTANTE: Este método requiere que subas las imágenes con el nombre exacto.
-            
-            const imgUrl = `https://drive.google.com/thumbnail?id=${DRIVE_FOLDER_ID}&sz=w1000`; 
-            // Debido a restricciones de seguridad de Google, el buscador directo por nombre de archivo 
-            // requiere que los archivos estén en tu repositorio de GitHub para ser "encontrados" por código.
+            pantalla.style.display = 'flex';
+            status.innerText = "Buscando indicativo: " + ind;
+            fotoDiv.innerHTML = "";
+            btnDiv.innerHTML = "";
 
-            res.innerHTML = `
-                <p>Para descargar, haz clic en el botón de abajo y busca tu indicativo en nuestra carpeta oficial:</p>
-                <a href="https://drive.google.com/drive/folders/${DRIVE_FOLDER_ID}?usp=sharing" target="_blank" class="btn-descarga-nube">
-                    📂 ABRIR NUBE DE DESCARGA
-                </a>
-                <p style="font-size:0.8em; margin-top:10px;">(Una vez dentro, usa la lupa y escribe <b>${ind}</b>)</p>
-            `;
+            // Buscamos en la carpeta 'tarjetas' de tu GitHub
+            const ruta = `tarjetas/${ind}.jpg`;
+            const img = new Image();
+            img.src = ruta;
+
+            img.onload = function() {
+                status.innerText = "¡Tarjeta Lista, Colega!";
+                fotoDiv.innerHTML = `<img src="${ruta}" class="qsl-img">`;
+                btnDiv.innerHTML = `<a href="${ruta}" download="${ind}_QSL_CL7ADV.jpg" class="btn-descarga">💾 DESCARGAR AHORA</a>`;
+            };
+
+            img.onerror = function() {
+                status.innerText = "Error: Indicativo no encontrado.";
+                fotoDiv.innerHTML = `<p style="color:gray">Asegúrese de que el operador haya subido su contacto.</p>`;
+            }
         }
 
-        function entrar() {
-            if(document.getElementById('p-clave').value === CLAVE_SEC) {
-                document.getElementById('login').style.display = 'none';
-                document.getElementById('nube-link').style.display = 'block';
-            } else { alert("Clave Errónea"); }
+        function cerrar() {
+            document.getElementById('pantalla-qsl').style.display = 'none';
+        }
+
+        function accesoAdmin() {
+            const p = prompt("Clave de Colaborador:");
+            if(p === CLAVE_ADMIN) {
+                window.open(LINK_NUBE, '_blank');
+            } else if(p !== null) {
+                alert("Clave incorrecta.");
+            }
         }
     </script>
 </body>
