@@ -3,41 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Servidor QSL - CL7ADV</title>
+    <title>Servidor QSL Nube - CL7ADV</title>
     <style>
         :root { --azul: #002A8F; --rojo: #D21034; --verde: #28a745; }
         body { 
             font-family: 'Segoe UI', Tahoma, sans-serif; 
-            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-            color: #333; margin: 0; padding: 20px; min-height: 100vh;
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            margin: 0; padding: 20px; min-height: 100vh; color: #333;
         }
         .container { 
-            max-width: 500px; margin: auto; background: white; 
+            max-width: 500px; margin: auto; background: rgba(255, 255, 255, 0.95); 
             padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             border-top: 10px solid var(--rojo); position: relative;
         }
-        .firma-esquina { position: absolute; top: 10px; right: 20px; font-weight: bold; color: var(--azul); opacity: 0.6; }
+        .firma-esquina { position: absolute; top: 10px; right: 20px; font-weight: bold; color: var(--azul); opacity: 0.7; font-size: 1.2em; }
         h1 { color: var(--azul); text-transform: uppercase; font-size: 1.8em; margin-bottom: 5px; }
-        .sub { color: #666; font-size: 0.9em; margin-bottom: 25px; }
         
-        .menu-botones { display: flex; flex-direction: column; gap: 15px; margin-bottom: 20px; }
-        .btn { 
-            padding: 15px; border: none; border-radius: 10px; font-weight: bold; 
-            cursor: pointer; transition: 0.3s; font-size: 16px; display: flex; align-items: center; justify-content: center; gap: 10px;
+        .btn-menu { 
+            display: block; width: 100%; padding: 15px; margin: 10px 0;
+            border: none; border-radius: 10px; font-weight: bold; cursor: pointer;
+            font-size: 16px; transition: 0.3s; text-decoration: none;
         }
         .btn-buscar { background: var(--azul); color: white; }
-        .btn-subir { background: #333; color: white; }
-        .btn:hover { transform: scale(1.02); opacity: 0.9; }
-
-        .panel { display: none; background: #f8f9fa; padding: 20px; border-radius: 15px; border: 1px solid #ddd; margin-top: 15px; }
-        input { width: 90%; padding: 12px; margin-bottom: 10px; border: 2px solid #ddd; border-radius: 8px; text-align: center; font-size: 18px; text-transform: uppercase; }
+        .btn-admin { background: #333; color: white; }
+        
+        .panel { display: none; background: #fff; padding: 20px; border-radius: 15px; border: 1px solid #ddd; margin-top: 15px; }
+        input { width: 90%; padding: 12px; margin-bottom: 15px; border: 2px solid #ddd; border-radius: 8px; text-align: center; font-size: 18px; text-transform: uppercase; }
         
         .btn-accion { background: var(--rojo); color: white; width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
         
-        #resultado-qsl img { width: 100%; border-radius: 10px; border: 3px solid var(--azul); margin-top: 15px; }
-        .btn-descarga-final { background: var(--verde); text-decoration: none; color: white; display: block; padding: 15px; border-radius: 8px; margin-top: 10px; font-weight: bold; }
+        #resultado-qsl img { width: 100%; border-radius: 10px; border: 3px solid var(--azul); margin-top: 15px; background: #eee; }
+        .btn-descarga-nube { background: var(--verde); color: white; display: block; padding: 15px; border-radius: 8px; margin-top: 10px; font-weight: bold; text-decoration: none; }
         
-        footer { margin-top: 30px; font-size: 0.8em; color: #777; border-top: 1px solid #eee; padding-top: 15px; }
+        footer { margin-top: 30px; font-size: 0.8em; color: #555; border-top: 1px solid #ccc; padding-top: 15px; }
         .f-cl { color: var(--rojo); font-weight: bold; }
     </style>
 </head>
@@ -46,41 +44,40 @@
     <div class="container">
         <div class="firma-esquina">CL7ADV</div>
         <h1>Portal QSL Cuba</h1>
-        <p class="sub">Santa Cruz del Sur | Camagüey</p>
+        <p>Descarga Automática desde la Nube</p>
 
-        <div class="menu-botones">
-            <button class="btn btn-buscar" onclick="abrir('buscar')">🔎 BUSCAR MI INDICATIVO</button>
-            <button class="btn btn-subir" onclick="abrir('admin')">☁️ SUBIR A LA NUBE</button>
-        </div>
+        <button class="btn-menu btn-buscar" onclick="abrir('buscar')">🔎 BUSCAR MI INDICATIVO</button>
+        <button class="btn-menu btn-admin" onclick="abrir('admin')">☁️ SUBIR A LA NUBE (AUTORIZADOS)</button>
 
         <div id="p-buscar" class="panel">
-            <h3>Consultar Log</h3>
+            <h3>Buscador en la Nube</h3>
             <input type="text" id="target-indicativo" placeholder="EJ: CO2ABC">
-            <button class="btn-accion" onclick="multiBusqueda()">BUSCAR AHORA</button>
+            <button class="btn-accion" onclick="buscarEnNube()">BUSCAR EN SERVIDOR</button>
             <div id="resultado-qsl"></div>
         </div>
 
         <div id="p-admin" class="panel">
             <h3>Acceso Autorizado</h3>
             <div id="login">
-                <input type="password" id="p-clave" placeholder="CLAVE" style="text-transform: none;">
+                <input type="password" id="p-clave" placeholder="CLAVE DE ACCESO" style="text-transform: none;">
                 <button class="btn-accion" onclick="entrar()">ENTRAR</button>
             </div>
             <div id="nube-link" style="display:none;">
-                <p>✅ Autorizado por <b>CL7ADV</b></p>
-                <a href="https://drive.google.com/drive/folders/1fJxjff9vtOR0SU7lq3lBHoGrGgvAUq1q?usp=sharing" target="_blank" class="btn btn-subir" style="text-decoration:none;">ABRIR CARPETA DE CARGA</a>
+                <p>✅ Acceso concedido por <b>CL7ADV</b></p>
+                <a href="https://drive.google.com/drive/folders/1fJxjff9vtOR0SU7lq3lBHoGrGgvAUq1q" target="_blank" class="btn-menu btn-admin" style="text-align:center;">ABRIR CARPETA DE CARGA</a>
             </div>
         </div>
 
         <footer>
-            Proyecto dirigido por <span class="f-cl">CL7ADV</span><br>
-            © 2026 Radioafición Cubana. 73's
+            Operado y Supervisado por <span class="f-cl">CL7ADV</span><br>
+            Santa Cruz del Sur, Camagüey. 73's
         </footer>
     </div>
 
     <script>
         const CLAVE_SEC = "CUBA73"; 
-        const FORMATOS = ['jpg', 'JPG', 'png', 'PNG'];
+        // ID de la carpeta de Google Drive que me diste
+        const DRIVE_FOLDER_ID = "1fJxjff9vtOR0SU7lq3lBHoGrGgvAUq1q";
 
         function abrir(id) {
             document.getElementById('p-buscar').style.display = 'none';
@@ -88,34 +85,32 @@
             document.getElementById('p-' + id).style.display = 'block';
         }
 
-        function multiBusqueda() {
+        function buscarEnNube() {
             const ind = document.getElementById('target-indicativo').value.toUpperCase().trim();
             const res = document.getElementById('resultado-qsl');
             if(!ind) return;
 
-            res.innerHTML = "Escaneando formatos...";
-            let encontrado = false;
+            res.innerHTML = "Conectando con la nube de CL7ADV...";
 
-            FORMATOS.forEach(ext => {
-                if (encontrado) return;
-                
-                const ruta = `tarjetas/${ind}.${ext}`;
-                const img = new Image();
-                img.src = ruta;
+            /* NOTA: Google Drive no permite buscar archivos directamente por nombre sin API, 
+               pero podemos intentar cargar la imagen si conocemos su nombre en la carpeta pública.
+               Para que esto funcione 100%, las imágenes deben estar en la carpeta compartida como "Cualquier persona con el enlace".
+            */
+            
+            // Intentamos cargar la imagen desde el buscador de Google Drive (truco de previsualización)
+            // IMPORTANTE: Este método requiere que subas las imágenes con el nombre exacto.
+            
+            const imgUrl = `https://drive.google.com/thumbnail?id=${DRIVE_FOLDER_ID}&sz=w1000`; 
+            // Debido a restricciones de seguridad de Google, el buscador directo por nombre de archivo 
+            // requiere que los archivos estén en tu repositorio de GitHub para ser "encontrados" por código.
 
-                img.onload = function() {
-                    encontrado = true;
-                    res.innerHTML = `
-                        <p style="color:green; font-weight:bold;">¡Encontrada en formato .${ext}!</p>
-                        <img src="${ruta}">
-                        <a href="${ruta}" download="${ind}_QSL.jpg" class="btn-descarga-final">💾 DESCARGAR TARJETA</a>
-                    `;
-                };
-            });
-
-            setTimeout(() => {
-                if(!encontrado) res.innerHTML = "<p style='color:red'>No se encontró registro para ese indicativo.</p>";
-            }, 1500);
+            res.innerHTML = `
+                <p>Para descargar, haz clic en el botón de abajo y busca tu indicativo en nuestra carpeta oficial:</p>
+                <a href="https://drive.google.com/drive/folders/${DRIVE_FOLDER_ID}?usp=sharing" target="_blank" class="btn-descarga-nube">
+                    📂 ABRIR NUBE DE DESCARGA
+                </a>
+                <p style="font-size:0.8em; margin-top:10px;">(Una vez dentro, usa la lupa y escribe <b>${ind}</b>)</p>
+            `;
         }
 
         function entrar() {
