@@ -1,259 +1,134 @@
 <!DOCTYPE html>
 <html lang="es">
-<head> <link rel="manifest" href="manifest.json">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#0b1622">
+<head>
     <meta charset="UTF-8">
-    <title>QSL CARIBE v112 - TROPICAL CYBER</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QSL Cloud Engine - CL7ADV</title>
     <style>
-        :root { 
-            --cyan: #00f2ff; 
-            --yellow: #f9ff00; 
-            --sand: #f4d03f;
-            --ocean: #16a085;
-            --bg: #010a14; 
-        }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
-        body, html { 
-            margin: 0; padding: 0; background: var(--bg); color: white; 
-            font-family: 'Rajdhani', sans-serif; min-height: 100vh; width: 100%; overflow-x: hidden; 
-        }
-
-        /* --- FONDO PLAYERO 3D --- */
-        body::before {
-            content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(180deg, #010a14 0%, #004d40 100%);
-            z-index: -2;
-        }
-
-        /* --- CINEMÁTICA 3D MEJORADA --- */
-        #intro-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle, #002d25 0%, #000 100%);
-            z-index: 10000; display: flex; flex-direction: column;
-            align-items: center; justify-content: center; transition: 1.5s cubic-bezier(0.7, 0, 0.3, 1);
-            perspective: 1000px;
-        }
-
-        .flag-box-3d {
-            width: 160px; height: 100px; 
-            transform: rotateY(-20deg) rotateX(10deg);
-            box-shadow: -10px 10px 30px rgba(0,0,0,0.5), 0 0 20px var(--cyan);
-            border: 2px solid rgba(255,255,255,0.5);
-            animation: flagFloat 4s ease-in-out infinite;
-            position: relative;
-        }
+        :root { --cuba-azul: #002A8F; --cuba-rojo: #D21034; --bg: #f8f9fa; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; }
         
-        @keyframes flagFloat { 
-            0%, 100% { transform: rotateY(-20deg) rotateX(10deg) translateY(0); }
-            50% { transform: rotateY(-10deg) rotateX(5deg) translateY(-10px); }
-        }
-
-        .system-title { 
-            font-family: 'Orbitron'; font-size: 1.8rem; letter-spacing: 8px; margin: 30px 0;
-            text-shadow: 0 0 15px var(--cyan);
-        }
-
-        .eating { animation: eat3d 1s forwards; }
-        @keyframes eat3d { 
-            0% { transform: scale(1) translateZ(0); filter: blur(0); }
-            100% { transform: scale(0) translateZ(-500px); opacity: 0; filter: blur(20px); }
-        }
-
-        .yellow-credits {
-            color: var(--yellow); font-family: 'Orbitron'; font-weight: 900;
-            opacity: 0; display: none; text-shadow: 0 0 25px rgba(249,255,0,0.8); text-align: center;
-            transform: scale(0.8); transition: 1s;
-        }
-
-        /* --- UI PRINCIPAL "TROPICAL GLASS" --- */
-        #main-ui { opacity: 0; display: none; transition: 1.5s; width: 100%; }
-        .container { width: 100%; max-width: 900px; margin: 0 auto; padding: 20px; }
+        /* HEADER ESTILO CARIBE */
+        header { background: var(--cuba-azul); color: white; padding: 25px; text-align: center; border-bottom: 6px solid var(--cuba-rojo); position: relative; }
+        .firma-top { font-size: 2.8em; font-weight: 900; letter-spacing: 5px; cursor: pointer; display: inline-block; }
         
-        .glass-panel { 
-            background: rgba(0, 45, 37, 0.6); 
-            border-radius: 40px; padding: 40px; 
-            border: 2px solid rgba(0, 242, 255, 0.3);
-            backdrop-filter: blur(15px);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.6), inset 0 0 20px rgba(0, 242, 255, 0.1);
-        }
+        .search-section { max-width: 800px; margin: 40px auto; padding: 0 20px; text-align: center; }
+        .bar-container { display: flex; background: white; border-radius: 50px; padding: 10px 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border: 2px solid #eee; }
+        input { border: none; outline: none; flex: 1; font-size: 1.3em; text-transform: uppercase; padding: 10px; }
+        .btn-search { background: var(--cuba-azul); color: white; border: none; padding: 10px 40px; border-radius: 50px; font-weight: bold; cursor: pointer; font-size: 1.1em; transition: 0.3s; }
+        .btn-search:hover { background: var(--cuba-rojo); transform: scale(1.05); }
 
-        .supreme-input { 
-            width: 100%; padding: 25px; border-radius: 20px; background: rgba(0,0,0,0.4); 
-            border: 2px solid var(--ocean); color: var(--cyan); font-size: 2.2rem; 
-            font-weight: 900; text-align: center; font-family: 'Orbitron'; margin-bottom: 25px; outline: none;
-            transition: 0.3s;
-        }
-        .supreme-input:focus { border-color: var(--yellow); box-shadow: 0 0 20px var(--ocean); }
-
-        .btn-scan { 
-            width: 100%; padding: 22px; border-radius: 60px; border: none; 
-            background: linear-gradient(90deg, var(--ocean), var(--cyan)); color: #001a1a;
-            font-weight: 900; font-family: 'Orbitron'; cursor: pointer; letter-spacing: 3px;
-            box-shadow: 0 10px 30px rgba(0,242,255,0.4); transition: 0.4s;
-        }
-        .btn-scan:hover { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(0,242,255,0.6); }
-
-        /* --- REJILLA Y CARTAS 3D --- */
-        #results { 
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
-            gap: 25px; margin-top: 35px; width: 100%; 
-        }
-        
-        .qsl-card { 
-            background: #001a1a; border-radius: 25px; overflow: hidden; 
-            border: 1px solid rgba(255,255,255,0.1);
-            transition: 0.5s; transform-style: preserve-3d;
-        }
-        .qsl-card:hover { transform: scale(1.03) translateY(-5px); border-color: var(--yellow); }
-        .qsl-card img { width: 100%; height: auto; display: block; }
-
-        .btn-dl { 
-            background: var(--yellow); color: #000; border: none; width: 100%; padding: 18px; 
-            font-weight: 900; font-family: 'Orbitron'; cursor: pointer; transition: 0.3s;
-        }
-
-        /* --- MENSAJE CÁLIDO --- */
-        .warm-error {
-            background: rgba(255, 255, 255, 0.1); border-radius: 20px; padding: 20px;
-            color: var(--sand); border: 1px solid var(--sand);
-            animation: fadeIn 0.5s forwards; line-height: 1.6;
-        }
-
-        #radar-container { display: none; margin: 25px auto; width: 100px; height: 100px; }
-        .radar-sweep {
-            width: 100%; height: 100%; border-radius: 50%; border: 3px solid var(--cyan);
-            background: conic-gradient(from 0deg, transparent, rgba(0,242,255,0.3));
-            animation: spin 1.2s linear infinite;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
+        /* MOSAICO DE RESULTADOS */
+        .qsl-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; max-width: 1200px; margin: 40px auto; padding: 20px; }
+        .qsl-item { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.08); border: 1px solid #ddd; animation: fadeIn 0.5s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .qsl-item img { width: 100%; height: auto; cursor: pointer; display: block; }
+        .qsl-meta { padding: 15px; background: #fff; border-top: 1px solid #eee; text-align: center; font-weight: bold; color: var(--cuba-azul); }
+
+        /* VISTA PREVIA (MODAL) */
+        .modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.9); z-index: 2000; align-items: center; justify-content: center; flex-direction: column; }
+        .modal img { max-width: 95%; max-height: 75vh; border: 4px solid white; border-radius: 10px; }
+        .modal-tools { margin-top: 25px; display: flex; gap: 20px; }
+        .btn-dl { background: #28a745; color: white; padding: 15px 40px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 1.1em; }
+        .btn-x { background: #444; color: white; border: none; padding: 15px 30px; border-radius: 8px; cursor: pointer; }
+
+        footer { text-align: center; padding: 50px; color: #aaa; font-size: 0.9em; border-top: 1px solid #eee; margin-top: 50px; }
     </style>
 </head>
-<body onload="initEpicIntro()">
+<body>
 
-    <audio id="snd-power" src="https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3"></audio>
-    <audio id="snd-scan" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3" loop></audio>
-    <audio id="snd-success" src="https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3"></audio>
+    <header>
+        <div class="firma-top" onclick="adminLink()">CL7ADV</div>
+        <div style="font-size: 0.8em; letter-spacing: 2px;">LOGBOOK SERVER • SANTA CRUZ DEL SUR</div>
+    </header>
 
-    <div id="intro-overlay">
-        <div class="flag-box-3d" id="flag">
-            <div style="width:100%; height:100%; background:#002a8f; position:relative;">
-                <div style="width:100%; height:20%; background:#fff; position:absolute; top:20%;"></div>
-                <div style="width:100%; height:20%; background:#fff; position:absolute; top:60%;"></div>
-                <div style="width:0; height:0; border-top:48px solid transparent; border-bottom:48px solid transparent; border-left:70px solid #cf142b; position:absolute; z-index:2;"></div>
-                <div style="color:#fff; position:absolute; left:15px; top:32px; z-index:3; font-size:24px;">★</div>
-            </div>
+    <div class="search-section">
+        <h1 style="color: var(--cuba-azul); margin-bottom: 30px;">Buscador de QSL & Certificados</h1>
+        <div class="bar-container">
+            <input type="text" id="callsign" placeholder="Ingresa indicativo..." onkeyup="if(event.keyCode===13) buscarQSL()">
+            <button class="btn-search" onclick="buscarQSL()">BUSCAR</button>
         </div>
-        <h1 class="system-title" id="txt-system">SISTEMA CARIBE</h1>
-        <div class="yellow-credits" id="credits">
-            <p style="margin:0; font-size:1.2rem; letter-spacing:4px;">RADIO CLUB</p>
-            <p style="margin:5px 0; font-size:2.5rem; color:white;">SANTA CRUZ DEL SUR</p>
-            <p style="margin:0; font-size:3rem; color:var(--yellow);">CL7ADV</p>
-            <button class="btn-scan" style="margin-top:35px; width:auto; padding:15px 50px;" onclick="startApp()">ACCEDER AL SISTEMA</button>
+        <p style="color: #888; margin-top: 15px; font-size: 0.9em;">Resultados para estaciones colaboradoras como <b>CO5ABC</b>.</p>
+    </div>
+
+    <div id="mosaico" class="qsl-grid"></div>
+
+    <div id="modalView" class="modal">
+        <img id="imgFull">
+        <div class="modal-tools">
+            <a id="linkDl" class="btn-dl" download>GUARDAR QSL</a>
+            <button class="btn-x" onclick="cerrar()">CERRAR</button>
         </div>
     </div>
 
-    <div id="main-ui">
-        <div class="container">
-            <div class="glass-panel">
-                <input type="text" id="target-id" class="supreme-input" placeholder="INDICATIVO" oninput="if(this.value===''){document.getElementById('results').innerHTML='';}">
-                <button class="btn-scan" onclick="runDeepSearch()">ESCANEAR BASE DE DATOS</button>
-                <div id="radar-container"><div class="radar-sweep"></div></div>
-                <div id="results"></div>
-            </div>
-        </div>
-    </div>
+    <footer>
+        Sistema Operado por CL7ADV © 2026<br>
+        Tecnología de Búsqueda en la Nube
+    </footer>
 
     <script>
-        function initEpicIntro() {
-            setTimeout(() => {
-                document.getElementById('txt-system').classList.add('eating');
-                document.getElementById('flag').classList.add('eating');
-                document.getElementById('snd-power').play();
-                setTimeout(() => {
-                    document.getElementById('txt-system').style.display = "none";
-                    document.getElementById('flag').style.display = "none";
-                    const cre = document.getElementById('credits');
-                    cre.style.display = "block";
-                    setTimeout(() => { cre.style.opacity = "1"; cre.style.transform = "scale(1)"; }, 50);
-                }, 800);
-            }, 2000);
+        const CLAVE = "CUBA73";
+        let clicks = 0;
+
+        function adminLink() {
+            clicks++;
+            if(clicks === 5) {
+                const p = prompt("ACCESO RESTRINGIDO CL7ADV:");
+                if(p === CLAVE) window.open("https://drive.google.com/drive/folders/1fJxjff9vtOR0SU7lq3lBHoGrGgvAUq1q", "_blank");
+                clicks = 0;
+            }
+            setTimeout(()=> clicks = 0, 2000);
         }
 
-        function startApp() {
-            document.getElementById('intro-overlay').style.opacity = "0";
-            setTimeout(() => {
-                document.getElementById('intro-overlay').style.display = "none";
-                document.getElementById('main-ui').style.display = "block";
-                setTimeout(() => { document.getElementById('main-ui').style.opacity = "1"; }, 100);
-            }, 1000);
-        }
+        async function buscarQSL() {
+            const ind = document.getElementById('callsign').value.toUpperCase().trim();
+            const mosaico = document.getElementById('mosaico');
+            if(!ind) return;
 
-        async function runDeepSearch() {
-            const id = document.getElementById('target-id').value.trim().toUpperCase();
-            if(!id) return;
-            const res = document.getElementById('results');
-            const radar = document.getElementById('radar-container');
-            res.innerHTML = "";
-            radar.style.display = "block";
-            document.getElementById('snd-scan').play();
+            mosaico.innerHTML = "<h4>Procesando motor de búsqueda...</h4>";
+            
+            // Intentamos buscar archivos con formato: INDICATIVO.jpg, INDICATIVO_1.jpg, INDICATIVO_2.jpg
+            const variantes = [`${ind}.jpg`, `${ind}_1.jpg`, `${ind}_2.jpg`, `${ind}_3.jpg`];
+            let encontradas = 0;
+            mosaico.innerHTML = "";
 
-            await new Promise(r => setTimeout(r, 4000));
-            radar.style.display = "none";
-            document.getElementById('snd-scan').pause();
-
-            const tests = [
-                `img/${id}.png`, `IMG/${id}.png`, `img/${id}.jpg`, `IMG/${id}.jpg`,
-                `img/${id}-1.png`, `IMG/${id}-1.png`, `img/${id}-1.jpg`,
-                `img/${id}-2.png`, `IMG/${id}-2.png`, `img/${id}-2.jpg`,
-                `img/${id}-3.png`, `IMG/${id}-3.png`
-            ];
-
-            let foundCount = 0;
-            const alreadyShown = new Set();
-
-            for(let p of tests) {
-                const ok = await verify(p);
-                if(ok && !alreadyShown.has(p)) {
-                    foundCount++;
-                    alreadyShown.add(p);
-                    res.innerHTML += `
-                        <div class="qsl-card">
-                            <img src="${p}">
-                            <button class="btn-dl" onclick="dlReset('${p}')">DESCARGAR QSL</button>
-                        </div>`;
+            for(let v of variantes) {
+                const ruta = `tarjetas/${v}`;
+                const existe = await comprobarImagen(ruta);
+                if(existe) {
+                    encontradas++;
+                    mosaico.innerHTML += `
+                        <div class="qsl-item">
+                            <img src="${ruta}" onclick="ver('${ruta}')">
+                            <div class="qsl-meta">${v}</div>
+                        </div>
+                    `;
                 }
             }
 
-            if(foundCount > 0) {
-                document.getElementById('snd-success').play();
-            } else {
-                // Mensaje cálido y regreso al inicio
-                res.innerHTML = `
-                    <div class="warm-error">
-                        <h3 style="margin-top:0">¡Hola Colega! 🌊</h3>
-                        <p>No logramos localizar la señal <b>${id}</b> en nuestros archivos actuales. Asegúrate de que el indicativo sea correcto o inténtalo más tarde.</p>
-                        <p style="font-size:0.9rem; color:var(--cyan)">Reiniciando sistema de búsqueda...</p>
-                    </div>`;
-                
-                setTimeout(() => {
-                    document.getElementById('target-id').value = "";
-                    res.innerHTML = "";
-                }, 6000);
+            if(encontradas === 0) {
+                mosaico.innerHTML = "<p>No se encontraron tarjetas para <b>"+ind+"</b> en el servidor.</p>";
             }
         }
 
-        function verify(u) { return new Promise(r => { const i=new Image(); i.onload=()=>r(true); i.onerror=()=>r(false); i.src=u; }); }
+        function comprobarImagen(url) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.onload = () => resolve(true);
+                img.onerror = () => resolve(false);
+                img.src = url;
+            });
+        }
 
-        function dlReset(u) {
-            const l = document.createElement('a'); l.href = u; l.download = u.split('/').pop(); l.click();
-            document.getElementById('target-id').value = "";
-            document.getElementById('results').innerHTML = "";
+        function ver(src) {
+            document.getElementById('imgFull').src = src;
+            document.getElementById('linkDl').href = src;
+            document.getElementById('modalView').style.display = 'flex';
+        }
+
+        function cerrar() {
+            document.getElementById('modalView').style.display = 'none';
         }
     </script>
 </body>
