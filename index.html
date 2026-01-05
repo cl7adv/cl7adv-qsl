@@ -3,80 +3,125 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Servidor QSL - Cuba Radio</title>
+    <title>Sistema QSL - Santa Cruz del Sur</title>
     <style>
-        body { font-family: 'Segoe UI', Arial, sans-serif; text-align: center; background: #f4f7f6; padding: 20px; }
-        .container { background: white; padding: 30px; border-radius: 12px; max-width: 600px; margin: auto; border-top: 10px solid #D21034; box-shadow: 0 5px 20px rgba(0,0,0,0.15); }
-        h1 { color: #002A8F; text-transform: uppercase; margin-bottom: 0; }
-        .loc { color: #D21034; font-weight: bold; margin-bottom: 20px; }
+        :root { --azul: #002A8F; --rojo: #D21034; --gris: #f4f4f4; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--gris); margin: 0; padding: 20px; text-align: center; }
+        .container { max-width: 600px; margin: auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border-top: 10px solid var(--rojo); }
         
-        /* Buscador Público */
-        .seccion-publica { background: #002A8F; color: white; padding: 25px; border-radius: 8px; margin-bottom: 30px; }
-        input { padding: 12px; width: 80%; border-radius: 5px; border: none; font-size: 18px; text-transform: uppercase; text-align: center; }
-        .btn-buscar { background: #D21034; color: white; border: none; padding: 12px 30px; border-radius: 5px; cursor: pointer; font-weight: bold; margin-top: 15px; width: 85%; }
+        h1 { color: var(--azul); margin-bottom: 5px; }
+        .badge { background: var(--azul); color: white; padding: 5px 15px; border-radius: 20px; font-size: 0.8em; font-weight: bold; }
+        
+        /* Estilo de los Botones Principales */
+        .menu-botones { margin: 30px 0; display: flex; flex-direction: column; gap: 15px; }
+        .btn-principal { padding: 20px; font-size: 18px; font-weight: bold; border: none; border-radius: 10px; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 10px; text-decoration: none; }
+        
+        .btn-solicitar { background: var(--azul); color: white; }
+        .btn-solicitar:hover { background: #001b5e; transform: scale(1.02); }
+        
+        .btn-colaborar { background: #333; color: white; }
+        .btn-colaborar:hover { background: #000; transform: scale(1.02); }
 
-        /* Panel de Subida (Tu sueño de la nube) */
-        .seccion-privada { background: #e9ecef; padding: 20px; border-radius: 8px; border: 1px dashed #6c757d; }
-        .btn-nube { background: #333; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block; font-size: 0.9em; margin-top: 10px; }
+        /* Secciones Ocultas */
+        .seccion { display: none; margin-top: 20px; padding: 20px; border: 2px solid #eee; border-radius: 10px; animation: fadeIn 0.5s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        input { padding: 12px; width: 80%; border: 1px solid #ccc; border-radius: 5px; margin-bottom: 10px; text-transform: uppercase; text-align: center; font-size: 16px; }
+        .btn-accion { background: var(--rojo); color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+
+        #resultado-qsl { margin-top: 15px; }
+        .qsl-preview { width: 100%; border-radius: 8px; margin-top: 10px; border: 1px solid #ddd; }
         
-        #resultado { margin-top: 20px; display: none; border-top: 2px solid #eee; padding-top: 20px; }
-        .qsl-img { width: 100%; border-radius: 5px; box-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+        footer { margin-top: 40px; font-size: 0.8em; color: #666; }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h1>🇨🇺 PORTAL QSL</h1>
-        <p class="loc">SANTA CRUZ DEL SUR - CAMAGÜEY</p>
+        <span class="badge">ESTACIÓN CUBANA</span>
+        <h1>SISTEMA QSL</h1>
+        <p>Santa Cruz del Sur, Camagüey</p>
 
-        <div class="seccion-publica">
+        <div class="menu-botones">
+            <button class="btn-principal btn-solicitar" onclick="mostrarSeccion('buscar')">
+                🔎 SOLICITAR / BUSCAR QSL
+            </button>
+
+            <button class="btn-principal btn-colaborar" onclick="mostrarSeccion('admin')">
+                👨‍🚀 ESTACIONES COLABORADORAS
+            </button>
+        </div>
+
+        <div id="seccion-buscar" class="seccion">
+            <h3>Buscar mi Tarjeta</h3>
             <p>Introduce tu indicativo para descargar:</p>
-            <input type="text" id="indicativo" placeholder="EJ: CO2ABC">
-            <button class="btn-buscar" onclick="buscarQSL()">BUSCAR MI QSL</button>
+            <input type="text" id="input-indicativo" placeholder="EJ: CO2ABC">
+            <button class="btn-accion" onclick="buscarQSL()">BUSCAR</button>
+            <div id="resultado-qsl"></div>
         </div>
 
-        <div id="resultado">
-            <h3 id="status-msg"></h3>
-            <div id="qsl-container"></div>
+        <div id="seccion-admin" class="seccion">
+            <h3>Acceso Restringido</h3>
+            <div id="login-admin">
+                <p>Introduce la clave para subir archivos:</p>
+                <input type="password" id="clave-acceso" placeholder="CONTRASEÑA" style="text-transform: none;">
+                <br>
+                <button class="btn-accion" onclick="verificarClave()">ENTRAR AL SERVIDOR</button>
+            </div>
+            <div id="upload-panel" style="display:none;">
+                <p style="color: green; font-weight: bold;">✅ Acceso Autorizado</p>
+                <p>Ya puedes subir tus diseños a la nube:</p>
+                <a href="https://drive.google.com/drive/folders/1fJxjff9vtOR0SU7lq3lBHoGrGgvAUq1q?usp=sharing" target="_blank">
+                    <button class="btn-principal btn-colaborar" style="width:100%">☁️ ABRIR NUBE DE CARGA</button>
+                </a>
+            </div>
         </div>
 
-        <div class="seccion-privada">
-            <p><strong>¿Eres colaborador autorizado?</strong></p>
-            <p style="font-size: 0.85em;">Sube las nuevas tarjetas a la nube aquí:</p>
-            <a href="https://drive.google.com/drive/folders/1fJxjff9vtOR0SU7lq3lBHoGrGgvAUq1q?usp=sharing" target="_blank" class="btn-nube">☁️ SUBIR QSL A LA NUBE</a>
-        </div>
-
-        <footer style="margin-top:30px; font-size: 0.8em; color: #888;">
-            73's Cordiales - Operación Digital y HF
+        <footer>
+            73 Cordiales para todos los colegas del mundo.
         </footer>
     </div>
 
     <script>
+        // --- CONFIGURACIÓN ---
+        const CLAVE_CORRECTA = "CUBA73"; // <--- CAMBIA TU CLAVE AQUÍ
+
+        function mostrarSeccion(tipo) {
+            document.getElementById('seccion-buscar').style.display = 'none';
+            document.getElementById('seccion-admin').style.display = 'none';
+            document.getElementById('seccion-' + tipo).style.display = 'block';
+        }
+
         function buscarQSL() {
-            const ind = document.getElementById('indicativo').value.toUpperCase().trim();
-            const res = document.getElementById('resultado');
-            const cont = document.getElementById('qsl-container');
-            const msg = document.getElementById('status-msg');
+            const ind = document.getElementById('input-indicativo').value.toUpperCase().trim();
+            const res = document.getElementById('resultado-qsl');
+            if (!ind) return;
 
-            if (ind === "") return;
-
-            // Ruta de la carpeta de tarjetas en tu GitHub
+            res.innerHTML = "Buscando...";
             const url = `tarjetas/${ind}.jpg`;
-            res.style.display = "block";
-            msg.innerText = "Buscando en servidor...";
-            cont.innerHTML = "";
-
             const img = new Image();
             img.src = url;
+
             img.onload = function() {
-                msg.innerText = "¡Confirmación para " + ind + "!";
-                cont.innerHTML = `<img src="${url}" class="qsl-img"><br><br>
-                <a href="${url}" download class="btn-buscar" style="background:#28a745; text-decoration:none;">DESCARGAR AHORA</a>`;
+                res.innerHTML = `
+                    <p style="color:blue">¡Tarjeta encontrada!</p>
+                    <img src="${url}" class="qsl-preview"><br><br>
+                    <a href="${url}" download><button class="btn-accion" style="background:green">DESCARGAR</button></a>
+                `;
             };
             img.onerror = function() {
-                msg.innerText = "No se encontró el indicativo.";
-                cont.innerHTML = "<p>Póngase en contacto con el administrador si el QSO fue reciente.</p>";
+                res.innerHTML = "<p style='color:red'>No se encontró la QSL. Inténtalo más tarde.</p>";
             };
+        }
+
+        function verificarClave() {
+            const pass = document.getElementById('clave-acceso').value;
+            if (pass === CLAVE_CORRECTA) {
+                document.getElementById('login-admin').style.display = 'none';
+                document.getElementById('upload-panel').style.display = 'block';
+            } else {
+                alert("Clave incorrecta, colega.");
+            }
         }
     </script>
 </body>
