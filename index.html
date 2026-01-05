@@ -1,43 +1,38 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Servidor QSL - Estación Cubana</title>
+    <title>Servidor QSL - Cuba Radio</title>
     <style>
-        /* Estilo con colores de la bandera cubana */
-        body { font-family: 'Trebuchet MS', sans-serif; text-align: center; background: #f0f0f0; padding: 20px; color: #333; }
-        .container { background: white; padding: 30px; border-radius: 10px; max-width: 600px; margin: auto; border-top: 8px solid #D21034; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        body { font-family: 'Segoe UI', Arial, sans-serif; text-align: center; background: #f4f7f6; padding: 20px; }
+        .container { background: white; padding: 30px; border-radius: 12px; max-width: 600px; margin: auto; border-top: 10px solid #D21034; box-shadow: 0 5px 20px rgba(0,0,0,0.15); }
+        h1 { color: #002A8F; text-transform: uppercase; margin-bottom: 0; }
+        .loc { color: #D21034; font-weight: bold; margin-bottom: 20px; }
         
-        h1 { color: #002A8F; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
-        .subtitulo { font-style: italic; color: #555; margin-bottom: 20px; }
+        /* Buscador Público */
+        .seccion-publica { background: #002A8F; color: white; padding: 25px; border-radius: 8px; margin-bottom: 30px; }
+        input { padding: 12px; width: 80%; border-radius: 5px; border: none; font-size: 18px; text-transform: uppercase; text-align: center; }
+        .btn-buscar { background: #D21034; color: white; border: none; padding: 12px 30px; border-radius: 5px; cursor: pointer; font-weight: bold; margin-top: 15px; width: 85%; }
+
+        /* Panel de Subida (Tu sueño de la nube) */
+        .seccion-privada { background: #e9ecef; padding: 20px; border-radius: 8px; border: 1px dashed #6c757d; }
+        .btn-nube { background: #333; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block; font-size: 0.9em; margin-top: 10px; }
         
-        .busqueda-caja { margin: 25px 0; padding: 25px; background: #002A8F; border-radius: 8px; color: white; }
-        input { padding: 12px; width: 80%; border: none; border-radius: 4px; font-size: 18px; text-transform: uppercase; text-align: center; font-weight: bold; }
-        
-        .btn-buscar { margin-top: 15px; padding: 12px 30px; background: #D21034; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 16px; width: 85%; }
-        .btn-buscar:hover { background: #a00d27; }
-        
-        #resultado { margin-top: 25px; display: none; padding: 15px; border: 1px solid #ddd; border-radius: 8px; }
-        .qsl-img { width: 100%; border-radius: 5px; border: 2px solid #002A8F; margin-top: 15px; }
-        
-        .btn-descargar { background: #28a745; color: white; padding: 12px 25px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; text-decoration: none; display: inline-block; margin-top: 10px; }
-        
-        footer { margin-top: 40px; font-size: 0.9em; color: #444; border-top: 1px solid #ccc; padding-top: 15px; }
-        .frase { font-weight: bold; color: #D21034; }
+        #resultado { margin-top: 20px; display: none; border-top: 2px solid #eee; padding-top: 20px; }
+        .qsl-img { width: 100%; border-radius: 5px; box-shadow: 0 2px 10px rgba(0,0,0,0.3); }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h1>🇨🇺 Confirmación QSL</h1>
-        <p class="subtitulo">Sistema de Descarga para Radioaficionados</p>
+        <h1>🇨🇺 PORTAL QSL</h1>
+        <p class="loc">SANTA CRUZ DEL SUR - CAMAGÜEY</p>
 
-        <div class="busqueda-caja">
-            <p>Escriba su indicativo (CO, CM, CL, etc.)</p>
-            <input type="text" id="indicativo" placeholder="EJ: CO2ABC" onkeyup="if(event.keyCode===13) buscarQSL()">
-            <button class="btn-buscar" onclick="buscarQSL()">VER MI TARJETA QSL</button>
+        <div class="seccion-publica">
+            <p>Introduce tu indicativo para descargar:</p>
+            <input type="text" id="indicativo" placeholder="EJ: CO2ABC">
+            <button class="btn-buscar" onclick="buscarQSL()">BUSCAR MI QSL</button>
         </div>
 
         <div id="resultado">
@@ -45,50 +40,42 @@
             <div id="qsl-container"></div>
         </div>
 
-        <footer>
-            <p>Intercambio de Tarjetas QSL vía Electrónica</p>
-            <p class="frase">¡Saludos cordiales y un fuerte 73 desde Cuba!</p>
+        <div class="seccion-privada">
+            <p><strong>¿Eres colaborador autorizado?</strong></p>
+            <p style="font-size: 0.85em;">Sube las nuevas tarjetas a la nube aquí:</p>
+            <a href="https://drive.google.com/drive/folders/1fJxjff9vtOR0SU7lq3lBHoGrGgvAUq1q?usp=sharing" target="_blank" class="btn-nube">☁️ SUBIR QSL A LA NUBE</a>
+        </div>
+
+        <footer style="margin-top:30px; font-size: 0.8em; color: #888;">
+            73's Cordiales - Operación Digital y HF
         </footer>
     </div>
 
     <script>
         function buscarQSL() {
-            const indicativo = document.getElementById('indicativo').value.toUpperCase().trim();
-            const container = document.getElementById('qsl-container');
-            const status = document.getElementById('status-msg');
-            const resDiv = document.getElementById('resultado');
+            const ind = document.getElementById('indicativo').value.toUpperCase().trim();
+            const res = document.getElementById('resultado');
+            const cont = document.getElementById('qsl-container');
+            const msg = document.getElementById('status-msg');
 
-            if (indicativo === "") {
-                alert("Por favor, introduce un indicativo válido.");
-                return;
-            }
+            if (ind === "") return;
 
-            // Ruta de la carpeta en tu repositorio de GitHub
-            const urlImagen = `tarjetas/${indicativo}.jpg`;
-
-            resDiv.style.display = "block";
-            container.innerHTML = "";
-            status.innerText = "Localizando en el log...";
+            // Ruta de la carpeta de tarjetas en tu GitHub
+            const url = `tarjetas/${ind}.jpg`;
+            res.style.display = "block";
+            msg.innerText = "Buscando en servidor...";
+            cont.innerHTML = "";
 
             const img = new Image();
-            img.src = urlImagen;
-            
+            img.src = url;
             img.onload = function() {
-                status.style.color = "#002A8F";
-                status.innerText = "¡Confirmación encontrada para " + indicativo + "!";
-                container.innerHTML = `
-                    <img src="${urlImagen}" class="qsl-img">
-                    <br><br>
-                    <a href="${urlImagen}" download="${indicativo}_QSL_Cuba.jpg" class="btn-descargar">
-                        DESCARGAR TARJETA
-                    </a>
-                `;
+                msg.innerText = "¡Confirmación para " + ind + "!";
+                cont.innerHTML = `<img src="${url}" class="qsl-img"><br><br>
+                <a href="${url}" download class="btn-buscar" style="background:#28a745; text-decoration:none;">DESCARGAR AHORA</a>`;
             };
-
             img.onerror = function() {
-                status.style.color = "#D21034";
-                status.innerText = "No se encontró el indicativo: " + indicativo;
-                container.innerHTML = "<p>Si el contacto fue reciente, por favor espere a que el operador suba el log.</p>";
+                msg.innerText = "No se encontró el indicativo.";
+                cont.innerHTML = "<p>Póngase en contacto con el administrador si el QSO fue reciente.</p>";
             };
         }
     </script>
