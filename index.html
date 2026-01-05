@@ -5,149 +5,124 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Servidor QSL - CL7ADV</title>
     <style>
-        :root {
-            --azul-cuba: #002A8F;
-            --rojo-cuba: #D21034;
-            --dorado: #FFD700;
-        }
+        :root { --azul: #002A8F; --rojo: #D21034; --verde: #28a745; }
         body { 
-            font-family: 'Segoe UI', Roboto, sans-serif; 
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            font-family: 'Segoe UI', Tahoma, sans-serif; 
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
             color: #333; margin: 0; padding: 20px; min-height: 100vh;
         }
         .container { 
-            max-width: 550px; margin: auto; background: rgba(255, 255, 255, 0.95); 
-            padding: 40px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.3);
-            border-bottom: 8px solid var(--rojo-cuba); position: relative;
+            max-width: 500px; margin: auto; background: white; 
+            padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border-top: 10px solid var(--rojo); position: relative;
         }
-        .firma-top {
-            position: absolute; top: 15px; right: 20px; font-weight: bold;
-            color: var(--azul-cuba); letter-spacing: 2px; font-size: 1.2em;
-        }
-        h1 { color: var(--azul-cuba); margin-top: 10px; font-size: 2em; text-transform: uppercase; }
-        .logo-cuba { font-size: 3em; margin: 10px 0; }
+        .firma-esquina { position: absolute; top: 10px; right: 20px; font-weight: bold; color: var(--azul); opacity: 0.6; }
+        h1 { color: var(--azul); text-transform: uppercase; font-size: 1.8em; margin-bottom: 5px; }
+        .sub { color: #666; font-size: 0.9em; margin-bottom: 25px; }
         
-        .menu-botones { margin: 30px 0; display: flex; flex-direction: column; gap: 20px; }
+        .menu-botones { display: flex; flex-direction: column; gap: 15px; margin-bottom: 20px; }
+        .btn { 
+            padding: 15px; border: none; border-radius: 10px; font-weight: bold; 
+            cursor: pointer; transition: 0.3s; font-size: 16px; display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        .btn-buscar { background: var(--azul); color: white; }
+        .btn-subir { background: #333; color: white; }
+        .btn:hover { transform: scale(1.02); opacity: 0.9; }
+
+        .panel { display: none; background: #f8f9fa; padding: 20px; border-radius: 15px; border: 1px solid #ddd; margin-top: 15px; }
+        input { width: 90%; padding: 12px; margin-bottom: 10px; border: 2px solid #ddd; border-radius: 8px; text-align: center; font-size: 18px; text-transform: uppercase; }
         
-        .btn {
-            padding: 18px; font-size: 17px; font-weight: bold; border: none;
-            border-radius: 50px; cursor: pointer; transition: all 0.3s ease;
-            display: flex; align-items: center; justify-content: center; gap: 10px;
-            text-decoration: none; box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-        }
-        .btn-descarga { background: var(--azul-cuba); color: white; }
-        .btn-subida { background: #333; color: white; }
-        .btn:hover { transform: translateY(-3px); box-shadow: 0 6px 15px rgba(0,0,0,0.3); opacity: 0.9; }
-
-        .seccion { 
-            display: none; background: #f9f9f9; padding: 20px; 
-            border-radius: 15px; margin-top: 20px; border: 1px solid #ddd;
-            animation: slideUp 0.4s ease-out;
-        }
-        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-
-        input { 
-            padding: 15px; width: 85%; border: 2px solid #ddd; border-radius: 10px;
-            font-size: 18px; text-transform: uppercase; text-align: center; margin-bottom: 15px;
-        }
-        .btn-confirm { 
-            background: var(--rojo-cuba); color: white; padding: 12px 25px; 
-            border: none; border-radius: 10px; cursor: pointer; font-weight: bold; width: 100%;
-        }
-
-        #resultado-qsl img { width: 100%; border-radius: 10px; margin: 15px 0; border: 3px solid var(--azul-cuba); }
+        .btn-accion { background: var(--rojo); color: white; width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
         
-        footer { margin-top: 30px; font-size: 0.85em; color: #555; line-height: 1.6; }
-        .firma-final { color: var(--rojo-cuba); font-weight: bold; font-size: 1.1em; }
+        #resultado-qsl img { width: 100%; border-radius: 10px; border: 3px solid var(--azul); margin-top: 15px; }
+        .btn-descarga-final { background: var(--verde); text-decoration: none; color: white; display: block; padding: 15px; border-radius: 8px; margin-top: 10px; font-weight: bold; }
+        
+        footer { margin-top: 30px; font-size: 0.8em; color: #777; border-top: 1px solid #eee; padding-top: 15px; }
+        .f-cl { color: var(--rojo); font-weight: bold; }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <div class="firma-top">CL7ADV</div>
-        <div class="logo-cuba">🇨🇺</div>
-        <h1>Portal QSL</h1>
-        <p>Santa Cruz del Sur, Camagüey</p>
+        <div class="firma-esquina">CL7ADV</div>
+        <h1>Portal QSL Cuba</h1>
+        <p class="sub">Santa Cruz del Sur | Camagüey</p>
 
         <div class="menu-botones">
-            <button class="btn btn-descarga" onclick="abrir('descarga')">📂 BUSCAR Y DESCARGAR MI QSL</button>
-            <button class="btn btn-subida" onclick="abrir('admin')">☁️ PANEL DE COLABORADORES</button>
+            <button class="btn btn-buscar" onclick="abrir('buscar')">🔎 BUSCAR MI INDICATIVO</button>
+            <button class="btn btn-subir" onclick="abrir('admin')">☁️ SUBIR A LA NUBE</button>
         </div>
 
-        <div id="seccion-descarga" class="seccion">
-            <h3>Obtener mi Tarjeta</h3>
-            <input type="text" id="ins-indicativo" placeholder="TU INDICATIVO (EJ: CO2ABC)">
-            <button class="btn-confirm" onclick="procesarDescarga()">BUSCAR EN EL SERVIDOR</button>
+        <div id="p-buscar" class="panel">
+            <h3>Consultar Log</h3>
+            <input type="text" id="target-indicativo" placeholder="EJ: CO2ABC">
+            <button class="btn-accion" onclick="multiBusqueda()">BUSCAR AHORA</button>
             <div id="resultado-qsl"></div>
         </div>
 
-        <div id="seccion-admin" class="seccion">
-            <h3>Acceso con Clave</h3>
-            <div id="login-form">
-                <input type="password" id="pass-admin" placeholder="CLAVE DE ACCESO" style="text-transform: none;">
-                <button class="btn-confirm" onclick="acceder()">ENTRAR A LA NUBE</button>
+        <div id="p-admin" class="panel">
+            <h3>Acceso Autorizado</h3>
+            <div id="login">
+                <input type="password" id="p-clave" placeholder="CLAVE" style="text-transform: none;">
+                <button class="btn-accion" onclick="entrar()">ENTRAR</button>
             </div>
-            <div id="link-nube" style="display:none;">
-                <p style="color:green; font-weight:bold;">¡Clave Correcta!</p>
-                <a href="https://drive.google.com/drive/folders/1fJxjff9vtOR0SU7lq3lBHoGrGgvAUq1q?usp=sharing" target="_blank" class="btn btn-subida">
-                    SUBIR ARCHIVOS AHORA
-                </a>
+            <div id="nube-link" style="display:none;">
+                <p>✅ Autorizado por <b>CL7ADV</b></p>
+                <a href="https://drive.google.com/drive/folders/1fJxjff9vtOR0SU7lq3lBHoGrGgvAUq1q?usp=sharing" target="_blank" class="btn btn-subir" style="text-decoration:none;">ABRIR CARPETA DE CARGA</a>
             </div>
         </div>
 
         <footer>
-            Sistema desarrollado para la radioafición cubana.<br>
-            Responsable del Proyecto: <span class="firma-final">CL7ADV</span><br>
-            73 y buenos comunicados.
+            Proyecto dirigido por <span class="f-cl">CL7ADV</span><br>
+            © 2026 Radioafición Cubana. 73's
         </footer>
     </div>
 
     <script>
-        const CLAVE = "CUBA73"; // Puedes cambiarla aquí
+        const CLAVE_SEC = "CUBA73"; 
+        const FORMATOS = ['jpg', 'JPG', 'png', 'PNG'];
 
         function abrir(id) {
-            document.getElementById('seccion-descarga').style.display = 'none';
-            document.getElementById('seccion-admin').style.display = 'none';
-            document.getElementById('seccion-' + id).style.display = 'block';
+            document.getElementById('p-buscar').style.display = 'none';
+            document.getElementById('p-admin').style.display = 'none';
+            document.getElementById('p-' + id).style.display = 'block';
         }
 
-        function procesarDescarga() {
-            const indicativo = document.getElementById('ins-indicativo').value.toUpperCase().trim();
+        function multiBusqueda() {
+            const ind = document.getElementById('target-indicativo').value.toUpperCase().trim();
             const res = document.getElementById('resultado-qsl');
-            if(!indicativo) return;
+            if(!ind) return;
 
-            res.innerHTML = "<p>Buscando en la base de datos...</p>";
-            
-            // IMPORTANTE: Asegúrate que la carpeta en GitHub se llame exactamente 'tarjetas'
-            const rutaImagen = `tarjetas/${indicativo}.jpg`;
-            
-            const img = new Image();
-            img.src = rutaImagen;
+            res.innerHTML = "Escaneando formatos...";
+            let encontrado = false;
 
-            img.onload = function() {
-                res.innerHTML = `
-                    <p style="color:green; font-weight:bold;">¡Tarjeta localizada!</p>
-                    <img src="${rutaImagen}">
-                    <br>
-                    <a href="${rutaImagen}" download="${indicativo}_QSL_CL7ADV.jpg" style="text-decoration:none;">
-                        <button class="btn-confirm" style="background:#28a745;">💾 GUARDAR EN MI DISPOSITIVO</button>
-                    </a>
-                `;
-            };
+            FORMATOS.forEach(ext => {
+                if (encontrado) return;
+                
+                const ruta = `tarjetas/${ind}.${ext}`;
+                const img = new Image();
+                img.src = ruta;
 
-            img.onerror = function() {
-                res.innerHTML = `<p style="color:var(--rojo-cuba)">No se encontró la QSL para ${indicativo}.<br>Asegúrate de que el operador la haya subido.</p>`;
-            };
+                img.onload = function() {
+                    encontrado = true;
+                    res.innerHTML = `
+                        <p style="color:green; font-weight:bold;">¡Encontrada en formato .${ext}!</p>
+                        <img src="${ruta}">
+                        <a href="${ruta}" download="${ind}_QSL.jpg" class="btn-descarga-final">💾 DESCARGAR TARJETA</a>
+                    `;
+                };
+            });
+
+            setTimeout(() => {
+                if(!encontrado) res.innerHTML = "<p style='color:red'>No se encontró registro para ese indicativo.</p>";
+            }, 1500);
         }
 
-        function acceder() {
-            const p = document.getElementById('pass-admin').value;
-            if(p === CLAVE) {
-                document.getElementById('login-form').style.display = 'none';
-                document.getElementById('link-nube').style.display = 'block';
-            } else {
-                alert("Clave incorrecta");
-            }
+        function entrar() {
+            if(document.getElementById('p-clave').value === CLAVE_SEC) {
+                document.getElementById('login').style.display = 'none';
+                document.getElementById('nube-link').style.display = 'block';
+            } else { alert("Clave Errónea"); }
         }
     </script>
 </body>
