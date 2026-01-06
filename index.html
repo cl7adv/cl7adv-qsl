@@ -207,37 +207,31 @@
             radar.style.display = "block";
             document.getElementById('snd-scan').play();
 
-            const extensions = ['.jpg', '.png', '.jpeg', '.gif'];
             const folderPath = "img/";
             let foundCount = 0;
 
-            // 1. Generar lista de posibles nombres (Indicativo solo + Indicativo-1 al Indicativo-30)
             let namesToSearch = [id];
             for(let i=1; i<=30; i++) {
                 namesToSearch.push(`${id}-${i}`);
             }
 
-            // 2. Proceso de búsqueda masiva
-            for (let name of namesToSearch) {
-                for (let ext of extensions) {
-                    const testUrl = `${folderPath}${name}${ext}`;
-                    const exists = await checkImage(testUrl);
-                    
-                    if (exists) {
-                        if(foundCount === 0) document.getElementById('snd-success').play();
-                        
-                        res.innerHTML += `
-                            <div class="qsl-card">
-                                <div class="qsl-label">${name}${ext}</div>
-                                <img src="${testUrl}" loading="lazy">
-                                <button class="btn-dl" onclick="window.open('${testUrl}', '_blank')">VER / DESCARGAR</button>
-                            </div>`;
-                        foundCount++;
-                        // Si encontramos una extensión para este nombre, saltamos a la siguiente numeración
-                        break; 
-                    }
+            // Búsqueda solo JPG y optimización de radar
+            const promises = namesToSearch.map(async (name) => {
+                const testUrl = `${folderPath}${name}.jpg`;
+                const exists = await checkImage(testUrl);
+                if (exists) {
+                    if(foundCount === 0) document.getElementById('snd-success').play();
+                    res.innerHTML += `
+                        <div class="qsl-card">
+                            <div class="qsl-label">${name}.jpg</div>
+                            <img src="${testUrl}" loading="lazy">
+                            <button class="btn-dl" onclick="window.open('${testUrl}', '_blank')">DESCARGAR</button>
+                        </div>`;
+                    foundCount++;
                 }
-            }
+            });
+
+            await Promise.all(promises);
 
             radar.style.display = "none";
             document.getElementById('snd-scan').pause();
@@ -246,9 +240,9 @@
                 res.innerHTML = `
                     <div class="warm-error">
                         <h3 style="margin-top:0">¡Sin resultados! 🌊</h3>
-                        <p>No se encontraron QSLs para <b>${id}</b> (buscado del 1 al 30).</p>
+                        <p>No se encontraron QSLs para <b>${id}</b>.</p>
                     </div>`;
-                setTimeout(() => { res.innerHTML = ""; }, 6000);
+                setTimeout(() => { if(res.contains(document.querySelector('.warm-error'))) res.innerHTML = ""; }, 4000);
             }
         }
     </script>
