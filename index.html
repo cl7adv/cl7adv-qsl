@@ -102,8 +102,10 @@
             background: #001a1a; border-radius: 25px; overflow: hidden; 
             border: 1px solid rgba(255,255,255,0.1);
             transition: 0.5s; transform-style: preserve-3d;
+            animation: fadeIn 0.5s forwards;
         }
         .qsl-card img { width: 100%; height: auto; display: block; }
+        .qsl-label { padding: 10px; text-align: center; color: var(--cyan); font-size: 0.9rem; font-weight: bold; background: rgba(0,0,0,0.3); }
 
         .btn-dl { 
             background: var(--yellow); color: #000; border: none; width: 100%; padding: 18px; 
@@ -162,9 +164,6 @@
     </div>
 
     <script>
-        // LA URL QUE ME PASASTE
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyU-KlmkDisA5RL0SOs518lgBoeWKfv5SIgcD69rZVpNal9cENLYRhUqzFQw7PHiDuYyg/exec";
-
         function initEpicIntro() {
             setTimeout(() => {
                 document.getElementById('txt-system').classList.add('eating');
@@ -189,6 +188,15 @@
             }, 1000);
         }
 
+        function checkImage(url) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.onload = () => resolve(true);
+                img.onerror = () => resolve(false);
+                img.src = url;
+            });
+        }
+
         async function runDeepSearch() {
             const id = document.getElementById('target-id').value.trim().toUpperCase();
             if(!id) return;
@@ -199,54 +207,49 @@
             radar.style.display = "block";
             document.getElementById('snd-scan').play();
 
-            try {
-                // FETCH OPTIMIZADO PARA EVITAR BLOQUEO DE REDIRECCIÓN DE GOOGLE
-                const response = await fetch(`${SCRIPT_URL}?q=${encodeURIComponent(id)}`, {
-                    method: 'GET',
-                    redirect: 'follow'
-                });
-                
-                if (!response.ok) throw new Error('Error en la red');
-                
-                const data = await response.json();
+            const extensions = ['.jpg', '.png', '.jpeg', '.gif'];
+            const folderPath = "img/";
+            let foundCount = 0;
 
-                await new Promise(r => setTimeout(r, 4000));
-                radar.style.display = "none";
-                document.getElementById('snd-scan').pause();
+            // 1. Generar lista de posibles nombres (Indicativo solo + Indicativo-1 al Indicativo-30)
+            let namesToSearch = [id];
+            for(let i=1; i<=30; i++) {
+                namesToSearch.push(`${id}-${i}`);
+            }
 
-                if(data && data.links && data.links.length > 0) {
-                    document.getElementById('snd-success').play();
-                    data.links.forEach(url => {
+            // 2. Proceso de búsqueda masiva
+            for (let name of namesToSearch) {
+                for (let ext of extensions) {
+                    const testUrl = `${folderPath}${name}${ext}`;
+                    const exists = await checkImage(testUrl);
+                    
+                    if (exists) {
+                        if(foundCount === 0) document.getElementById('snd-success').play();
+                        
                         res.innerHTML += `
                             <div class="qsl-card">
-                                <img src="${url}" loading="lazy">
-                                <button class="btn-dl" onclick="dlReset('${url}')">VER / DESCARGAR</button>
+                                <div class="qsl-label">${name}${ext}</div>
+                                <img src="${testUrl}" loading="lazy">
+                                <button class="btn-dl" onclick="window.open('${testUrl}', '_blank')">VER / DESCARGAR</button>
                             </div>`;
-                    });
-                } else {
-                    throw new Error("No encontrado");
+                        foundCount++;
+                        // Si encontramos una extensión para este nombre, saltamos a la siguiente numeración
+                        break; 
+                    }
                 }
+            }
 
-            } catch (error) {
-                radar.style.display = "none";
-                document.getElementById('snd-scan').pause();
+            radar.style.display = "none";
+            document.getElementById('snd-scan').pause();
+
+            if (foundCount === 0) {
                 res.innerHTML = `
                     <div class="warm-error">
-                        <h3 style="margin-top:0">¡Atención Colega! 🌊</h3>
-                        <p>No se encontraron resultados para <b>${id}</b>.</p>
-                        <p style="font-size:0.8rem">Si el error persiste, verifica que el script esté publicado correctamente.</p>
+                        <h3 style="margin-top:0">¡Sin resultados! 🌊</h3>
+                        <p>No se encontraron QSLs para <b>${id}</b> (buscado del 1 al 30).</p>
                     </div>`;
-                setTimeout(() => {
-                    document.getElementById('target-id').value = "";
-                    res.innerHTML = "";
-                }, 5000);
+                setTimeout(() => { res.innerHTML = ""; }, 6000);
             }
-        }
-
-        function dlReset(u) {
-            window.open(u, '_blank');
-            document.getElementById('target-id').value = "";
-            document.getElementById('results').innerHTML = "";
         }
     </script>
 </body>
