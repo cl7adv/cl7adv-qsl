@@ -7,6 +7,9 @@
     <meta name="theme-color" content="#0b1622">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
     
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
     <style>
         :root { 
             --cyan: #00f2ff; 
@@ -14,6 +17,7 @@
             --sand: #f4d03f;
             --ocean: #16a085;
             --bg: #010a14; 
+            --danger: #ff2a2a;
         }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
@@ -76,6 +80,7 @@
             border: 2px solid rgba(0, 242, 255, 0.3);
             backdrop-filter: blur(15px);
             box-shadow: 0 20px 50px rgba(0,0,0,0.6), inset 0 0 20px rgba(0, 242, 255, 0.1);
+            position: relative;
         }
 
         .supreme-input { 
@@ -93,6 +98,17 @@
             box-shadow: 0 10px 30px rgba(0,242,255,0.4); transition: 0.4s;
         }
 
+        /* Botón especial ZIP */
+        .btn-zip {
+            display: none; /* Oculto por defecto */
+            width: 100%; margin-top: 20px; padding: 20px; border-radius: 15px; border: none;
+            background: linear-gradient(45deg, var(--yellow), #ff9100); color: black;
+            font-family: 'Orbitron'; font-weight: 900; font-size: 1.1rem;
+            cursor: pointer; box-shadow: 0 0 25px rgba(255, 230, 0, 0.4);
+            animation: fadeIn 0.5s;
+        }
+        .btn-zip:active { transform: scale(0.98); }
+
         #results { 
             display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
             gap: 25px; margin-top: 35px; width: 100%; 
@@ -103,14 +119,17 @@
             border: 1px solid rgba(255,255,255,0.1);
             transition: 0.5s; transform-style: preserve-3d;
             animation: fadeIn 0.5s forwards;
+            position: relative;
         }
         .qsl-card img { width: 100%; height: auto; display: block; }
         .qsl-label { padding: 10px; text-align: center; color: var(--cyan); font-size: 0.9rem; font-weight: bold; background: rgba(0,0,0,0.3); }
 
         .btn-dl { 
-            background: var(--yellow); color: #000; border: none; width: 100%; padding: 18px; 
-            font-weight: 900; font-family: 'Orbitron'; cursor: pointer; transition: 0.3s;
+            background: var(--ocean); color: #fff; border: none; width: 100%; padding: 15px; 
+            font-weight: 700; font-family: 'Rajdhani'; font-size: 1.1rem; 
+            cursor: pointer; transition: 0.3s;
         }
+        .btn-dl:hover { background: var(--cyan); color: #000; }
 
         .warm-error {
             background: rgba(255, 255, 255, 0.1); border-radius: 20px; padding: 20px;
@@ -155,8 +174,12 @@
     <div id="main-ui">
         <div class="container">
             <div class="glass-panel">
-                <input type="text" id="target-id" class="supreme-input" placeholder="INDICATIVO" oninput="if(this.value===''){document.getElementById('results').innerHTML='';}">
+                <input type="text" id="target-id" class="supreme-input" placeholder="INDICATIVO" oninput="resetUI()">
+                
                 <button class="btn-scan" onclick="runDeepSearch()">ESCANEAR BASE DE DATOS</button>
+                
+                <button id="btn-zip-all" class="btn-zip" onclick="downloadAllZip()">📥 DESCARGAR PACK COMPLETO (.ZIP)</button>
+
                 <div id="radar-container"><div class="radar-sweep"></div></div>
                 <div id="results"></div>
             </div>
@@ -164,6 +187,10 @@
     </div>
 
     <script>
+        // Variables globales para almacenar lo encontrado
+        let foundFiles = []; 
+        let currentCallsign = "";
+
         function initEpicIntro() {
             setTimeout(() => {
                 document.getElementById('txt-system').classList.add('eating');
@@ -188,6 +215,14 @@
             }, 1000);
         }
 
+        function resetUI() {
+            if(document.getElementById('target-id').value === ''){
+                document.getElementById('results').innerHTML='';
+                document.getElementById('btn-zip-all').style.display = 'none';
+                foundFiles = [];
+            }
+        }
+
         function checkImage(url) {
             return new Promise((resolve) => {
                 const img = new Image();
@@ -200,34 +235,45 @@
         async function runDeepSearch() {
             const id = document.getElementById('target-id').value.trim().toUpperCase();
             if(!id) return;
+            currentCallsign = id;
+            
             const res = document.getElementById('results');
             const radar = document.getElementById('radar-container');
+            const zipBtn = document.getElementById('btn-zip-all');
             
+            // Reset
             res.innerHTML = "";
+            zipBtn.style.display = "none";
+            foundFiles = [];
+            
             radar.style.display = "block";
             document.getElementById('snd-scan').play();
 
             const folderPath = "img/";
-            let foundCount = 0;
-
+            
+            // Generar nombres a buscar
             let namesToSearch = [id];
             for(let i=1; i<=30; i++) {
                 namesToSearch.push(`${id}-${i}`);
             }
 
-            // Búsqueda solo JPG y optimización de radar
+            // Promesas de búsqueda
             const promises = namesToSearch.map(async (name) => {
-                const testUrl = `${folderPath}${name}.jpg`;
+                const fileName = `${name}.jpg`;
+                const testUrl = `${folderPath}${fileName}`;
                 const exists = await checkImage(testUrl);
+                
                 if (exists) {
-                    if(foundCount === 0) document.getElementById('snd-success').play();
+                    if(foundFiles.length === 0) document.getElementById('snd-success').play();
+                    
+                    foundFiles.push({ url: testUrl, name: fileName });
+
                     res.innerHTML += `
                         <div class="qsl-card">
-                            <div class="qsl-label">${name}.jpg</div>
+                            <div class="qsl-label">${fileName}</div>
                             <img src="${testUrl}" loading="lazy">
-                            <button class="btn-dl" onclick="window.open('${testUrl}', '_blank')">DESCARGAR</button>
+                            <button class="btn-dl" onclick="forceDownload('${testUrl}', '${fileName}')">DESCARGAR</button>
                         </div>`;
-                    foundCount++;
                 }
             });
 
@@ -236,7 +282,13 @@
             radar.style.display = "none";
             document.getElementById('snd-scan').pause();
 
-            if (foundCount === 0) {
+            // Lógica para mostrar botón ZIP si hay más de 1
+            if (foundFiles.length > 1) {
+                zipBtn.style.display = "block";
+                zipBtn.innerHTML = `📥 DESCARGAR PACK COMPLETO (${foundFiles.length} QSLs)`;
+            }
+
+            if (foundFiles.length === 0) {
                 res.innerHTML = `
                     <div class="warm-error">
                         <h3 style="margin-top:0">¡Sin resultados! 🌊</h3>
@@ -244,6 +296,52 @@
                     </div>`;
                 setTimeout(() => { if(res.contains(document.querySelector('.warm-error'))) res.innerHTML = ""; }, 4000);
             }
+        }
+
+        // --- FUNCIONES DE DESCARGA ---
+
+        // Descarga Individual (Directa)
+        function forceDownload(url, filename) {
+            fetch(url)
+                .then(response => response.blob())
+                .then(blob => {
+                    saveAs(blob, filename);
+                })
+                .catch(console.error);
+        }
+
+        // Descarga Masiva ZIP y RESET
+        function downloadAllZip() {
+            if(foundFiles.length === 0) return;
+
+            const zipBtn = document.getElementById('btn-zip-all');
+            zipBtn.innerHTML = "⌛ COMPRIMIENDO...";
+            
+            var zip = new JSZip();
+            var count = 0;
+            var zipFilename = `QSL_PACK_${currentCallsign}.zip`;
+
+            foundFiles.forEach(function(fileObj){
+                // Usamos fetch para obtener los datos binarios de la imagen
+                fetch(fileObj.url)
+                    .then(response => response.blob())
+                    .then(blob => {
+                        zip.file(fileObj.name, blob, {binary:true});
+                        count++;
+                        if(count === foundFiles.length){
+                            // Generar ZIP
+                            zip.generateAsync({type:'blob'}).then(function(content) {
+                                saveAs(content, zipFilename);
+                                zipBtn.innerHTML = "✅ ¡LISTO! REINICIANDO...";
+                                
+                                // Vuelve al inicio después de 3 segundos
+                                setTimeout(() => {
+                                    location.reload(); 
+                                }, 3000);
+                            });
+                        }
+                    });
+            });
         }
     </script>
 </body>
