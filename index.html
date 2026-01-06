@@ -173,6 +173,8 @@
     <script>
         let foundFiles = []; 
         let currentCallsign = "";
+        let idleTimer;
+        const IDLE_LIMIT = 10000; // 10 segundos
 
         // Helper para reproducir audio de forma segura
         function safePlay(id) {
@@ -189,6 +191,22 @@
             }
         }
 
+        // Función para resetear el temporizador de inactividad
+        function resetIdleTimer() {
+            clearTimeout(idleTimer);
+            // Solo activar el temporizador si estamos en el UI principal y hay resultados
+            if (document.getElementById('main-ui').style.display === "block" && foundFiles.length > 0) {
+                idleTimer = setTimeout(() => {
+                    location.reload(); // Volver al inicio
+                }, IDLE_LIMIT);
+            }
+        }
+
+        // Escuchar eventos de interacción para evitar el reinicio si el usuario está activo
+        window.addEventListener('mousemove', resetIdleTimer);
+        window.addEventListener('keypress', resetIdleTimer);
+        window.addEventListener('touchstart', resetIdleTimer);
+
         function startApp() {
             safePlay('snd-power');
             document.getElementById('intro-overlay').style.opacity = "0";
@@ -204,6 +222,9 @@
                 document.getElementById('results').innerHTML='';
                 document.getElementById('btn-zip-all').style.display = 'none';
                 foundFiles = [];
+                clearTimeout(idleTimer);
+            } else {
+                resetIdleTimer();
             }
         }
 
@@ -275,10 +296,13 @@
                     <div class="warm-error">
                         <p style="margin:0; font-family: 'Orbitron';">NO SE ENCONTRARON REGISTROS PARA ${id}</p>
                     </div>`;
+            } else {
+                resetIdleTimer(); // Iniciar cuenta regresiva al encontrar archivos
             }
         }
 
         function forceDownload(url, filename) {
+            resetIdleTimer();
             fetch(url)
                 .then(response => response.blob())
                 .then(blob => {
@@ -289,6 +313,9 @@
 
         function downloadAllZip() {
             if(foundFiles.length === 0) return;
+            
+            // Cancelar el timer de inactividad mientras procesa
+            clearTimeout(idleTimer);
 
             const zipBtn = document.getElementById('btn-zip-all');
             zipBtn.innerHTML = "PROCESANDO PACK...";
@@ -308,6 +335,7 @@
                             zip.generateAsync({type:'blob'}).then(function(content) {
                                 saveAs(content, zipFilename);
                                 zipBtn.innerHTML = "¡EXITO!";
+                                // Reiniciar después de descargar el ZIP
                                 setTimeout(() => {
                                     location.reload(); 
                                 }, 2000);
@@ -316,7 +344,7 @@
                     })
                     .catch(e => {
                         console.error("Error fetching file for zip:", e);
-                        count++; // Seguir intentando con el resto
+                        count++;
                     });
             });
         }
