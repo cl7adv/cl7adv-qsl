@@ -132,16 +132,91 @@
             animation: spin 1s linear infinite;
         }
 
+        /* Botón de Ayuda/Info en la esquina */
+        #btn-info {
+            position: fixed; bottom: 20px; right: 20px;
+            width: 45px; height: 45px; border-radius: 50%;
+            background: rgba(0, 210, 255, 0.1);
+            border: 1px solid var(--neon-blue);
+            color: var(--neon-blue);
+            font-family: 'Orbitron'; font-weight: bold; font-size: 1.2rem;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: 0.3s; z-index: 1000;
+            box-shadow: 0 0 10px rgba(0, 210, 255, 0.2);
+        }
+        #btn-info:hover { 
+            background: var(--neon-blue); color: #000; 
+            box-shadow: 0 0 20px var(--neon-blue);
+            transform: scale(1.1);
+        }
+
+        /* Modal de Actualización */
+        #update-modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            display: none; align-items: center; justify-content: center;
+            z-index: 20000; backdrop-filter: blur(10px);
+        }
+        .modal-content {
+            background: #0a141e; border: 1px solid var(--neon-blue);
+            padding: 40px; border-radius: 10px; max-width: 500px; width: 90%;
+            box-shadow: 0 0 50px rgba(0, 210, 255, 0.3);
+            text-align: center; position: relative;
+            animation: modalIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes modalIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        .modal-title { 
+            font-family: 'Orbitron'; font-weight: 900; color: #fff; 
+            font-size: 1.5rem; margin-bottom: 20px; text-shadow: 0 0 10px var(--neon-blue);
+        }
+        .modal-body { 
+            font-family: 'Rajdhani'; font-size: 1.1rem; line-height: 1.6; 
+            color: var(--text-main); text-align: left;
+        }
+        .modal-body ul { list-style: none; padding: 0; }
+        .modal-body li { margin-bottom: 10px; padding-left: 20px; position: relative; }
+        .modal-body li::before { 
+            content: ">>"; position: absolute; left: 0; color: var(--neon-blue); font-weight: bold; 
+        }
+        .btn-close-modal {
+            margin-top: 30px; width: 100%; padding: 15px; background: transparent;
+            border: 1px solid var(--neon-blue); color: var(--neon-blue);
+            font-family: 'Orbitron'; cursor: pointer; transition: 0.3s;
+        }
+        .btn-close-modal:hover { background: var(--neon-blue); color: #000; }
+
         @keyframes spin { to { transform: rotate(360deg); } }
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-    <!-- Audios con fallback silencioso para evitar errores de fuente no soportada si el servidor externo falla -->
     <audio id="snd-power" src="https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3" preload="auto"></audio>
     <audio id="snd-scan" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3" loop preload="auto"></audio>
     <audio id="snd-success" src="https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3" preload="auto"></audio>
+
+    <!-- Botón de Información -->
+    <div id="btn-info" onclick="toggleModal(true)">?</div>
+
+    <!-- Pantalla de Info de Actualización -->
+    <div id="update-modal">
+        <div class="modal-content">
+            <h2 class="modal-title">SISTEMA CARIBE V 2.0</h2>
+            <div class="modal-body">
+                <p style="text-align: center; color: var(--neon-blue); font-weight: bold;">[ REPORTE DE ACTUALIZACIÓN ]</p>
+                <ul>
+                    <li><strong>Nueva Interfaz:</strong> Rediseño total bajo estética "Cyber-FRC".</li>
+                    <li><strong>Estilo Épico:</strong> Fondos con rejilla dinámica y efectos de cristal.</li>
+                    <li><strong>Escaneo Avanzado:</strong> Algoritmo de búsqueda optimizado para QSL.</li>
+                    <li><strong>Auto-Reinicio:</strong> Sistema inteligente que vuelve al inicio tras inactividad o descarga.</li>
+                    <li><strong>Pack de Descarga:</strong> Generación de archivos .ZIP instantánea.</li>
+                </ul>
+                <p style="font-size: 0.8rem; opacity: 0.7; text-align: center; margin-top: 20px;">Desarrollado para la comunidad de radioaficionados cubanos.</p>
+            </div>
+            <button class="btn-close-modal" onclick="toggleModal(false)">CERRAR TRANSMISIÓN</button>
+        </div>
+    </div>
 
     <div id="intro-overlay">
         <div class="intro-content">
@@ -176,7 +251,11 @@
         let idleTimer;
         const IDLE_LIMIT = 10000; // 10 segundos
 
-        // Helper para reproducir audio de forma segura
+        function toggleModal(show) {
+            const modal = document.getElementById('update-modal');
+            modal.style.display = show ? 'flex' : 'none';
+        }
+
         function safePlay(id) {
             const el = document.getElementById(id);
             if (el && typeof el.play === 'function') {
@@ -191,18 +270,15 @@
             }
         }
 
-        // Función para resetear el temporizador de inactividad
         function resetIdleTimer() {
             clearTimeout(idleTimer);
-            // Solo activar el temporizador si estamos en el UI principal y hay resultados
             if (document.getElementById('main-ui').style.display === "block" && foundFiles.length > 0) {
                 idleTimer = setTimeout(() => {
-                    location.reload(); // Volver al inicio
+                    location.reload(); 
                 }, IDLE_LIMIT);
             }
         }
 
-        // Escuchar eventos de interacción para evitar el reinicio si el usuario está activo
         window.addEventListener('mousemove', resetIdleTimer);
         window.addEventListener('keypress', resetIdleTimer);
         window.addEventListener('touchstart', resetIdleTimer);
@@ -297,7 +373,7 @@
                         <p style="margin:0; font-family: 'Orbitron';">NO SE ENCONTRARON REGISTROS PARA ${id}</p>
                     </div>`;
             } else {
-                resetIdleTimer(); // Iniciar cuenta regresiva al encontrar archivos
+                resetIdleTimer(); 
             }
         }
 
@@ -313,18 +389,13 @@
 
         function downloadAllZip() {
             if(foundFiles.length === 0) return;
-            
-            // Cancelar el timer de inactividad mientras procesa
             clearTimeout(idleTimer);
-
             const zipBtn = document.getElementById('btn-zip-all');
             zipBtn.innerHTML = "PROCESANDO PACK...";
             zipBtn.disabled = true;
-            
             var zip = new JSZip();
             var count = 0;
             var zipFilename = `QSL_${currentCallsign}.zip`;
-
             foundFiles.forEach(function(fileObj){
                 fetch(fileObj.url)
                     .then(response => response.blob())
@@ -335,7 +406,6 @@
                             zip.generateAsync({type:'blob'}).then(function(content) {
                                 saveAs(content, zipFilename);
                                 zipBtn.innerHTML = "¡EXITO!";
-                                // Reiniciar después de descargar el ZIP
                                 setTimeout(() => {
                                     location.reload(); 
                                 }, 2000);
@@ -349,10 +419,9 @@
             });
         }
 
-        // Manejar errores globales de carga de elementos (audio/img)
         window.addEventListener('error', function(e) {
             if (e.target.tagName === 'AUDIO') {
-                console.warn("Audio element failed to load source, replacing with silent fallback.");
+                console.warn("Audio fallback triggered.");
                 e.target.src = "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=";
             }
         }, true);
