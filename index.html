@@ -22,14 +22,12 @@
             font-family: 'Rajdhani', sans-serif; min-height: 100vh; width: 100%; overflow-x: hidden; 
         }
 
-        /* --- FONDO PLAYERO --- */
         body::before {
             content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(180deg, #010a14 0%, #004d40 100%);
             z-index: -2;
         }
 
-        /* --- CINEMÁTICA 3D --- */
         #intro-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: radial-gradient(circle, #002d25 0%, #000 100%);
@@ -69,7 +67,6 @@
             transform: scale(0.8); transition: 1s;
         }
 
-        /* --- UI PRINCIPAL --- */
         #main-ui { opacity: 0; display: none; transition: 1.5s; width: 100%; }
         .container { width: 100%; max-width: 900px; margin: 0 auto; padding: 20px; }
         
@@ -95,9 +92,7 @@
             font-weight: 900; font-family: 'Orbitron'; cursor: pointer; letter-spacing: 3px;
             box-shadow: 0 10px 30px rgba(0,242,255,0.4); transition: 0.4s;
         }
-        .btn-scan:hover { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(0,242,255,0.6); }
 
-        /* --- RESULTADOS --- */
         #results { 
             display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
             gap: 25px; margin-top: 35px; width: 100%; 
@@ -108,7 +103,6 @@
             border: 1px solid rgba(255,255,255,0.1);
             transition: 0.5s; transform-style: preserve-3d;
         }
-        .qsl-card:hover { transform: scale(1.03) translateY(-5px); border-color: var(--yellow); }
         .qsl-card img { width: 100%; height: auto; display: block; }
 
         .btn-dl { 
@@ -168,8 +162,8 @@
     </div>
 
     <script>
-        // URL de tu Google Apps Script
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzzltEIX8y8U1NXkKwylpFYEU5WYTuTtdOcya0PgGkrTfMUSkLOcVIO-gh-A6zcVlQ3Lw/exec";
+        // LA URL QUE ME PASASTE
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyU-KlmkDisA5RL0SOs518lgBoeWKfv5SIgcD69rZVpNal9cENLYRhUqzFQw7PHiDuYyg/exec";
 
         function initEpicIntro() {
             setTimeout(() => {
@@ -206,13 +200,17 @@
             document.getElementById('snd-scan').play();
 
             try {
-                // LLAMADA AL PUENTE DE GOOGLE SCRIPT
-                const response = await fetch(`${SCRIPT_URL}?q=${id}`);
+                // FETCH OPTIMIZADO PARA EVITAR BLOQUEO DE REDIRECCIÓN DE GOOGLE
+                const response = await fetch(`${SCRIPT_URL}?q=${encodeURIComponent(id)}`, {
+                    method: 'GET',
+                    redirect: 'follow'
+                });
+                
+                if (!response.ok) throw new Error('Error en la red');
+                
                 const data = await response.json();
 
-                // Simulación de escaneo (4 segundos para mantener la estética)
                 await new Promise(r => setTimeout(r, 4000));
-                
                 radar.style.display = "none";
                 document.getElementById('snd-scan').pause();
 
@@ -222,7 +220,7 @@
                         res.innerHTML += `
                             <div class="qsl-card">
                                 <img src="${url}" loading="lazy">
-                                <button class="btn-dl" onclick="dlReset('${url}')">DESCARGAR QSL</button>
+                                <button class="btn-dl" onclick="dlReset('${url}')">VER / DESCARGAR</button>
                             </div>`;
                     });
                 } else {
@@ -230,26 +228,22 @@
                 }
 
             } catch (error) {
-                console.error("Error en búsqueda:", error);
                 radar.style.display = "none";
                 document.getElementById('snd-scan').pause();
-                
                 res.innerHTML = `
                     <div class="warm-error">
-                        <h3 style="margin-top:0">¡Hola Colega! 🌊</h3>
-                        <p>No logramos localizar la señal <b>${id}</b> en el servidor. Revisa el indicativo e intenta de nuevo.</p>
-                        <p style="font-size:0.9rem; color:var(--cyan)">Reiniciando sistema...</p>
+                        <h3 style="margin-top:0">¡Atención Colega! 🌊</h3>
+                        <p>No se encontraron resultados para <b>${id}</b>.</p>
+                        <p style="font-size:0.8rem">Si el error persiste, verifica que el script esté publicado correctamente.</p>
                     </div>`;
-                
                 setTimeout(() => {
                     document.getElementById('target-id').value = "";
                     res.innerHTML = "";
-                }, 6000);
+                }, 5000);
             }
         }
 
         function dlReset(u) {
-            // Abrir imagen en pestaña nueva para descargar (más seguro para Drive)
             window.open(u, '_blank');
             document.getElementById('target-id').value = "";
             document.getElementById('results').innerHTML = "";
