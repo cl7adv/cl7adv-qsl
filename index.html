@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 <html lang="es">
-<head> <link rel="manifest" href="manifest.json">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#0b1622">
+<head>
     <meta charset="UTF-8">
     <title>QSL CARIBE v112 - TROPICAL CYBER</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0b1622">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
     
     <style>
@@ -23,14 +22,14 @@
             font-family: 'Rajdhani', sans-serif; min-height: 100vh; width: 100%; overflow-x: hidden; 
         }
 
-        /* --- FONDO PLAYERO 3D --- */
+        /* --- FONDO PLAYERO --- */
         body::before {
             content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(180deg, #010a14 0%, #004d40 100%);
             z-index: -2;
         }
 
-        /* --- CINEMÁTICA 3D MEJORADA --- */
+        /* --- CINEMÁTICA 3D --- */
         #intro-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: radial-gradient(circle, #002d25 0%, #000 100%);
@@ -70,7 +69,7 @@
             transform: scale(0.8); transition: 1s;
         }
 
-        /* --- UI PRINCIPAL "TROPICAL GLASS" --- */
+        /* --- UI PRINCIPAL --- */
         #main-ui { opacity: 0; display: none; transition: 1.5s; width: 100%; }
         .container { width: 100%; max-width: 900px; margin: 0 auto; padding: 20px; }
         
@@ -98,7 +97,7 @@
         }
         .btn-scan:hover { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(0,242,255,0.6); }
 
-        /* --- REJILLA Y CARTAS 3D --- */
+        /* --- RESULTADOS --- */
         #results { 
             display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
             gap: 25px; margin-top: 35px; width: 100%; 
@@ -117,7 +116,6 @@
             font-weight: 900; font-family: 'Orbitron'; cursor: pointer; transition: 0.3s;
         }
 
-        /* --- MENSAJE CÁLIDO --- */
         .warm-error {
             background: rgba(255, 255, 255, 0.1); border-radius: 20px; padding: 20px;
             color: var(--sand); border: 1px solid var(--sand);
@@ -170,6 +168,9 @@
     </div>
 
     <script>
+        // URL de tu Google Apps Script
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzzltEIX8y8U1NXkKwylpFYEU5WYTuTtdOcya0PgGkrTfMUSkLOcVIO-gh-A6zcVlQ3Lw/exec";
+
         function initEpicIntro() {
             setTimeout(() => {
                 document.getElementById('txt-system').classList.add('eating');
@@ -199,46 +200,45 @@
             if(!id) return;
             const res = document.getElementById('results');
             const radar = document.getElementById('radar-container');
+            
             res.innerHTML = "";
             radar.style.display = "block";
             document.getElementById('snd-scan').play();
 
-            await new Promise(r => setTimeout(r, 4000));
-            radar.style.display = "none";
-            document.getElementById('snd-scan').pause();
+            try {
+                // LLAMADA AL PUENTE DE GOOGLE SCRIPT
+                const response = await fetch(`${SCRIPT_URL}?q=${id}`);
+                const data = await response.json();
 
-            const tests = [
-                `img/${id}.png`, `IMG/${id}.png`, `img/${id}.jpg`, `IMG/${id}.jpg`,
-                `img/${id}-1.png`, `IMG/${id}-1.png`, `img/${id}-1.jpg`,
-                `img/${id}-2.png`, `IMG/${id}-2.png`, `img/${id}-2.jpg`, `img/${id}-3.jpg`, `img/${id}-4.jpg`, `img/${id}-5.jpg`, `img/${id}-6.jpg`, `img/${id}-7.jpg`,
-                `img/${id}-3.png`, `IMG/${id}-3.png`
-            ];
+                // Simulación de escaneo (4 segundos para mantener la estética)
+                await new Promise(r => setTimeout(r, 4000));
+                
+                radar.style.display = "none";
+                document.getElementById('snd-scan').pause();
 
-            let foundCount = 0;
-            const alreadyShown = new Set();
-
-            for(let p of tests) {
-                const ok = await verify(p);
-                if(ok && !alreadyShown.has(p)) {
-                    foundCount++;
-                    alreadyShown.add(p);
-                    res.innerHTML += `
-                        <div class="qsl-card">
-                            <img src="${p}">
-                            <button class="btn-dl" onclick="dlReset('${p}')">DESCARGAR QSL</button>
-                        </div>`;
+                if(data && data.links && data.links.length > 0) {
+                    document.getElementById('snd-success').play();
+                    data.links.forEach(url => {
+                        res.innerHTML += `
+                            <div class="qsl-card">
+                                <img src="${url}" loading="lazy">
+                                <button class="btn-dl" onclick="dlReset('${url}')">DESCARGAR QSL</button>
+                            </div>`;
+                    });
+                } else {
+                    throw new Error("No encontrado");
                 }
-            }
 
-            if(foundCount > 0) {
-                document.getElementById('snd-success').play();
-            } else {
-                // Mensaje cálido y regreso al inicio
+            } catch (error) {
+                console.error("Error en búsqueda:", error);
+                radar.style.display = "none";
+                document.getElementById('snd-scan').pause();
+                
                 res.innerHTML = `
                     <div class="warm-error">
                         <h3 style="margin-top:0">¡Hola Colega! 🌊</h3>
-                        <p>No logramos localizar la señal <b>${id}</b> en nuestros archivos actuales. Asegúrate de que el indicativo sea correcto o inténtalo más tarde.</p>
-                        <p style="font-size:0.9rem; color:var(--cyan)">Reiniciando sistema de búsqueda...</p>
+                        <p>No logramos localizar la señal <b>${id}</b> en el servidor. Revisa el indicativo e intenta de nuevo.</p>
+                        <p style="font-size:0.9rem; color:var(--cyan)">Reiniciando sistema...</p>
                     </div>`;
                 
                 setTimeout(() => {
@@ -248,10 +248,9 @@
             }
         }
 
-        function verify(u) { return new Promise(r => { const i=new Image(); i.onload=()=>r(true); i.onerror=()=>r(false); i.src=u; }); }
-
         function dlReset(u) {
-            const l = document.createElement('a'); l.href = u; l.download = u.split('/').pop(); l.click();
+            // Abrir imagen en pestaña nueva para descargar (más seguro para Drive)
+            window.open(u, '_blank');
             document.getElementById('target-id').value = "";
             document.getElementById('results').innerHTML = "";
         }
