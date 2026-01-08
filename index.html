@@ -48,7 +48,7 @@
 
         #buscarBtn:active { transform: translateY(3px); box-shadow: 0 2px 0 #b35900; }
 
-        /* Barra de Carga */
+        /* Barra carretera */
         .progress-container {
             width: 100%; max-width: 400px; height: 10px; 
             background: rgba(255,255,255,0.1); border-radius: 20px;
@@ -70,7 +70,6 @@
 
         .status-text { height: 40px; color: var(--neon); font-weight: bold; margin-top: 10px; }
 
-        /* Mensajes de Resultado */
         .error-msg {
             background: rgba(255, 68, 68, 0.2); border: 1px solid #ff4444;
             color: #ffbaba; padding: 15px; border-radius: 12px;
@@ -125,14 +124,6 @@
     </div>
 
     <script>
-        // --- BASE DE DATOS DE QSLs ---
-        // Aquí es donde añades los indicativos y el link a su imagen
-        const baseDeDatosQSL = {
-            "CO7ABC": "https://via.placeholder.com/400x250?text=QSL+CO7ABC",
-            "CM2XYZ": "https://via.placeholder.com/400x250?text=QSL+CM2XYZ",
-            "CL7ADV": "https://via.placeholder.com/400x250?text=QSL+Alfred"
-        };
-
         function playRadioSound() {
             try {
                 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -149,36 +140,54 @@
                 gainNode.connect(audioCtx.destination);
                 whiteNoise.start();
                 whiteNoise.stop(audioCtx.currentTime + 1.5);
-            } catch(e) { console.log("Audio no soportado"); }
+            } catch(e) {}
         }
 
-        function buscarQSL() {
-            const input = document.getElementById('indicativo');
-            const call = input.value.trim().toUpperCase();
+        function generarRutas(call) {
+            const rutas = [];
+            const formatos = ["jpg", "png"];
+            const variantes = ["", "-1", "-2", "-3"];
+
+            formatos.forEach(ext => {
+                variantes.forEach(v => {
+                    rutas.push(`img/${call}${v}.${ext}`);
+                });
+            });
+
+            return rutas;
+        }
+
+        function probarImagen(src) {
+            return new Promise(resolve => {
+                const img = new Image();
+                img.onload = () => resolve(src);
+                img.onerror = () => resolve(null);
+                img.src = src + "?t=" + Date.now();
+            });
+        }
+
+        async function buscarQSL() {
+            const call = document.getElementById('indicativo').value.trim().toUpperCase();
             const pContainer = document.getElementById('pContainer');
             const card = document.getElementById('card');
             const fill = document.getElementById('fill');
             const status = document.getElementById('status');
             const res = document.getElementById('resultado');
 
-            if (!call) {
-                alert("Por favor, ingresa un indicativo");
-                return;
-            }
+            if (!call) return alert("Por favor, ingresa un indicativo");
 
-            // Reset de búsqueda previa
             res.innerHTML = "";
             pContainer.style.display = "block";
             fill.style.width = "0%";
             card.style.left = "0%";
             playRadioSound();
-            
+
             let progreso = 0;
             const anim = setInterval(() => {
                 progreso += 2;
                 fill.style.width = progreso + "%";
                 card.style.left = progreso + "%";
-                
+
                 if(progreso == 30) status.innerText = "SINTONIZANDO SEÑAL...";
                 if(progreso == 60) status.innerText = "BUSCANDO EN LOGS...";
                 if(progreso == 90) status.innerText = "FILTRANDO INDICATIVO...";
@@ -190,7 +199,7 @@
             }, 30);
         }
 
-        function finalizarBusqueda(call) {
+        async function finalizarBusqueda(call) {
             const res = document.getElementById('resultado');
             const status = document.getElementById('status');
             const pContainer = document.getElementById('pContainer');
@@ -199,23 +208,16 @@
             status.innerText = "";
             pContainer.style.display = "none";
 
-            // Lógica de verificación
-            if (baseDeDatosQSL[call]) {
-                const urlImagen = baseDeDatosQSL[call];
-                res.innerHTML = `
-                    <div class="success-msg">
-                        ✅ ¡QSL ENCONTRADA! <br><br>
-                        <img src="${urlImagen}" style="width:100%; border-radius:10px; margin-bottom:10px;">
-                        <a href="${urlImagen}" target="_blank" class="download-btn">DESCARGAR TARJETA</a>
-                    </div>
-                `;
-            } else {
+            const rutas = generarRutas(call);
+            const pruebas = await Promise.all(rutas.map(probarImagen));
+            const encontradas = pruebas.filter(x => x !== null);
+
+            if (encontradas.length === 0) {
                 res.innerHTML = `
                     <div class="error-msg" id="msg">
                         ❌ LA QSL PARA ${call} NO HA SIDO SUBIDA AÚN
                     </div>
                 `;
-                // Solo auto-reinicio si falla, para que si la encuentra el usuario la pueda ver/bajar
                 setTimeout(() => {
                     const msg = document.getElementById('msg');
                     if(msg) {
@@ -223,7 +225,18 @@
                         setTimeout(() => { res.innerHTML = ""; input.value = ""; }, 1000);
                     }
                 }, 5000);
+                return;
             }
+
+            const urlImagen = encontradas[0];
+
+            res.innerHTML = `
+                <div class="success-msg">
+                    ✅ ¡QSL ENCONTRADA! <br><br>
+                    <img src="${urlImagen}" style="width:100%; border-radius:10px; margin-bottom:10px;">
+                    <a href="${urlImagen}" target="_blank" class="download-btn">DESCARGAR TARJETA</a>
+                </div>
+            `;
         }
     </script>
 </body>
