@@ -475,7 +475,27 @@ function ejecutarProceso(callback) {
             callback();
         }
     }, 30);
+}function buscarQSL() {
+    const indicativo = document.getElementById("indicativo").value.trim().toUpperCase();
+    if (!indicativo) return;
+
+    const ruta = `IMG/${indicativo}.png`;
+
+    fetch(ruta)
+        .then(res => {
+            if (res.ok) {
+                document.getElementById("resultadoQSL").src = ruta;
+            } else {
+                document.getElementById("resultadoQSL").src = "";
+                alert("QSL no encontrada");
+            }
+        })
+        .catch(() => {
+            document.getElementById("resultadoQSL").src = "";
+            alert("QSL no encontrada");
+        });
 }
+
 
 async function finalizarBusqueda(call) {
     const rutas = generarRutas(call);
