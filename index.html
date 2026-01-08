@@ -2,8 +2,12 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Buscador QSL Caribeño - CL7ADV</title>
+    <title>QSL Caribeña Ultra - CL7ADV</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
+
+    <!-- JSZip para ZIP masivo (se usa en PARTE 2) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
     <style>
         :root {
             --primary: #00bcd4;
@@ -21,7 +25,7 @@
         }
 
         .container { 
-            max-width: 650px; width: 90%; padding: 40px; 
+            max-width: 750px; width: 95%; padding: 40px; 
             background: var(--glass); border-radius: 30px; 
             box-shadow: 0 30px 70px rgba(0,0,0,0.8); 
             border: 1px solid rgba(0, 255, 153, 0.3); text-align: center;
@@ -30,7 +34,14 @@
         h1 { font-size: 2.2rem; margin-bottom: 5px; text-shadow: 0 0 15px var(--neon); }
         .subtitle { color: var(--gold); margin-bottom: 30px; font-size: 0.9rem; letter-spacing: 2px; }
 
-        .search-group { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; }
+        /* Grupo de búsqueda */
+        .search-group { 
+            display: flex; 
+            flex-wrap: wrap; 
+            justify-content: center; 
+            gap: 15px; 
+            align-items: center;
+        }
 
         #indicativo { 
             padding: 15px; font-size: 1.3rem; border: 2px solid rgba(255,255,255,0.1); 
@@ -47,6 +58,58 @@
         }
 
         #buscarBtn:active { transform: translateY(3px); box-shadow: 0 2px 0 #b35900; }
+
+        /* INTERRUPTOR iPHONE */
+        .modo-switch {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: bold;
+            color: var(--gold);
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 55px;
+            height: 28px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0;
+            right: 0; bottom: 0;
+            background-color: #555;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--neon);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
 
         /* Barra carretera */
         .progress-container {
@@ -70,6 +133,7 @@
 
         .status-text { height: 40px; color: var(--neon); font-weight: bold; margin-top: 10px; }
 
+        /* Mensajes */
         .error-msg {
             background: rgba(255, 68, 68, 0.2); border: 1px solid #ff4444;
             color: #ffbaba; padding: 15px; border-radius: 12px;
@@ -88,6 +152,49 @@
             border-radius: 8px; font-weight: bold;
         }
 
+        /* Modo manual */
+        #manualPanel {
+            display: none;
+            margin-top: 25px;
+            background: rgba(255,255,255,0.05);
+            padding: 20px;
+            border-radius: 15px;
+        }
+
+        #manualLista {
+            width: 90%;
+            height: 120px;
+            background: #000;
+            color: var(--neon);
+            border-radius: 10px;
+            padding: 10px;
+            font-size: 1rem;
+            text-transform: uppercase;
+        }
+
+        #btnBuscarManual {
+            margin-top: 15px;
+            padding: 12px 25px;
+            background: var(--accent);
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        #btnZip {
+            margin-top: 20px;
+            padding: 12px 25px;
+            background: var(--neon);
+            border: none;
+            border-radius: 10px;
+            color: #000;
+            font-weight: bold;
+            cursor: pointer;
+            display: none;
+        }
+
         @keyframes shake {
             0%, 100% { transform: translateX(0); }
             25% { transform: translateX(-10px); }
@@ -99,17 +206,38 @@
         .fade-out { opacity: 0; transition: opacity 1s; }
     </style>
 </head>
+
 <body>
 
     <div class="container">
-        <h1>🌴 QSL Caribeña 🌊</h1>
+        <h1>🌴 QSL Caribeña Ultra 🌊</h1>
         <p class="subtitle">CL7ADV - SANTA CRUZ DEL SUR</p>
 
+        <!-- Grupo de búsqueda con interruptor -->
         <div class="search-group">
             <input type="text" id="indicativo" placeholder="HP3GNG" maxlength="10">
-            <button id="buscarBtn" onclick="buscarQSL()">BUSCAR QSL</button>
+
+            <div class="modo-switch">
+                <span>Modo:</span>
+                <label class="switch">
+                    <input type="checkbox" id="modoManual">
+                    <span class="slider"></span>
+                </label>
+                <span id="modoTexto">Automático</span>
+            </div>
+
+            <button id="buscarBtn">BUSCAR QSL</button>
         </div>
 
+        <!-- Panel manual -->
+        <div id="manualPanel">
+            <h3>Modo Manual</h3>
+            <p>Escribe varios indicativos, uno por línea:</p>
+            <textarea id="manualLista" placeholder="HP3GNG&#10;CO7ABC&#10;CM2XYZ"></textarea>
+            <button id="btnBuscarManual">BUSCAR LISTA</button>
+        </div>
+
+        <!-- Barra carretera -->
         <div id="pContainer" class="progress-container">
             <div id="card" class="card-icon">QSL</div>
             <div id="fill" class="progress-fill"></div>
@@ -118,126 +246,255 @@
         <div id="status" class="status-text"></div>
         <div id="resultado"></div>
 
+        <button id="btnZip">DESCARGAR SELECCIONADAS EN ZIP</button>
+
         <footer style="margin-top:40px; font-size:0.8rem; opacity:0.7;">
             73's Cordiales - Alfred - 2026
         </footer>
     </div>
+<script>
+/* ============================
+   SONIDO DE RADIO
+============================ */
+function playRadioSound() {
+    try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const bufferSize = 2 * audioCtx.sampleRate;
+        const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+        const output = noiseBuffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) { output[i] = Math.random() * 2 - 1; }
+        const whiteNoise = audioCtx.createBufferSource();
+        whiteNoise.buffer = noiseBuffer;
+        const gainNode = audioCtx.createGain();
+        gainNode.gain.setValueAtTime(0.05, audioCtx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 1.5);
+        whiteNoise.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        whiteNoise.start();
+        whiteNoise.stop(audioCtx.currentTime + 1.5);
+    } catch(e) {}
+}
 
-    <script>
-        function playRadioSound() {
-            try {
-                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                const bufferSize = 2 * audioCtx.sampleRate;
-                const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-                const output = noiseBuffer.getChannelData(0);
-                for (let i = 0; i < bufferSize; i++) { output[i] = Math.random() * 2 - 1; }
-                const whiteNoise = audioCtx.createBufferSource();
-                whiteNoise.buffer = noiseBuffer;
-                const gainNode = audioCtx.createGain();
-                gainNode.gain.setValueAtTime(0.05, audioCtx.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 1.5);
-                whiteNoise.connect(gainNode);
-                gainNode.connect(audioCtx.destination);
-                whiteNoise.start();
-                whiteNoise.stop(audioCtx.currentTime + 1.5);
-            } catch(e) {}
-        }
+/* ============================
+   GENERADOR DE RUTAS
+============================ */
+function generarRutas(call) {
+    const rutas = [];
+    const formatos = ["jpg", "JPG", "png", "PNG"];
+    const variantes = ["", "-1", "-2", "-3"];
 
-        function generarRutas(call) {
-            const rutas = [];
-            const formatos = ["jpg", "JPG", "png", "PNG"];
-            const variantes = ["", "-1", "-2", "-3"];
+    formatos.forEach(ext => {
+        variantes.forEach(v => {
+            rutas.push(`img/${call}${v}.${ext}`);
+        });
+    });
 
-            formatos.forEach(ext => {
-                variantes.forEach(v => {
-                    rutas.push(`img/${call}${v}.${ext}`);
-                });
-            });
+    return rutas;
+}
 
-            return rutas;
-        }
+/* ============================
+   PROBAR SI UNA IMAGEN EXISTE
+============================ */
+function probarImagen(src) {
+    return new Promise(resolve => {
+        const img = new Image();
+        img.onload = () => resolve(src);
+        img.onerror = () => resolve(null);
+        img.src = src + "?t=" + Date.now();
+    });
+}
 
-        function probarImagen(src) {
-            return new Promise(resolve => {
-                const img = new Image();
-                img.onload = () => resolve(src);
-                img.onerror = () => resolve(null);
-                img.src = src + "?t=" + Date.now();
-            });
-        }
+/* ============================
+   INTERRUPTOR AUTOMÁTICO / MANUAL
+============================ */
+document.getElementById("modoManual").addEventListener("change", function() {
+    const texto = document.getElementById("modoTexto");
+    const panel = document.getElementById("manualPanel");
 
-        async function buscarQSL() {
-            const call = document.getElementById('indicativo').value.trim().toUpperCase();
-            const pContainer = document.getElementById('pContainer');
-            const card = document.getElementById('card');
-            const fill = document.getElementById('fill');
-            const status = document.getElementById('status');
-            const res = document.getElementById('resultado');
+    if (this.checked) {
+        texto.innerText = "Manual";
+        panel.style.display = "block";
+    } else {
+        texto.innerText = "Automático";
+        panel.style.display = "none";
+    }
+});
 
-            if (!call) return alert("Por favor, ingresa un indicativo");
+/* ============================
+   MODO AUTOMÁTICO
+============================ */
+document.getElementById("buscarBtn").addEventListener("click", buscarQSL);
 
-            res.innerHTML = "";
-            pContainer.style.display = "block";
-            fill.style.width = "0%";
-            card.style.left = "0%";
-            playRadioSound();
+async function buscarQSL() {
+    const call = document.getElementById('indicativo').value.trim().toUpperCase();
+    if (!call) return alert("Por favor, ingresa un indicativo");
 
-            let progreso = 0;
-            const anim = setInterval(() => {
-                progreso += 2;
-                fill.style.width = progreso + "%";
-                card.style.left = progreso + "%";
+    iniciarBarra();
 
-                if(progreso == 30) status.innerText = "SINTONIZANDO SEÑAL...";
-                if(progreso == 60) status.innerText = "BUSCANDO EN LOGS...";
-                if(progreso == 90) status.innerText = "FILTRANDO INDICATIVO...";
+    setTimeout(() => finalizarBusquedaAutomatica(call), 1600);
+}
 
-                if (progreso >= 100) {
-                    clearInterval(anim);
-                    finalizarBusqueda(call);
-                }
-            }, 30);
-        }
+async function finalizarBusquedaAutomatica(call) {
+    detenerBarra();
 
-        async function finalizarBusqueda(call) {
-            const res = document.getElementById('resultado');
-            const status = document.getElementById('status');
-            const pContainer = document.getElementById('pContainer');
-            const input = document.getElementById('indicativo');
+    const rutas = generarRutas(call);
+    const pruebas = await Promise.all(rutas.map(probarImagen));
+    const encontradas = pruebas.filter(x => x !== null);
 
-            status.innerText = "";
-            pContainer.style.display = "none";
+    const res = document.getElementById('resultado');
+    const btnZip = document.getElementById('btnZip');
+
+    if (encontradas.length === 0) {
+        res.innerHTML = `
+            <div class="error-msg" id="msg">
+                ❌ LA QSL PARA ${call} NO HA SIDO SUBIDA AÚN
+            </div>
+        `;
+        setTimeout(() => reiniciarSistema(), 4000);
+        return;
+    }
+
+    // Mostrar todas las variantes
+    res.innerHTML = `<div class="success-msg">QSLs encontradas para ${call}:</div>`;
+    encontradas.forEach(src => {
+        res.innerHTML += `
+            <div style="margin-top:15px;">
+                <input type="checkbox" class="chkQSL" value="${src}">
+                <img src="${src}" style="width:100%; border-radius:10px; margin-top:5px;">
+            </div>
+        `;
+    });
+
+    btnZip.style.display = "block";
+}
+
+/* ============================
+   MODO MANUAL
+============================ */
+document.getElementById("btnBuscarManual").addEventListener("click", buscarManual);
+
+async function buscarManual() {
+    const lista = document.getElementById("manualLista").value.trim().split("\n");
+    const res = document.getElementById("resultado");
+    const btnZip = document.getElementById("btnZip");
+
+    res.innerHTML = "";
+    btnZip.style.display = "none";
+
+    if (lista.length === 0) return alert("Escribe al menos un indicativo");
+
+    iniciarBarra();
+
+    setTimeout(async () => {
+        detenerBarra();
+
+        let totalEncontradas = [];
+
+        for (let call of lista) {
+            call = call.trim().toUpperCase();
+            if (!call) continue;
 
             const rutas = generarRutas(call);
             const pruebas = await Promise.all(rutas.map(probarImagen));
             const encontradas = pruebas.filter(x => x !== null);
 
-            if (encontradas.length === 0) {
-                res.innerHTML = `
-                    <div class="error-msg" id="msg">
-                        ❌ LA QSL PARA ${call} NO HA SIDO SUBIDA AÚN
-                    </div>
+            if (encontradas.length > 0) {
+                res.innerHTML += `<div class="success-msg">QSLs de ${call}:</div>`;
+                encontradas.forEach(src => {
+                    totalEncontradas.push(src);
+                    res.innerHTML += `
+                        <div style="margin-top:15px;">
+                            <input type="checkbox" class="chkQSL" value="${src}">
+                            <img src="${src}" style="width:100%; border-radius:10px; margin-top:5px;">
+                        </div>
+                    `;
+                });
+            } else {
+                res.innerHTML += `
+                    <div class="error-msg">❌ No hay QSL para ${call}</div>
                 `;
-                setTimeout(() => {
-                    const msg = document.getElementById('msg');
-                    if(msg) {
-                        msg.classList.add('fade-out');
-                        setTimeout(() => { res.innerHTML = ""; input.value = ""; }, 1000);
-                    }
-                }, 5000);
-                return;
             }
-
-            const urlImagen = encontradas[0];
-
-            res.innerHTML = `
-                <div class="success-msg">
-                    ✅ ¡QSL ENCONTRADA! <br><br>
-                    <img src="${urlImagen}" style="width:100%; border-radius:10px; margin-bottom:10px;">
-                    <a href="${urlImagen}" target="_blank" class="download-btn">DESCARGAR TARJETA</a>
-                </div>
-            `;
         }
-    </script>
+
+        if (totalEncontradas.length > 0) {
+            btnZip.style.display = "block";
+        }
+
+    }, 1600);
+}
+
+/* ============================
+   ZIP MASIVO
+============================ */
+document.getElementById("btnZip").addEventListener("click", async () => {
+    const seleccionadas = [...document.querySelectorAll(".chkQSL:checked")].map(x => x.value);
+
+    if (seleccionadas.length === 0) {
+        alert("Selecciona al menos una QSL");
+        return;
+    }
+
+    const zip = new JSZip();
+
+    for (let url of seleccionadas) {
+        const nombre = url.split("/").pop();
+        const blob = await fetch(url).then(r => r.blob());
+        zip.file(nombre, blob);
+    }
+
+    const contenido = await zip.generateAsync({ type: "blob" });
+    const enlace = document.createElement("a");
+    enlace.href = URL.createObjectURL(contenido);
+    enlace.download = "QSLs.zip";
+    enlace.click();
+
+    setTimeout(() => reiniciarSistema(), 2000);
+});
+
+/* ============================
+   BARRA CARRETERA
+============================ */
+function iniciarBarra() {
+    const p = document.getElementById("pContainer");
+    const fill = document.getElementById("fill");
+    const card = document.getElementById("card");
+    const status = document.getElementById("status");
+
+    p.style.display = "block";
+    fill.style.width = "0%";
+    card.style.left = "0%";
+    status.innerText = "";
+    playRadioSound();
+
+    let progreso = 0;
+    window.animBarra = setInterval(() => {
+        progreso += 2;
+        fill.style.width = progreso + "%";
+        card.style.left = progreso + "%";
+
+        if (progreso == 30) status.innerText = "SINTONIZANDO SEÑAL...";
+        if (progreso == 60) status.innerText = "BUSCANDO EN LOGS...";
+        if (progreso == 90) status.innerText = "FILTRANDO INDICATIVO...";
+
+        if (progreso >= 100) clearInterval(window.animBarra);
+    }, 30);
+}
+
+function detenerBarra() {
+    clearInterval(window.animBarra);
+    document.getElementById("pContainer").style.display = "none";
+}
+
+/* ============================
+   REINICIO AUTOMÁTICO
+============================ */
+function reiniciarSistema() {
+    document.getElementById("resultado").innerHTML = "";
+    document.getElementById("btnZip").style.display = "none";
+    document.getElementById("indicativo").value = "";
+    document.getElementById("manualLista").value = "";
+    document.getElementById("status").innerText = "";
+}
+</script>
 </body>
 </html>
