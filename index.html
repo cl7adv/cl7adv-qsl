@@ -5,7 +5,7 @@
     <title>QSL Caribeña Ultra - CL7ADV</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
 
-    <!-- JSZip para ZIP masivo (se usa en PARTE 2) -->
+    <!-- JSZip para ZIP masivo (se usa en PARTE A2) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
     <style>
@@ -133,26 +133,38 @@
 
         .status-text { height: 40px; color: var(--neon); font-weight: bold; margin-top: 10px; }
 
-        /* Mensajes */
-        .error-msg {
-            background: rgba(255, 68, 68, 0.2); border: 1px solid #ff4444;
-            color: #ffbaba; padding: 15px; border-radius: 12px;
-            margin-top: 20px; animation: shake 0.5s;
+        /* MINI‑CARDS */
+        .qsl-card {
+            width: 160px;
+            background: rgba(255,255,255,0.05);
+            padding: 10px;
+            border-radius: 12px;
+            margin: 10px;
+            display: inline-block;
+            vertical-align: top;
+            text-align: center;
+            box-shadow: 0 0 10px rgba(0,0,0,0.4);
         }
 
-        .success-msg {
-            background: rgba(0, 255, 153, 0.2); border: 1px solid var(--neon);
-            color: #e0fff0; padding: 20px; border-radius: 12px;
-            margin-top: 20px; animation: fadeIn 0.8s;
+        .qsl-card img {
+            width: 100%;
+            border-radius: 8px;
         }
 
-        .download-btn {
-            display: inline-block; margin-top: 15px; padding: 10px 20px;
-            background: var(--neon); color: #000; text-decoration: none;
-            border-radius: 8px; font-weight: bold;
+        /* RESPONSIVE — 2 columnas en móvil */
+        @media (max-width: 600px) {
+            .qsl-card {
+                width: 45%;
+            }
         }
 
-        /* Modo manual */
+        @media (max-width: 400px) {
+            .qsl-card {
+                width: 45%;
+            }
+        }
+
+        /* Panel manual */
         #manualPanel {
             display: none;
             margin-top: 25px;
@@ -195,13 +207,17 @@
             display: none;
         }
 
+        /* Animaciones */
         @keyframes shake {
             0%, 100% { transform: translateX(0); }
             25% { transform: translateX(-10px); }
             75% { transform: translateX(10px); }
         }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { 
+            from { opacity: 0; transform: translateY(10px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
 
         .fade-out { opacity: 0; transition: opacity 1s; }
     </style>
@@ -354,13 +370,13 @@ async function finalizarBusquedaAutomatica(call) {
         return;
     }
 
-    // Mostrar todas las variantes
+    // Mostrar mini‑cards marcadas automáticamente
     res.innerHTML = `<div class="success-msg">QSLs encontradas para ${call}:</div>`;
     encontradas.forEach(src => {
         res.innerHTML += `
-            <div style="margin-top:15px;">
-                <input type="checkbox" class="chkQSL" value="${src}">
-                <img src="${src}" style="width:100%; border-radius:10px; margin-top:5px;">
+            <div class="qsl-card">
+                <input type="checkbox" class="chkQSL" value="${src}" checked>
+                <img src="${src}">
             </div>
         `;
     });
@@ -403,9 +419,9 @@ async function buscarManual() {
                 encontradas.forEach(src => {
                     totalEncontradas.push(src);
                     res.innerHTML += `
-                        <div style="margin-top:15px;">
-                            <input type="checkbox" class="chkQSL" value="${src}">
-                            <img src="${src}" style="width:100%; border-radius:10px; margin-top:5px;">
+                        <div class="qsl-card">
+                            <input type="checkbox" class="chkQSL" value="${src}" checked>
+                            <img src="${src}">
                         </div>
                     `;
                 });
