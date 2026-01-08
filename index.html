@@ -3,246 +3,379 @@
 <head>
     <meta charset="UTF-8">
     <title>QSL Caribeña Ultra - CL7ADV</title>
-    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
     <!-- JSZip para ZIP masivo -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
     <style>
         :root {
-            --primary: #00bcd4;
-            --accent: #ff9800;
-            --gold: #ffe082;
-            --neon: #00ff99;
-            --glass: rgba(14, 36, 49, 0.96);
+            --caribbean-cyan: #00f2ff;
+            --caribbean-pink: #ff007a;
+            --caribbean-gold: #ffcc00;
+            --deep-ocean: #000814;
+            --glass-bg: rgba(0, 15, 30, 0.85);
+            --border-glow: rgba(0, 242, 255, 0.3);
         }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body { 
-            margin: 0; font-family: 'Segoe UI', sans-serif; 
-            background: radial-gradient(circle at center, #00acc1, #013d3e); 
-            background-attachment: fixed; color: #fff; 
-            display: flex; align-items: center; justify-content: center; min-height: 100vh;
-            overflow-x: hidden;
+            margin: 0; 
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; 
+            background: var(--deep-ocean); 
+            color: #fff; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            min-height: 100vh;
+            overflow: hidden;
         }
 
-        /* --- MARCA DE AGUA ESTACIÓN (COPYRIGHT) --- */
+        /* --- MARCA DE AGUA ESTILO RADAR --- */
         .station-copyright {
             position: fixed;
             bottom: 20px;
-            right: 25px;
-            font-size: 0.85rem;
-            color: rgba(255, 255, 255, 0.4);
-            letter-spacing: 2px;
-            z-index: 10001;
-            pointer-events: none;
+            right: 20px;
+            font-size: 0.65rem;
+            color: var(--caribbean-cyan);
+            letter-spacing: 3px;
+            z-index: 1000;
             text-transform: uppercase;
-            font-weight: bold;
-            border-right: 3px solid var(--neon);
-            padding-right: 10px;
+            font-weight: 900;
+            background: rgba(0,0,0,0.5);
+            padding: 5px 10px;
+            border-left: 3px solid var(--caribbean-pink);
         }
 
-        /* --- PANTALLA DE BIENVENIDA --- */
+        /* --- PANTALLA DE BIENVENIDA: RADAR CARIBEÑO --- */
         #welcome-screen {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: #013d3e;
+            background: radial-gradient(circle at center, #001a2e 0%, #000 100%);
             z-index: 9999;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            overflow: hidden;
+            transition: all 1s cubic-bezier(0.87, 0, 0.13, 1);
         }
 
-        .qsl-rocket {
+        /* El Radar */
+        .radar-circle {
             position: absolute;
-            width: 140px;
-            height: 90px;
-            background: #fff;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 0 40px rgba(255,255,255,0.4);
-            left: -300px;
-            top: 40%;
-            z-index: 10000;
-            display: none; 
-        }
-        .qsl-rocket::before { content: "✉️"; font-size: 2.5rem; }
-
-        .smoke-trail {
-            position: absolute;
-            right: 100%;
-            top: 50%;
-            transform: translateY(-50%);
             width: 600px;
-            height: 80px;
-            background: radial-gradient(ellipse at right, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.1) 60%, transparent 100%);
-            filter: blur(20px);
-            opacity: 0.7;
+            height: 600px;
+            border: 1px solid rgba(0, 242, 255, 0.1);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        .radar-sweep {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: conic-gradient(from 0deg, transparent 270deg, rgba(0, 242, 255, 0.3) 360deg);
+            top: 50%; left: 50%;
+            transform-origin: 0 0;
+            animation: sweep 4s linear infinite;
+            border-radius: 0 100% 0 0;
         }
 
-        @keyframes fastPass {
-            0% { left: -300px; transform: rotate(15deg) scale(0.5); }
-            40% { transform: rotate(-5deg) scale(1.1); }
-            100% { left: 130%; transform: rotate(-25deg) scale(0.7); }
+        @keyframes sweep {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Los Láseres Horizontales */
+        .laser {
+            position: absolute;
+            height: 2px;
+            width: 30%;
+            z-index: 5;
+            filter: blur(2px);
+            opacity: 0.8;
+        }
+        .laser-blue {
+            background: linear-gradient(to right, transparent, var(--caribbean-cyan));
+            top: 20%;
+            left: -30%;
+            animation: patrol-left 3s linear infinite;
+        }
+        .laser-red {
+            background: linear-gradient(to left, transparent, var(--caribbean-pink));
+            bottom: 20%;
+            right: -30%;
+            animation: patrol-right 3s linear infinite;
+        }
+
+        @keyframes patrol-left {
+            0% { left: -30%; }
+            100% { left: 110%; }
+        }
+        @keyframes patrol-right {
+            0% { right: -30%; }
+            100% { right: 110%; }
         }
 
         .welcome-msg {
             text-align: center;
-            opacity: 1;
-            transform: scale(1);
-            transition: 0.5s;
+            z-index: 10;
+            padding: 20px;
         }
-        .welcome-msg h2 { font-size: 3.5rem; color: var(--neon); text-shadow: 0 0 25px rgba(0,255,153,0.6); margin-bottom: 5px; font-weight: 900; }
-        .welcome-msg p { font-size: 1.6rem; color: var(--gold); margin-bottom: 35px; letter-spacing: 1px; }
+
+        .main-title {
+            font-size: clamp(2rem, 8vw, 4.5rem);
+            font-weight: 900;
+            text-transform: uppercase;
+            background: linear-gradient(to bottom, #fff 40%, var(--caribbean-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 8px;
+            margin-bottom: 5px;
+            filter: drop-shadow(0 0 10px rgba(0, 242, 255, 0.5));
+        }
+
+        .subtitle {
+            font-size: 0.9rem;
+            letter-spacing: 6px;
+            color: var(--caribbean-pink);
+            text-transform: uppercase;
+            font-weight: bold;
+            margin-bottom: 40px;
+            opacity: 0.8;
+        }
 
         #start-app {
-            padding: 15px 50px; font-size: 1.2rem; border-radius: 40px; border: none;
-            background: linear-gradient(to right, var(--neon), #00cc7a);
-            color: #000; font-weight: bold; cursor: pointer; box-shadow: 0 10px 30px rgba(0,0,0,0.4); transition: 0.3s;
+            padding: 18px 45px;
+            font-size: 1rem;
+            background: transparent;
+            color: #fff;
+            border: 1px solid var(--caribbean-cyan);
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            transition: 0.4s;
+            position: relative;
+            overflow: hidden;
+            border-radius: 4px;
         }
+        #start-app::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.5s;
+        }
+        #start-app:hover {
+            background: var(--caribbean-cyan);
+            color: #000;
+            box-shadow: 0 0 30px var(--caribbean-cyan);
+        }
+        #start-app:hover::before { left: 100%; }
 
         /* --- CONTENIDO PRINCIPAL --- */
         .container { 
-            max-width: 800px; width: 95%; padding: 40px; 
-            background: var(--glass); border-radius: 30px; 
-            box-shadow: 0 30px 70px rgba(0,0,0,0.8); 
-            border: 1px solid rgba(0, 255, 153, 0.3); text-align: center;
-            display: none; position: relative;
+            width: 95%; 
+            max-width: 950px; 
+            padding: 40px; 
+            background: var(--glass-bg); 
+            border-radius: 12px;
+            box-shadow: 0 0 60px rgba(0,0,0,0.8), inset 0 0 20px rgba(0, 242, 255, 0.05); 
+            border: 1px solid var(--border-glow); 
+            text-align: center;
+            display: none;
+            backdrop-filter: blur(15px);
+            animation: terminal-open 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+            max-height: 90vh;
+            overflow-y: auto;
         }
 
-        h1 { font-size: 2.2rem; margin-bottom: 30px; text-shadow: 0 0 15px var(--neon); }
+        @keyframes terminal-open { 
+            from { opacity: 0; transform: scale(0.9) translateY(20px); } 
+            to { opacity: 1; transform: scale(1) translateY(0); } 
+        }
 
-        .search-group { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; align-items: center; }
+        h1 { 
+            font-size: 1.5rem; 
+            margin-bottom: 35px; 
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 8px;
+            position: relative;
+        }
+        h1::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 3px;
+            background: var(--caribbean-pink);
+            margin: 10px auto;
+        }
+
+        .search-group { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            gap: 15px; 
+        }
+
+        @media (min-width: 600px) {
+            .search-group { flex-direction: row; justify-content: center; }
+        }
 
         #indicativo { 
-            padding: 15px; font-size: 1.3rem; border: 2px solid rgba(255,255,255,0.1); 
-            border-radius: 12px; width: 220px; background: #000;
-            color: var(--neon); font-weight: bold; text-transform: uppercase;
-            text-align: center; letter-spacing: 2px;
-        }
-
-        #buscarBtn { 
-            padding: 15px 30px; font-size: 1rem; 
-            background: linear-gradient(145deg, #ffb74d, #f57c00); 
-            color: #fff; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; 
-            box-shadow: 0 5px 0 #b35900;
-        }
-
-        .progress-container { width: 100%; max-width: 400px; height: 10px; background: rgba(255,255,255,0.1); border-radius: 20px; margin: 50px auto 20px; position: relative; display: none; }
-        .progress-fill { height: 100%; background: var(--neon); width: 0%; border-radius: 20px; transition: 0.1s linear; }
-        .card-icon { position: absolute; top: -35px; left: 0%; width: 45px; height: 30px; background: #fff; border: 2px solid var(--gold); border-radius: 5px; color: #333; font-weight: bold; font-size: 10px; display: flex; align-items: center; justify-content: center; transform: translateX(-50%); transition: 0.1s linear; }
-
-        /* --- TARJETAS QSL --- */
-        .qsl-card { 
-            width: 180px; background: rgba(255,255,255,0.05); padding: 12px; 
-            border-radius: 12px; margin: 10px; display: inline-block; 
-            vertical-align: top; text-align: center; border: 1px solid rgba(255,255,255,0.1);
-        }
-        .qsl-card img { width: 100%; border-radius: 8px; margin-bottom: 8px; cursor: pointer; }
-        .btn-individual {
-            width: 100%; padding: 8px; font-size: 0.8rem; background: rgba(0, 255, 153, 0.2);
-            color: var(--neon); border: 1px solid var(--neon); border-radius: 5px; cursor: pointer;
+            padding: 15px; font-size: 1.8rem; border: 1px solid rgba(255,255,255,0.1); 
+            background: rgba(0,0,0,0.4);
+            color: var(--caribbean-cyan); font-weight: 900; text-transform: uppercase;
+            text-align: center; letter-spacing: 8px; outline: none;
+            width: 100%; max-width: 320px;
+            border-radius: 4px;
             transition: 0.3s;
         }
-        .btn-individual:hover { background: var(--neon); color: #000; }
+        #indicativo:focus { border-color: var(--caribbean-cyan); box-shadow: 0 0 15px var(--border-glow); }
 
-        /* --- CONTADOR DE REINICIO --- */
+        #buscarBtn { 
+            padding: 18px 40px; font-size: 1rem; 
+            background: var(--caribbean-pink); 
+            color: #fff; border: none; cursor: pointer; font-weight: 900; 
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border-radius: 4px;
+            transition: 0.3s;
+        }
+        #buscarBtn:hover { transform: translateY(-2px); box-shadow: 0 5px 20px var(--caribbean-pink); }
+
+        .modo-switch { margin-top: 20px; font-size: 0.75rem; color: #5a7d8c; letter-spacing: 2px; }
+        .switch { position: relative; display: inline-block; width: 46px; height: 24px; vertical-align: middle; margin: 0 10px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #1a2e3a; transition: .4s; border-radius: 24px; border: 1px solid rgba(255,255,255,0.1); }
+        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 4px; bottom: 3px; background-color: #fff; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--caribbean-cyan); }
+        input:checked + .slider:before { transform: translateX(20px); background-color: #000; }
+
+        .progress-container { width: 100%; height: 3px; background: rgba(255,255,255,0.05); margin: 35px 0; display: none; border-radius: 3px; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--caribbean-cyan), var(--caribbean-pink)); width: 0%; box-shadow: 0 0 15px var(--caribbean-cyan); }
+
+        #resultado { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); 
+            gap: 25px; 
+            margin-top: 20px;
+        }
+
+        .qsl-card { 
+            background: rgba(255, 255, 255, 0.02); padding: 10px; 
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: 0.4s;
+            border-radius: 8px;
+        }
+        .qsl-card:hover { transform: scale(1.03); border-color: var(--caribbean-cyan); background: rgba(0, 242, 255, 0.05); }
+        .qsl-card img { width: 100%; aspect-ratio: 3/2; object-fit: cover; border-radius: 4px; margin-bottom: 10px; cursor: pointer; }
+        .btn-individual {
+            width: 100%; padding: 10px; font-size: 0.7rem; background: transparent;
+            color: #fff; border: 1px solid rgba(255,255,255,0.2); cursor: pointer; 
+            border-radius: 4px; text-transform: uppercase; font-weight: bold;
+        }
+        .btn-individual:hover { background: #fff; color: #000; }
+
         #timer-box {
             display: none;
-            margin: 20px auto;
+            margin-top: 30px;
             padding: 15px;
-            background: rgba(255, 82, 82, 0.1);
-            border: 1px dashed #ff5252;
-            border-radius: 15px;
-            color: #ff5252;
-            font-weight: bold;
+            background: rgba(255, 0, 122, 0.1);
+            color: var(--caribbean-pink);
+            font-size: 0.8rem;
+            letter-spacing: 3px;
+            border-radius: 4px;
         }
-        #timer-count { font-size: 1.5rem; display: block; }
 
-        /* --- BOTONES DE ACCION --- */
-        .action-btns { display: flex; justify-content: center; gap: 15px; margin-top: 20px; }
-        #btnZip, #btnVolver { padding: 12px 25px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; display: none; }
-        #btnZip { background: var(--neon); color: #000; }
-        #btnVolver { background: #555; color: #fff; }
+        .action-btns { display: flex; flex-direction: column; gap: 15px; margin-top: 40px; }
+        @media (min-width: 500px) { .action-btns { flex-direction: row; justify-content: center; } }
 
-        #manualPanel { display: none; margin-top: 25px; background: rgba(255,255,255,0.05); padding: 20px; border-radius: 15px; }
-        #manualLista { width: 90%; height: 100px; background: #000; color: var(--neon); border-radius: 10px; padding: 10px; font-size: 1rem; text-transform: uppercase; border: 1px solid #444; }
-        
-        .modo-switch { display: flex; align-items: center; gap: 10px; font-weight: bold; color: var(--gold); }
-        .switch { position: relative; display: inline-block; width: 50px; height: 24px; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #555; transition: .4s; border-radius: 34px; }
-        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
-        input:checked + .slider { background-color: var(--neon); }
-        input:checked + .slider:before { transform: translateX(26px); }
+        #btnZip, #btnVolver { 
+            padding: 18px 35px; border: none; font-weight: 900; cursor: pointer; 
+            display: none; width: 100%; max-width: 280px; text-transform: uppercase; letter-spacing: 2px;
+            border-radius: 4px;
+        }
+        #btnZip { background: #fff; color: #000; }
+        #btnVolver { background: rgba(0,0,0,0.5); color: #fff; border: 1px solid #333; }
+
+        #manualPanel { display: none; margin-top: 20px; }
+        #manualLista { 
+            width: 100%; height: 100px; background: rgba(0,0,0,0.5); color: var(--caribbean-cyan); 
+            padding: 15px; border: 1px solid #222; resize: none; outline: none; font-family: 'Courier New', monospace;
+            font-size: 1rem; border-radius: 4px;
+        }
+
+        footer { margin-top: 50px; font-size: 0.65rem; color: #444; letter-spacing: 4px; text-transform: uppercase; }
+
+        /* Scrollbar */
+        .container::-webkit-scrollbar { width: 4px; }
+        .container::-webkit-scrollbar-thumb { background: var(--caribbean-cyan); border-radius: 10px; }
     </style>
 </head>
 
 <body>
 
-    <div class="station-copyright">
-        © CL7ADV ALFRED STATION
-    </div>
+    <div class="station-copyright">SCANNING NODE: CL7ADV</div>
 
+    <!-- PANTALLA DE BIENVENIDA -->
     <div id="welcome-screen">
-        <div id="rocket" class="qsl-rocket"><div class="smoke-trail"></div></div>
+        <div class="radar-circle"></div>
+        <div class="radar-sweep"></div>
+        <div class="laser laser-blue"></div>
+        <div class="laser laser-red"></div>
+        
         <div class="welcome-msg" id="msg-box">
-            <h2>¡Hola Colegas!</h2>
-            <p>Bienvenidos!</p>
-            <button id="start-app">ENTRAR AL SISTEMA</button>
+            <div class="main-title">RADIOAFICIONADOS</div>
+            <div class="subtitle">DEL CARIBE • DX TERMINAL</div>
+            <button id="start-app">INICIAR FRECUENCIA</button>
         </div>
     </div>
 
+    <!-- CONTENEDOR PRINCIPAL -->
     <div class="container" id="main-container">
-        <h1>🌴 QSL Caribeña Ultra 🌊</h1>
+        <h1>SISTEMA DE GESTIÓN QSL</h1>
 
         <div id="search-interface">
             <div class="search-group">
-                <input type="text" id="indicativo" placeholder="HP3GNG" maxlength="10">
-                <div class="modo-switch">
-                    <span>Modo:</span>
-                    <label class="switch">
-                        <input type="checkbox" id="modoManual">
-                        <span class="slider"></span>
-                    </label>
-                    <span id="modoTexto">Automático</span>
-                </div>
-                <button id="buscarBtn">BUSCAR QSL</button>
+                <input type="text" id="indicativo" placeholder="ESTACIÓN" maxlength="10" spellcheck="false" autocomplete="off">
+                <button id="buscarBtn">BUSCAR EN DB</button>
+            </div>
+
+            <div class="modo-switch">
+                SINGLE CALL
+                <label class="switch">
+                    <input type="checkbox" id="modoManual">
+                    <span class="slider"></span>
+                </label>
+                BATCH LIST
             </div>
 
             <div id="manualPanel">
-                <h3>Modo Manual</h3>
-                <textarea id="manualLista" placeholder="HP3GNG&#10;CO7ABC"></textarea>
-                <br>
-                <button id="btnBuscarManual" style="margin-top:10px; padding:10px 20px; background:var(--accent); border:none; border-radius:8px; color:#fff; cursor:pointer; font-weight:bold;">BUSCAR LISTA</button>
+                <textarea id="manualLista" placeholder="CO7ABC, CM8DAA, HP1X..."></textarea>
+                <button id="btnBuscarManual" style="margin-top:10px; width:100%; padding:18px; background:var(--caribbean-cyan); color:#000; border:none; font-weight:900; cursor:pointer; text-transform:uppercase; border-radius:4px;">PROCESAR LOTE COMPLETO</button>
             </div>
         </div>
 
         <div id="pContainer" class="progress-container">
-            <div id="card" class="card-icon">QSL</div>
             <div id="fill" class="progress-fill"></div>
         </div>
 
-        <div id="status" style="height:30px; margin-top:10px; color:var(--neon); font-weight:bold;"></div>
+        <div id="status" style="height:20px; margin-top:10px; font-size:0.7rem; color:var(--caribbean-cyan); letter-spacing:3px; font-weight:bold;"></div>
         
-        <div id="resultado" style="margin-top:20px;"></div>
+        <div id="resultado"></div>
 
         <div id="timer-box">
-            EL SISTEMA SE REINICIARÁ EN:
-            <span id="timer-count">7</span>
+            RESET AUTOMÁTICO EN: <span id="timer-count">7</span> SEGUNDOS
         </div>
 
         <div class="action-btns">
-            <button id="btnZip">DESCARGAR TODAS (ZIP)</button>
-            <button id="btnVolver">BUSCAR OTRA VEZ</button>
+            <button id="btnZip">GENERAR PAQUETE ZIP</button>
+            <button id="btnVolver">NUEVA CONSULTA</button>
         </div>
 
-        <footer style="margin-top:40px; font-size:0.8rem; opacity:0.7;">
-            73's Cordiales - Alfred - 2026
-        </footer>
+        <footer>73's • OPERADOR ALFRED • CAMAGÜEY, CUBA</footer>
     </div>
 
 <script>
@@ -250,73 +383,43 @@ let countdown;
 let timeLeft = 7;
 
 /* ============================
-   SONIDO SUPERSÓNICO SINCRONIZADO
-============================ */
-function playSonicPass() {
-    try {
-        const AudioContext = window.AudioContext || window.webkitAudioContext;
-        const ctx = new AudioContext();
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        const filter = ctx.createBiquadFilter();
-
-        osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(440, ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(9000, ctx.currentTime + 0.4);
-        osc.frequency.exponentialRampToValueAtTime(80, ctx.currentTime + 1.8);
-        
-        gain.gain.setValueAtTime(0.001, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.7, ctx.currentTime + 0.4);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.8);
-        
-        filter.type = "lowpass";
-        filter.frequency.setValueAtTime(12000, ctx.currentTime);
-        filter.frequency.exponentialRampToValueAtTime(400, ctx.currentTime + 1.8);
-
-        osc.connect(filter);
-        filter.connect(gain);
-        gain.connect(ctx.destination);
-        
-        osc.start();
-        osc.stop(ctx.currentTime + 1.9);
-    } catch(e) { console.error("Audio fallido:", e); }
-}
-
-/* ============================
-   CONTROL DE BIENVENIDA SINCRONIZADA
+   ANIMACIÓN DE ENTRADA
 ============================ */
 document.getElementById("start-app").addEventListener("click", () => {
-    const rocket = document.getElementById("rocket");
-    const msg = document.getElementById("msg-box");
     const welcome = document.getElementById("welcome-screen");
     const main = document.getElementById("main-container");
 
-    msg.style.opacity = "0";
-    msg.style.transform = "scale(0.9)";
+    // Sonido cinemático
+    try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const g = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(150, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(800, ctx.currentTime + 0.8);
+        g.gain.setValueAtTime(0.2, ctx.currentTime);
+        g.gain.linearRampToValueAtTime(0, ctx.currentTime + 1.0);
+        osc.connect(g); g.connect(ctx.destination);
+        osc.start(); osc.stop(ctx.currentTime + 1.0);
+    } catch(e) {}
+
+    welcome.style.transform = "scale(1.5)";
+    welcome.style.opacity = "0";
 
     setTimeout(() => {
-        playSonicPass();
-        rocket.style.display = "flex";
-        rocket.style.animation = "fastPass 1.8s cubic-bezier(0.45, 0, 0.55, 1) forwards";
-    }, 200);
-
-    setTimeout(() => {
-        welcome.style.transition = "opacity 0.5s ease";
-        welcome.style.opacity = "0";
-        setTimeout(() => {
-            welcome.style.display = "none";
-            main.style.display = "block";
-        }, 500);
-    }, 2000);
+        welcome.style.display = "none";
+        main.style.display = "block";
+        document.body.style.overflow = "auto";
+    }, 800);
 });
 
 /* ============================
    LÓGICA DE BÚSQUEDA
 ============================ */
 function generarRutas(call) {
-    const rutas = [];
     const formatos = ["jpg", "png", "JPG", "PNG"];
     const variantes = ["", "-1", "-2", "-3"];
+    let rutas = [];
     formatos.forEach(ext => variantes.forEach(v => rutas.push(`img/${call}${v}.${ext}`)));
     return rutas;
 }
@@ -326,25 +429,22 @@ function probarImagen(src) {
         const img = new Image();
         img.onload = () => resolve(src);
         img.onerror = () => resolve(null);
-        img.src = src + "?t=" + Date.now();
+        img.src = src; 
     });
 }
 
 document.getElementById("modoManual").addEventListener("change", function() {
-    document.getElementById("modoTexto").innerText = this.checked ? "Manual" : "Automático";
     document.getElementById("manualPanel").style.display = this.checked ? "block" : "none";
 });
 
 document.getElementById("buscarBtn").addEventListener("click", () => {
     const call = document.getElementById('indicativo').value.trim().toUpperCase();
-    if (call) {
-        ejecutarProceso(() => finalizarBusqueda(call));
-    }
+    if (call) ejecutarProceso(() => finalizarBusqueda(call));
 });
 
 document.getElementById("btnBuscarManual").addEventListener("click", () => {
-    const lista = document.getElementById("manualLista").value.trim().split("\n");
-    if (lista[0]) {
+    const lista = document.getElementById("manualLista").value.split(/[\n,; ]+/).map(s => s.trim());
+    if (lista.length > 0 && lista[0] !== "") {
         ejecutarProceso(() => finalizarBusquedaManual(lista));
     }
 });
@@ -356,107 +456,97 @@ function ejecutarProceso(callback) {
     document.getElementById("btnZip").style.display = "none";
     document.getElementById("btnVolver").style.display = "none";
     
-    iniciarBarra();
-    setTimeout(callback, 1800);
+    const p = document.getElementById("pContainer");
+    const fill = document.getElementById("fill");
+    const status = document.getElementById("status");
+    p.style.display = "block";
+    
+    let prog = 0;
+    let interval = setInterval(() => {
+        prog += 5;
+        fill.style.width = prog + "%";
+        if (prog === 25) status.innerText = ">> CONECTANDO A REPETIDOR...";
+        if (prog === 65) status.innerText = ">> RECUPERANDO DATOS DX...";
+        if (prog === 90) status.innerText = ">> COMPROBANDO CHECKSUM...";
+        if (prog >= 100) {
+            clearInterval(interval);
+            p.style.display = "none";
+            status.innerText = "";
+            callback();
+        }
+    }, 30);
 }
 
 async function finalizarBusqueda(call) {
-    detenerBarra();
-    const pruebas = await Promise.all(generarRutas(call).map(probarImagen));
-    const encontradas = pruebas.filter(x => x !== null);
+    const rutas = generarRutas(call);
+    const encontradas = (await Promise.all(rutas.map(probarImagen))).filter(x => x !== null);
     mostrarResultados(encontradas, call);
 }
 
 async function finalizarBusquedaManual(lista) {
-    detenerBarra();
-    let total = [];
+    let todas = [];
     for (let call of lista) {
-        call = call.trim().toUpperCase();
         if (!call) continue;
-        const pruebas = await Promise.all(generarRutas(call).map(probarImagen));
-        total = total.concat(pruebas.filter(x => x !== null));
+        const rutas = generarRutas(call.toUpperCase());
+        const ok = (await Promise.all(rutas.map(probarImagen))).filter(x => x !== null);
+        todas = todas.concat(ok);
     }
-    mostrarResultados(total, "Varios");
+    mostrarResultados([...new Set(todas)], "MÚLTIPLE");
 }
 
 function mostrarResultados(encontradas, call) {
     const res = document.getElementById('resultado');
     if (encontradas.length === 0) {
-        res.innerHTML = `<div style="color:#ff5252; font-weight:bold;">❌ NO SE ENCONTRÓ QSL PARA ${call}</div>`;
+        res.innerHTML = `<div style="grid-column: 1/-1; color:var(--caribbean-pink); border:1px solid var(--caribbean-pink); padding:40px; font-weight:bold; letter-spacing:2px;">[ SIN REGISTROS PARA: ${call} ]</div>`;
         iniciarTimer();
     } else {
-        res.innerHTML = `<div style="color:var(--neon); margin-bottom:15px; font-weight:bold;">✅ QSLs listas para descargar:</div>`;
         encontradas.forEach(src => {
-            res.innerHTML += `
-                <div class="qsl-card">
-                    <input type="checkbox" class="chkQSL" value="${src}" checked style="display:none">
-                    <img src="${src}" onclick="descargarIndividual('${src}')" title="Clic para descargar">
-                    <button class="btn-individual" onclick="descargarIndividual('${src}')">DESCARGAR JPG</button>
-                </div>
+            const card = document.createElement('div');
+            card.className = 'qsl-card';
+            card.innerHTML = `
+                <img src="${src}" onclick="descargarIndividual('${src}')">
+                <button class="btn-individual" onclick="descargarIndividual('${src}')">DESCARGAR</button>
             `;
+            res.appendChild(card);
         });
         document.getElementById("btnZip").style.display = "block";
     }
     document.getElementById("btnVolver").style.display = "block";
 }
 
-/* ============================
-   DESCARGAS
-============================ */
 function descargarIndividual(url) {
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = url.split('/').pop();
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = url.split('/').pop();
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
     iniciarTimer(); 
 }
 
 document.getElementById("btnZip").addEventListener("click", async () => {
-    const urls = [...document.querySelectorAll(".chkQSL:checked")].map(x => x.value);
-    if (urls.length === 0) return;
+    const imgs = document.querySelectorAll(".qsl-card img");
+    if (imgs.length === 0) return;
     
     const zip = new JSZip();
-    for (let url of urls) {
+    document.getElementById("btnZip").innerText = "GENERANDO...";
+    
+    for (let img of imgs) {
         try {
-            const blob = await fetch(url).then(r => r.blob());
-            zip.file(url.split('/').pop(), blob);
-        } catch(e) {}
+            const response = await fetch(img.src);
+            const blob = await response.blob();
+            zip.file(img.src.split('/').pop(), blob);
+        } catch(e) { console.error(e); }
     }
+    
     const content = await zip.generateAsync({type:"blob"});
     const link = document.createElement("a");
     link.href = URL.createObjectURL(content);
-    link.download = "QSLs_Alfred_CL7ADV.zip";
+    link.download = "QSL_CARIBE_PACK.zip";
     link.click();
+    document.getElementById("btnZip").innerText = "GENERAR PAQUETE ZIP";
     iniciarTimer();
 });
-
-/* ============================
-   UTILIDADES REINICIO
-============================ */
-function iniciarBarra() {
-    const p = document.getElementById("pContainer");
-    const fill = document.getElementById("fill");
-    const card = document.getElementById("card");
-    const status = document.getElementById("status");
-    p.style.display = "block";
-    let prog = 0;
-    window.anim = setInterval(() => {
-        prog += 2;
-        fill.style.width = prog + "%";
-        card.style.left = prog + "%";
-        if (prog == 40) status.innerText = "SINTONIZANDO...";
-        if (prog == 80) status.innerText = "DESCODIFICANDO IMAGEN...";
-        if (prog >= 100) clearInterval(window.anim);
-    }, 30);
-}
-
-function detenerBarra() {
-    clearInterval(window.anim);
-    document.getElementById("pContainer").style.display = "none";
-    document.getElementById("status").innerText = "";
-}
 
 function iniciarTimer() {
     resetTimer();
@@ -464,9 +554,7 @@ function iniciarTimer() {
     countdown = setInterval(() => {
         timeLeft--;
         document.getElementById("timer-count").innerText = timeLeft;
-        if (timeLeft <= 0) {
-            reiniciarTodo();
-        }
+        if (timeLeft <= 0) reiniciarTodo();
     }, 1000);
 }
 
@@ -487,7 +575,12 @@ function reiniciarTodo() {
     document.getElementById("btnVolver").style.display = "none";
     document.getElementById("indicativo").value = "";
     document.getElementById("manualLista").value = "";
+    window.scrollTo({top: 0, behavior: 'smooth'});
 }
+
+document.getElementById("indicativo").addEventListener("keypress", (e) => {
+    if (e.key === "Enter") document.getElementById("buscarBtn").click();
+});
 </script>
 </body>
 </html>
