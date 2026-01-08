@@ -5,7 +5,7 @@
     <title>QSL Caribeña Ultra - CL7ADV</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
 
-    <!-- JSZip para ZIP masivo (se usa en PARTE A2) -->
+    <!-- JSZip para ZIP masivo -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
     <style>
@@ -22,25 +22,136 @@
             background: radial-gradient(circle at center, #00acc1, #013d3e); 
             background-attachment: fixed; color: #fff; 
             display: flex; align-items: center; justify-content: center; min-height: 100vh;
+            overflow-x: hidden;
         }
 
+        /* --- MARCA DE AGUA ESTACIÓN (DERECHOS DE AUTOR) --- */
+        .station-copyright {
+            position: fixed;
+            bottom: 20px;
+            right: 25px;
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.4);
+            letter-spacing: 2px;
+            z-index: 10001;
+            pointer-events: none;
+            text-transform: uppercase;
+            font-weight: bold;
+            border-right: 3px solid var(--neon);
+            padding-right: 10px;
+        }
+
+        /* --- PANTALLA DE BIENVENIDA --- */
+        #welcome-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #013d3e;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        /* La tarjeta QSL que cruza */
+        .qsl-rocket {
+            position: absolute;
+            width: 140px;
+            height: 90px;
+            background: #fff;
+            border: 3px solid #eee;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 40px rgba(255,255,255,0.4);
+            left: -300px;
+            top: 40%;
+            z-index: 10000;
+            animation: fastPass 1.8s cubic-bezier(0.45, 0, 0.55, 1) forwards;
+        }
+
+        /* Eliminadas las firmas de agua de la tarjeta */
+        .qsl-rocket::before { content: "✉️"; font-size: 2.5rem; }
+
+        /* Estela de humo/humareda realista */
+        .smoke-trail {
+            position: absolute;
+            right: 100%;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 600px;
+            height: 80px;
+            background: radial-gradient(ellipse at right, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.1) 60%, transparent 100%);
+            filter: blur(20px);
+            opacity: 0.7;
+        }
+
+        @keyframes fastPass {
+            0% { left: -300px; transform: rotate(15deg) scale(0.5); }
+            40% { transform: rotate(-5deg) scale(1.1); }
+            100% { left: 130%; transform: rotate(-25deg) scale(0.7); }
+        }
+
+        /* Mensaje que queda después de pasar */
+        .welcome-msg {
+            text-align: center;
+            opacity: 0;
+            transform: scale(0.8);
+            animation: revealMsg 0.8s ease 0.6s forwards;
+        }
+
+        .welcome-msg h2 {
+            font-size: 3.5rem;
+            color: var(--neon);
+            text-shadow: 0 0 25px rgba(0,255,153,0.6);
+            margin-bottom: 5px;
+            font-weight: 900;
+        }
+
+        .welcome-msg p {
+            font-size: 1.6rem;
+            color: var(--gold);
+            margin-bottom: 35px;
+            letter-spacing: 1px;
+        }
+
+        @keyframes revealMsg {
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* Botón de entrada */
+        #start-app {
+            padding: 15px 50px;
+            font-size: 1.2rem;
+            border-radius: 40px;
+            border: none;
+            background: linear-gradient(to right, var(--neon), #00cc7a);
+            color: #000;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+            transition: 0.3s;
+        }
+        #start-app:hover { transform: scale(1.05); box-shadow: 0 0 25px var(--neon); }
+
+        /* --- CONTENIDO PRINCIPAL --- */
         .container { 
             max-width: 750px; width: 95%; padding: 40px; 
             background: var(--glass); border-radius: 30px; 
             box-shadow: 0 30px 70px rgba(0,0,0,0.8); 
             border: 1px solid rgba(0, 255, 153, 0.3); text-align: center;
+            display: none;
+            animation: fadeIn 0.5s ease;
         }
 
         h1 { font-size: 2.2rem; margin-bottom: 5px; text-shadow: 0 0 15px var(--neon); }
         .subtitle { color: var(--gold); margin-bottom: 30px; font-size: 0.9rem; letter-spacing: 2px; }
 
-        /* Grupo de búsqueda */
         .search-group { 
-            display: flex; 
-            flex-wrap: wrap; 
-            justify-content: center; 
-            gap: 15px; 
-            align-items: center;
+            display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; align-items: center;
         }
 
         #indicativo { 
@@ -59,177 +170,63 @@
 
         #buscarBtn:active { transform: translateY(3px); box-shadow: 0 2px 0 #b35900; }
 
-        /* INTERRUPTOR iPHONE */
-        .modo-switch {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-weight: bold;
-            color: var(--gold);
-        }
+        .modo-switch { display: flex; align-items: center; gap: 10px; font-weight: bold; color: var(--gold); }
+        .switch { position: relative; display: inline-block; width: 55px; height: 28px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #555; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 22px; width: 22px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--neon); }
+        input:checked + .slider:before { transform: translateX(26px); }
 
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 55px;
-            height: 28px;
-        }
-
-        .switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0; left: 0;
-            right: 0; bottom: 0;
-            background-color: #555;
-            transition: .4s;
-            border-radius: 34px;
-        }
-
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 22px;
-            width: 22px;
-            left: 3px;
-            bottom: 3px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
-        }
-
-        input:checked + .slider {
-            background-color: var(--neon);
-        }
-
-        input:checked + .slider:before {
-            transform: translateX(26px);
-        }
-
-        /* Barra carretera */
-        .progress-container {
-            width: 100%; max-width: 400px; height: 10px; 
-            background: rgba(255,255,255,0.1); border-radius: 20px;
-            margin: 50px auto 20px; position: relative; display: none;
-        }
-
+        .progress-container { width: 100%; max-width: 400px; height: 10px; background: rgba(255,255,255,0.1); border-radius: 20px; margin: 50px auto 20px; position: relative; display: none; }
         .progress-fill { height: 100%; background: var(--neon); width: 0%; border-radius: 20px; transition: 0.1s linear; }
-
-        .card-icon {
-            position: absolute; top: -35px; left: 0%;
-            width: 45px; height: 30px; background: #fff;
-            border: 2px solid var(--gold); border-radius: 5px;
-            color: #333; font-weight: bold; font-size: 10px;
-            display: flex; align-items: center; justify-content: center;
-            transform: translateX(-50%); transition: 0.1s linear;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-        }
+        .card-icon { position: absolute; top: -35px; left: 0%; width: 45px; height: 30px; background: #fff; border: 2px solid var(--gold); border-radius: 5px; color: #333; font-weight: bold; font-size: 10px; display: flex; align-items: center; justify-content: center; transform: translateX(-50%); transition: 0.1s linear; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
         .card-icon::after { content: "✉️"; font-size: 16px; }
 
         .status-text { height: 40px; color: var(--neon); font-weight: bold; margin-top: 10px; }
 
-        /* MINI‑CARDS */
-        .qsl-card {
-            width: 160px;
-            background: rgba(255,255,255,0.05);
-            padding: 10px;
-            border-radius: 12px;
-            margin: 10px;
-            display: inline-block;
-            vertical-align: top;
-            text-align: center;
-            box-shadow: 0 0 10px rgba(0,0,0,0.4);
-        }
+        .qsl-card { width: 160px; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 12px; margin: 10px; display: inline-block; vertical-align: top; text-align: center; box-shadow: 0 0 10px rgba(0,0,0,0.4); }
+        .qsl-card img { width: 100%; border-radius: 8px; }
 
-        .qsl-card img {
-            width: 100%;
-            border-radius: 8px;
-        }
+        .success-msg { color: var(--neon); margin: 15px 0; font-weight: bold; }
+        .error-msg { color: #ff5252; margin: 15px 0; font-weight: bold; animation: shake 0.4s; }
 
-        /* RESPONSIVE — 2 columnas en móvil */
-        @media (max-width: 600px) {
-            .qsl-card {
-                width: 45%;
-            }
-        }
+        @media (max-width: 600px) { .qsl-card { width: 45%; } }
 
-        @media (max-width: 400px) {
-            .qsl-card {
-                width: 45%;
-            }
-        }
+        #manualPanel { display: none; margin-top: 25px; background: rgba(255,255,255,0.05); padding: 20px; border-radius: 15px; }
+        #manualLista { width: 90%; height: 120px; background: #000; color: var(--neon); border-radius: 10px; padding: 10px; font-size: 1rem; text-transform: uppercase; border: 1px solid #444; }
+        #btnBuscarManual { margin-top: 15px; padding: 12px 25px; background: var(--accent); border: none; border-radius: 10px; color: #fff; font-weight: bold; cursor: pointer; }
+        #btnZip { margin-top: 20px; padding: 12px 25px; background: var(--neon); border: none; border-radius: 10px; color: #000; font-weight: bold; cursor: pointer; display: none; }
 
-        /* Panel manual */
-        #manualPanel {
-            display: none;
-            margin-top: 25px;
-            background: rgba(255,255,255,0.05);
-            padding: 20px;
-            border-radius: 15px;
-        }
-
-        #manualLista {
-            width: 90%;
-            height: 120px;
-            background: #000;
-            color: var(--neon);
-            border-radius: 10px;
-            padding: 10px;
-            font-size: 1rem;
-            text-transform: uppercase;
-        }
-
-        #btnBuscarManual {
-            margin-top: 15px;
-            padding: 12px 25px;
-            background: var(--accent);
-            border: none;
-            border-radius: 10px;
-            color: #fff;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        #btnZip {
-            margin-top: 20px;
-            padding: 12px 25px;
-            background: var(--neon);
-            border: none;
-            border-radius: 10px;
-            color: #000;
-            font-weight: bold;
-            cursor: pointer;
-            display: none;
-        }
-
-        /* Animaciones */
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-10px); }
-            75% { transform: translateX(10px); }
-        }
-
-        @keyframes fadeIn { 
-            from { opacity: 0; transform: translateY(10px); } 
-            to { opacity: 1; transform: translateY(0); } 
-        }
-
-        .fade-out { opacity: 0; transition: opacity 1s; }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-10px); } 75% { transform: translateX(10px); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 
 <body>
 
-    <div class="container">
+    <!-- Marca de Agua Fija Estación -->
+    <div class="station-copyright">
+        © CL7ADV ALFRED STATION
+    </div>
+
+    <!-- Pantalla de Bienvenida Dinámica -->
+    <div id="welcome-screen">
+        <div class="qsl-rocket">
+            <div class="smoke-trail"></div>
+        </div>
+        
+        <div class="welcome-msg">
+            <h2>¡Hola Colegas!</h2>
+            <p>Bienvenidos por sus QSLs</p>
+            <button id="start-app">ENTRAR AL SISTEMA</button>
+        </div>
+    </div>
+
+    <div class="container" id="main-container">
         <h1>🌴 QSL Caribeña Ultra 🌊</h1>
         <p class="subtitle">CL7ADV - SANTA CRUZ DEL SUR</p>
 
-        <!-- Grupo de búsqueda con interruptor -->
         <div class="search-group">
             <input type="text" id="indicativo" placeholder="HP3GNG" maxlength="10">
 
@@ -245,15 +242,14 @@
             <button id="buscarBtn">BUSCAR QSL</button>
         </div>
 
-        <!-- Panel manual -->
         <div id="manualPanel">
             <h3>Modo Manual</h3>
             <p>Escribe varios indicativos, uno por línea:</p>
             <textarea id="manualLista" placeholder="HP3GNG&#10;CO7ABC&#10;CM2XYZ"></textarea>
+            <br>
             <button id="btnBuscarManual">BUSCAR LISTA</button>
         </div>
 
-        <!-- Barra carretera -->
         <div id="pContainer" class="progress-container">
             <div id="card" class="card-icon">QSL</div>
             <div id="fill" class="progress-fill"></div>
@@ -268,7 +264,67 @@
             73's Cordiales - Alfred - 2026
         </footer>
     </div>
+
 <script>
+/* ============================
+   SÍNTESIS DE SONIDO SUPERSÓNICO
+============================ */
+function playSonicPass() {
+    try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        const ctx = new AudioContext();
+        
+        // Oscilador para el tono supersónico
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        
+        osc.type = 'sawtooth';
+        // Empieza agudo y cae rápido (efecto Doppler Jet)
+        osc.frequency.setValueAtTime(440, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(9000, ctx.currentTime + 0.4);
+        osc.frequency.exponentialRampToValueAtTime(80, ctx.currentTime + 1.8);
+        
+        // Volumen dinámico
+        gain.gain.setValueAtTime(0.001, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.6, ctx.currentTime + 0.4);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.9);
+        
+        const filter = ctx.createBiquadFilter();
+        filter.type = "lowpass";
+        filter.frequency.setValueAtTime(12000, ctx.currentTime);
+        filter.frequency.exponentialRampToValueAtTime(400, ctx.currentTime + 1.8);
+
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(ctx.destination);
+        
+        osc.start();
+        osc.stop(ctx.currentTime + 2.0);
+    } catch(e) {}
+}
+
+/* ============================
+   CONTROL DE BIENVENIDA
+============================ */
+// Iniciar el sonido al primer clic en cualquier parte para cumplir reglas del navegador
+document.addEventListener('mousedown', function startFirstSound() {
+    playSonicPass();
+    document.removeEventListener('mousedown', startFirstSound);
+}, {once: true});
+
+document.getElementById("start-app").addEventListener("click", () => {
+    const welcome = document.getElementById("welcome-screen");
+    const main = document.getElementById("main-container");
+    
+    welcome.style.transition = "opacity 0.6s ease, transform 0.6s ease";
+    welcome.style.opacity = "0";
+    welcome.style.transform = "scale(1.05)";
+    setTimeout(() => {
+        welcome.style.display = "none";
+        main.style.display = "block";
+    }, 600);
+});
+
 /* ============================
    SONIDO DE RADIO
 ============================ */
@@ -298,19 +354,14 @@ function generarRutas(call) {
     const rutas = [];
     const formatos = ["jpg", "JPG", "png", "PNG"];
     const variantes = ["", "-1", "-2", "-3"];
-
     formatos.forEach(ext => {
         variantes.forEach(v => {
             rutas.push(`img/${call}${v}.${ext}`);
         });
     });
-
     return rutas;
 }
 
-/* ============================
-   PROBAR SI UNA IMAGEN EXISTE
-============================ */
 function probarImagen(src) {
     return new Promise(resolve => {
         const img = new Image();
@@ -320,13 +371,9 @@ function probarImagen(src) {
     });
 }
 
-/* ============================
-   INTERRUPTOR AUTOMÁTICO / MANUAL
-============================ */
 document.getElementById("modoManual").addEventListener("change", function() {
     const texto = document.getElementById("modoTexto");
     const panel = document.getElementById("manualPanel");
-
     if (this.checked) {
         texto.innerText = "Manual";
         panel.style.display = "block";
@@ -336,41 +383,26 @@ document.getElementById("modoManual").addEventListener("change", function() {
     }
 });
 
-/* ============================
-   MODO AUTOMÁTICO
-============================ */
 document.getElementById("buscarBtn").addEventListener("click", buscarQSL);
-
 async function buscarQSL() {
     const call = document.getElementById('indicativo').value.trim().toUpperCase();
-    if (!call) return alert("Por favor, ingresa un indicativo");
-
+    if (!call) return;
     iniciarBarra();
-
     setTimeout(() => finalizarBusquedaAutomatica(call), 1600);
 }
 
 async function finalizarBusquedaAutomatica(call) {
     detenerBarra();
-
     const rutas = generarRutas(call);
     const pruebas = await Promise.all(rutas.map(probarImagen));
     const encontradas = pruebas.filter(x => x !== null);
-
     const res = document.getElementById('resultado');
     const btnZip = document.getElementById('btnZip');
-
     if (encontradas.length === 0) {
-        res.innerHTML = `
-            <div class="error-msg" id="msg">
-                ❌ LA QSL PARA ${call} NO HA SIDO SUBIDA AÚN
-            </div>
-        `;
+        res.innerHTML = `<div class="error-msg">❌ LA QSL PARA ${call} NO HA SIDO SUBIDA AÚN</div>`;
         setTimeout(() => reiniciarSistema(), 4000);
         return;
     }
-
-    // Mostrar mini‑cards marcadas automáticamente
     res.innerHTML = `<div class="success-msg">QSLs encontradas para ${call}:</div>`;
     encontradas.forEach(src => {
         res.innerHTML += `
@@ -380,40 +412,27 @@ async function finalizarBusquedaAutomatica(call) {
             </div>
         `;
     });
-
     btnZip.style.display = "block";
 }
 
-/* ============================
-   MODO MANUAL
-============================ */
 document.getElementById("btnBuscarManual").addEventListener("click", buscarManual);
-
 async function buscarManual() {
     const lista = document.getElementById("manualLista").value.trim().split("\n");
     const res = document.getElementById("resultado");
     const btnZip = document.getElementById("btnZip");
-
     res.innerHTML = "";
     btnZip.style.display = "none";
-
-    if (lista.length === 0) return alert("Escribe al menos un indicativo");
-
+    if (!lista[0]) return;
     iniciarBarra();
-
     setTimeout(async () => {
         detenerBarra();
-
         let totalEncontradas = [];
-
         for (let call of lista) {
             call = call.trim().toUpperCase();
             if (!call) continue;
-
             const rutas = generarRutas(call);
             const pruebas = await Promise.all(rutas.map(probarImagen));
             const encontradas = pruebas.filter(x => x !== null);
-
             if (encontradas.length > 0) {
                 res.innerHTML += `<div class="success-msg">QSLs de ${call}:</div>`;
                 encontradas.forEach(src => {
@@ -426,72 +445,50 @@ async function buscarManual() {
                     `;
                 });
             } else {
-                res.innerHTML += `
-                    <div class="error-msg">❌ No hay QSL para ${call}</div>
-                `;
+                res.innerHTML += `<div class="error-msg">❌ No hay QSL para ${call}</div>`;
             }
         }
-
-        if (totalEncontradas.length > 0) {
-            btnZip.style.display = "block";
-        }
-
+        if (totalEncontradas.length > 0) btnZip.style.display = "block";
     }, 1600);
 }
 
-/* ============================
-   ZIP MASIVO
-============================ */
 document.getElementById("btnZip").addEventListener("click", async () => {
     const seleccionadas = [...document.querySelectorAll(".chkQSL:checked")].map(x => x.value);
-
-    if (seleccionadas.length === 0) {
-        alert("Selecciona al menos una QSL");
-        return;
-    }
-
+    if (seleccionadas.length === 0) return;
     const zip = new JSZip();
-
     for (let url of seleccionadas) {
         const nombre = url.split("/").pop();
-        const blob = await fetch(url).then(r => r.blob());
-        zip.file(nombre, blob);
+        try {
+            const blob = await fetch(url).then(r => r.blob());
+            zip.file(nombre, blob);
+        } catch(e) {}
     }
-
     const contenido = await zip.generateAsync({ type: "blob" });
     const enlace = document.createElement("a");
     enlace.href = URL.createObjectURL(contenido);
-    enlace.download = "QSLs.zip";
+    enlace.download = "QSLs_Alfred_CL7ADV.zip";
     enlace.click();
-
     setTimeout(() => reiniciarSistema(), 2000);
 });
 
-/* ============================
-   BARRA CARRETERA
-============================ */
 function iniciarBarra() {
     const p = document.getElementById("pContainer");
     const fill = document.getElementById("fill");
     const card = document.getElementById("card");
     const status = document.getElementById("status");
-
     p.style.display = "block";
     fill.style.width = "0%";
     card.style.left = "0%";
     status.innerText = "";
     playRadioSound();
-
     let progreso = 0;
     window.animBarra = setInterval(() => {
         progreso += 2;
         fill.style.width = progreso + "%";
         card.style.left = progreso + "%";
-
         if (progreso == 30) status.innerText = "SINTONIZANDO SEÑAL...";
         if (progreso == 60) status.innerText = "BUSCANDO EN LOGS...";
         if (progreso == 90) status.innerText = "FILTRANDO INDICATIVO...";
-
         if (progreso >= 100) clearInterval(window.animBarra);
     }, 30);
 }
@@ -501,9 +498,6 @@ function detenerBarra() {
     document.getElementById("pContainer").style.display = "none";
 }
 
-/* ============================
-   REINICIO AUTOMÁTICO
-============================ */
 function reiniciarSistema() {
     document.getElementById("resultado").innerHTML = "";
     document.getElementById("btnZip").style.display = "none";
