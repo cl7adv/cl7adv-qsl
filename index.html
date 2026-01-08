@@ -2,10 +2,10 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>QSL Caribeña Ultra - CL7ADV</title>
+    <title>QSL Caribeña Ultra V2 - CL7ADV</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-    <!-- JSZip para ZIP masivo -->
+    <!-- Librerías Externas -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
     <style>
@@ -14,15 +14,16 @@
             --caribbean-pink: #ff007a;
             --caribbean-gold: #ffcc00;
             --deep-ocean: #000814;
-            --glass-bg: rgba(0, 15, 30, 0.9);
-            --border-glow: rgba(0, 242, 255, 0.3);
+            --glass-bg: rgba(0, 15, 30, 0.92);
+            --border-glow: rgba(0, 242, 255, 0.4);
+            --neon-green: #39ff14;
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body { 
             margin: 0; 
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; 
+            font-family: 'Segoe UI', 'Orbitron', sans-serif; 
             background: var(--deep-ocean); 
             color: #fff; 
             display: flex; 
@@ -43,10 +44,11 @@
             z-index: 1000;
             text-transform: uppercase;
             font-weight: 900;
-            background: rgba(0,0,0,0.5);
-            padding: 5px 10px;
+            background: rgba(0,0,0,0.7);
+            padding: 8px 15px;
             border-left: 3px solid var(--caribbean-pink);
             pointer-events: none;
+            box-shadow: 0 0 15px rgba(0,0,0,0.5);
         }
 
         /* --- PANTALLA DE BIENVENIDA --- */
@@ -64,16 +66,13 @@
 
         .radar-circle {
             position: absolute;
-            width: 600px;
-            height: 600px;
+            width: 600px; height: 600px;
             border: 1px solid rgba(0, 242, 255, 0.1);
             border-radius: 50%;
-            pointer-events: none;
         }
         .radar-sweep {
             position: absolute;
-            width: 300px;
-            height: 300px;
+            width: 300px; height: 300px;
             background: conic-gradient(from 0deg, transparent 270deg, rgba(0, 242, 255, 0.3) 360deg);
             top: 50%; left: 50%;
             transform-origin: 0 0;
@@ -81,18 +80,9 @@
             border-radius: 0 100% 0 0;
         }
 
-        @keyframes sweep {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
+        @keyframes sweep { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-        .laser {
-            position: absolute;
-            height: 2px;
-            width: 30%;
-            filter: blur(2px);
-            opacity: 0.8;
-        }
+        .laser { position: absolute; height: 2px; width: 30%; filter: blur(2px); opacity: 0.8; }
         .laser-blue { background: linear-gradient(to right, transparent, var(--caribbean-cyan)); top: 20%; left: -30%; animation: patrol-left 3s linear infinite; }
         .laser-red { background: linear-gradient(to left, transparent, var(--caribbean-pink)); bottom: 20%; right: -30%; animation: patrol-right 3s linear infinite; }
 
@@ -106,7 +96,7 @@
             background: linear-gradient(to bottom, #fff 40%, var(--caribbean-cyan));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            letter-spacing: 8px;
+            letter-spacing: 12px;
             margin-bottom: 5px;
             filter: drop-shadow(0 0 10px rgba(0, 242, 255, 0.5));
         }
@@ -124,96 +114,193 @@
             padding: 18px 45px;
             background: transparent;
             color: #fff;
-            border: 1px solid var(--caribbean-cyan);
+            border: 2px solid var(--caribbean-cyan);
             cursor: pointer;
             text-transform: uppercase;
             letter-spacing: 4px;
             transition: 0.4s;
             border-radius: 4px;
             font-weight: bold;
+            position: relative;
+            overflow: hidden;
         }
-        #start-app:hover { background: var(--caribbean-cyan); color: #000; box-shadow: 0 0 30px var(--caribbean-cyan); }
+        #start-app:hover { 
+            background: var(--caribbean-cyan); 
+            color: #000; 
+            box-shadow: 0 0 30px var(--caribbean-cyan); 
+        }
 
         /* --- CONTENEDOR PRINCIPAL --- */
         .container { 
             width: 95%; 
-            max-width: 950px; 
-            padding: 40px; 
+            max-width: 1000px; 
+            padding: 30px; 
             background: var(--glass-bg); 
             border-radius: 12px;
-            box-shadow: 0 0 60px rgba(0,0,0,0.8); 
+            box-shadow: 0 0 80px rgba(0,0,0,0.9); 
             border: 1px solid var(--border-glow); 
             text-align: center;
             display: none;
-            backdrop-filter: blur(15px);
+            backdrop-filter: blur(20px);
             max-height: 90vh;
             overflow-y: auto;
-            animation: terminal-open 0.6s ease-out;
+            animation: terminal-open 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        @keyframes terminal-open { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes terminal-open { from { opacity: 0; transform: scale(0.9) translateY(40px); } to { opacity: 1; transform: scale(1) translateY(0); } }
 
-        h1 { font-size: 1.5rem; letter-spacing: 8px; margin-bottom: 30px; }
-        
+        .header-box { border-bottom: 1px solid rgba(0, 242, 255, 0.2); margin-bottom: 25px; padding-bottom: 15px; }
+        h1 { font-size: 1.2rem; letter-spacing: 10px; color: var(--caribbean-cyan); margin: 0; }
+
+        /* --- INTERFAZ DE BÚSQUEDA --- */
+        .search-area {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+        @media (min-width: 768px) { .search-area { grid-template-columns: 3fr 1fr; } }
+
         .search-group { display: flex; flex-direction: column; align-items: center; gap: 15px; justify-content: center; }
         @media (min-width: 600px) { .search-group { flex-direction: row; } }
 
         #indicativo { 
-            padding: 15px; font-size: 1.8rem; border: 1px solid rgba(255,255,255,0.1); 
-            background: rgba(0,0,0,0.4); color: var(--caribbean-cyan); font-weight: 900; 
+            padding: 15px; font-size: 1.8rem; border: 1px solid rgba(0, 242, 255, 0.3); 
+            background: rgba(0,0,0,0.5); color: var(--caribbean-cyan); font-weight: 900; 
             text-transform: uppercase; text-align: center; letter-spacing: 8px; outline: none;
-            width: 100%; max-width: 320px; border-radius: 4px;
+            width: 100%; max-width: 400px; border-radius: 4px;
+            box-shadow: inset 0 0 10px rgba(0, 242, 255, 0.1);
         }
 
         #buscarBtn { 
             padding: 18px 40px; font-size: 1rem; background: var(--caribbean-pink); 
             color: #fff; border: none; cursor: pointer; font-weight: 900; text-transform: uppercase;
-            border-radius: 4px; transition: 0.3s;
+            border-radius: 4px; transition: 0.3s; letter-spacing: 2px;
         }
-        #buscarBtn:hover { transform: translateY(-2px); box-shadow: 0 5px 20px var(--caribbean-pink); }
+        #buscarBtn:hover { transform: scale(1.05); box-shadow: 0 0 25px var(--caribbean-pink); }
 
-        .modo-switch { margin: 20px 0; font-size: 0.75rem; color: #5a7d8c; letter-spacing: 2px; }
-        .switch { position: relative; display: inline-block; width: 46px; height: 24px; vertical-align: middle; margin: 0 10px; }
+        /* --- HISTORIAL --- */
+        .history-panel {
+            background: rgba(0,0,0,0.3);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: left;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .history-title { font-size: 0.6rem; letter-spacing: 2px; color: #5a7d8c; margin-bottom: 10px; text-transform: uppercase; }
+        #history-list { list-style: none; padding: 0; margin: 0; font-size: 0.8rem; max-height: 120px; overflow-y: auto; }
+        .history-item { 
+            padding: 5px 10px; border-bottom: 1px solid rgba(255,255,255,0.05); 
+            cursor: pointer; transition: 0.2s; color: var(--caribbean-cyan);
+        }
+        .history-item:hover { background: rgba(0, 242, 255, 0.1); }
+
+        /* --- SWITCHES --- */
+        .settings-bar {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .modo-switch { font-size: 0.7rem; color: #5a7d8c; letter-spacing: 2px; display: flex; align-items: center; }
+        .switch { position: relative; display: inline-block; width: 40px; height: 20px; margin: 0 10px; }
         .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #1a2e3a; transition: .4s; border-radius: 24px; }
-        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 4px; bottom: 4px; background-color: #fff; transition: .4s; border-radius: 50%; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #1a2e3a; transition: .4s; border-radius: 20px; }
+        .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: #fff; transition: .4s; border-radius: 50%; }
         input:checked + .slider { background-color: var(--caribbean-cyan); }
-        input:checked + .slider:before { transform: translateX(22px); background-color: #000; }
+        input:checked + .slider:before { transform: translateX(20px); background-color: #000; }
 
-        #manualPanel { display: none; margin-top: 20px; }
+        /* --- PANEL LOTE --- */
+        #manualPanel { display: none; margin-top: 10px; animation: slideDown 0.3s ease; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
         #manualLista { 
-            width: 100%; height: 100px; background: rgba(0,0,0,0.5); color: var(--caribbean-cyan); 
-            padding: 15px; border: 1px solid #222; resize: none; font-family: monospace; border-radius: 4px;
+            width: 100%; height: 80px; background: rgba(0,0,0,0.6); color: var(--caribbean-cyan); 
+            padding: 15px; border: 1px solid #1a2e3a; resize: none; font-family: monospace; border-radius: 4px;
+            outline: none;
         }
 
-        .progress-container { width: 100%; height: 4px; background: rgba(255,255,255,0.05); margin: 30px 0; display: none; }
-        .progress-fill { height: 100%; background: var(--caribbean-cyan); width: 0%; transition: width 0.1s; box-shadow: 0 0 10px var(--caribbean-cyan); }
+        /* --- VISUALIZADOR DE AUDIO / ESCANEO --- */
+        .scanner-visual {
+            height: 40px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 3px;
+            margin: 15px 0;
+            display: none;
+        }
+        .bar { width: 4px; background: var(--caribbean-cyan); animation: bounce 0.5s ease infinite alternate; }
+        @keyframes bounce { from { height: 5px; opacity: 0.3; } to { height: 35px; opacity: 1; } }
 
-        #resultado { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; margin-top: 30px; }
-        .qsl-card { background: rgba(255, 255, 255, 0.03); padding: 10px; border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; transition: 0.3s; }
-        .qsl-card:hover { border-color: var(--caribbean-cyan); background: rgba(0, 242, 255, 0.05); }
-        .qsl-card img { width: 100%; aspect-ratio: 3/2; object-fit: cover; border-radius: 4px; cursor: pointer; margin-bottom: 10px; }
+        /* --- RESULTADOS --- */
+        #resultado { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); 
+            gap: 25px; 
+            margin-top: 30px; 
+        }
+        .qsl-card { 
+            background: rgba(255, 255, 255, 0.02); 
+            padding: 12px; 
+            border: 1px solid rgba(255,255,255,0.05); 
+            border-radius: 8px; 
+            transition: 0.4s;
+            position: relative;
+            overflow: hidden;
+            animation: card-in 0.5s ease backwards;
+        }
+        @keyframes card-in { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .qsl-card:hover { 
+            border-color: var(--caribbean-cyan); 
+            background: rgba(0, 242, 255, 0.08); 
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+        }
+        .qsl-card img { 
+            width: 100%; aspect-ratio: 3/2; object-fit: cover; border-radius: 4px; 
+            cursor: pointer; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.1);
+        }
+        .qsl-info { font-size: 0.7rem; color: var(--caribbean-gold); margin-bottom: 10px; font-weight: bold; }
         
-        .btn-individual { width: 100%; padding: 8px; font-size: 0.7rem; background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.2); cursor: pointer; border-radius: 4px; font-weight: bold; }
-        .btn-individual:hover { background: #fff; color: #000; }
+        .btn-individual { 
+            width: 100%; padding: 10px; font-size: 0.75rem; background: transparent; 
+            color: #fff; border: 1px solid rgba(0, 242, 255, 0.3); cursor: pointer; 
+            border-radius: 4px; font-weight: 900; letter-spacing: 1px;
+        }
+        .btn-individual:hover { background: var(--caribbean-cyan); color: #000; }
 
+        /* --- CONTROLES FINALES --- */
         .action-btns { display: flex; flex-direction: column; gap: 15px; margin-top: 30px; align-items: center; }
         @media (min-width: 500px) { .action-btns { flex-direction: row; justify-content: center; } }
         
-        #btnZip, #btnVolver { padding: 15px 30px; border: none; font-weight: bold; cursor: pointer; display: none; text-transform: uppercase; border-radius: 4px; width: 100%; max-width: 250px; }
-        #btnZip { background: #fff; color: #000; }
-        #btnVolver { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid #444; }
+        #btnZip, #btnVolver { padding: 16px 35px; border: none; font-weight: 900; cursor: pointer; display: none; text-transform: uppercase; border-radius: 4px; width: 100%; max-width: 280px; letter-spacing: 2px; }
+        #btnZip { background: #fff; color: #000; box-shadow: 0 0 20px rgba(255,255,255,0.2); }
+        #btnVolver { background: rgba(0,0,0,0.5); color: #fff; border: 1px solid #333; }
 
-        #timer-box { display: none; margin-top: 20px; color: var(--caribbean-pink); font-size: 0.8rem; letter-spacing: 2px; }
+        #timer-box { display: none; margin-top: 25px; color: var(--caribbean-pink); font-size: 0.75rem; letter-spacing: 3px; font-weight: bold; }
 
-        footer { margin-top: 40px; font-size: 0.6rem; color: #444; letter-spacing: 3px; }
-        .container::-webkit-scrollbar { width: 4px; }
-        .container::-webkit-scrollbar-thumb { background: var(--caribbean-cyan); }
+        footer { margin-top: 40px; font-size: 0.65rem; color: #3d5a69; letter-spacing: 4px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 20px; }
+        
+        /* Scrollbar */
+        .container::-webkit-scrollbar { width: 5px; }
+        .container::-webkit-scrollbar-track { background: transparent; }
+        .container::-webkit-scrollbar-thumb { background: var(--caribbean-cyan); border-radius: 10px; }
+
+        /* Efectos GLITCH para el titulo */
+        .glitch { position: relative; }
+        .glitch::before, .glitch::after {
+            content: attr(data-text); position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.8;
+        }
+        .glitch::before { color: #0ff; z-index: -1; animation: glitch-anim 2s infinite linear alternate-reverse; }
+        .glitch::after { color: #f0f; z-index: -2; animation: glitch-anim2 3s infinite linear alternate-reverse; }
+        @keyframes glitch-anim { 0% { transform: translate(0); } 20% { transform: translate(-2px, 2px); } 40% { transform: translate(-2px, -2px); } 60% { transform: translate(2px, 2px); } 80% { transform: translate(2px, -2px); } 100% { transform: translate(0); } }
+        @keyframes glitch-anim2 { 0% { transform: translate(0); } 20% { transform: translate(2px, -2px); } 40% { transform: translate(2px, 2px); } 60% { transform: translate(-2px, -2px); } 80% { transform: translate(-2px, 2px); } 100% { transform: translate(0); } }
     </style>
 </head>
 <body>
 
-    <div class="station-copyright">SCANNING NODE: CL7ADV</div>
+    <div class="station-copyright">SYS NODE: CL7ADV // DX-OPS</div>
 
     <div id="welcome-screen">
         <div class="radar-circle"></div>
@@ -221,78 +308,162 @@
         <div class="laser laser-blue"></div>
         <div class="laser laser-red"></div>
         <div class="welcome-msg">
-            <div class="main-title">RADIOAFICIONADOS</div>
-            <div class="subtitle">DEL CARIBE • DX TERMINAL</div>
-            <button id="start-app">INICIAR FRECUENCIA</button>
+            <div class="main-title glitch" data-text="RADIOAFICIONADOS">RADIOAFICIONADOS</div>
+            <div class="subtitle">CARIBBEAN NETWORK • ULTRA TERMINAL</div>
+            <button id="start-app">ESTABLECER CONEXIÓN</button>
         </div>
     </div>
 
     <div class="container" id="main-container">
-        <h1>SISTEMA DE GESTIÓN QSL</h1>
+        <div class="header-box">
+            <h1>SISTEMA DE GESTIÓN QSL V2.0</h1>
+        </div>
 
         <div id="search-interface">
-            <div class="search-group">
-                <input type="text" id="indicativo" placeholder="ESTACIÓN" maxlength="15" spellcheck="false" autocomplete="off">
-                <button id="buscarBtn">BUSCAR EN DB</button>
+            <div class="search-area">
+                <div class="search-group">
+                    <input type="text" id="indicativo" placeholder="CALLSIGN" maxlength="15" spellcheck="false" autocomplete="off">
+                    <button id="buscarBtn">CONSULTAR</button>
+                </div>
+                <div class="history-panel">
+                    <div class="history-title">RECENT LOGS</div>
+                    <ul id="history-list"></ul>
+                </div>
             </div>
 
-            <div class="modo-switch">
-                SINGLE CALL
-                <label class="switch">
-                    <input type="checkbox" id="modoManual">
-                    <span class="slider"></span>
-                </label>
-                BATCH LIST
+            <div class="settings-bar">
+                <div class="modo-switch">
+                    SINGLE CALL
+                    <label class="switch">
+                        <input type="checkbox" id="modoManual">
+                        <span class="slider"></span>
+                    </label>
+                    BATCH LIST
+                </div>
+                <div class="modo-switch">
+                    SFX
+                    <label class="switch">
+                        <input type="checkbox" id="soundToggle" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
             </div>
 
             <div id="manualPanel">
-                <textarea id="manualLista" placeholder="CO7ABC, CM8DAA, HP1X..."></textarea>
+                <textarea id="manualLista" placeholder="CO7ABC, CM8DAA, CL7ADV, HP1X..."></textarea>
                 <button id="btnBuscarManual" style="margin-top:10px; width:100%; padding:15px; background:var(--caribbean-cyan); color:#000; border:none; font-weight:900; cursor:pointer; text-transform:uppercase; border-radius:4px;">PROCESAR LOTE COMPLETO</button>
             </div>
         </div>
 
-        <div id="pContainer" class="progress-container">
-            <div id="fill" class="progress-fill"></div>
+        <div class="scanner-visual" id="scannerVisual">
+            <!-- Barras generadas por JS -->
         </div>
 
-        <div id="status" style="height:20px; margin-top:10px; font-size:0.7rem; color:var(--caribbean-cyan); font-weight:bold;"></div>
+        <div id="status" style="height:25px; margin-top:10px; font-size:0.75rem; color:var(--caribbean-cyan); font-weight:bold; letter-spacing:2px;"></div>
         
         <div id="resultado"></div>
 
         <div id="timer-box">
-            RESET AUTOMÁTICO EN: <span id="timer-count">10</span>s
+            AUTO-RESET IN: <span id="timer-count">10</span>s
         </div>
 
         <div class="action-btns">
-            <button id="btnZip">GENERAR PAQUETE ZIP</button>
-            <button id="btnVolver">NUEVA CONSULTA</button>
+            <button id="btnZip">GENERAR ARCHIVO .ZIP</button>
+            <button id="btnVolver">NUEVA SESIÓN</button>
         </div>
 
-        <footer>73'S • OPERADOR ALFRED • CAMAGÜEY, CUBA</footer>
+        <footer>
+            73'S DE CL7ADV • ALFRED • CAMAGÜEY, CUBA<br>
+            <span style="opacity: 0.4; font-size: 0.5rem; letter-spacing: 1px;">ENCRYPTED DX TERMINAL ACCESS // 2024</span>
+        </footer>
     </div>
 
 <script>
 let countdown;
 let timeLeft = 10;
+let history = JSON.parse(localStorage.getItem('qsl_history') || '[]');
+
+// Crear barras del visualizador
+const visual = document.getElementById('scannerVisual');
+for(let i=0; i<30; i++) {
+    const bar = document.createElement('div');
+    bar.className = 'bar';
+    bar.style.animationDelay = `${i * 0.05}s`;
+    visual.appendChild(bar);
+}
+
+// Sonidos (Beeps sintetizados)
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+function playBeep(freq, dur, type="sine") {
+    if (!document.getElementById('soundToggle').checked) return;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+    gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + dur);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    osc.stop(audioCtx.currentTime + dur);
+}
+
+function playStatic() {
+    if (!document.getElementById('soundToggle').checked) return;
+    const bufferSize = audioCtx.sampleRate * 1;
+    const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) { data[i] = Math.random() * 2 - 1; }
+    const noise = audioCtx.createBufferSource();
+    noise.buffer = buffer;
+    const gain = audioCtx.createGain();
+    gain.gain.setValueAtTime(0.03, audioCtx.currentTime);
+    noise.connect(gain);
+    gain.connect(audioCtx.destination);
+    noise.start();
+}
 
 // Inicio de App
 document.getElementById("start-app").addEventListener("click", () => {
+    playBeep(880, 0.1);
     document.getElementById("welcome-screen").style.opacity = "0";
     setTimeout(() => {
         document.getElementById("welcome-screen").style.display = "none";
         document.getElementById("main-container").style.display = "block";
+        updateHistoryUI();
     }, 800);
 });
 
+// Historial
+function addToHistory(call) {
+    if(!history.includes(call)) {
+        history.unshift(call);
+        if(history.length > 10) history.pop();
+        localStorage.setItem('qsl_history', JSON.stringify(history));
+        updateHistoryUI();
+    }
+}
+
+function updateHistoryUI() {
+    const list = document.getElementById('history-list');
+    list.innerHTML = history.map(h => `<li class="history-item" onclick="quickSearch('${h}')">${h}</li>`).join('');
+}
+
+function quickSearch(call) {
+    document.getElementById('indicativo').value = call;
+    document.getElementById('buscarBtn').click();
+}
+
 // Switch de modo
 document.getElementById("modoManual").addEventListener("change", function() {
+    playBeep(440, 0.05);
     document.getElementById("manualPanel").style.display = this.checked ? "block" : "none";
 });
 
-// Rutas de búsqueda
+// Generación de Rutas
 function generarRutas(call) {
-    const formatos = ["jpg", "png", "JPG", "PNG"];
-    const variantes = ["", "-1", "-2", "-3"];
+    const formatos = ["jpg", "png", "JPG", "PNG", "jpeg"];
+    const variantes = ["", "-1", "-2", "-3", "_1", "_2"];
     let rutas = [];
     formatos.forEach(ext => variantes.forEach(v => rutas.push(`img/${call}${v}.${ext}`)));
     return rutas;
@@ -310,10 +481,13 @@ function probarImagen(src) {
 // Búsqueda Single
 document.getElementById("buscarBtn").addEventListener("click", () => {
     const call = document.getElementById('indicativo').value.trim().toUpperCase();
-    if (call) ejecutarProceso(() => realizarBusqueda(call));
+    if (call) {
+        addToHistory(call);
+        ejecutarProceso(() => realizarBusqueda(call));
+    }
 });
 
-// Búsqueda Manual / Lote
+// Lote
 document.getElementById("btnBuscarManual").addEventListener("click", () => {
     const texto = document.getElementById("manualLista").value;
     const lista = texto.split(/[\n,; ]+/).filter(s => s.trim() !== "").map(s => s.trim().toUpperCase());
@@ -324,29 +498,28 @@ document.getElementById("btnBuscarManual").addEventListener("click", () => {
 
 function ejecutarProceso(callback) {
     resetTimer();
+    playStatic();
     document.getElementById("search-interface").style.display = "none";
     document.getElementById("resultado").innerHTML = "";
     document.getElementById("btnZip").style.display = "none";
     document.getElementById("btnVolver").style.display = "none";
+    document.getElementById("scannerVisual").style.display = "flex";
     
-    const p = document.getElementById("pContainer");
-    const fill = document.getElementById("fill");
     const status = document.getElementById("status");
-    p.style.display = "block";
-    
     let prog = 0;
     let interval = setInterval(() => {
         prog += 2;
-        fill.style.width = prog + "%";
-        if (prog === 20) status.innerText = ">> ESCANEANDO FRECUENCIAS...";
-        if (prog === 60) status.innerText = ">> ACCEDIENDO A DB CARIBE...";
+        if (prog === 20) { status.innerText = ">> SCANNING VHF/UHF BANDS..."; playBeep(600, 0.1, "square"); }
+        if (prog === 50) { status.innerText = ">> DECRYPTING CARIBBEAN CLOUD..."; playBeep(700, 0.1, "square"); }
+        if (prog === 80) { status.innerText = ">> PARSING QSL METADATA..."; playBeep(800, 0.1, "square"); }
         if (prog >= 100) {
             clearInterval(interval);
-            p.style.display = "none";
+            document.getElementById("scannerVisual").style.display = "none";
             status.innerText = "";
+            playBeep(1200, 0.2);
             callback();
         }
-    }, 20);
+    }, 30);
 }
 
 async function realizarBusqueda(call) {
@@ -362,20 +535,23 @@ async function realizarBusquedaLote(lista) {
         const ok = (await Promise.all(rutas.map(probarImagen))).filter(x => x !== null);
         todas = todas.concat(ok);
     }
-    mostrarResultados([...new Set(todas)], "LOTE");
+    mostrarResultadas([...new Set(todas)], "BATCH_MODE");
 }
 
 function mostrarResultados(encontradas, call) {
     const res = document.getElementById('resultado');
     if (encontradas.length === 0) {
-        res.innerHTML = `<div style="grid-column: 1/-1; color:var(--caribbean-pink); border:1px solid var(--caribbean-pink); padding:40px; font-weight:bold;">[ SIN REGISTROS PARA: ${call} ]</div>`;
+        res.innerHTML = `<div style="grid-column: 1/-1; color:var(--caribbean-pink); border:2px dashed var(--caribbean-pink); padding:40px; font-weight:bold; background: rgba(255,0,0,0.05);">[ !!! NO RECORDS FOUND FOR: ${call} !!! ]</div>`;
     } else {
-        encontradas.forEach(src => {
+        encontradas.forEach((src, index) => {
+            const fileName = src.split('/').pop();
             const card = document.createElement('div');
             card.className = 'qsl-card';
+            card.style.animationDelay = `${index * 0.1}s`;
             card.innerHTML = `
-                <img src="${src}" onclick="descargarIndividual('${src}')" title="Clic para descargar">
-                <button class="btn-individual" onclick="descargarIndividual('${src}')">DESCARGAR</button>
+                <div class="qsl-info">DE: ${fileName.split('.')[0]}</div>
+                <img src="${src}" onclick="descargarIndividual('${src}')" title="Descargar QSL">
+                <button class="btn-individual" onclick="descargarIndividual('${src}')">DOWNLOAD RAW</button>
             `;
             res.appendChild(card);
         });
@@ -386,6 +562,7 @@ function mostrarResultados(encontradas, call) {
 }
 
 function descargarIndividual(url) {
+    playBeep(1000, 0.05);
     const a = document.createElement('a');
     a.href = url;
     a.download = url.split('/').pop();
@@ -400,22 +577,25 @@ document.getElementById("btnZip").addEventListener("click", async () => {
     
     const zip = new JSZip();
     const btn = document.getElementById("btnZip");
-    btn.innerText = "COMPRIMIENDO...";
+    const originalText = btn.innerText;
+    btn.innerText = "PACKING DATA...";
+    playStatic();
     
     for (let img of imgs) {
         try {
             const response = await fetch(img.src);
             const blob = await response.blob();
             zip.file(img.src.split('/').pop(), blob);
-        } catch(e) { console.error("Error al descargar:", img.src); }
+        } catch(e) { console.error("Error:", img.src); }
     }
     
     const content = await zip.generateAsync({type:"blob"});
     const link = document.createElement("a");
     link.href = URL.createObjectURL(content);
-    link.download = "QSL_CARIBE_PACK.zip";
+    link.download = `QSL_PACK_${new Date().getTime()}.zip`;
     link.click();
-    btn.innerText = "GENERAR PAQUETE ZIP";
+    btn.innerText = originalText;
+    playBeep(1500, 0.3);
 });
 
 function iniciarTimer() {
@@ -423,6 +603,7 @@ function iniciarTimer() {
     countdown = setInterval(() => {
         timeLeft--;
         document.getElementById("timer-count").innerText = timeLeft;
+        if (timeLeft <= 3) playBeep(400, 0.02, "sawtooth");
         if (timeLeft <= 0) reiniciarTodo();
     }, 1000);
 }
@@ -434,7 +615,10 @@ function resetTimer() {
     document.getElementById("timer-box").style.display = "none";
 }
 
-document.getElementById("btnVolver").addEventListener("click", reiniciarTodo);
+document.getElementById("btnVolver").addEventListener("click", () => {
+    playBeep(600, 0.1);
+    reiniciarTodo();
+});
 
 function reiniciarTodo() {
     resetTimer();
