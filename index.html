@@ -3,335 +3,268 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QSL Caribe v3.02 - CL7ADV</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>CL7ADV | QSL MASTER STATION</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Quicksand:wght@400;700&family=Dancing+Script:wght@700&display=swap');
-        
         :root {
-            --neon-soft: rgba(251, 255, 0, 0.4);
-            --tropical-dark: #0a1a2f;
+            --neon-green: #00ff41;
+            --neon-blue: #00f2ff;
+            --dark: #050505;
+            --panel: #111;
+            --warning: #f39c12;
         }
 
         body {
-            font-family: 'Quicksand', sans-serif;
-            background: radial-gradient(circle at center, #1a3a5c 0%, #050a0f 100%);
-            color: white;
-            min-height: 100vh;
+            background-color: var(--dark);
+            color: var(--neon-green);
+            font-family: 'Share Tech Mono', monospace;
+            margin: 0; padding: 15px;
+            overflow-x: hidden;
+        }
+
+        .main-layout {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 20px;
+        }
+
+        .header {
+            grid-column: 1 / -1;
+            border-bottom: 2px solid var(--neon-green);
+            padding: 10px;
             display: flex;
-            flex-direction: column;
+            justify-content: space-between;
             align-items: center;
-            justify-content: center;
-            overflow: hidden;
         }
 
-        .glass {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(15px);
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+        .panel {
+            background: var(--panel);
+            border: 1px solid #333;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
         }
 
-        .neon-soft-glow {
-            box-shadow: 0 0 15px var(--neon-soft);
-            border: 1px solid rgba(251, 255, 0, 0.5);
+        /* --- VISUALIZADORES --- */
+        #spectrogram { 
+            width: 100%; height: 150px; 
+            background: #000; border: 1px solid var(--neon-green);
         }
 
-        .qsl-arrival {
-            animation: flyIn 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+        .terminal {
+            height: 200px; overflow-y: auto;
+            padding: 15px; color: #fff;
+            font-size: 1.4rem; background: #000;
+            border: 1px solid #222; margin-top: 10px;
         }
 
-        @keyframes flyIn {
-            0% { transform: scale(0.2) rotate(-20deg) translateY(500px); opacity: 0; }
-            100% { transform: scale(1) rotate(0deg) translateY(0); opacity: 1; }
+        /* --- GALERÍA DE RESULTADOS --- */
+        .qsl-display {
+            margin-top: 20px;
+            text-align: center;
         }
 
-        .fade-out { animation: fadeOut 0.8s forwards; }
-        @keyframes fadeOut { to { opacity: 0; visibility: hidden; } }
+        .qsl-img-frame {
+            max-width: 100%;
+            border: 5px solid #fff;
+            box-shadow: 0 0 20px rgba(0,242,255,0.3);
+            margin-bottom: 15px;
+            transition: transform 0.3s;
+        }
 
-        #clock { font-family: 'Orbitron', sans-serif; letter-spacing: 1px; }
+        .qsl-img-frame:hover { transform: scale(1.02); }
+
+        /* --- INTERFAZ --- */
+        .hidden { display: none !important; }
         
-        .footer-text {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 0.65rem;
-            letter-spacing: 2px;
-            opacity: 0.5;
+        input[type="text"] {
+            width: 100%; padding: 12px;
+            background: #000; color: var(--neon-blue);
+            border: 1px solid var(--neon-blue);
+            margin-bottom: 10px; box-sizing: border-box;
+            font-family: 'Orbitron';
         }
 
-        .artistic-signature {
-            font-family: 'Dancing Script', cursive;
-            background: linear-gradient(to right, #60a5fa, #facc15);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-size: 1.5rem;
-            filter: drop-shadow(0 0 5px rgba(96, 165, 250, 0.3));
+        button {
+            width: 100%; padding: 12px;
+            background: transparent; border: 1px solid var(--neon-green);
+            color: var(--neon-green); font-family: 'Orbitron', sans-serif;
+            cursor: pointer; transition: 0.3s;
         }
 
-        /* Estilos para el scroll de resultados */
-        .results-scroll {
-            max-height: 300px;
-            overflow-y: auto;
-            scrollbar-width: thin;
-            scrollbar-color: #3b82f6 rgba(255,255,255,0.1);
-        }
+        button:hover { background: var(--neon-green); color: #000; }
+        
+        .btn-download { border-color: var(--warning); color: var(--warning); margin-top: 10px; }
+        .btn-download:hover { background: var(--warning); color: #000; }
+
+        #status-bar { font-size: 0.7rem; color: var(--neon-blue); }
     </style>
 </head>
 <body>
 
-    <!-- Pantalla de Entrada: La Carta QSL -->
-    <div id="landing-page" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#050a0f]">
-        <div class="qsl-arrival glass p-1 text-center cursor-pointer" onclick="enterApp()">
-            <div class="border-2 border-dashed border-white/20 p-8 rounded-xl bg-gradient-to-br from-blue-900/40 to-black">
-                <div class="text-5xl mb-4">✉️</div>
-                <h2 class="text-2xl font-bold mb-2 tracking-widest text-blue-300 uppercase">Nueva QSL Entrante</h2>
-                <p class="text-sm text-gray-400 italic">Desde la distancia, llega una señal...</p>
-                <div class="mt-6 px-6 py-2 bg-blue-500/20 border border-blue-400/50 rounded-full text-blue-300 animate-pulse uppercase text-xs tracking-widest">
-                    Haz clic para decodificar
-                </div>
-            </div>
+<div class="header">
+    <h1 style="font-family:'Orbitron'; margin:0;">CL7ADV STATION MASTER</h1>
+    <div id="status-bar">MODO: STANDBY</div>
+</div>
+
+<div class="main-layout">
+    <div class="panel">
+        <h3>SINTONIZADOR CW</h3>
+        <button onclick="initAudio()">ENCENDER RECEPTOR</button>
+        <div style="margin-top:15px; font-size:0.8rem;">
+            FREQ: <span id="fVal">700</span>Hz | SQ: <span id="sVal">110</span>
+            <input type="range" id="fSlider" min="400" max="1200" value="700" oninput="syncParams()">
         </div>
-        <div class="absolute bottom-10 footer-text uppercase">Designed by CL7ADV Alfred-Cuba</div>
+
+        <hr style="border:1px solid #222; margin:20px 0;">
+
+        <h3>BÚSQUEDA EN REPOSITORIO</h3>
+        <input type="text" id="qslInput" placeholder="CALLSIGN...">
+        <button onclick="buscarQSL()">BUSCAR MI QSL</button>
+        <div id="searchInfo" style="margin-top:10px; font-size:0.8rem; color:var(--warning);"></div>
     </div>
 
-    <!-- Reloj UTC -->
-    <div class="fixed top-5 right-5 glass p-3 text-sm font-bold border-blue-400/30 z-40">
-        <span class="text-[10px] block text-blue-300">UTC CLOCK</span>
-        <div id="clock" class="text-blue-100">00:00:00</div>
-    </div>
+    <div class="panel">
+        <canvas id="spectrogram"></canvas>
+        <div class="terminal" id="term">INICIE AUDIO PARA DECODIFICAR...</div>
 
-    <!-- Contenido Principal -->
-    <div id="main-content" class="hidden w-full flex flex-col items-center justify-center">
-        <div class="glass p-8 w-11/12 max-w-2xl text-center relative border-white/10">
-            <div class="flex justify-between items-center mb-6">
-                <span class="text-[10px] text-blue-400 font-bold uppercase tracking-widest">V3.02 Engine</span>
-                <span class="text-[10px] text-gray-500 font-bold uppercase tracking-widest">CL7ADV-CUBA</span>
-            </div>
+        <div id="results-area" class="hidden qsl-display">
+            <h2 style="color:var(--neon-blue);">¡TARJETA ENCONTRADA!</h2>
+            <div id="imgContainer">
+                </div>
+            <button class="btn-download" onclick="descargarMasivo()">DESCARGAR PACK QSL (.JPG)</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // CONFIGURACIÓN DE TU CARPETA
+    const CARPETA_IMAGENES = "img/CL7ADV-QSL/";
+    let qslEncontradas = [];
+    let timerReinicio;
+
+    /**
+     * FUNCIÓN DE BÚSQUEDA (CONEXIÓN CON CARPETA)
+     */
+    function buscarQSL() {
+        const call = document.getElementById('qslInput').value.toUpperCase().trim();
+        const info = document.getElementById('searchInfo');
+        const area = document.getElementById('results-area');
+        const container = document.getElementById('imgContainer');
+
+        if(call === "") return;
+
+        info.innerText = "ACCEDIENDO AL SERVIDOR...";
+        qslEncontradas = [];
+        container.innerHTML = "";
+
+        // Intentamos cargar la imagen desde tu carpeta GitHub
+        const urlImagen = CARPETA_IMAGENES + call + ".jpg";
+        const img = new Image();
+        img.src = urlImagen;
+
+        img.onload = function() {
+            info.innerText = "CONEXIÓN EXITOSA";
+            area.classList.remove('hidden');
             
-            <h1 class="text-2xl font-bold mb-6 tracking-tighter text-white/90 uppercase">Radio Ether Browser</h1>
+            // Crear el elemento visual de la QSL
+            const frame = document.createElement('img');
+            frame.src = urlImagen;
+            frame.className = "qsl-img-frame";
+            container.appendChild(frame);
             
-            <!-- Buscador -->
-            <div id="search-container">
-                <div class="flex gap-2 mb-4">
-                    <input type="text" id="qslInput" placeholder="BUSCAR INDICATIVO (EJ: CO5ABC)..." 
-                           class="flex-1 p-4 rounded-lg bg-black/40 border border-white/10 text-blue-100 placeholder-white/20 focus:outline-none focus:border-blue-500/50 text-center font-bold tracking-widest">
-                    <button onclick="buscarQSL()" class="bg-blue-600/20 hover:bg-blue-600/40 border border-blue-500/50 text-blue-300 px-6 rounded-lg transition-all active:scale-95">
-                        🔍
-                    </button>
-                </div>
-            </div>
+            qslEncontradas.push(urlImagen);
+            startInactivityTimer(); // Iniciamos tu timer de 6 seg
+            
+            // Log en la terminal
+            document.getElementById('term').innerHTML += `<br>[SISTEMA] QSL PARA ${call} LOCALIZADA.`;
+        };
 
-            <!-- Area de Resultados (Múltiples QSLs) -->
-            <div id="results-area" class="hidden mt-4">
-                <div class="flex justify-between items-center mb-4 border-b border-white/10 pb-2">
-                    <span id="results-count" class="text-[10px] text-blue-300 uppercase font-bold tracking-widest">Cargando...</span>
-                    <button onclick="descargarTodo()" class="text-[10px] bg-green-500/20 hover:bg-green-500/40 text-green-300 border border-green-500/50 px-3 py-1 rounded uppercase font-bold tracking-widest">
-                        Descarga Masiva (.zip/all)
-                    </button>
-                </div>
-                <div id="qsl-gallery" class="results-scroll grid grid-cols-1 sm:grid-cols-2 gap-4 p-2">
-                    <!-- Aquí se inyectan las imágenes -->
-                </div>
-            </div>
+        img.onerror = function() {
+            info.innerText = "ERROR: NO EXISTE QSL PARA " + call;
+            area.classList.add('hidden');
+        };
+    }
 
-            <!-- Mensaje Tropical (Fallo) -->
-            <div id="tropicalMessage" class="hidden mt-6 p-6 border border-yellow-500/30 rounded-xl bg-yellow-500/5">
-                <div class="text-3xl mb-3">🏝️</div>
-                <p class="text-lg font-medium italic text-yellow-200/80">"¡Ay, caramba! Ese contacto se nos escapó por las olas. No hay QSL por aquí, colega, ¡pero sigue pulsando!"</p>
-                <p id="timeout-msg" class="text-[10px] mt-4 text-yellow-500/50 uppercase tracking-[0.2em]">Sincronizando de nuevo en 6s...</p>
-            </div>
+    /**
+     * DESCARGA MASIVA (TU LÓGICA INTEGRADA)
+     */
+    function descargarIndividual(src, name) {
+        const link = document.createElement('a');
+        link.href = src;
+        link.download = name;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
 
-            <!-- Firma -->
-            <div class="mt-8 border-t border-white/5 pt-4">
-                <div class="artistic-signature">Alfred - CL7ADV</div>
-                <div class="text-[9px] text-gray-500 tracking-[0.3em] uppercase">Santa Cruz del Sur, Camagüey</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Barra Inferior -->
-    <div class="fixed bottom-8 left-0 right-0 px-8 flex justify-between items-end">
-        <div class="flex flex-col items-start gap-4">
-            <div id="techTip" class="hidden p-4 glass neon-soft-glow text-xs max-w-xs text-yellow-100 rounded-xl relative mb-2">
-                <span id="tipText">Iniciando...</span>
-            </div>
-            <div class="flex items-center gap-3">
-                <div onclick="toggleTip()" class="w-12 h-12 bg-yellow-500/10 rounded-full neon-soft-glow flex items-center justify-center cursor-pointer hover:bg-yellow-500/20 transition-all text-xl">💡</div>
-                <div onclick="toggleThanks()" class="w-12 h-12 bg-green-500/10 border border-green-500/30 rounded-full flex items-center justify-center cursor-pointer hover:bg-green-500/20 transition-all text-xl">😊</div>
-                <div onclick="toggleUpdateInfo()" class="px-4 py-2 glass border-blue-400/20 text-[10px] text-blue-300 cursor-pointer hover:border-blue-400/50 transition-all uppercase tracking-widest font-bold">LOG V3.02</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modales -->
-    <div id="thanks-modal" class="hidden fixed inset-0 z-[70] flex items-center justify-center bg-black/85 backdrop-blur-sm p-6">
-        <div class="glass max-w-sm w-full p-8 border-green-500/30 text-center">
-            <div class="text-4xl mb-4">🤝</div>
-            <h3 class="text-green-400 font-bold mb-4 tracking-widest border-b border-green-500/20 pb-2 uppercase text-sm">Gratitud Colega</h3>
-            <p class="text-gray-300 text-xs leading-relaxed mb-6">
-                Un agradecimiento especial a todos los amigos y colegas que con sus ideas y apoyo técnico hacen crecer este proyecto.
-                <br><br>
-                Mención especial a:<br>
-                <span class="text-blue-300 font-bold text-lg">CO5ABC</span>
-                <br>Por su valiosa ayuda y visión técnica.
-            </p>
-            <div class="artistic-signature text-xl mb-6">73's de Alfred, CL7ADV</div>
-            <button onclick="toggleThanks()" class="w-full py-2 bg-green-500/10 border border-green-500/30 text-green-400 text-[10px] font-bold uppercase tracking-widest">Cerrar</button>
-        </div>
-    </div>
-
-    <div id="update-modal" class="hidden fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-md p-6">
-        <div class="glass max-w-sm w-full p-6 border-blue-500/30">
-            <h3 class="text-blue-400 font-bold mb-4 tracking-widest border-b border-blue-500/20 pb-2 uppercase">Actualización V3.02</h3>
-            <ul class="text-[11px] text-gray-300 space-y-3 leading-relaxed">
-                <li><b class="text-blue-300 uppercase">Motor de Búsqueda:</b> Optimizado para rapidez y búsqueda múltiple.</li>
-                <li><b class="text-blue-300 uppercase">Masa de Imágenes:</b> Soporte para cargar todas las QSLs de un colega (JPG/PNG).</li>
-                <li><b class="text-blue-300 uppercase">Descarga:</b> Botón individual y botón de descarga masiva.</li>
-                <li><b class="text-blue-300 uppercase">Tiempo Tropical:</b> Aumentado a 6 segundos para mayor comodidad.</li>
-                <li><b class="text-blue-300 uppercase">Inactividad:</b> Reinicio automático tras 6s de reposo.</li>
-            </ul>
-            <button onclick="toggleUpdateInfo()" class="mt-6 w-full py-2 bg-blue-500/10 border border-blue-500/30 text-blue-400 text-[10px] font-bold uppercase tracking-widest">Entendido</button>
-        </div>
-    </div>
-
-    <script>
-        // Simulación de base de datos de QSLs (JPG y PNG)
-        const qslDatabase = [
-            { id: "CO5ABC", imgs: ["https://picsum.photos/seed/radio1/400/250", "https://picsum.photos/seed/radio2/400/250"] },
-            { id: "CL7ADV", imgs: ["https://picsum.photos/seed/radio3/400/250"] },
-            { id: "HI8XYZ", imgs: ["https://picsum.photos/seed/radio4/400/250", "https://picsum.photos/seed/radio5/400/250", "https://picsum.photos/seed/radio6/400/250"] }
-        ];
-
-        let resetTimer;
-
-        function updateClock() {
-            const now = new Date();
-            const h = String(now.getUTCHours()).padStart(2, '0');
-            const m = String(now.getUTCMinutes()).padStart(2, '0');
-            const s = String(now.getUTCSeconds()).padStart(2, '0');
-            document.getElementById('clock').textContent = `${h}:${m}:${s}`;
-        }
-        setInterval(updateClock, 1000);
-        updateClock();
-
-        function enterApp() {
-            const landing = document.getElementById('landing-page');
-            const main = document.getElementById('main-content');
-            landing.classList.add('fade-out');
+    function descargarMasivo() {
+        qslEncontradas.forEach((imgUrl, i) => {
             setTimeout(() => {
-                landing.classList.add('hidden');
-                main.classList.remove('hidden');
-                main.classList.add('qsl-arrival');
-                startInactivityTimer();
-            }, 800);
-        }
+                descargarIndividual(imgUrl, `QSL_CL7ADV_${i}.jpg`);
+            }, i * 300);
+        });
+    }
 
-        function toggleTip() {
-            const tipEl = document.getElementById('techTip');
-            const tipText = document.getElementById('tipText');
-            const tips = [
-                "TIP: El estaño 60/40 es ideal para electrónica analógica.",
-                "TIP: Una antena dipolo bien calculada te dará mejores contactos.",
-                "TIP: Revisa siempre las ROE antes de transmitir.",
-                "TIP: El alcohol isopropílico limpia placas sin dejar residuos.",
-                "TIP: ¿Ruidos? Revisa la tierra de tu estación.",
-                "TIP: Nunca sueldes componentes sin usar disipador térmico."
-            ];
-            if (tipEl.classList.contains('hidden')) {
-                tipText.textContent = tips[Math.floor(Math.random() * tips.length)];
-                tipEl.classList.remove('hidden');
-            } else {
-                tipEl.classList.add('hidden');
-            }
+    /**
+     * TIMER DE INACTIVIDAD DE 6 SEGUNDOS (TU LÓGICA INTEGRADA)
+     */
+    function startInactivityTimer() {
+        clearTimeout(timerReinicio);
+        document.getElementById('status-bar').innerText = "ESTADO: SESIÓN ACTIVA";
+        timerReinicio = setTimeout(() => {
+            resetUI();
+        }, 6000); 
+    }
+
+    function resetUI() {
+        document.getElementById('qslInput').value = "";
+        document.getElementById('results-area').classList.add('hidden');
+        document.getElementById('searchInfo').innerText = "";
+        document.getElementById('status-bar').innerText = "ESTADO: STANDBY (RESET)";
+    }
+
+    // Resetear timer con movimiento
+    document.addEventListener('mousemove', () => {
+        if(!document.getElementById('results-area').classList.contains('hidden')) {
             startInactivityTimer();
         }
+    });
 
-        function toggleUpdateInfo() { document.getElementById('update-modal').classList.toggle('hidden'); }
-        function toggleThanks() { document.getElementById('thanks-modal').classList.toggle('hidden'); }
+    /**
+     * MOTOR DE AUDIO PARA RADIO
+     */
+    let audioCtx, analyzer;
+    async function initAudio() {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        const source = audioCtx.createMediaStreamSource(stream);
+        analyzer = audioCtx.createAnalyser();
+        source.connect(analyzer);
+        render();
+        document.getElementById('term').innerText = "RECEPTOR ESCUCHANDO...";
+    }
 
-        // MOTOR DE BÚSQUEDA EFICIENTE
-        function buscarQSL() {
-            const query = document.getElementById('qslInput').value.trim().toUpperCase();
-            const searchContainer = document.getElementById('search-container');
-            const message = document.getElementById('tropicalMessage');
-            const resultsArea = document.getElementById('results-area');
-            const gallery = document.getElementById('qsl-gallery');
-            const countLabel = document.getElementById('results-count');
-
-            if (!query) return;
-
-            // Limpieza previa
-            gallery.innerHTML = "";
-            clearTimeout(resetTimer);
-
-            // Filtrar en base de datos
-            const colega = qslDatabase.find(item => item.id.includes(query));
-
-            if (colega) {
-                searchContainer.classList.add('hidden');
-                resultsArea.classList.remove('hidden');
-                countLabel.textContent = `${colega.imgs.length} Tarjeta(s) encontrada(s) para ${colega.id}`;
-
-                colega.imgs.forEach((url, index) => {
-                    const card = document.createElement('div');
-                    card.className = "glass p-2 border border-white/10 flex flex-col gap-2";
-                    card.innerHTML = `
-                        <img src="${url}" class="rounded w-full h-auto border border-white/5" alt="QSL ${index}">
-                        <div class="flex justify-between items-center px-1">
-                            <span class="text-[9px] text-gray-400">QSL_${colega.id}_${index}.jpg</span>
-                            <button onclick="descargarIndividual('${url}', 'QSL_${colega.id}_${index}.jpg')" 
-                                    class="bg-blue-500/20 hover:bg-blue-500/40 text-blue-300 p-1 px-2 rounded text-[10px] font-bold">
-                                ⬇️
-                            </button>
-                        </div>
-                    `;
-                    gallery.appendChild(card);
-                });
-                startInactivityTimer();
-            } else {
-                searchContainer.classList.add('hidden');
-                message.classList.remove('hidden');
-                startInactivityTimer();
-            }
+    function render() {
+        const canvas = document.getElementById('spectrogram');
+        const ctx = canvas.getContext('2d');
+        const data = new Uint8Array(analyzer.frequencyBinCount);
+        analyzer.getByteFrequencyData(data);
+        ctx.fillStyle = '#000'; ctx.fillRect(0,0, canvas.width, canvas.height);
+        for(let i=0; i<100; i++) {
+            ctx.fillStyle = 'var(--neon-green)';
+            ctx.fillRect(i*12, canvas.height - data[i]/2, 10, data[i]/2);
         }
+        requestAnimationFrame(render);
+    }
 
-        function descargarIndividual(url, name) {
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = name;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-        }
-
-        function descargarTodo() {
-            // Simulación de descarga masiva (abre las imágenes en nuevas pestañas o descarga secuencial)
-            const images = document.querySelectorAll('#qsl-gallery img');
-            if (images.length === 0) return;
-            images.forEach((img, i) => {
-                setTimeout(() => descargarIndividual(img.src, `MASIVO_QSL_${i}.jpg`), i * 300);
-            });
-        }
-
-        // TIMER DE 6 SEGUNDOS PARA REINICIO/INACTIVIDAD
-        function startInactivityTimer() {
-            clearTimeout(resetTimer);
-            resetTimer = setTimeout(() => {
-                resetUI();
-            }, 6000); // 6 segundos
-        }
-
-        function resetUI() {
-            document.getElementById('qslInput').value = "";
-            document.getElementById('tropicalMessage').classList.add('hidden');
-            document.getElementById('results-area').classList.add('hidden');
-            document.getElementById('search-container').classList.remove('hidden');
-        }
-
-        // Detectar actividad para resetear el timer si el usuario interactúa
-        document.addEventListener('mousemove', startInactivityTimer);
-        document.addEventListener('keypress', startInactivityTimer);
-
-    </script>
+    function syncParams() {
+        document.getElementById('fVal').innerText = document.getElementById('fSlider').value;
+    }
+</script>
 </body>
 </html>
