@@ -25,7 +25,7 @@
             overflow-x: hidden;
         }
 
-        /* --- MARCA DE AGUA ESTACIÓN (DERECHOS DE AUTOR) --- */
+        /* --- MARCA DE AGUA ESTACIÓN --- */
         .station-copyright {
             position: fixed;
             bottom: 20px;
@@ -54,29 +54,24 @@
             overflow: hidden;
         }
 
-        /* La tarjeta QSL que cruza */
         .qsl-rocket {
             position: absolute;
             width: 140px;
             height: 90px;
             background: #fff;
-            border: 3px solid #eee;
             border-radius: 8px;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
             box-shadow: 0 0 40px rgba(255,255,255,0.4);
             left: -300px;
             top: 40%;
             z-index: 10000;
-            animation: fastPass 1.8s cubic-bezier(0.45, 0, 0.55, 1) forwards;
+            /* Se activa por JS para sincronizar con sonido */
+            display: none; 
         }
-
-        /* Eliminadas las firmas de agua de la tarjeta */
         .qsl-rocket::before { content: "✉️"; font-size: 2.5rem; }
 
-        /* Estela de humo/humareda realista */
         .smoke-trail {
             position: absolute;
             right: 100%;
@@ -95,64 +90,34 @@
             100% { left: 130%; transform: rotate(-25deg) scale(0.7); }
         }
 
-        /* Mensaje que queda después de pasar */
         .welcome-msg {
             text-align: center;
-            opacity: 0;
-            transform: scale(0.8);
-            animation: revealMsg 0.8s ease 0.6s forwards;
+            opacity: 1;
+            transform: scale(1);
+            transition: 0.5s;
         }
+        .welcome-msg h2 { font-size: 3.5rem; color: var(--neon); text-shadow: 0 0 25px rgba(0,255,153,0.6); margin-bottom: 5px; font-weight: 900; }
+        .welcome-msg p { font-size: 1.6rem; color: var(--gold); margin-bottom: 35px; letter-spacing: 1px; }
 
-        .welcome-msg h2 {
-            font-size: 3.5rem;
-            color: var(--neon);
-            text-shadow: 0 0 25px rgba(0,255,153,0.6);
-            margin-bottom: 5px;
-            font-weight: 900;
-        }
-
-        .welcome-msg p {
-            font-size: 1.6rem;
-            color: var(--gold);
-            margin-bottom: 35px;
-            letter-spacing: 1px;
-        }
-
-        @keyframes revealMsg {
-            to { opacity: 1; transform: scale(1); }
-        }
-
-        /* Botón de entrada */
         #start-app {
-            padding: 15px 50px;
-            font-size: 1.2rem;
-            border-radius: 40px;
-            border: none;
+            padding: 15px 50px; font-size: 1.2rem; border-radius: 40px; border: none;
             background: linear-gradient(to right, var(--neon), #00cc7a);
-            color: #000;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-            transition: 0.3s;
+            color: #000; font-weight: bold; cursor: pointer; box-shadow: 0 10px 30px rgba(0,0,0,0.4); transition: 0.3s;
         }
-        #start-app:hover { transform: scale(1.05); box-shadow: 0 0 25px var(--neon); }
 
         /* --- CONTENIDO PRINCIPAL --- */
         .container { 
-            max-width: 750px; width: 95%; padding: 40px; 
+            max-width: 800px; width: 95%; padding: 40px; 
             background: var(--glass); border-radius: 30px; 
             box-shadow: 0 30px 70px rgba(0,0,0,0.8); 
             border: 1px solid rgba(0, 255, 153, 0.3); text-align: center;
-            display: none;
-            animation: fadeIn 0.5s ease;
+            display: none; position: relative;
         }
 
         h1 { font-size: 2.2rem; margin-bottom: 5px; text-shadow: 0 0 15px var(--neon); }
         .subtitle { color: var(--gold); margin-bottom: 30px; font-size: 0.9rem; letter-spacing: 2px; }
 
-        .search-group { 
-            display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; align-items: center;
-        }
+        .search-group { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; align-items: center; }
 
         #indicativo { 
             padding: 15px; font-size: 1.3rem; border: 2px solid rgba(255,255,255,0.1); 
@@ -165,58 +130,68 @@
             padding: 15px 30px; font-size: 1rem; 
             background: linear-gradient(145deg, #ffb74d, #f57c00); 
             color: #fff; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; 
-            box-shadow: 0 5px 0 #b35900; transition: 0.1s;
+            box-shadow: 0 5px 0 #b35900;
         }
-
-        #buscarBtn:active { transform: translateY(3px); box-shadow: 0 2px 0 #b35900; }
-
-        .modo-switch { display: flex; align-items: center; gap: 10px; font-weight: bold; color: var(--gold); }
-        .switch { position: relative; display: inline-block; width: 55px; height: 28px; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #555; transition: .4s; border-radius: 34px; }
-        .slider:before { position: absolute; content: ""; height: 22px; width: 22px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
-        input:checked + .slider { background-color: var(--neon); }
-        input:checked + .slider:before { transform: translateX(26px); }
 
         .progress-container { width: 100%; max-width: 400px; height: 10px; background: rgba(255,255,255,0.1); border-radius: 20px; margin: 50px auto 20px; position: relative; display: none; }
         .progress-fill { height: 100%; background: var(--neon); width: 0%; border-radius: 20px; transition: 0.1s linear; }
-        .card-icon { position: absolute; top: -35px; left: 0%; width: 45px; height: 30px; background: #fff; border: 2px solid var(--gold); border-radius: 5px; color: #333; font-weight: bold; font-size: 10px; display: flex; align-items: center; justify-content: center; transform: translateX(-50%); transition: 0.1s linear; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
-        .card-icon::after { content: "✉️"; font-size: 16px; }
+        .card-icon { position: absolute; top: -35px; left: 0%; width: 45px; height: 30px; background: #fff; border: 2px solid var(--gold); border-radius: 5px; color: #333; font-weight: bold; font-size: 10px; display: flex; align-items: center; justify-content: center; transform: translateX(-50%); transition: 0.1s linear; }
 
-        .status-text { height: 40px; color: var(--neon); font-weight: bold; margin-top: 10px; }
+        /* --- TARJETAS QSL --- */
+        .qsl-card { 
+            width: 180px; background: rgba(255,255,255,0.05); padding: 12px; 
+            border-radius: 12px; margin: 10px; display: inline-block; 
+            vertical-align: top; text-align: center; border: 1px solid rgba(255,255,255,0.1);
+        }
+        .qsl-card img { width: 100%; border-radius: 8px; margin-bottom: 8px; cursor: pointer; }
+        .btn-individual {
+            width: 100%; padding: 8px; font-size: 0.8rem; background: rgba(0, 255, 153, 0.2);
+            color: var(--neon); border: 1px solid var(--neon); border-radius: 5px; cursor: pointer;
+            transition: 0.3s;
+        }
+        .btn-individual:hover { background: var(--neon); color: #000; }
 
-        .qsl-card { width: 160px; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 12px; margin: 10px; display: inline-block; vertical-align: top; text-align: center; box-shadow: 0 0 10px rgba(0,0,0,0.4); }
-        .qsl-card img { width: 100%; border-radius: 8px; }
+        /* --- CONTADOR DE REINICIO --- */
+        #timer-box {
+            display: none;
+            margin: 20px auto;
+            padding: 15px;
+            background: rgba(255, 82, 82, 0.1);
+            border: 1px dashed #ff5252;
+            border-radius: 15px;
+            color: #ff5252;
+            font-weight: bold;
+        }
+        #timer-count { font-size: 1.5rem; display: block; }
 
-        .success-msg { color: var(--neon); margin: 15px 0; font-weight: bold; }
-        .error-msg { color: #ff5252; margin: 15px 0; font-weight: bold; animation: shake 0.4s; }
-
-        @media (max-width: 600px) { .qsl-card { width: 45%; } }
+        /* --- BOTONES DE ACCION --- */
+        .action-btns { display: flex; justify-content: center; gap: 15px; margin-top: 20px; }
+        #btnZip, #btnVolver { padding: 12px 25px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; display: none; }
+        #btnZip { background: var(--neon); color: #000; }
+        #btnVolver { background: #555; color: #fff; }
 
         #manualPanel { display: none; margin-top: 25px; background: rgba(255,255,255,0.05); padding: 20px; border-radius: 15px; }
-        #manualLista { width: 90%; height: 120px; background: #000; color: var(--neon); border-radius: 10px; padding: 10px; font-size: 1rem; text-transform: uppercase; border: 1px solid #444; }
-        #btnBuscarManual { margin-top: 15px; padding: 12px 25px; background: var(--accent); border: none; border-radius: 10px; color: #fff; font-weight: bold; cursor: pointer; }
-        #btnZip { margin-top: 20px; padding: 12px 25px; background: var(--neon); border: none; border-radius: 10px; color: #000; font-weight: bold; cursor: pointer; display: none; }
-
-        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-10px); } 75% { transform: translateX(10px); } }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        #manualLista { width: 90%; height: 100px; background: #000; color: var(--neon); border-radius: 10px; padding: 10px; font-size: 1rem; text-transform: uppercase; border: 1px solid #444; }
+        
+        .modo-switch { display: flex; align-items: center; gap: 10px; font-weight: bold; color: var(--gold); }
+        .switch { position: relative; display: inline-block; width: 50px; height: 24px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #555; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--neon); }
+        input:checked + .slider:before { transform: translateX(26px); }
     </style>
 </head>
 
 <body>
 
-    <!-- Marca de Agua Fija Estación -->
     <div class="station-copyright">
         © CL7ADV ALFRED STATION
     </div>
 
-    <!-- Pantalla de Bienvenida Dinámica -->
     <div id="welcome-screen">
-        <div class="qsl-rocket">
-            <div class="smoke-trail"></div>
-        </div>
-        
-        <div class="welcome-msg">
+        <div id="rocket" class="qsl-rocket"><div class="smoke-trail"></div></div>
+        <div class="welcome-msg" id="msg-box">
             <h2>¡Hola Colegas!</h2>
             <p>Bienvenidos por sus QSLs</p>
             <button id="start-app">ENTRAR AL SISTEMA</button>
@@ -227,27 +202,26 @@
         <h1>🌴 QSL Caribeña Ultra 🌊</h1>
         <p class="subtitle">CL7ADV - SANTA CRUZ DEL SUR</p>
 
-        <div class="search-group">
-            <input type="text" id="indicativo" placeholder="HP3GNG" maxlength="10">
-
-            <div class="modo-switch">
-                <span>Modo:</span>
-                <label class="switch">
-                    <input type="checkbox" id="modoManual">
-                    <span class="slider"></span>
-                </label>
-                <span id="modoTexto">Automático</span>
+        <div id="search-interface">
+            <div class="search-group">
+                <input type="text" id="indicativo" placeholder="HP3GNG" maxlength="10">
+                <div class="modo-switch">
+                    <span>Modo:</span>
+                    <label class="switch">
+                        <input type="checkbox" id="modoManual">
+                        <span class="slider"></span>
+                    </label>
+                    <span id="modoTexto">Automático</span>
+                </div>
+                <button id="buscarBtn">BUSCAR QSL</button>
             </div>
 
-            <button id="buscarBtn">BUSCAR QSL</button>
-        </div>
-
-        <div id="manualPanel">
-            <h3>Modo Manual</h3>
-            <p>Escribe varios indicativos, uno por línea:</p>
-            <textarea id="manualLista" placeholder="HP3GNG&#10;CO7ABC&#10;CM2XYZ"></textarea>
-            <br>
-            <button id="btnBuscarManual">BUSCAR LISTA</button>
+            <div id="manualPanel">
+                <h3>Modo Manual</h3>
+                <textarea id="manualLista" placeholder="HP3GNG&#10;CO7ABC"></textarea>
+                <br>
+                <button id="btnBuscarManual" style="margin-top:10px; padding:10px 20px; background:var(--accent); border:none; border-radius:8px; color:#fff; cursor:pointer; font-weight:bold;">BUSCAR LISTA</button>
+            </div>
         </div>
 
         <div id="pContainer" class="progress-container">
@@ -255,10 +229,19 @@
             <div id="fill" class="progress-fill"></div>
         </div>
 
-        <div id="status" class="status-text"></div>
-        <div id="resultado"></div>
+        <div id="status" style="height:30px; margin-top:10px; color:var(--neon); font-weight:bold;"></div>
+        
+        <div id="resultado" style="margin-top:20px;"></div>
 
-        <button id="btnZip">DESCARGAR SELECCIONADAS EN ZIP</button>
+        <div id="timer-box">
+            EL SISTEMA SE REINICIARÁ EN:
+            <span id="timer-count">7</span>
+        </div>
+
+        <div class="action-btns">
+            <button id="btnZip">DESCARGAR TODAS (ZIP)</button>
+            <button id="btnVolver">BUSCAR OTRA VEZ</button>
+        </div>
 
         <footer style="margin-top:40px; font-size:0.8rem; opacity:0.7;">
             73's Cordiales - Alfred - 2026
@@ -266,30 +249,30 @@
     </div>
 
 <script>
+let countdown;
+let timeLeft = 7;
+
 /* ============================
-   SÍNTESIS DE SONIDO SUPERSÓNICO
+   SONIDO SUPERSÓNICO SINCRONIZADO
 ============================ */
 function playSonicPass() {
     try {
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         const ctx = new AudioContext();
-        
-        // Oscilador para el tono supersónico
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
-        
+        const filter = ctx.createBiquadFilter();
+
         osc.type = 'sawtooth';
-        // Empieza agudo y cae rápido (efecto Doppler Jet)
+        // El sonido dura 1.8 segundos igual que la animación CSS
         osc.frequency.setValueAtTime(440, ctx.currentTime);
         osc.frequency.exponentialRampToValueAtTime(9000, ctx.currentTime + 0.4);
         osc.frequency.exponentialRampToValueAtTime(80, ctx.currentTime + 1.8);
         
-        // Volumen dinámico
         gain.gain.setValueAtTime(0.001, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.6, ctx.currentTime + 0.4);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.9);
+        gain.gain.exponentialRampToValueAtTime(0.7, ctx.currentTime + 0.4); // Pico de volumen al centro
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.8);
         
-        const filter = ctx.createBiquadFilter();
         filter.type = "lowpass";
         filter.frequency.setValueAtTime(12000, ctx.currentTime);
         filter.frequency.exponentialRampToValueAtTime(400, ctx.currentTime + 1.8);
@@ -299,66 +282,49 @@ function playSonicPass() {
         gain.connect(ctx.destination);
         
         osc.start();
-        osc.stop(ctx.currentTime + 2.0);
-    } catch(e) {}
+        osc.stop(ctx.currentTime + 1.9);
+    } catch(e) { console.error("Audio fallido:", e); }
 }
 
 /* ============================
-   CONTROL DE BIENVENIDA
+   CONTROL DE BIENVENIDA SINCRONIZADA
 ============================ */
-// Iniciar el sonido al primer clic en cualquier parte para cumplir reglas del navegador
-document.addEventListener('mousedown', function startFirstSound() {
-    playSonicPass();
-    document.removeEventListener('mousedown', startFirstSound);
-}, {once: true});
-
 document.getElementById("start-app").addEventListener("click", () => {
+    const rocket = document.getElementById("rocket");
+    const msg = document.getElementById("msg-box");
     const welcome = document.getElementById("welcome-screen");
     const main = document.getElementById("main-container");
-    
-    welcome.style.transition = "opacity 0.6s ease, transform 0.6s ease";
-    welcome.style.opacity = "0";
-    welcome.style.transform = "scale(1.05)";
+
+    // 1. Ocultar mensaje suavemente
+    msg.style.opacity = "0";
+    msg.style.transform = "scale(0.9)";
+
+    // 2. Disparar sonido y animación QSL al mismo tiempo
     setTimeout(() => {
-        welcome.style.display = "none";
-        main.style.display = "block";
-    }, 600);
+        playSonicPass(); // Sonido
+        rocket.style.display = "flex"; // Mostrar QSL
+        rocket.style.animation = "fastPass 1.8s cubic-bezier(0.45, 0, 0.55, 1) forwards"; // Iniciar vuelo
+    }, 200);
+
+    // 3. Transición al contenedor principal tras el vuelo (1.8s + margen)
+    setTimeout(() => {
+        welcome.style.transition = "opacity 0.5s ease";
+        welcome.style.opacity = "0";
+        setTimeout(() => {
+            welcome.style.display = "none";
+            main.style.display = "block";
+        }, 500);
+    }, 2000);
 });
 
 /* ============================
-   SONIDO DE RADIO
-============================ */
-function playRadioSound() {
-    try {
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        const bufferSize = 2 * audioCtx.sampleRate;
-        const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-        const output = noiseBuffer.getChannelData(0);
-        for (let i = 0; i < bufferSize; i++) { output[i] = Math.random() * 2 - 1; }
-        const whiteNoise = audioCtx.createBufferSource();
-        whiteNoise.buffer = noiseBuffer;
-        const gainNode = audioCtx.createGain();
-        gainNode.gain.setValueAtTime(0.05, audioCtx.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 1.5);
-        whiteNoise.connect(gainNode);
-        gainNode.connect(audioCtx.destination);
-        whiteNoise.start();
-        whiteNoise.stop(audioCtx.currentTime + 1.5);
-    } catch(e) {}
-}
-
-/* ============================
-   GENERADOR DE RUTAS
+   LÓGICA DE BÚSQUEDA
 ============================ */
 function generarRutas(call) {
     const rutas = [];
-    const formatos = ["jpg", "JPG", "png", "PNG"];
+    const formatos = ["jpg", "png", "JPG", "PNG"];
     const variantes = ["", "-1", "-2", "-3"];
-    formatos.forEach(ext => {
-        variantes.forEach(v => {
-            rutas.push(`img/${call}${v}.${ext}`);
-        });
-    });
+    formatos.forEach(ext => variantes.forEach(v => rutas.push(`img/${call}${v}.${ext}`)));
     return rutas;
 }
 
@@ -372,138 +338,162 @@ function probarImagen(src) {
 }
 
 document.getElementById("modoManual").addEventListener("change", function() {
-    const texto = document.getElementById("modoTexto");
-    const panel = document.getElementById("manualPanel");
-    if (this.checked) {
-        texto.innerText = "Manual";
-        panel.style.display = "block";
-    } else {
-        texto.innerText = "Automático";
-        panel.style.display = "none";
+    document.getElementById("modoTexto").innerText = this.checked ? "Manual" : "Automático";
+    document.getElementById("manualPanel").style.display = this.checked ? "block" : "none";
+});
+
+document.getElementById("buscarBtn").addEventListener("click", () => {
+    const call = document.getElementById('indicativo').value.trim().toUpperCase();
+    if (call) {
+        ejecutarProceso(() => finalizarBusqueda(call));
     }
 });
 
-document.getElementById("buscarBtn").addEventListener("click", buscarQSL);
-async function buscarQSL() {
-    const call = document.getElementById('indicativo').value.trim().toUpperCase();
-    if (!call) return;
-    iniciarBarra();
-    setTimeout(() => finalizarBusquedaAutomatica(call), 1600);
-}
-
-async function finalizarBusquedaAutomatica(call) {
-    detenerBarra();
-    const rutas = generarRutas(call);
-    const pruebas = await Promise.all(rutas.map(probarImagen));
-    const encontradas = pruebas.filter(x => x !== null);
-    const res = document.getElementById('resultado');
-    const btnZip = document.getElementById('btnZip');
-    if (encontradas.length === 0) {
-        res.innerHTML = `<div class="error-msg">❌ LA QSL PARA ${call} NO HA SIDO SUBIDA AÚN</div>`;
-        setTimeout(() => reiniciarSistema(), 4000);
-        return;
-    }
-    res.innerHTML = `<div class="success-msg">QSLs encontradas para ${call}:</div>`;
-    encontradas.forEach(src => {
-        res.innerHTML += `
-            <div class="qsl-card">
-                <input type="checkbox" class="chkQSL" value="${src}" checked>
-                <img src="${src}">
-            </div>
-        `;
-    });
-    btnZip.style.display = "block";
-}
-
-document.getElementById("btnBuscarManual").addEventListener("click", buscarManual);
-async function buscarManual() {
+document.getElementById("btnBuscarManual").addEventListener("click", () => {
     const lista = document.getElementById("manualLista").value.trim().split("\n");
-    const res = document.getElementById("resultado");
-    const btnZip = document.getElementById("btnZip");
-    res.innerHTML = "";
-    btnZip.style.display = "none";
-    if (!lista[0]) return;
+    if (lista[0]) {
+        ejecutarProceso(() => finalizarBusquedaManual(lista));
+    }
+});
+
+function ejecutarProceso(callback) {
+    resetTimer();
+    document.getElementById("search-interface").style.display = "none";
+    document.getElementById("resultado").innerHTML = "";
+    document.getElementById("btnZip").style.display = "none";
+    document.getElementById("btnVolver").style.display = "none";
+    
     iniciarBarra();
-    setTimeout(async () => {
-        detenerBarra();
-        let totalEncontradas = [];
-        for (let call of lista) {
-            call = call.trim().toUpperCase();
-            if (!call) continue;
-            const rutas = generarRutas(call);
-            const pruebas = await Promise.all(rutas.map(probarImagen));
-            const encontradas = pruebas.filter(x => x !== null);
-            if (encontradas.length > 0) {
-                res.innerHTML += `<div class="success-msg">QSLs de ${call}:</div>`;
-                encontradas.forEach(src => {
-                    totalEncontradas.push(src);
-                    res.innerHTML += `
-                        <div class="qsl-card">
-                            <input type="checkbox" class="chkQSL" value="${src}" checked>
-                            <img src="${src}">
-                        </div>
-                    `;
-                });
-            } else {
-                res.innerHTML += `<div class="error-msg">❌ No hay QSL para ${call}</div>`;
-            }
-        }
-        if (totalEncontradas.length > 0) btnZip.style.display = "block";
-    }, 1600);
+    setTimeout(callback, 1800);
+}
+
+async function finalizarBusqueda(call) {
+    detenerBarra();
+    const pruebas = await Promise.all(generarRutas(call).map(probarImagen));
+    const encontradas = pruebas.filter(x => x !== null);
+    mostrarResultados(encontradas, call);
+}
+
+async function finalizarBusquedaManual(lista) {
+    detenerBarra();
+    let total = [];
+    for (let call of lista) {
+        call = call.trim().toUpperCase();
+        if (!call) continue;
+        const pruebas = await Promise.all(generarRutas(call).map(probarImagen));
+        total = total.concat(pruebas.filter(x => x !== null));
+    }
+    mostrarResultados(total, "Varios");
+}
+
+function mostrarResultados(encontradas, call) {
+    const res = document.getElementById('resultado');
+    if (encontradas.length === 0) {
+        res.innerHTML = `<div style="color:#ff5252; font-weight:bold;">❌ NO SE ENCONTRÓ QSL PARA ${call}</div>`;
+        iniciarTimer();
+    } else {
+        res.innerHTML = `<div style="color:var(--neon); margin-bottom:15px; font-weight:bold;">✅ QSLs listas para descargar:</div>`;
+        encontradas.forEach(src => {
+            res.innerHTML += `
+                <div class="qsl-card">
+                    <input type="checkbox" class="chkQSL" value="${src}" checked style="display:none">
+                    <img src="${src}" onclick="descargarIndividual('${src}')" title="Clic para descargar">
+                    <button class="btn-individual" onclick="descargarIndividual('${src}')">DESCARGAR JPG</button>
+                </div>
+            `;
+        });
+        document.getElementById("btnZip").style.display = "block";
+    }
+    document.getElementById("btnVolver").style.display = "block";
+}
+
+/* ============================
+   DESCARGAS
+============================ */
+function descargarIndividual(url) {
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = url.split('/').pop();
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    iniciarTimer(); 
 }
 
 document.getElementById("btnZip").addEventListener("click", async () => {
-    const seleccionadas = [...document.querySelectorAll(".chkQSL:checked")].map(x => x.value);
-    if (seleccionadas.length === 0) return;
+    const urls = [...document.querySelectorAll(".chkQSL:checked")].map(x => x.value);
+    if (urls.length === 0) return;
+    
     const zip = new JSZip();
-    for (let url of seleccionadas) {
-        const nombre = url.split("/").pop();
+    for (let url of urls) {
         try {
             const blob = await fetch(url).then(r => r.blob());
-            zip.file(nombre, blob);
+            zip.file(url.split('/').pop(), blob);
         } catch(e) {}
     }
-    const contenido = await zip.generateAsync({ type: "blob" });
-    const enlace = document.createElement("a");
-    enlace.href = URL.createObjectURL(contenido);
-    enlace.download = "QSLs_Alfred_CL7ADV.zip";
-    enlace.click();
-    setTimeout(() => reiniciarSistema(), 2000);
+    const content = await zip.generateAsync({type:"blob"});
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(content);
+    link.download = "QSLs_Alfred_CL7ADV.zip";
+    link.click();
+    iniciarTimer();
 });
 
+/* ============================
+   UTILIDADES REINICIO
+============================ */
 function iniciarBarra() {
     const p = document.getElementById("pContainer");
     const fill = document.getElementById("fill");
     const card = document.getElementById("card");
     const status = document.getElementById("status");
     p.style.display = "block";
-    fill.style.width = "0%";
-    card.style.left = "0%";
-    status.innerText = "";
-    playRadioSound();
-    let progreso = 0;
-    window.animBarra = setInterval(() => {
-        progreso += 2;
-        fill.style.width = progreso + "%";
-        card.style.left = progreso + "%";
-        if (progreso == 30) status.innerText = "SINTONIZANDO SEÑAL...";
-        if (progreso == 60) status.innerText = "BUSCANDO EN LOGS...";
-        if (progreso == 90) status.innerText = "FILTRANDO INDICATIVO...";
-        if (progreso >= 100) clearInterval(window.animBarra);
+    let prog = 0;
+    window.anim = setInterval(() => {
+        prog += 2;
+        fill.style.width = prog + "%";
+        card.style.left = prog + "%";
+        if (prog == 40) status.innerText = "SINTONIZANDO...";
+        if (prog == 80) status.innerText = "DESCODIFICANDO IMAGEN...";
+        if (prog >= 100) clearInterval(window.anim);
     }, 30);
 }
 
 function detenerBarra() {
-    clearInterval(window.animBarra);
+    clearInterval(window.anim);
     document.getElementById("pContainer").style.display = "none";
+    document.getElementById("status").innerText = "";
 }
 
-function reiniciarSistema() {
+function iniciarTimer() {
+    resetTimer();
+    document.getElementById("timer-box").style.display = "block";
+    countdown = setInterval(() => {
+        timeLeft--;
+        document.getElementById("timer-count").innerText = timeLeft;
+        if (timeLeft <= 0) {
+            reiniciarTodo();
+        }
+    }, 1000);
+}
+
+function resetTimer() {
+    clearInterval(countdown);
+    timeLeft = 7;
+    document.getElementById("timer-count").innerText = timeLeft;
+    document.getElementById("timer-box").style.display = "none";
+}
+
+document.getElementById("btnVolver").addEventListener("click", reiniciarTodo);
+
+function reiniciarTodo() {
+    resetTimer();
+    document.getElementById("search-interface").style.display = "block";
     document.getElementById("resultado").innerHTML = "";
     document.getElementById("btnZip").style.display = "none";
+    document.getElementById("btnVolver").style.display = "none";
     document.getElementById("indicativo").value = "";
     document.getElementById("manualLista").value = "";
-    document.getElementById("status").innerText = "";
 }
 </script>
 </body>
