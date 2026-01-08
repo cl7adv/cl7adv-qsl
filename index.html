@@ -2,269 +2,229 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CL7ADV | QSL MASTER STATION</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
-    
+    <title>Buscador QSL Caribeño - CL7ADV</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
     <style>
         :root {
-            --neon-green: #00ff41;
-            --neon-blue: #00f2ff;
-            --dark: #050505;
-            --panel: #111;
-            --warning: #f39c12;
+            --primary: #00bcd4;
+            --accent: #ff9800;
+            --gold: #ffe082;
+            --neon: #00ff99;
+            --glass: rgba(14, 36, 49, 0.96);
         }
 
-        body {
-            background-color: var(--dark);
-            color: var(--neon-green);
-            font-family: 'Share Tech Mono', monospace;
-            margin: 0; padding: 15px;
-            overflow-x: hidden;
+        body { 
+            margin: 0; font-family: 'Segoe UI', sans-serif; 
+            background: radial-gradient(circle at center, #00acc1, #013d3e); 
+            background-attachment: fixed; color: #fff; 
+            display: flex; align-items: center; justify-content: center; min-height: 100vh;
         }
 
-        .main-layout {
-            max-width: 1400px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: 350px 1fr;
-            gap: 20px;
+        .container { 
+            max-width: 650px; width: 90%; padding: 40px; 
+            background: var(--glass); border-radius: 30px; 
+            box-shadow: 0 30px 70px rgba(0,0,0,0.8); 
+            border: 1px solid rgba(0, 255, 153, 0.3); text-align: center;
         }
 
-        .header {
-            grid-column: 1 / -1;
-            border-bottom: 2px solid var(--neon-green);
-            padding: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        h1 { font-size: 2.2rem; margin-bottom: 5px; text-shadow: 0 0 15px var(--neon); }
+        .subtitle { color: var(--gold); margin-bottom: 30px; font-size: 0.9rem; letter-spacing: 2px; }
+
+        .search-group { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; }
+
+        #indicativo { 
+            padding: 15px; font-size: 1.3rem; border: 2px solid rgba(255,255,255,0.1); 
+            border-radius: 12px; width: 220px; background: #000;
+            color: var(--neon); font-weight: bold; text-transform: uppercase;
+            text-align: center; letter-spacing: 2px;
         }
 
-        .panel {
-            background: var(--panel);
-            border: 1px solid #333;
-            padding: 20px;
-            border-radius: 8px;
+        #buscarBtn { 
+            padding: 15px 30px; font-size: 1rem; 
+            background: linear-gradient(145deg, #ffb74d, #f57c00); 
+            color: #fff; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; 
+            box-shadow: 0 5px 0 #b35900; transition: 0.1s;
+        }
+
+        #buscarBtn:active { transform: translateY(3px); box-shadow: 0 2px 0 #b35900; }
+
+        /* Barra de Carga */
+        .progress-container {
+            width: 100%; max-width: 400px; height: 10px; 
+            background: rgba(255,255,255,0.1); border-radius: 20px;
+            margin: 50px auto 20px; position: relative; display: none;
+        }
+
+        .progress-fill { height: 100%; background: var(--neon); width: 0%; border-radius: 20px; transition: 0.1s linear; }
+
+        .card-icon {
+            position: absolute; top: -35px; left: 0%;
+            width: 45px; height: 30px; background: #fff;
+            border: 2px solid var(--gold); border-radius: 5px;
+            color: #333; font-weight: bold; font-size: 10px;
+            display: flex; align-items: center; justify-content: center;
+            transform: translateX(-50%); transition: 0.1s linear;
             box-shadow: 0 5px 15px rgba(0,0,0,0.5);
         }
+        .card-icon::after { content: "✉️"; font-size: 16px; }
 
-        /* --- VISUALIZADORES --- */
-        #spectrogram { 
-            width: 100%; height: 150px; 
-            background: #000; border: 1px solid var(--neon-green);
+        .status-text { height: 40px; color: var(--neon); font-weight: bold; margin-top: 10px; }
+
+        /* Mensajes de Resultado */
+        .error-msg {
+            background: rgba(255, 68, 68, 0.2); border: 1px solid #ff4444;
+            color: #ffbaba; padding: 15px; border-radius: 12px;
+            margin-top: 20px; animation: shake 0.5s;
         }
 
-        .terminal {
-            height: 200px; overflow-y: auto;
-            padding: 15px; color: #fff;
-            font-size: 1.4rem; background: #000;
-            border: 1px solid #222; margin-top: 10px;
+        .success-msg {
+            background: rgba(0, 255, 153, 0.2); border: 1px solid var(--neon);
+            color: #e0fff0; padding: 20px; border-radius: 12px;
+            margin-top: 20px; animation: fadeIn 0.8s;
         }
 
-        /* --- GALERÍA DE RESULTADOS --- */
-        .qsl-display {
-            margin-top: 20px;
-            text-align: center;
+        .download-btn {
+            display: inline-block; margin-top: 15px; padding: 10px 20px;
+            background: var(--neon); color: #000; text-decoration: none;
+            border-radius: 8px; font-weight: bold;
         }
 
-        .qsl-img-frame {
-            max-width: 100%;
-            border: 5px solid #fff;
-            box-shadow: 0 0 20px rgba(0,242,255,0.3);
-            margin-bottom: 15px;
-            transition: transform 0.3s;
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
         }
 
-        .qsl-img-frame:hover { transform: scale(1.02); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- INTERFAZ --- */
-        .hidden { display: none !important; }
-        
-        input[type="text"] {
-            width: 100%; padding: 12px;
-            background: #000; color: var(--neon-blue);
-            border: 1px solid var(--neon-blue);
-            margin-bottom: 10px; box-sizing: border-box;
-            font-family: 'Orbitron';
-        }
-
-        button {
-            width: 100%; padding: 12px;
-            background: transparent; border: 1px solid var(--neon-green);
-            color: var(--neon-green); font-family: 'Orbitron', sans-serif;
-            cursor: pointer; transition: 0.3s;
-        }
-
-        button:hover { background: var(--neon-green); color: #000; }
-        
-        .btn-download { border-color: var(--warning); color: var(--warning); margin-top: 10px; }
-        .btn-download:hover { background: var(--warning); color: #000; }
-
-        #status-bar { font-size: 0.7rem; color: var(--neon-blue); }
+        .fade-out { opacity: 0; transition: opacity 1s; }
     </style>
 </head>
 <body>
 
-<div class="header">
-    <h1 style="font-family:'Orbitron'; margin:0;">CL7ADV STATION MASTER</h1>
-    <div id="status-bar">MODO: STANDBY</div>
-</div>
+    <div class="container">
+        <h1>🌴 QSL Caribeña 🌊</h1>
+        <p class="subtitle">CL7ADV - SANTA CRUZ DEL SUR</p>
 
-<div class="main-layout">
-    <div class="panel">
-        <h3>SINTONIZADOR CW</h3>
-        <button onclick="initAudio()">ENCENDER RECEPTOR</button>
-        <div style="margin-top:15px; font-size:0.8rem;">
-            FREQ: <span id="fVal">700</span>Hz | SQ: <span id="sVal">110</span>
-            <input type="range" id="fSlider" min="400" max="1200" value="700" oninput="syncParams()">
+        <div class="search-group">
+            <input type="text" id="indicativo" placeholder="CO7ABC" maxlength="10">
+            <button id="buscarBtn" onclick="buscarQSL()">BUSCAR QSL</button>
         </div>
 
-        <hr style="border:1px solid #222; margin:20px 0;">
-
-        <h3>BÚSQUEDA EN REPOSITORIO</h3>
-        <input type="text" id="qslInput" placeholder="CALLSIGN...">
-        <button onclick="buscarQSL()">BUSCAR MI QSL</button>
-        <div id="searchInfo" style="margin-top:10px; font-size:0.8rem; color:var(--warning);"></div>
-    </div>
-
-    <div class="panel">
-        <canvas id="spectrogram"></canvas>
-        <div class="terminal" id="term">INICIE AUDIO PARA DECODIFICAR...</div>
-
-        <div id="results-area" class="hidden qsl-display">
-            <h2 style="color:var(--neon-blue);">¡TARJETA ENCONTRADA!</h2>
-            <div id="imgContainer">
-                </div>
-            <button class="btn-download" onclick="descargarMasivo()">DESCARGAR PACK QSL (.JPG)</button>
+        <div id="pContainer" class="progress-container">
+            <div id="card" class="card-icon">QSL</div>
+            <div id="fill" class="progress-fill"></div>
         </div>
+
+        <div id="status" class="status-text"></div>
+        <div id="resultado"></div>
+
+        <footer style="margin-top:40px; font-size:0.8rem; opacity:0.7;">
+            73's Cordiales - Alfred - 2026
+        </footer>
     </div>
-</div>
 
-<script>
-    // CONFIGURACIÓN DE TU CARPETA
-    const CARPETA_IMAGENES = "img/CL7ADV-QSL/";
-    let qslEncontradas = [];
-    let timerReinicio;
-
-    /**
-     * FUNCIÓN DE BÚSQUEDA (CONEXIÓN CON CARPETA)
-     */
-    function buscarQSL() {
-        const call = document.getElementById('qslInput').value.toUpperCase().trim();
-        const info = document.getElementById('searchInfo');
-        const area = document.getElementById('results-area');
-        const container = document.getElementById('imgContainer');
-
-        if(call === "") return;
-
-        info.innerText = "ACCEDIENDO AL SERVIDOR...";
-        qslEncontradas = [];
-        container.innerHTML = "";
-
-        // Intentamos cargar la imagen desde tu carpeta GitHub
-        const urlImagen = CARPETA_IMAGENES + call + ".jpg";
-        const img = new Image();
-        img.src = urlImagen;
-
-        img.onload = function() {
-            info.innerText = "CONEXIÓN EXITOSA";
-            area.classList.remove('hidden');
-            
-            // Crear el elemento visual de la QSL
-            const frame = document.createElement('img');
-            frame.src = urlImagen;
-            frame.className = "qsl-img-frame";
-            container.appendChild(frame);
-            
-            qslEncontradas.push(urlImagen);
-            startInactivityTimer(); // Iniciamos tu timer de 6 seg
-            
-            // Log en la terminal
-            document.getElementById('term').innerHTML += `<br>[SISTEMA] QSL PARA ${call} LOCALIZADA.`;
+    <script>
+        // --- BASE DE DATOS DE QSLs ---
+        // Aquí es donde añades los indicativos y el link a su imagen
+        const baseDeDatosQSL = {
+            "CO7ABC": "https://via.placeholder.com/400x250?text=QSL+CO7ABC",
+            "CM2XYZ": "https://via.placeholder.com/400x250?text=QSL+CM2XYZ",
+            "CL7ADV": "https://via.placeholder.com/400x250?text=QSL+Alfred"
         };
 
-        img.onerror = function() {
-            info.innerText = "ERROR: NO EXISTE QSL PARA " + call;
-            area.classList.add('hidden');
-        };
-    }
-
-    /**
-     * DESCARGA MASIVA (TU LÓGICA INTEGRADA)
-     */
-    function descargarIndividual(src, name) {
-        const link = document.createElement('a');
-        link.href = src;
-        link.download = name;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    }
-
-    function descargarMasivo() {
-        qslEncontradas.forEach((imgUrl, i) => {
-            setTimeout(() => {
-                descargarIndividual(imgUrl, `QSL_CL7ADV_${i}.jpg`);
-            }, i * 300);
-        });
-    }
-
-    /**
-     * TIMER DE INACTIVIDAD DE 6 SEGUNDOS (TU LÓGICA INTEGRADA)
-     */
-    function startInactivityTimer() {
-        clearTimeout(timerReinicio);
-        document.getElementById('status-bar').innerText = "ESTADO: SESIÓN ACTIVA";
-        timerReinicio = setTimeout(() => {
-            resetUI();
-        }, 6000); 
-    }
-
-    function resetUI() {
-        document.getElementById('qslInput').value = "";
-        document.getElementById('results-area').classList.add('hidden');
-        document.getElementById('searchInfo').innerText = "";
-        document.getElementById('status-bar').innerText = "ESTADO: STANDBY (RESET)";
-    }
-
-    // Resetear timer con movimiento
-    document.addEventListener('mousemove', () => {
-        if(!document.getElementById('results-area').classList.contains('hidden')) {
-            startInactivityTimer();
+        function playRadioSound() {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const bufferSize = 2 * audioCtx.sampleRate;
+                const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+                const output = noiseBuffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) { output[i] = Math.random() * 2 - 1; }
+                const whiteNoise = audioCtx.createBufferSource();
+                whiteNoise.buffer = noiseBuffer;
+                const gainNode = audioCtx.createGain();
+                gainNode.gain.setValueAtTime(0.05, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 1.5);
+                whiteNoise.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                whiteNoise.start();
+                whiteNoise.stop(audioCtx.currentTime + 1.5);
+            } catch(e) { console.log("Audio no soportado"); }
         }
-    });
 
-    /**
-     * MOTOR DE AUDIO PARA RADIO
-     */
-    let audioCtx, analyzer;
-    async function initAudio() {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        const source = audioCtx.createMediaStreamSource(stream);
-        analyzer = audioCtx.createAnalyser();
-        source.connect(analyzer);
-        render();
-        document.getElementById('term').innerText = "RECEPTOR ESCUCHANDO...";
-    }
+        function buscarQSL() {
+            const input = document.getElementById('indicativo');
+            const call = input.value.trim().toUpperCase();
+            const pContainer = document.getElementById('pContainer');
+            const card = document.getElementById('card');
+            const fill = document.getElementById('fill');
+            const status = document.getElementById('status');
+            const res = document.getElementById('resultado');
 
-    function render() {
-        const canvas = document.getElementById('spectrogram');
-        const ctx = canvas.getContext('2d');
-        const data = new Uint8Array(analyzer.frequencyBinCount);
-        analyzer.getByteFrequencyData(data);
-        ctx.fillStyle = '#000'; ctx.fillRect(0,0, canvas.width, canvas.height);
-        for(let i=0; i<100; i++) {
-            ctx.fillStyle = 'var(--neon-green)';
-            ctx.fillRect(i*12, canvas.height - data[i]/2, 10, data[i]/2);
+            if (!call) {
+                alert("Por favor, ingresa un indicativo");
+                return;
+            }
+
+            // Reset de búsqueda previa
+            res.innerHTML = "";
+            pContainer.style.display = "block";
+            fill.style.width = "0%";
+            card.style.left = "0%";
+            playRadioSound();
+            
+            let progreso = 0;
+            const anim = setInterval(() => {
+                progreso += 2;
+                fill.style.width = progreso + "%";
+                card.style.left = progreso + "%";
+                
+                if(progreso == 30) status.innerText = "SINTONIZANDO SEÑAL...";
+                if(progreso == 60) status.innerText = "BUSCANDO EN LOGS...";
+                if(progreso == 90) status.innerText = "FILTRANDO INDICATIVO...";
+
+                if (progreso >= 100) {
+                    clearInterval(anim);
+                    finalizarBusqueda(call);
+                }
+            }, 30);
         }
-        requestAnimationFrame(render);
-    }
 
-    function syncParams() {
-        document.getElementById('fVal').innerText = document.getElementById('fSlider').value;
-    }
-</script>
+        function finalizarBusqueda(call) {
+            const res = document.getElementById('resultado');
+            const status = document.getElementById('status');
+            const pContainer = document.getElementById('pContainer');
+            const input = document.getElementById('indicativo');
+
+            status.innerText = "";
+            pContainer.style.display = "none";
+
+            // Lógica de verificación
+            if (baseDeDatosQSL[call]) {
+                const urlImagen = baseDeDatosQSL[call];
+                res.innerHTML = `
+                    <div class="success-msg">
+                        ✅ ¡QSL ENCONTRADA! <br><br>
+                        <img src="${urlImagen}" style="width:100%; border-radius:10px; margin-bottom:10px;">
+                        <a href="${urlImagen}" target="_blank" class="download-btn">DESCARGAR TARJETA</a>
+                    </div>
+                `;
+            } else {
+                res.innerHTML = `
+                    <div class="error-msg" id="msg">
+                        ❌ LA QSL PARA ${call} NO HA SIDO SUBIDA AÚN
+                    </div>
+                `;
+                // Solo auto-reinicio si falla, para que si la encuentra el usuario la pueda ver/bajar
+                setTimeout(() => {
+                    const msg = document.getElementById('msg');
+                    if(msg) {
+                        msg.classList.add('fade-out');
+                        setTimeout(() => { res.innerHTML = ""; input.value = ""; }, 1000);
+                    }
+                }, 5000);
+            }
+        }
+    </script>
 </body>
 </html>
