@@ -5,7 +5,6 @@
     <title>QSL Caribeña Ultra V2 - CL7ADV</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-    <!-- Librerías Externas -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
     <style>
@@ -280,6 +279,16 @@
 
         #timer-box { display: none; margin-top: 25px; color: var(--caribbean-pink); font-size: 0.75rem; letter-spacing: 3px; font-weight: bold; }
 
+        /* --- CONTADOR DE VISITAS --- */
+        .visit-counter-container {
+            margin-top: 30px;
+            background: rgba(0,0,0,0.3);
+            padding: 20px;
+            text-align: center;
+            border-radius: 8px;
+            border: 1px solid rgba(0, 242, 255, 0.05);
+        }
+
         footer { margin-top: 40px; font-size: 0.65rem; color: #3d5a69; letter-spacing: 4px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 20px; }
         
         /* Scrollbar */
@@ -356,8 +365,7 @@
         </div>
 
         <div class="scanner-visual" id="scannerVisual">
-            <!-- Barras generadas por JS -->
-        </div>
+            </div>
 
         <div id="status" style="height:25px; margin-top:10px; font-size:0.75rem; color:var(--caribbean-cyan); font-weight:bold; letter-spacing:2px;"></div>
         
@@ -372,16 +380,24 @@
             <button id="btnVolver">NUEVA SESIÓN</button>
         </div>
 
+        <div class="visit-counter-container">
+            <div style="margin-bottom:15px">
+                <a href="https://info.flagcounter.com/ReMh" style="text-decoration: none;">
+                    <img alt="Flag Counter" border="0" src="https://s01.flagcounter.com/count2/ReMh/bg_0b1622/txt_ffffff/border_1a3a5a/columns_5/maxflags_15/viewers_0/labels_0/pageviews_0/flags_0/percent_0/" />
+                </a>
+            </div>
+        </div>
+
         <footer>
             73'S DE CL7ADV • ALFRED • CAMAGÜEY, CUBA<br>
-            <span style="opacity: 0.4; font-size: 0.5rem; letter-spacing: 1px;">ENCRYPTED DX TERMINAL ACCESS // 2024</span>
+            <span style="opacity: 0.4; font-size: 0.5rem; letter-spacing: 1px;">ENCRYPTED DX TERMINAL ACCESS // 2026</span>
         </footer>
     </div>
 
 <script>
 let countdown;
 let timeLeft = 10;
-let history = JSON.parse(localStorage.getItem('qsl_history') || '[]');
+let historyData = JSON.parse(localStorage.getItem('qsl_history') || '[]');
 
 // Crear barras del visualizador
 const visual = document.getElementById('scannerVisual');
@@ -436,17 +452,17 @@ document.getElementById("start-app").addEventListener("click", () => {
 
 // Historial
 function addToHistory(call) {
-    if(!history.includes(call)) {
-        history.unshift(call);
-        if(history.length > 10) history.pop();
-        localStorage.setItem('qsl_history', JSON.stringify(history));
+    if(!historyData.includes(call)) {
+        historyData.unshift(call);
+        if(historyData.length > 10) historyData.pop();
+        localStorage.setItem('qsl_history', JSON.stringify(historyData));
         updateHistoryUI();
     }
 }
 
 function updateHistoryUI() {
     const list = document.getElementById('history-list');
-    list.innerHTML = history.map(h => `<li class="history-item" onclick="quickSearch('${h}')">${h}</li>`).join('');
+    list.innerHTML = historyData.map(h => `<li class="history-item" onclick="quickSearch('${h}')">${h}</li>`).join('');
 }
 
 function quickSearch(call) {
@@ -535,7 +551,7 @@ async function realizarBusquedaLote(lista) {
         const ok = (await Promise.all(rutas.map(probarImagen))).filter(x => x !== null);
         todas = todas.concat(ok);
     }
-    mostrarResultadas([...new Set(todas)], "BATCH_MODE");
+    mostrarResultados([...new Set(todas)], "BATCH_MODE");
 }
 
 function mostrarResultados(encontradas, call) {
