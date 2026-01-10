@@ -9,6 +9,7 @@
 
     <style>
         :root {
+            /* Colores ajustados al nuevo Flag Counter */
             --caribbean-cyan: #00f2ff;
             --caribbean-pink: #ff007a;
             --caribbean-gold: #ffcc00;
@@ -282,11 +283,12 @@
         /* --- CONTADOR DE VISITAS --- */
         .visit-counter-container {
             margin-top: 30px;
-            background: rgba(0,0,0,0.3);
+            background: rgba(0,0,0,0.4);
             padding: 20px;
             text-align: center;
             border-radius: 8px;
-            border: 1px solid rgba(0, 242, 255, 0.05);
+            border: 1px solid var(--border-glow);
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.1);
         }
 
         footer { margin-top: 40px; font-size: 0.65rem; color: #3d5a69; letter-spacing: 4px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 20px; }
@@ -381,10 +383,9 @@
         </div>
 
         <div class="visit-counter-container">
-            <div style="margin-bottom:15px">
-                <a href="https://info.flagcounter.com/ReMh" style="text-decoration: none;">
-                    <img alt="Flag Counter" border="0" src="https://s01.flagcounter.com/count2/ReMh/bg_0b1622/txt_ffffff/border_1a3a5a/columns_5/maxflags_15/viewers_0/labels_0/pageviews_0/flags_0/percent_0/" />
-                </a>
+            <div style="margin-bottom:5px; font-size: 0.7rem; color: var(--caribbean-cyan); letter-spacing: 2px;">ESTADÍSTICAS GLOBALES</div>
+            <div style="display: flex; justify-content: center; align-items: center;">
+                <a href="https://info.flagcounter.com/P5wV"><img src="https://s01.flagcounter.com/count2/P5wV/bg_C6C4FF/txt_000000/border_24F0C7/columns_5/maxflags_20/viewers_0/labels_0/pageviews_0/flags_0/percent_0/" alt="Flag Counter" border="0"></a>
             </div>
         </div>
 
