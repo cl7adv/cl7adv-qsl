@@ -81,7 +81,7 @@
             border-left: 3px solid var(--caribbean-pink);
         }
 
-        /* --- CONTADOR DE VISITAS (MODIFICADO) --- */
+        /* --- CONTADOR DE VISITAS --- */
         .visitor-counter {
             position: fixed;
             top: 20px;
@@ -99,7 +99,7 @@
         }
         .visitor-counter img {
             display: block;
-            max-height: 80px; /* Ajuste para que no sea invasivo */
+            max-height: 80px;
             width: auto;
         }
 
@@ -129,49 +129,61 @@
             align-items: center;
             justify-content: center;
             transition: all 0.8s cubic-bezier(0.87, 0, 0.13, 1);
+            padding: 20px;
+            text-align: center;
         }
 
         .radar-circle {
             position: absolute;
-            width: 600px; height: 600px;
+            width: min(600px, 90vw); height: min(600px, 90vw);
             border: 1px solid rgba(0, 242, 255, 0.1);
             border-radius: 50%;
+            pointer-events: none; /* Crucial para clics en móvil */
         }
         .radar-sweep {
             position: absolute;
-            width: 300px; height: 300px;
+            width: min(300px, 45vw); height: min(300px, 45vw);
             background: conic-gradient(from 0deg, transparent 270deg, rgba(0, 242, 255, 0.3) 360deg);
             top: 50%; left: 50%;
             transform-origin: 0 0;
             animation: sweep 4s linear infinite;
             border-radius: 0 100% 0 0;
+            pointer-events: none; /* Crucial para clics en móvil */
         }
         @keyframes sweep { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
+        .welcome-msg {
+            position: relative;
+            z-index: 10001; /* Asegurar que esté por encima del radar */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 600px;
+        }
+
         .main-title {
-            font-size: clamp(1.5rem, 5vw, 3rem);
+            font-size: clamp(1.2rem, 6vw, 3rem);
             font-weight: 900;
             text-transform: uppercase;
             background: linear-gradient(to bottom, #fff 40%, var(--caribbean-cyan));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            letter-spacing: 6px;
-            margin-bottom: 5px;
-            text-align: center;
+            letter-spacing: 4px;
+            margin-bottom: 10px;
             filter: drop-shadow(0 0 10px rgba(0, 242, 255, 0.5));
         }
 
         .subtitle {
-            font-size: 0.9rem;
-            letter-spacing: 4px;
+            font-size: clamp(0.7rem, 3vw, 0.9rem);
+            letter-spacing: 3px;
             color: var(--caribbean-pink);
             text-transform: uppercase;
             font-weight: bold;
             margin-bottom: 40px;
-            text-align: center;
         }
 
         #start-app {
+            position: relative;
             padding: 18px 45px;
             background: transparent;
             color: #fff;
@@ -181,9 +193,15 @@
             letter-spacing: 4px;
             border-radius: 4px;
             font-weight: bold;
-            z-index: 10;
+            z-index: 10002; /* El nivel más alto para ser clickable */
+            transition: 0.3s;
+            outline: none;
         }
-        #start-app:hover { background: var(--caribbean-cyan); color: #000; box-shadow: 0 0 30px var(--caribbean-cyan); }
+        #start-app:hover, #start-app:active { 
+            background: var(--caribbean-cyan); 
+            color: #000; 
+            box-shadow: 0 0 30px var(--caribbean-cyan); 
+        }
 
         /* --- CONTENEDOR PRINCIPAL --- */
         .container { 
@@ -248,7 +266,6 @@
         }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* Notificación de gracias */
         #thanks-msg {
             position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
             background: var(--caribbean-cyan); color: #000; padding: 10px 25px;
@@ -268,7 +285,6 @@
 
     <div class="station-copyright">CL7ADV // DX-TERMINAL</div>
 
-    <!-- NUEVO CONTADOR DE BANDERAS -->
     <div class="visitor-counter">
         <a href="https://info.flagcounter.com/BrfY">
             <img src="https://s01.flagcounter.com/count2/BrfY/bg_26A8FF/txt_000000/border_FF1259/columns_2/maxflags_15/viewers_0/labels_0/pageviews_0/flags_0/percent_0/" alt="Flag Counter" border="0">
@@ -279,7 +295,6 @@
 
     <div id="thanks-msg">¡GRACIAS POR DESCARGAR! 73s</div>
 
-    <!-- PANTALLA CARGA/BÚSQUEDA -->
     <div id="search-overlay">
         <div class="loader-spin"></div>
         <div id="overlay-text">ACCEDIENDO A LA BASE DE DATOS...</div>
@@ -329,7 +344,6 @@
     </div>
 
 <script>
-// CONFIGURACIÓN DE GITHUB
 const REPO_URL = "https://raw.githubusercontent.com/cl7adv/cl7adv-qsl/main/img/";
 
 let historyData = JSON.parse(localStorage.getItem('qsl_history') || '[]');
@@ -338,7 +352,6 @@ let countdownInterval;
 let timeLeft = 10;
 let isAppStarted = false;
 
-// --- SISTEMA DE INACTIVIDAD (10 SEGUNDOS) ---
 function resetInactivity() {
     if (!isAppStarted) return;
     
@@ -369,12 +382,10 @@ function returnToStart() {
     location.reload();
 }
 
-// Escuchar actividad
 ['mousedown', 'mousemove', 'keypress', 'touchstart'].forEach(evt => {
     window.addEventListener(evt, resetInactivity);
 });
 
-// --- EFECTO DE PARTÍCULAS (Canvas) ---
 const canvas = document.getElementById('bg-canvas');
 const ctx = canvas.getContext('2d');
 let particles = [];
@@ -437,11 +448,11 @@ function animateParticles() {
     requestAnimationFrame(animateParticles);
 }
 
-// INICIAR TODO
 initParticles();
 animateParticles();
 
-document.getElementById("start-app").addEventListener("click", () => {
+document.getElementById("start-app").addEventListener("click", (e) => {
+    e.preventDefault();
     isAppStarted = true;
     document.getElementById("welcome-screen").style.opacity = "0";
     setTimeout(() => {
@@ -463,7 +474,7 @@ function quickSearch(call) {
 }
 
 function generarRutas(call) {
-    const formatos = ["jpg", "png", "pmg", "jpeg", "JPG", "PNG", "PMG", "JPG"];
+    const formatos = ["jpg", "png", "pmg", "jpeg", "JPG", "PNG", "PMG"];
     const variantes = ["", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "_1", "_2", "_QSL"];
     let rutas = [];
     formatos.forEach(ext => {
