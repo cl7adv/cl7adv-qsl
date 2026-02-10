@@ -138,7 +138,7 @@
             width: min(600px, 90vw); height: min(600px, 90vw);
             border: 1px solid rgba(0, 242, 255, 0.1);
             border-radius: 50%;
-            pointer-events: none; /* Crucial para clics en móvil */
+            pointer-events: none;
         }
         .radar-sweep {
             position: absolute;
@@ -148,13 +148,13 @@
             transform-origin: 0 0;
             animation: sweep 4s linear infinite;
             border-radius: 0 100% 0 0;
-            pointer-events: none; /* Crucial para clics en móvil */
+            pointer-events: none;
         }
         @keyframes sweep { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
         .welcome-msg {
             position: relative;
-            z-index: 10001; /* Asegurar que esté por encima del radar */
+            z-index: 10001;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -193,7 +193,7 @@
             letter-spacing: 4px;
             border-radius: 4px;
             font-weight: bold;
-            z-index: 10002; /* El nivel más alto para ser clickable */
+            z-index: 10002;
             transition: 0.3s;
             outline: none;
         }
@@ -351,18 +351,27 @@ let inactivityTimer;
 let countdownInterval;
 let timeLeft = 10;
 let isAppStarted = false;
+let isShowingResults = false; // Nueva bandera para controlar el temporizador
 
 function resetInactivity() {
-    if (!isAppStarted) return;
+    // El temporizador SOLO funciona si la app inició Y estamos en la pantalla de resultados
+    if (!isAppStarted || !isShowingResults) {
+        document.getElementById('inactivity-timer').style.display = "none";
+        clearInterval(countdownInterval);
+        clearTimeout(inactivityTimer);
+        return;
+    }
     
     document.getElementById('inactivity-timer').style.display = "none";
     clearInterval(countdownInterval);
     clearTimeout(inactivityTimer);
     
+    // Inicia cuenta atrás tras 20s de inactividad solo en resultados
     inactivityTimer = setTimeout(startCountdown, 20000); 
 }
 
 function startCountdown() {
+    if (!isShowingResults) return;
     timeLeft = 10;
     document.getElementById('inactivity-timer').style.display = "block";
     document.getElementById('time-left').innerText = timeLeft;
@@ -379,6 +388,7 @@ function startCountdown() {
 
 function returnToStart() {
     isAppStarted = false;
+    isShowingResults = false;
     location.reload();
 }
 
@@ -386,6 +396,7 @@ function returnToStart() {
     window.addEventListener(evt, resetInactivity);
 });
 
+// Partículas Fondo
 const canvas = document.getElementById('bg-canvas');
 const ctx = canvas.getContext('2d');
 let particles = [];
@@ -404,9 +415,7 @@ window.addEventListener('resize', resizeCanvas);
 resizeCanvas();
 
 class Particle {
-    constructor() {
-        this.reset();
-    }
+    constructor() { this.reset(); }
     reset() {
         this.x = Math.random() * canvas.width;
         this.y = Math.random() * canvas.height;
@@ -441,10 +450,7 @@ function initParticles() {
 
 function animateParticles() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    particles.forEach(p => {
-        p.update();
-        p.draw();
-    });
+    particles.forEach(p => { p.update(); p.draw(); });
     requestAnimationFrame(animateParticles);
 }
 
@@ -498,13 +504,12 @@ function probarImagen(src) {
 function showThanks() {
     const msg = document.getElementById('thanks-msg');
     msg.style.display = 'block';
-    setTimeout(() => {
-        msg.style.display = 'none';
-    }, 3000);
+    setTimeout(() => { msg.style.display = 'none'; }, 3000);
 }
 
 document.getElementById("buscarBtn").addEventListener("click", async () => {
-    const call = document.getElementById('indicativo').value.trim().toUpperCase();
+    const callInput = document.getElementById('indicativo');
+    const call = callInput.value.trim().toUpperCase();
     if (!call) return;
 
     if(!historyData.includes(call)) {
@@ -517,8 +522,12 @@ document.getElementById("buscarBtn").addEventListener("click", async () => {
     overlay.style.display = "flex";
     document.getElementById("search-interface").style.display = "none";
     document.getElementById("resultado").innerHTML = "";
+    
+    // Desactivamos temporalmente el timer de inactividad mientras busca
+    isShowingResults = false; 
 
     const rutas = generarRutas(call);
+    // Promise.all espera a que todas terminen, manteniendo la búsqueda activa
     const resultados = await Promise.all(rutas.map(probarImagen));
     const encontradas = [...new Set(resultados.filter(x => x !== null))];
 
@@ -532,9 +541,15 @@ function mostrarResultados(encontradas, call) {
         res.innerHTML = `
             <div style="grid-column: 1/-1; color:var(--caribbean-pink); padding:40px; border:1px dashed var(--caribbean-pink); background: rgba(255,0,122,0.05);">
                 <div style="font-size: 2rem; margin-bottom: 10px;">⚠️</div>
-                SIN REGISTROS PARA: <strong>${call}</strong><br>
-                <small style="opacity:0.7; margin-top:10px; display:block;">Verifique el indicativo o intente más tarde.</small>
+                NO HAY QSL PARA: <strong>${call}</strong><br>
+                <small style="opacity:0.7; margin-top:10px; display:block;">Regresando al inicio...</small>
             </div>`;
+        
+        // Si no hay QSL, esperamos 3 segundos y regresamos al inicio
+        setTimeout(() => {
+            document.getElementById("btnVolver").click();
+        }, 3000);
+        
     } else {
         encontradas.forEach((src) => {
             const fileName = src.split('/').pop();
@@ -548,8 +563,12 @@ function mostrarResultados(encontradas, call) {
             res.appendChild(card);
         });
         document.getElementById("btnZip").style.display = "block";
+        document.getElementById("btnVolver").style.display = "block";
+        
+        // Activamos la bandera para que el temporizador de 10s funcione en esta pantalla
+        isShowingResults = true;
+        resetInactivity();
     }
-    document.getElementById("btnVolver").style.display = "block";
 }
 
 async function descargarIndividual(url) {
@@ -572,12 +591,14 @@ async function descargarIndividual(url) {
 }
 
 document.getElementById("btnVolver").addEventListener("click", () => {
+    isShowingResults = false; // Desactivamos el timer al volver
     document.getElementById("search-interface").style.display = "block";
     document.getElementById("resultado").innerHTML = "";
     document.getElementById("btnZip").style.display = "none";
     document.getElementById("btnVolver").style.display = "none";
     document.getElementById("indicativo").value = "";
     document.getElementById("indicativo").focus();
+    resetInactivity();
 });
 
 document.getElementById("btnZip").addEventListener("click", async () => {
