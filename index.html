@@ -2,17 +2,15 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Zona Caribeña QSL - CL7ADV</title>
+    <title>Zona Caribeña QSL - CL7ADV | POTA Mode</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
-    <!-- JSZip para la descarga de paquetes -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-
     <style>
         :root {
             --caribbean-cyan: #00f2ff;
             --caribbean-pink: #ff007a;
             --caribbean-gold: #ffcc00;
+            --pota-green: #00ff88;
             --deep-ocean: #000814;
             --glass-bg: rgba(0, 15, 30, 0.92);
             --border-glow: rgba(0, 242, 255, 0.4);
@@ -39,7 +37,6 @@
             pointer-events: none;
         }
 
-        /* --- AMANECER CARIBEÑO --- */
         #sunrise-layer {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -65,7 +62,6 @@
         @keyframes rise { to { transform: translateY(-50px); } }
         @keyframes fadeOutSunrise { to { opacity: 0; visibility: hidden; } }
 
-        /* --- MARCA DE AGUA --- */
         .station-copyright {
             position: fixed;
             bottom: 20px;
@@ -81,7 +77,6 @@
             border-left: 3px solid var(--caribbean-pink);
         }
 
-        /* --- CONTADOR DE VISITAS --- */
         .visitor-counter {
             position: fixed;
             top: 20px;
@@ -92,18 +87,8 @@
             border-radius: 8px;
             border: 1px solid var(--border-glow);
             backdrop-filter: blur(10px);
-            transition: transform 0.3s;
-        }
-        .visitor-counter:hover {
-            transform: scale(1.05);
-        }
-        .visitor-counter img {
-            display: block;
-            max-height: 80px;
-            width: auto;
         }
 
-        /* --- INDICADOR DE INACTIVIDAD --- */
         #inactivity-timer {
             position: fixed;
             top: 20px;
@@ -113,12 +98,10 @@
             background: rgba(0,0,0,0.6);
             padding: 5px 12px;
             border-radius: 20px;
-            border: 1px solid rgba(255, 0, 122, 0.3);
             z-index: 1000;
             display: none;
         }
 
-        /* --- PANTALLA DE BIENVENIDA --- */
         #welcome-screen {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -170,20 +153,17 @@
             -webkit-text-fill-color: transparent;
             letter-spacing: 4px;
             margin-bottom: 10px;
-            filter: drop-shadow(0 0 10px rgba(0, 242, 255, 0.5));
         }
 
         .subtitle {
             font-size: clamp(0.7rem, 3vw, 0.9rem);
             letter-spacing: 3px;
             color: var(--caribbean-pink);
-            text-transform: uppercase;
             font-weight: bold;
             margin-bottom: 40px;
         }
 
         #start-app {
-            position: relative;
             padding: 18px 45px;
             background: transparent;
             color: #fff;
@@ -193,34 +173,236 @@
             letter-spacing: 4px;
             border-radius: 4px;
             font-weight: bold;
-            z-index: 10002;
             transition: 0.3s;
-            outline: none;
         }
-        #start-app:hover, #start-app:active { 
-            background: var(--caribbean-cyan); 
-            color: #000; 
-            box-shadow: 0 0 30px var(--caribbean-cyan); 
-        }
+        #start-app:hover { background: var(--caribbean-cyan); color: #000; box-shadow: 0 0 30px var(--caribbean-cyan); }
 
-        /* --- CONTENEDOR PRINCIPAL --- */
         .container { 
             width: 95%; max-width: 1000px; padding: 30px; 
             background: var(--glass-bg); border-radius: 12px;
             border: 1px solid var(--border-glow); text-align: center;
             display: none; backdrop-filter: blur(20px);
             max-height: 90vh; overflow-y: auto;
-            position: relative;
-            animation: terminal-open 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        @keyframes terminal-open { from { opacity: 0; transform: scale(0.9) translateY(40px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+        /* Modal POTA - Versión Buscador */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(15px);
+            z-index: 20000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, rgba(0, 40, 30, 0.95), rgba(0, 20, 15, 0.98));
+            border: 2px solid var(--pota-green);
+            border-radius: 20px;
+            padding: 20px;
+            width: 90%;
+            max-width: 1200px;
+            max-height: 85vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 0 50px rgba(0, 255, 136, 0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--pota-green);
+        }
+
+        .modal-header h2 {
+            color: var(--pota-green);
+            margin: 0;
+            font-size: clamp(1.2rem, 4vw, 2rem);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        .close-modal {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--pota-green);
+            color: var(--pota-green);
+            font-size: 28px;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .close-modal:hover {
+            background: var(--pota-green);
+            color: #000;
+            transform: rotate(90deg);
+        }
+
+        /* Área de búsqueda POTA */
+        .pota-search-area {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(0, 255, 136, 0.3);
+        }
+
+        .pota-search-box {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .pota-search-box input {
+            flex: 2;
+            min-width: 200px;
+            padding: 15px 20px;
+            font-size: 1.5rem;
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid var(--pota-green);
+            color: var(--pota-green);
+            border-radius: 10px;
+            text-transform: uppercase;
+            text-align: center;
+            font-weight: bold;
+            letter-spacing: 2px;
+            outline: none;
+        }
+
+        .pota-search-box input:focus {
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+        }
+
+        .pota-search-box button {
+            padding: 15px 30px;
+            background: var(--pota-green);
+            border: none;
+            color: #000;
+            font-weight: bold;
+            font-size: 1.1rem;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+        }
+
+        .pota-search-box button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px var(--pota-green);
+        }
+
+        .pota-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        .pota-card {
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid rgba(0, 255, 136, 0.4);
+            border-radius: 12px;
+            padding: 15px;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .pota-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--pota-green);
+            box-shadow: 0 5px 20px rgba(0, 255, 136, 0.3);
+        }
+
+        .pota-card img {
+            width: 100%;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 10px 0;
+        }
+
+        .pota-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--pota-green);
+            color: #000;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 25px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(0, 255, 136, 0.3);
+        }
+
+        .modal-btn {
+            padding: 12px 25px;
+            background: transparent;
+            border: 1px solid var(--pota-green);
+            color: var(--pota-green);
+            cursor: pointer;
+            border-radius: 8px;
+            font-weight: bold;
+            text-transform: uppercase;
+            transition: all 0.3s;
+        }
+
+        .modal-btn:hover {
+            background: var(--pota-green);
+            color: #000;
+        }
+
+        .pota-float-btn {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #00ff88, #00cc66);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1001;
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.6);
+            transition: all 0.3s;
+            animation: pulse 2s infinite;
+            font-size: 35px;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(0, 255, 136, 0.6); }
+            50% { transform: scale(1.1); box-shadow: 0 0 40px rgba(0, 255, 136, 0.9); }
+        }
+
+        .pota-float-btn:hover { transform: scale(1.15); }
 
         #search-overlay {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.85); backdrop-filter: blur(10px);
             z-index: 2000; flex-direction: column; align-items: center; justify-content: center;
-            color: var(--caribbean-cyan); letter-spacing: 5px;
+            color: var(--caribbean-cyan);
         }
 
         .search-area { display: grid; grid-template-columns: 1fr; gap: 20px; }
@@ -229,17 +411,15 @@
         #indicativo { 
             padding: 15px; font-size: 1.8rem; border: 1px solid rgba(0, 242, 255, 0.3); 
             background: rgba(0,0,0,0.5); color: var(--caribbean-cyan); font-weight: 900; 
-            text-transform: uppercase; text-align: center; width: 100%; border-radius: 4px;
+            text-transform: uppercase; text-align: center; border-radius: 4px;
             outline: none;
         }
-        #indicativo:focus { border-color: var(--caribbean-cyan); box-shadow: 0 0 15px rgba(0, 242, 255, 0.2); }
 
         #buscarBtn { 
             padding: 18px 40px; background: var(--caribbean-pink); 
             color: #fff; border: none; cursor: pointer; font-weight: 900; 
-            text-transform: uppercase; border-radius: 4px; transition: 0.3s;
+            text-transform: uppercase; border-radius: 4px;
         }
-        #buscarBtn:hover { transform: scale(1.02); filter: brightness(1.2); }
 
         #resultado { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 25px; margin-top: 30px; }
         
@@ -249,10 +429,9 @@
             transition: 0.3s;
         }
         .qsl-card:hover { border-color: var(--caribbean-cyan); transform: translateY(-5px); }
-        .qsl-card img { width: 100%; border-radius: 4px; cursor: pointer; margin-bottom: 10px; display: block; }
+        .qsl-card img { width: 100%; border-radius: 4px; cursor: pointer; margin-bottom: 10px; }
         
-        .btn-individual { width: 100%; padding: 10px; background: transparent; color: #fff; border: 1px solid var(--caribbean-cyan); cursor: pointer; font-size: 0.8rem; border-radius: 4px; }
-        .btn-individual:hover { background: var(--caribbean-cyan); color: #000; }
+        .btn-individual { width: 100%; padding: 10px; background: transparent; color: #fff; border: 1px solid var(--caribbean-cyan); cursor: pointer; border-radius: 4px; }
 
         .action-btns { display: flex; gap: 15px; justify-content: center; margin-top: 30px; }
         #btnZip, #btnVolver { padding: 16px 30px; border: none; font-weight: 900; cursor: pointer; display: none; border-radius: 4px; text-transform: uppercase; }
@@ -269,38 +448,77 @@
         #thanks-msg {
             position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
             background: var(--caribbean-cyan); color: #000; padding: 10px 25px;
-            border-radius: 4px; font-weight: 900; letter-spacing: 1px;
-            display: none; z-index: 5000; animation: fadeInUp 0.5s ease-out;
+            border-radius: 4px; font-weight: 900;
+            display: none; z-index: 5000;
         }
-        @keyframes fadeInUp { from { opacity: 0; transform: translate(-50%, 20px); } to { opacity: 1; transform: translate(-50%, 0); } }
 
-        footer { margin-top: 40px; font-size: 0.65rem; color: #3d5a69; letter-spacing: 2px; line-height: 1.5; }
+        footer { margin-top: 40px; font-size: 0.65rem; color: #3d5a69; letter-spacing: 2px; }
+        
+        .pota-result-count {
+            text-align: center;
+            padding: 15px;
+            color: var(--pota-green);
+            font-size: 1rem;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
 
     <canvas id="bg-canvas"></canvas>
-
     <div id="sunrise-layer"><div class="sun"></div></div>
-
-    <div class="station-copyright">CL7ADV // DX-TERMINAL</div>
+    <div class="station-copyright">CL7ADV // DX-TERMINAL // POTA MODE</div>
 
     <div class="visitor-counter">
         <a href="https://info.flagcounter.com/BrfY">
-            <img src="https://s01.flagcounter.com/count2/BrfY/bg_26A8FF/txt_000000/border_FF1259/columns_2/maxflags_15/viewers_0/labels_0/pageviews_0/flags_0/percent_0/" alt="Flag Counter" border="0">
+            <img src="https://s01.flagcounter.com/count2/BrfY/bg_26A8FF/txt_000000/border_FF1259/columns_2/maxflags_15/viewers_0/labels_0/pageviews_0/flags_0/percent_0/" alt="Flag Counter">
         </a>
     </div>
     
     <div id="inactivity-timer">REINICIO EN: <span id="time-left">10</span>s</div>
-
     <div id="thanks-msg">¡GRACIAS POR DESCARGAR! 73s</div>
+
+    <!-- Botón flotante POTA - Ahora abre buscador -->
+    <div class="pota-float-btn" id="potaFloatBtn">🏞️</div>
+
+    <!-- Modal POTA - Con buscador de indicativo -->
+    <div id="potaModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🏞️ BUSCADOR POTA - PARQUES ACTIVOS</h2>
+                <div class="close-modal">&times;</div>
+            </div>
+            
+            <div class="pota-search-area">
+                <div class="pota-search-box">
+                    <input type="text" id="potaCallInput" placeholder="Ej: W3SB, CL7ADV, CO7POTA" maxlength="20" autocomplete="off">
+                    <button id="potaSearchBtn">🔍 BUSCAR QSL POTA</button>
+                </div>
+                <div style="font-size: 0.7rem; text-align: center; margin-top: 10px; color: rgba(0,255,136,0.6);">
+                    💡 Busca QSLs con reseña POTA de cualquier indicativo
+                </div>
+            </div>
+            
+            <div id="potaContent" class="pota-grid">
+                <div style="grid-column: 1/-1; text-align: center; padding: 40px;">
+                    <div>🏞️</div>
+                    <p style="color: var(--pota-green); margin-top: 10px;">Ingresa un indicativo y presiona BUSCAR</p>
+                    <p style="font-size: 0.8rem; opacity: 0.7;">Ejemplos: W3SB, CL7ADV, CO7POTA</p>
+                </div>
+            </div>
+            
+            <div class="modal-buttons">
+                <button class="modal-btn" id="downloadAllPotaBtn">📦 DESCARGAR TODAS (.ZIP)</button>
+                <button class="modal-btn" id="closePotaModal">CERRAR</button>
+            </div>
+        </div>
+    </div>
 
     <div id="search-overlay">
         <div class="loader-spin"></div>
         <div id="overlay-text">ACCEDIENDO A LA BASE DE DATOS...</div>
     </div>
 
-    <!-- BIENVENIDA -->
     <div id="welcome-screen">
         <div class="radar-circle"></div>
         <div class="radar-sweep"></div>
@@ -311,10 +529,9 @@
         </div>
     </div>
 
-    <!-- APP PRINCIPAL -->
     <div class="container" id="main-container">
         <div class="header-box">
-            <h1 style="color:var(--caribbean-cyan); letter-spacing:5px; margin-bottom: 30px; text-shadow: 0 0 20px var(--caribbean-cyan);">ZONA CARIBEÑA</h1>
+            <h1 style="color:var(--caribbean-cyan); letter-spacing:5px; margin-bottom: 30px;">ZONA CARIBEÑA</h1>
         </div>
 
         <div id="search-interface">
@@ -323,7 +540,7 @@
                     <input type="text" id="indicativo" placeholder="CALLSIGN (Ej: CO7ZZ)" maxlength="15" autocomplete="off">
                     <button id="buscarBtn">CONSULTAR QSL</button>
                 </div>
-                <div style="background:rgba(0,0,0,0.3); padding:10px; border-radius:5px; text-align:left; border: 1px solid rgba(255,255,255,0.05);">
+                <div style="background:rgba(0,0,0,0.3); padding:10px; border-radius:5px; text-align:left;">
                     <div style="font-size:0.6rem; color:#5a7d8c; margin-bottom: 8px;">LOGS RECIENTES</div>
                     <ul id="history-list" style="list-style:none; padding:0; font-size:0.8rem; color:var(--caribbean-cyan);"></ul>
                 </div>
@@ -339,7 +556,7 @@
 
         <footer>
             73'S DE CL7ADV • ALFRED • CAMAGÜEY, CUBA<br>
-            <span style="opacity: 0.4;">SISTEMA DE GESTIÓN DE TARJETAS QSL // 2026</span>
+            <span style="opacity: 0.4;">SISTEMA DE GESTIÓN DE TARJETAS QSL // 2026 // POTA ACTIVADO</span>
         </footer>
     </div>
 
@@ -347,65 +564,19 @@
 const REPO_URL = "https://raw.githubusercontent.com/cl7adv/cl7adv-qsl/main/img/";
 
 let historyData = JSON.parse(localStorage.getItem('qsl_history') || '[]');
-let inactivityTimer;
-let countdownInterval;
+let inactivityTimer, countdownInterval;
 let timeLeft = 10;
 let isAppStarted = false;
-let isShowingResults = false; // Nueva bandera para controlar el temporizador
+let isShowingResults = false;
+let currentPotaImages = []; // Para almacenar las imágenes POTA actuales
 
-function resetInactivity() {
-    // El temporizador SOLO funciona si la app inició Y estamos en la pantalla de resultados
-    if (!isAppStarted || !isShowingResults) {
-        document.getElementById('inactivity-timer').style.display = "none";
-        clearInterval(countdownInterval);
-        clearTimeout(inactivityTimer);
-        return;
-    }
-    
-    document.getElementById('inactivity-timer').style.display = "none";
-    clearInterval(countdownInterval);
-    clearTimeout(inactivityTimer);
-    
-    // Inicia cuenta atrás tras 20s de inactividad solo en resultados
-    inactivityTimer = setTimeout(startCountdown, 20000); 
-}
-
-function startCountdown() {
-    if (!isShowingResults) return;
-    timeLeft = 10;
-    document.getElementById('inactivity-timer').style.display = "block";
-    document.getElementById('time-left').innerText = timeLeft;
-    
-    countdownInterval = setInterval(() => {
-        timeLeft--;
-        document.getElementById('time-left').innerText = timeLeft;
-        if (timeLeft <= 0) {
-            clearInterval(countdownInterval);
-            returnToStart();
-        }
-    }, 1000);
-}
-
-function returnToStart() {
-    isAppStarted = false;
-    isShowingResults = false;
-    location.reload();
-}
-
-['mousedown', 'mousemove', 'keypress', 'touchstart'].forEach(evt => {
-    window.addEventListener(evt, resetInactivity);
-});
-
-// Partículas Fondo
+// Canvas y partículas
 const canvas = document.getElementById('bg-canvas');
 const ctx = canvas.getContext('2d');
 let particles = [];
 const mouse = { x: -100, y: -100 };
 
-window.addEventListener('mousemove', (e) => {
-    mouse.x = e.x;
-    mouse.y = e.y;
-});
+window.addEventListener('mousemove', (e) => { mouse.x = e.x; mouse.y = e.y; });
 
 function resizeCanvas() {
     canvas.width = window.innerWidth;
@@ -457,6 +628,44 @@ function animateParticles() {
 initParticles();
 animateParticles();
 
+function resetInactivity() {
+    if (!isAppStarted || !isShowingResults) {
+        document.getElementById('inactivity-timer').style.display = "none";
+        clearInterval(countdownInterval);
+        clearTimeout(inactivityTimer);
+        return;
+    }
+    document.getElementById('inactivity-timer').style.display = "none";
+    clearInterval(countdownInterval);
+    clearTimeout(inactivityTimer);
+    inactivityTimer = setTimeout(startCountdown, 20000);
+}
+
+function startCountdown() {
+    if (!isShowingResults) return;
+    timeLeft = 10;
+    document.getElementById('inactivity-timer').style.display = "block";
+    document.getElementById('time-left').innerText = timeLeft;
+    countdownInterval = setInterval(() => {
+        timeLeft--;
+        document.getElementById('time-left').innerText = timeLeft;
+        if (timeLeft <= 0) {
+            clearInterval(countdownInterval);
+            returnToStart();
+        }
+    }, 1000);
+}
+
+function returnToStart() {
+    isAppStarted = false;
+    isShowingResults = false;
+    location.reload();
+}
+
+['mousedown', 'mousemove', 'keypress', 'touchstart'].forEach(evt => {
+    window.addEventListener(evt, resetInactivity);
+});
+
 document.getElementById("start-app").addEventListener("click", (e) => {
     e.preventDefault();
     isAppStarted = true;
@@ -479,22 +688,24 @@ function quickSearch(call) {
     document.getElementById('buscarBtn').click();
 }
 
+// FUNCIÓN PARA GENERAR RUTAS (BUSCA TODAS LAS VARIANTES)
 function generarRutas(call) {
-    const formatos = ["jpg", "png", "pmg", "jpeg", "JPG", "PNG", "PMG"];
-    const variantes = ["", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "_1", "_2", "_QSL"];
+    const formatos = ["jpg", "png", "jpeg", "gif", "webp"];
+    const variantes = ["", "-1", "-2", "-3", "-4", "-5", "_1", "_2", "_QSL", "-pota", "_POTA", "-PARK", "_PARK", "-NATURE"];
     let rutas = [];
     formatos.forEach(ext => {
         variantes.forEach(v => {
             rutas.push(`${REPO_URL}${call}${v}.${ext}`);
+            // También buscar con QSL_ al inicio
+            rutas.push(`${REPO_URL}QSL_${call}${v}.${ext}`);
         });
     });
-    return rutas;
+    return [...new Set(rutas)];
 }
 
 function probarImagen(src) {
     return new Promise(resolve => {
         const img = new Image();
-        img.crossOrigin = "Anonymous";
         img.onload = () => resolve(src);
         img.onerror = () => resolve(null);
         img.src = src;
@@ -507,71 +718,72 @@ function showThanks() {
     setTimeout(() => { msg.style.display = 'none'; }, 3000);
 }
 
-document.getElementById("buscarBtn").addEventListener("click", async () => {
-    const callInput = document.getElementById('indicativo');
+// ========== FUNCIÓN PRINCIPAL POTA - BUSCA POR INDICATIVO ==========
+async function buscarQSListaPOTA() {
+    const callInput = document.getElementById('potaCallInput');
     const call = callInput.value.trim().toUpperCase();
-    if (!call) return;
-
-    if(!historyData.includes(call)) {
-        historyData.unshift(call);
-        localStorage.setItem('qsl_history', JSON.stringify(historyData));
-        updateHistoryUI();
-    }
-
-    const overlay = document.getElementById("search-overlay");
-    overlay.style.display = "flex";
-    document.getElementById("search-interface").style.display = "none";
-    document.getElementById("resultado").innerHTML = "";
     
-    // Desactivamos temporalmente el timer de inactividad mientras busca
-    isShowingResults = false; 
-
+    if (!call) {
+        alert("Por favor ingresa un indicativo (ej: W3SB, CL7ADV)");
+        return;
+    }
+    
+    const container = document.getElementById('potaContent');
+    container.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px;"><div class="loader-spin"></div><p>🔍 BUSCANDO QSLs POTA PARA ' + call + '...</p></div>';
+    
     const rutas = generarRutas(call);
-    // Promise.all espera a que todas terminen, manteniendo la búsqueda activa
     const resultados = await Promise.all(rutas.map(probarImagen));
     const encontradas = [...new Set(resultados.filter(x => x !== null))];
-
-    overlay.style.display = "none";
-    mostrarResultados(encontradas, call);
-});
-
-function mostrarResultados(encontradas, call) {
-    const res = document.getElementById('resultado');
+    
+    // Guardar para descarga masiva
+    currentPotaImages = encontradas;
+    
     if (encontradas.length === 0) {
-        res.innerHTML = `
-            <div style="grid-column: 1/-1; color:var(--caribbean-pink); padding:40px; border:1px dashed var(--caribbean-pink); background: rgba(255,0,122,0.05);">
-                <div style="font-size: 2rem; margin-bottom: 10px;">⚠️</div>
-                NO HAY QSL PARA: <strong>${call}</strong><br>
-                <small style="opacity:0.7; margin-top:10px; display:block;">Regresando al inicio...</small>
-            </div>`;
-        
-        // Si no hay QSL, esperamos 3 segundos y regresamos al inicio
-        setTimeout(() => {
-            document.getElementById("btnVolver").click();
-        }, 3000);
-        
+        container.innerHTML = `
+            <div style="grid-column: 1/-1; text-align: center; padding: 40px;">
+                <div style="font-size: 3rem; margin-bottom: 20px;">🏞️</div>
+                <h3 style="color: var(--pota-green);">NO SE ENCONTRARON QSLs POTA</h3>
+                <p>Para el indicativo: <strong style="color: #fff;">${call}</strong></p>
+                <p style="font-size: 0.8rem; margin-top: 15px;">💡 Las QSLs POTA deben tener en su nombre: <strong>-pota, _POTA, -PARK</strong></p>
+                <button onclick="document.getElementById('potaSearchBtn').click()" style="margin-top: 20px; padding: 10px 20px; background: var(--pota-green); border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">
+                🔄 REINTENTAR
+                </button>
+            </div>
+        `;
     } else {
+        container.innerHTML = '';
         encontradas.forEach((src) => {
             const fileName = src.split('/').pop();
             const card = document.createElement('div');
-            card.className = 'qsl-card';
+            card.className = 'pota-card';
             card.innerHTML = `
-                <div style="font-size:0.6rem; color:var(--caribbean-cyan); margin-bottom:5px; text-align:left; opacity:0.6;">REF: ${fileName}</div>
-                <img src="${src}" title="Click para ampliar" onclick="window.open('${src}')">
-                <button class="btn-individual" onclick="descargarIndividual('${src}')">GUARDAR IMAGEN</button>
+                <div class="pota-badge">🏞️ POTA</div>
+                <img src="${src}" alt="QSL POTA" onclick="window.open('${src}')">
+                <div style="font-family: monospace; font-size: 0.7rem; text-align: center; margin: 10px 0; word-break: break-all;">
+                    📄 ${fileName}
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button onclick="descargarIndividualPOTA('${src}')" 
+                            style="flex: 1; background: var(--pota-green); border: none; padding: 8px; border-radius: 5px; cursor: pointer; font-weight: bold;">
+                        📥 DESCARGAR
+                    </button>
+                    <button onclick="window.open('${src}')" 
+                            style="flex: 1; background: transparent; border: 1px solid var(--pota-green); color: var(--pota-green); padding: 8px; border-radius: 5px; cursor: pointer;">
+                        🔍 VER
+                    </button>
+                </div>
             `;
-            res.appendChild(card);
+            container.appendChild(card);
         });
-        document.getElementById("btnZip").style.display = "block";
-        document.getElementById("btnVolver").style.display = "block";
         
-        // Activamos la bandera para que el temporizador de 10s funcione en esta pantalla
-        isShowingResults = true;
-        resetInactivity();
+        const counter = document.createElement('div');
+        counter.className = 'pota-result-count';
+        counter.innerHTML = `✅ ${encontradas.length} QSL(s) POTA encontrada(s) para ${call} 🏞️`;
+        container.appendChild(counter);
     }
 }
 
-async function descargarIndividual(url) {
+async function descargarIndividualPOTA(url) {
     try {
         const response = await fetch(url);
         const blob = await response.blob();
@@ -590,14 +802,106 @@ async function descargarIndividual(url) {
     }
 }
 
+async function downloadAllPotaImages() {
+    if (currentPotaImages.length === 0) {
+        alert("No hay QSLs POTA para descargar");
+        return;
+    }
+    
+    const btn = document.querySelector('#downloadAllPotaBtn');
+    const originalText = btn.innerText;
+    btn.innerText = "📦 EMPAQUETANDO...";
+    btn.disabled = true;
+    
+    try {
+        const zip = new JSZip();
+        for (let url of currentPotaImages) {
+            const response = await fetch(url);
+            const blob = await response.blob();
+            zip.file(url.split('/').pop(), blob);
+        }
+        const content = await zip.generateAsync({type:"blob"});
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(content);
+        link.download = `POTA_${new Date().getTime()}.zip`;
+        link.click();
+        showThanks();
+    } catch (err) {
+        console.error("Error:", err);
+    } finally {
+        btn.innerText = originalText;
+        btn.disabled = false;
+    }
+}
+
+// ========== BÚSQUEDA NORMAL ==========
+document.getElementById("buscarBtn").addEventListener("click", async () => {
+    const call = document.getElementById('indicativo').value.trim().toUpperCase();
+    if (!call) return;
+
+    if(!historyData.includes(call)) {
+        historyData.unshift(call);
+        localStorage.setItem('qsl_history', JSON.stringify(historyData));
+        updateHistoryUI();
+    }
+
+    const overlay = document.getElementById("search-overlay");
+    overlay.style.display = "flex";
+    document.getElementById("search-interface").style.display = "none";
+    document.getElementById("resultado").innerHTML = "";
+    isShowingResults = false;
+
+    const rutas = generarRutas(call);
+    const resultados = await Promise.all(rutas.map(probarImagen));
+    const encontradas = [...new Set(resultados.filter(x => x !== null))];
+
+    overlay.style.display = "none";
+    
+    const res = document.getElementById('resultado');
+    if (encontradas.length === 0) {
+        res.innerHTML = `<div style="grid-column: 1/-1; color:var(--caribbean-pink); padding:40px;">NO HAY QSL PARA: <strong>${call}</strong></div>`;
+        setTimeout(() => document.getElementById("btnVolver").click(), 3000);
+    } else {
+        encontradas.forEach((src) => {
+            const card = document.createElement('div');
+            card.className = 'qsl-card';
+            card.innerHTML = `
+                <img src="${src}" onclick="window.open('${src}')">
+                <button class="btn-individual" onclick="descargarIndividual('${src}')">GUARDAR IMAGEN</button>
+            `;
+            res.appendChild(card);
+        });
+        document.getElementById("btnZip").style.display = "block";
+        document.getElementById("btnVolver").style.display = "block";
+        isShowingResults = true;
+        resetInactivity();
+    }
+});
+
+async function descargarIndividual(url) {
+    try {
+        const response = await fetch(url);
+        const blob = await response.blob();
+        const blobUrl = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = blobUrl;
+        a.download = url.split('/').pop();
+        a.click();
+        URL.revokeObjectURL(blobUrl);
+        showThanks();
+    } catch (e) {
+        window.open(url, '_blank');
+        showThanks();
+    }
+}
+
 document.getElementById("btnVolver").addEventListener("click", () => {
-    isShowingResults = false; // Desactivamos el timer al volver
+    isShowingResults = false;
     document.getElementById("search-interface").style.display = "block";
     document.getElementById("resultado").innerHTML = "";
     document.getElementById("btnZip").style.display = "none";
     document.getElementById("btnVolver").style.display = "none";
     document.getElementById("indicativo").value = "";
-    document.getElementById("indicativo").focus();
     resetInactivity();
 });
 
@@ -606,7 +910,6 @@ document.getElementById("btnZip").addEventListener("click", async () => {
     const originalText = btn.innerText;
     btn.innerText = "PROCESANDO...";
     btn.disabled = true;
-
     try {
         const imgs = document.querySelectorAll(".qsl-card img");
         const zip = new JSZip();
@@ -618,12 +921,11 @@ document.getElementById("btnZip").addEventListener("click", async () => {
         const content = await zip.generateAsync({type:"blob"});
         const link = document.createElement("a");
         link.href = URL.createObjectURL(content);
-        link.download = `QSL_PACK_CL7ADV_${Date.now()}.zip`;
+        link.download = `QSL_PACK_${Date.now()}.zip`;
         link.click();
         showThanks();
-    } catch (err) {
-        console.error("Error al crear ZIP:", err);
-    } finally {
+    } catch (err) {}
+    finally {
         btn.innerText = originalText;
         btn.disabled = false;
     }
@@ -631,6 +933,44 @@ document.getElementById("btnZip").addEventListener("click", async () => {
 
 document.getElementById("indicativo").addEventListener("keypress", (e) => {
     if (e.key === "Enter") document.getElementById("buscarBtn").click();
+});
+
+// Evento Enter en el campo POTA
+document.getElementById("potaCallInput").addEventListener("keypress", (e) => {
+    if (e.key === "Enter") buscarQSListaPOTA();
+});
+
+// Eventos POTA - El botón flotante abre el modal con buscador
+document.getElementById('potaFloatBtn').addEventListener('click', () => {
+    document.getElementById('potaModal').style.display = 'flex';
+    // Limpiar búsqueda anterior
+    document.getElementById('potaCallInput').value = '';
+    document.getElementById('potaContent').innerHTML = `
+        <div style="grid-column: 1/-1; text-align: center; padding: 40px;">
+            <div>🏞️</div>
+            <p style="color: var(--pota-green); margin-top: 10px;">Ingresa un indicativo y presiona BUSCAR</p>
+            <p style="font-size: 0.8rem; opacity: 0.7;">Ejemplos: W3SB, CL7ADV, CO7POTA</p>
+        </div>
+    `;
+    currentPotaImages = [];
+});
+
+document.getElementById('potaSearchBtn').addEventListener('click', buscarQSListaPOTA);
+
+document.querySelector('.close-modal').addEventListener('click', () => {
+    document.getElementById('potaModal').style.display = 'none';
+});
+
+document.getElementById('closePotaModal').addEventListener('click', () => {
+    document.getElementById('potaModal').style.display = 'none';
+});
+
+document.getElementById('downloadAllPotaBtn').addEventListener('click', downloadAllPotaImages);
+
+window.addEventListener('click', (e) => {
+    if (e.target === document.getElementById('potaModal')) {
+        document.getElementById('potaModal').style.display = 'none';
+    }
 });
 </script>
 </body>
