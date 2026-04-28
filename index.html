@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Zona Caribeña QSL - CL7ADV | POTA Mode</title>
+    <title>Zona Caribeña QSL - CM7ADV | POTA Mode</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <style>
@@ -185,7 +185,7 @@
             max-height: 90vh; overflow-y: auto;
         }
 
-        /* Modal POTA - Versión Buscador */
+        /* Modal POTA - Versión Simplificada */
         .modal {
             display: none;
             position: fixed;
@@ -251,7 +251,7 @@
             transform: rotate(90deg);
         }
 
-        /* Área de búsqueda POTA */
+        /* Área de búsqueda POTA simplificada */
         .pota-search-area {
             background: rgba(0, 0, 0, 0.5);
             padding: 20px;
@@ -467,7 +467,7 @@
 
     <canvas id="bg-canvas"></canvas>
     <div id="sunrise-layer"><div class="sun"></div></div>
-    <div class="station-copyright">CL7ADV // DX-TERMINAL // POTA MODE</div>
+    <div class="station-copyright">CM7ADV // DX-TERMINAL // POTA MODE</div>
 
     <div class="visitor-counter">
         <a href="https://info.flagcounter.com/BrfY">
@@ -478,24 +478,24 @@
     <div id="inactivity-timer">REINICIO EN: <span id="time-left">10</span>s</div>
     <div id="thanks-msg">¡GRACIAS POR DESCARGAR! 73s</div>
 
-    <!-- Botón flotante POTA - Ahora abre buscador -->
+    <!-- Botón flotante POTA -->
     <div class="pota-float-btn" id="potaFloatBtn">🏞️</div>
 
-    <!-- Modal POTA - Con buscador de indicativo -->
+    <!-- Modal POTA - Buscador simplificado -->
     <div id="potaModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>🏞️ BUSCADOR POTA - PARQUES ACTIVOS</h2>
+                <h2>🏞️ QSL POTA - PARQUES ACTIVOS</h2>
                 <div class="close-modal">&times;</div>
             </div>
             
             <div class="pota-search-area">
                 <div class="pota-search-box">
-                    <input type="text" id="potaCallInput" placeholder="Ej: W3SB, CL7ADV, CO7POTA" maxlength="20" autocomplete="off">
-                    <button id="potaSearchBtn">🔍 BUSCAR QSL POTA</button>
+                    <input type="text" id="potaCallInput" placeholder="Ej: W3SB, CM7ADV, CO7POTA" maxlength="20" autocomplete="off">
+                    <button id="potaSearchBtn">🔍 BUSCAR QSL</button>
                 </div>
                 <div style="font-size: 0.7rem; text-align: center; margin-top: 10px; color: rgba(0,255,136,0.6);">
-                    💡 Busca QSLs con reseña POTA de cualquier indicativo
+                    💡 Ingresa cualquier indicativo - Buscará todas las QSLs disponibles
                 </div>
             </div>
             
@@ -503,7 +503,7 @@
                 <div style="grid-column: 1/-1; text-align: center; padding: 40px;">
                     <div>🏞️</div>
                     <p style="color: var(--pota-green); margin-top: 10px;">Ingresa un indicativo y presiona BUSCAR</p>
-                    <p style="font-size: 0.8rem; opacity: 0.7;">Ejemplos: W3SB, CL7ADV, CO7POTA</p>
+                    <p style="font-size: 0.8rem; opacity: 0.7;">Ejemplos: W3SB, CM7ADV, CO7POTA</p>
                 </div>
             </div>
             
@@ -524,7 +524,7 @@
         <div class="radar-sweep"></div>
         <div class="welcome-msg">
             <div class="main-title">BIENVENIDOS COLEGAS RADIOPERADORES</div>
-            <div class="subtitle">CARIBBEAN QSL NETWORK • 73's DE CL7ADV</div>
+            <div class="subtitle">CARIBBEAN QSL NETWORK • 73's DE CM7ADV</div>
             <button id="start-app">ENTRAR A LA TERMINAL</button>
         </div>
     </div>
@@ -555,7 +555,7 @@
         </div>
 
         <footer>
-            73'S DE CL7ADV • ALFRED • CAMAGÜEY, CUBA<br>
+            73'S DE CM7ADV • ALFRED • CAMAGÜEY, CUBA<br>
             <span style="opacity: 0.4;">SISTEMA DE GESTIÓN DE TARJETAS QSL // 2026 // POTA ACTIVADO</span>
         </footer>
     </div>
@@ -568,7 +568,7 @@ let inactivityTimer, countdownInterval;
 let timeLeft = 10;
 let isAppStarted = false;
 let isShowingResults = false;
-let currentPotaImages = []; // Para almacenar las imágenes POTA actuales
+let currentPotaImages = [];
 
 // Canvas y partículas
 const canvas = document.getElementById('bg-canvas');
@@ -688,18 +688,35 @@ function quickSearch(call) {
     document.getElementById('buscarBtn').click();
 }
 
-// FUNCIÓN PARA GENERAR RUTAS (BUSCA TODAS LAS VARIANTES)
+// FUNCIÓN SIMPLIFICADA - Busca cualquier QSL sin restricciones de formato
 function generarRutas(call) {
-    const formatos = ["jpg", "png", "jpeg", "gif", "webp"];
-    const variantes = ["", "-1", "-2", "-3", "-4", "-5", "_1", "_2", "_QSL", "-pota", "_POTA", "-PARK", "_PARK", "-NATURE"];
+    const formatos = ["png", "jpg", "jpeg", "gif", "webp", "PNG", "JPG", "JPEG"];
     let rutas = [];
+    
     formatos.forEach(ext => {
-        variantes.forEach(v => {
-            rutas.push(`${REPO_URL}${call}${v}.${ext}`);
-            // También buscar con QSL_ al inicio
-            rutas.push(`${REPO_URL}QSL_${call}${v}.${ext}`);
-        });
+        // Búsqueda directa del indicativo
+        rutas.push(`${REPO_URL}${call}.${ext}`);
+        rutas.push(`${REPO_URL}${call.toLowerCase()}.${ext}`);
+        
+        // Con QSL_ al inicio
+        rutas.push(`${REPO_URL}QSL_${call}.${ext}`);
+        rutas.push(`${REPO_URL}qsl_${call}.${ext}`);
+        
+        // Con -pota, _pota, -POTA
+        rutas.push(`${REPO_URL}${call}-pota.${ext}`);
+        rutas.push(`${REPO_URL}${call}_pota.${ext}`);
+        rutas.push(`${REPO_URL}${call}-POTA.${ext}`);
+        rutas.push(`${REPO_URL}QSL_${call}-pota.${ext}`);
+        rutas.push(`${REPO_URL}QSL_${call}_pota.${ext}`);
+        
+        // Variantes numéricas
+        for(let i = 1; i <= 5; i++) {
+            rutas.push(`${REPO_URL}${call}${i}.${ext}`);
+            rutas.push(`${REPO_URL}${call}-${i}.${ext}`);
+            rutas.push(`${REPO_URL}QSL_${call}${i}.${ext}`);
+        }
     });
+    
     return [...new Set(rutas)];
 }
 
@@ -718,34 +735,33 @@ function showThanks() {
     setTimeout(() => { msg.style.display = 'none'; }, 3000);
 }
 
-// ========== FUNCIÓN PRINCIPAL POTA - BUSCA POR INDICATIVO ==========
+// ========== FUNCIÓN POTA SIMPLIFICADA - Busca cualquier QSL del indicativo ==========
 async function buscarQSListaPOTA() {
     const callInput = document.getElementById('potaCallInput');
-    const call = callInput.value.trim().toUpperCase();
+    let call = callInput.value.trim().toUpperCase();
     
     if (!call) {
-        alert("Por favor ingresa un indicativo (ej: W3SB, CL7ADV)");
+        alert("Por favor ingresa un indicativo (ej: W3SB, CM7ADV)");
         return;
     }
     
     const container = document.getElementById('potaContent');
-    container.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px;"><div class="loader-spin"></div><p>🔍 BUSCANDO QSLs POTA PARA ' + call + '...</p></div>';
+    container.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px;"><div class="loader-spin"></div><p>🔍 BUSCANDO QSL PARA ' + call + '...</p></div>';
     
     const rutas = generarRutas(call);
     const resultados = await Promise.all(rutas.map(probarImagen));
     const encontradas = [...new Set(resultados.filter(x => x !== null))];
     
-    // Guardar para descarga masiva
     currentPotaImages = encontradas;
     
     if (encontradas.length === 0) {
         container.innerHTML = `
             <div style="grid-column: 1/-1; text-align: center; padding: 40px;">
                 <div style="font-size: 3rem; margin-bottom: 20px;">🏞️</div>
-                <h3 style="color: var(--pota-green);">NO SE ENCONTRARON QSLs POTA</h3>
+                <h3 style="color: var(--pota-green);">NO SE ENCONTRARON QSLs</h3>
                 <p>Para el indicativo: <strong style="color: #fff;">${call}</strong></p>
-                <p style="font-size: 0.8rem; margin-top: 15px;">💡 Las QSLs POTA deben tener en su nombre: <strong>-pota, _POTA, -PARK</strong></p>
-                <button onclick="document.getElementById('potaSearchBtn').click()" style="margin-top: 20px; padding: 10px 20px; background: var(--pota-green); border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">
+                <p style="font-size: 0.8rem; margin-top: 15px;">💡 Verifica que la imagen esté en el repositorio</p>
+                <button onclick="buscarQSListaPOTA()" style="margin-top: 20px; padding: 10px 20px; background: var(--pota-green); border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">
                 🔄 REINTENTAR
                 </button>
             </div>
@@ -758,7 +774,7 @@ async function buscarQSListaPOTA() {
             card.className = 'pota-card';
             card.innerHTML = `
                 <div class="pota-badge">🏞️ POTA</div>
-                <img src="${src}" alt="QSL POTA" onclick="window.open('${src}')">
+                <img src="${src}" alt="QSL" onclick="window.open('${src}')" onerror="this.style.opacity='0.5'">
                 <div style="font-family: monospace; font-size: 0.7rem; text-align: center; margin: 10px 0; word-break: break-all;">
                     📄 ${fileName}
                 </div>
@@ -778,7 +794,7 @@ async function buscarQSListaPOTA() {
         
         const counter = document.createElement('div');
         counter.className = 'pota-result-count';
-        counter.innerHTML = `✅ ${encontradas.length} QSL(s) POTA encontrada(s) para ${call} 🏞️`;
+        counter.innerHTML = `✅ ${encontradas.length} QSL(s) encontrada(s) para ${call} 🏞️`;
         container.appendChild(counter);
     }
 }
@@ -804,7 +820,7 @@ async function descargarIndividualPOTA(url) {
 
 async function downloadAllPotaImages() {
     if (currentPotaImages.length === 0) {
-        alert("No hay QSLs POTA para descargar");
+        alert("No hay QSLs para descargar");
         return;
     }
     
@@ -823,7 +839,7 @@ async function downloadAllPotaImages() {
         const content = await zip.generateAsync({type:"blob"});
         const link = document.createElement("a");
         link.href = URL.createObjectURL(content);
-        link.download = `POTA_${new Date().getTime()}.zip`;
+        link.download = `POTA_${Date.now()}.zip`;
         link.click();
         showThanks();
     } catch (err) {
@@ -940,16 +956,15 @@ document.getElementById("potaCallInput").addEventListener("keypress", (e) => {
     if (e.key === "Enter") buscarQSListaPOTA();
 });
 
-// Eventos POTA - El botón flotante abre el modal con buscador
+// Eventos POTA
 document.getElementById('potaFloatBtn').addEventListener('click', () => {
     document.getElementById('potaModal').style.display = 'flex';
-    // Limpiar búsqueda anterior
     document.getElementById('potaCallInput').value = '';
     document.getElementById('potaContent').innerHTML = `
         <div style="grid-column: 1/-1; text-align: center; padding: 40px;">
             <div>🏞️</div>
             <p style="color: var(--pota-green); margin-top: 10px;">Ingresa un indicativo y presiona BUSCAR</p>
-            <p style="font-size: 0.8rem; opacity: 0.7;">Ejemplos: W3SB, CL7ADV, CO7POTA</p>
+            <p style="font-size: 0.8rem; opacity: 0.7;">Ejemplos: W3SB, CM7ADV, CO7POTA</p>
         </div>
     `;
     currentPotaImages = [];
