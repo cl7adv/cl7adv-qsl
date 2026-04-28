@@ -185,7 +185,7 @@
             max-height: 90vh; overflow-y: auto;
         }
 
-        /* Modal POTA - Versión Simplificada */
+        /* Modal POTA - Versión Ultra Simple */
         .modal {
             display: none;
             position: fixed;
@@ -206,7 +206,7 @@
             border-radius: 20px;
             padding: 20px;
             width: 90%;
-            max-width: 1200px;
+            max-width: 800px;
             max-height: 85vh;
             overflow-y: auto;
             position: relative;
@@ -251,7 +251,7 @@
             transform: rotate(90deg);
         }
 
-        /* Área de búsqueda POTA simplificada */
+        /* Área de búsqueda POTA - Simplificada al máximo */
         .pota-search-area {
             background: rgba(0, 0, 0, 0.5);
             padding: 20px;
@@ -269,32 +269,33 @@
 
         .pota-search-box input {
             flex: 2;
-            min-width: 200px;
-            padding: 15px 20px;
-            font-size: 1.5rem;
+            min-width: 250px;
+            padding: 18px 20px;
+            font-size: 1.8rem;
             background: rgba(0, 0, 0, 0.7);
-            border: 1px solid var(--pota-green);
+            border: 2px solid var(--pota-green);
             color: var(--pota-green);
-            border-radius: 10px;
+            border-radius: 15px;
             text-transform: uppercase;
             text-align: center;
             font-weight: bold;
-            letter-spacing: 2px;
+            letter-spacing: 3px;
             outline: none;
         }
 
         .pota-search-box input:focus {
-            box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+            box-shadow: 0 0 25px rgba(0, 255, 136, 0.4);
+            transform: scale(1.02);
         }
 
         .pota-search-box button {
-            padding: 15px 30px;
+            padding: 18px 35px;
             background: var(--pota-green);
             border: none;
             color: #000;
             font-weight: bold;
-            font-size: 1.1rem;
-            border-radius: 10px;
+            font-size: 1.3rem;
+            border-radius: 15px;
             cursor: pointer;
             transition: all 0.3s;
             text-transform: uppercase;
@@ -302,48 +303,46 @@
 
         .pota-search-box button:hover {
             transform: scale(1.05);
-            box-shadow: 0 0 20px var(--pota-green);
+            box-shadow: 0 0 25px var(--pota-green);
         }
 
-        .pota-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 25px;
+        .pota-resultado {
             margin-top: 20px;
+            text-align: center;
         }
 
-        .pota-card {
+        .pota-card-simple {
             background: rgba(0, 0, 0, 0.7);
-            border: 1px solid rgba(0, 255, 136, 0.4);
-            border-radius: 12px;
-            padding: 15px;
+            border: 2px solid rgba(0, 255, 136, 0.5);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px auto;
+            max-width: 500px;
             transition: all 0.3s;
-            position: relative;
         }
 
-        .pota-card:hover {
-            transform: translateY(-5px);
+        .pota-card-simple:hover {
+            transform: scale(1.02);
             border-color: var(--pota-green);
-            box-shadow: 0 5px 20px rgba(0, 255, 136, 0.3);
+            box-shadow: 0 0 30px rgba(0, 255, 136, 0.3);
         }
 
-        .pota-card img {
+        .pota-card-simple img {
             width: 100%;
-            border-radius: 8px;
+            border-radius: 12px;
             cursor: pointer;
             margin: 10px 0;
         }
 
-        .pota-badge {
-            position: absolute;
-            top: 10px;
-            right: 10px;
+        .pota-badge-simple {
+            display: inline-block;
             background: var(--pota-green);
             color: #000;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 0.7rem;
+            padding: 5px 15px;
+            border-radius: 25px;
+            font-size: 0.8rem;
             font-weight: bold;
+            margin-bottom: 10px;
         }
 
         .modal-buttons {
@@ -453,14 +452,6 @@
         }
 
         footer { margin-top: 40px; font-size: 0.65rem; color: #3d5a69; letter-spacing: 2px; }
-        
-        .pota-result-count {
-            text-align: center;
-            padding: 15px;
-            color: var(--pota-green);
-            font-size: 1rem;
-            font-weight: bold;
-        }
     </style>
 </head>
 <body>
@@ -481,34 +472,28 @@
     <!-- Botón flotante POTA -->
     <div class="pota-float-btn" id="potaFloatBtn">🏞️</div>
 
-    <!-- Modal POTA - Buscador simplificado -->
+    <!-- Modal POTA - Ultra Simple -->
     <div id="potaModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>🏞️ QSL POTA - PARQUES ACTIVOS</h2>
+                <h2>🏞️ BUSCADOR POTA</h2>
                 <div class="close-modal">&times;</div>
             </div>
             
             <div class="pota-search-area">
                 <div class="pota-search-box">
-                    <input type="text" id="potaCallInput" placeholder="Ej: W3SB, CM7ADV, CO7POTA" maxlength="20" autocomplete="off">
-                    <button id="potaSearchBtn">🔍 BUSCAR QSL</button>
+                    <input type="text" id="potaCallInput" placeholder="EJ: W3SB" maxlength="20" autocomplete="off">
+                    <button id="potaSearchBtn">🔍 BUSCAR</button>
                 </div>
-                <div style="font-size: 0.7rem; text-align: center; margin-top: 10px; color: rgba(0,255,136,0.6);">
-                    💡 Ingresa cualquier indicativo - Buscará todas las QSLs disponibles
+                <div style="font-size: 0.8rem; text-align: center; margin-top: 12px; color: var(--pota-green);">
+                    💡 ESCRIBE EL INDICATIVO Y PRESIONA BUSCAR
                 </div>
             </div>
             
-            <div id="potaContent" class="pota-grid">
-                <div style="grid-column: 1/-1; text-align: center; padding: 40px;">
-                    <div>🏞️</div>
-                    <p style="color: var(--pota-green); margin-top: 10px;">Ingresa un indicativo y presiona BUSCAR</p>
-                    <p style="font-size: 0.8rem; opacity: 0.7;">Ejemplos: W3SB, CM7ADV, CO7POTA</p>
-                </div>
-            </div>
+            <div id="potaResultado" class="pota-resultado"></div>
             
             <div class="modal-buttons">
-                <button class="modal-btn" id="downloadAllPotaBtn">📦 DESCARGAR TODAS (.ZIP)</button>
+                <button class="modal-btn" id="downloadAllPotaBtn">📦 DESCARGAR TODAS</button>
                 <button class="modal-btn" id="closePotaModal">CERRAR</button>
             </div>
         </div>
@@ -688,45 +673,31 @@ function quickSearch(call) {
     document.getElementById('buscarBtn').click();
 }
 
-// FUNCIÓN SIMPLIFICADA - Busca cualquier QSL sin restricciones de formato
-function generarRutas(call) {
-    const formatos = ["png", "jpg", "jpeg", "gif", "webp", "PNG", "JPG", "JPEG"];
-    let rutas = [];
+// FUNCIÓN SIMPLIFICADA - Busca la QSL directamente
+async function buscarQSL(call) {
+    const formatos = ["png", "jpg", "jpeg", "gif", "webp"];
+    const variantes = [
+        `${call}`,
+        `QSL_${call}`,
+        `${call}-pota`,
+        `${call}_pota`,
+        `QSL_${call}-pota`,
+        `QSL_${call}_pota`
+    ];
     
-    formatos.forEach(ext => {
-        // Búsqueda directa del indicativo
-        rutas.push(`${REPO_URL}${call}.${ext}`);
-        rutas.push(`${REPO_URL}${call.toLowerCase()}.${ext}`);
-        
-        // Con QSL_ al inicio
-        rutas.push(`${REPO_URL}QSL_${call}.${ext}`);
-        rutas.push(`${REPO_URL}qsl_${call}.${ext}`);
-        
-        // Con -pota, _pota, -POTA
-        rutas.push(`${REPO_URL}${call}-pota.${ext}`);
-        rutas.push(`${REPO_URL}${call}_pota.${ext}`);
-        rutas.push(`${REPO_URL}${call}-POTA.${ext}`);
-        rutas.push(`${REPO_URL}QSL_${call}-pota.${ext}`);
-        rutas.push(`${REPO_URL}QSL_${call}_pota.${ext}`);
-        
-        // Variantes numéricas
-        for(let i = 1; i <= 5; i++) {
-            rutas.push(`${REPO_URL}${call}${i}.${ext}`);
-            rutas.push(`${REPO_URL}${call}-${i}.${ext}`);
-            rutas.push(`${REPO_URL}QSL_${call}${i}.${ext}`);
+    for (const formato of formatos) {
+        for (const variante of variantes) {
+            const url = `${REPO_URL}${variante}.${formato}`;
+            const existe = await new Promise(resolve => {
+                const img = new Image();
+                img.onload = () => resolve(true);
+                img.onerror = () => resolve(false);
+                img.src = url;
+            });
+            if (existe) return url;
         }
-    });
-    
-    return [...new Set(rutas)];
-}
-
-function probarImagen(src) {
-    return new Promise(resolve => {
-        const img = new Image();
-        img.onload = () => resolve(src);
-        img.onerror = () => resolve(null);
-        img.src = src;
-    });
+    }
+    return null;
 }
 
 function showThanks() {
@@ -735,71 +706,64 @@ function showThanks() {
     setTimeout(() => { msg.style.display = 'none'; }, 3000);
 }
 
-// ========== FUNCIÓN POTA SIMPLIFICADA - Busca cualquier QSL del indicativo ==========
-async function buscarQSListaPOTA() {
+// ========== FUNCIÓN POTA - SIMPLIFICADA: ESCRIBE INDICATIVO Y CARGA ==========
+async function buscarPOTA() {
     const callInput = document.getElementById('potaCallInput');
-    let call = callInput.value.trim().toUpperCase();
+    const call = callInput.value.trim().toUpperCase();
     
     if (!call) {
-        alert("Por favor ingresa un indicativo (ej: W3SB, CM7ADV)");
+        alert("✏️ ESCRIBE UN INDICATIVO (Ej: W3SB)");
         return;
     }
     
-    const container = document.getElementById('potaContent');
-    container.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px;"><div class="loader-spin"></div><p>🔍 BUSCANDO QSL PARA ' + call + '...</p></div>';
+    const resultadoDiv = document.getElementById('potaResultado');
+    resultadoDiv.innerHTML = '<div style="padding: 40px;"><div class="loader-spin"></div><p style="color: var(--pota-green);">🔍 BUSCANDO QSL PARA ' + call + '...</p></div>';
     
-    const rutas = generarRutas(call);
-    const resultados = await Promise.all(rutas.map(probarImagen));
-    const encontradas = [...new Set(resultados.filter(x => x !== null))];
+    const qslUrl = await buscarQSL(call);
+    currentPotaImages = qslUrl ? [qslUrl] : [];
     
-    currentPotaImages = encontradas;
-    
-    if (encontradas.length === 0) {
-        container.innerHTML = `
-            <div style="grid-column: 1/-1; text-align: center; padding: 40px;">
+    if (!qslUrl) {
+        resultadoDiv.innerHTML = `
+            <div style="padding: 40px; text-align: center;">
                 <div style="font-size: 3rem; margin-bottom: 20px;">🏞️</div>
-                <h3 style="color: var(--pota-green);">NO SE ENCONTRARON QSLs</h3>
-                <p>Para el indicativo: <strong style="color: #fff;">${call}</strong></p>
+                <h3 style="color: var(--pota-green);">NO SE ENCONTRÓ QSL</h3>
+                <p>Para el indicativo: <strong style="color: #fff; font-size: 1.2rem;">${call}</strong></p>
                 <p style="font-size: 0.8rem; margin-top: 15px;">💡 Verifica que la imagen esté en el repositorio</p>
-                <button onclick="buscarQSListaPOTA()" style="margin-top: 20px; padding: 10px 20px; background: var(--pota-green); border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">
+                <button onclick="buscarPOTA()" style="margin-top: 20px; padding: 10px 25px; background: var(--pota-green); border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
                 🔄 REINTENTAR
                 </button>
             </div>
         `;
     } else {
-        container.innerHTML = '';
-        encontradas.forEach((src) => {
-            const fileName = src.split('/').pop();
-            const card = document.createElement('div');
-            card.className = 'pota-card';
-            card.innerHTML = `
-                <div class="pota-badge">🏞️ POTA</div>
-                <img src="${src}" alt="QSL" onclick="window.open('${src}')" onerror="this.style.opacity='0.5'">
-                <div style="font-family: monospace; font-size: 0.7rem; text-align: center; margin: 10px 0; word-break: break-all;">
+        const fileName = qslUrl.split('/').pop();
+        resultadoDiv.innerHTML = `
+            <div class="pota-card-simple">
+                <div style="text-align: center;">
+                    <span class="pota-badge-simple">🏞️ QSL POTA - ${call}</span>
+                </div>
+                <img src="${qslUrl}" alt="QSL ${call}" onclick="window.open('${qslUrl}')" style="width: 100%; border-radius: 12px; margin: 15px 0;">
+                <div style="font-family: monospace; font-size: 0.75rem; text-align: center; margin: 10px 0; background: rgba(0,0,0,0.5); padding: 8px; border-radius: 8px;">
                     📄 ${fileName}
                 </div>
-                <div style="display: flex; gap: 10px;">
-                    <button onclick="descargarIndividualPOTA('${src}')" 
-                            style="flex: 1; background: var(--pota-green); border: none; padding: 8px; border-radius: 5px; cursor: pointer; font-weight: bold;">
+                <div style="display: flex; gap: 12px; margin-top: 15px;">
+                    <button onclick="descargarPOTA('${qslUrl}')" 
+                            style="flex: 1; background: var(--pota-green); border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1rem;">
                         📥 DESCARGAR
                     </button>
-                    <button onclick="window.open('${src}')" 
-                            style="flex: 1; background: transparent; border: 1px solid var(--pota-green); color: var(--pota-green); padding: 8px; border-radius: 5px; cursor: pointer;">
+                    <button onclick="window.open('${qslUrl}')" 
+                            style="flex: 1; background: transparent; border: 2px solid var(--pota-green); color: var(--pota-green); padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold;">
                         🔍 VER
                     </button>
                 </div>
-            `;
-            container.appendChild(card);
-        });
-        
-        const counter = document.createElement('div');
-        counter.className = 'pota-result-count';
-        counter.innerHTML = `✅ ${encontradas.length} QSL(s) encontrada(s) para ${call} 🏞️`;
-        container.appendChild(counter);
+            </div>
+            <div style="text-align: center; margin-top: 15px; color: var(--pota-green);">
+                ✅ QSL encontrada para ${call}
+            </div>
+        `;
     }
 }
 
-async function descargarIndividualPOTA(url) {
+async function descargarPOTA(url) {
     try {
         const response = await fetch(url);
         const blob = await response.blob();
@@ -818,15 +782,15 @@ async function descargarIndividualPOTA(url) {
     }
 }
 
-async function downloadAllPotaImages() {
+async function downloadAllPota() {
     if (currentPotaImages.length === 0) {
-        alert("No hay QSLs para descargar");
+        alert("No hay QSL para descargar");
         return;
     }
     
     const btn = document.querySelector('#downloadAllPotaBtn');
     const originalText = btn.innerText;
-    btn.innerText = "📦 EMPAQUETANDO...";
+    btn.innerText = "📦 ZIP...";
     btn.disabled = true;
     
     try {
@@ -842,9 +806,8 @@ async function downloadAllPotaImages() {
         link.download = `POTA_${Date.now()}.zip`;
         link.click();
         showThanks();
-    } catch (err) {
-        console.error("Error:", err);
-    } finally {
+    } catch (err) {}
+    finally {
         btn.innerText = originalText;
         btn.disabled = false;
     }
@@ -867,26 +830,20 @@ document.getElementById("buscarBtn").addEventListener("click", async () => {
     document.getElementById("resultado").innerHTML = "";
     isShowingResults = false;
 
-    const rutas = generarRutas(call);
-    const resultados = await Promise.all(rutas.map(probarImagen));
-    const encontradas = [...new Set(resultados.filter(x => x !== null))];
-
+    const qslUrl = await buscarQSL(call);
     overlay.style.display = "none";
     
     const res = document.getElementById('resultado');
-    if (encontradas.length === 0) {
+    if (!qslUrl) {
         res.innerHTML = `<div style="grid-column: 1/-1; color:var(--caribbean-pink); padding:40px;">NO HAY QSL PARA: <strong>${call}</strong></div>`;
         setTimeout(() => document.getElementById("btnVolver").click(), 3000);
     } else {
-        encontradas.forEach((src) => {
-            const card = document.createElement('div');
-            card.className = 'qsl-card';
-            card.innerHTML = `
-                <img src="${src}" onclick="window.open('${src}')">
-                <button class="btn-individual" onclick="descargarIndividual('${src}')">GUARDAR IMAGEN</button>
-            `;
-            res.appendChild(card);
-        });
+        res.innerHTML = `
+            <div class="qsl-card">
+                <img src="${qslUrl}" onclick="window.open('${qslUrl}')">
+                <button class="btn-individual" onclick="descargarIndividual('${qslUrl}')">GUARDAR IMAGEN</button>
+            </div>
+        `;
         document.getElementById("btnZip").style.display = "block";
         document.getElementById("btnVolver").style.display = "block";
         isShowingResults = true;
@@ -951,26 +908,26 @@ document.getElementById("indicativo").addEventListener("keypress", (e) => {
     if (e.key === "Enter") document.getElementById("buscarBtn").click();
 });
 
-// Evento Enter en el campo POTA
+// Evento Enter en POTA
 document.getElementById("potaCallInput").addEventListener("keypress", (e) => {
-    if (e.key === "Enter") buscarQSListaPOTA();
+    if (e.key === "Enter") buscarPOTA();
 });
 
 // Eventos POTA
 document.getElementById('potaFloatBtn').addEventListener('click', () => {
     document.getElementById('potaModal').style.display = 'flex';
     document.getElementById('potaCallInput').value = '';
-    document.getElementById('potaContent').innerHTML = `
-        <div style="grid-column: 1/-1; text-align: center; padding: 40px;">
-            <div>🏞️</div>
-            <p style="color: var(--pota-green); margin-top: 10px;">Ingresa un indicativo y presiona BUSCAR</p>
-            <p style="font-size: 0.8rem; opacity: 0.7;">Ejemplos: W3SB, CM7ADV, CO7POTA</p>
+    document.getElementById('potaResultado').innerHTML = `
+        <div style="padding: 40px; text-align: center;">
+            <div style="font-size: 3rem;">🏞️</div>
+            <p style="color: var(--pota-green); margin-top: 10px;">ESCRIBE EL INDICATIVO</p>
+            <p style="font-size: 0.9rem;">Ejemplo: W3SB, CM7ADV, CO7POTA</p>
         </div>
     `;
     currentPotaImages = [];
 });
 
-document.getElementById('potaSearchBtn').addEventListener('click', buscarQSListaPOTA);
+document.getElementById('potaSearchBtn').addEventListener('click', buscarPOTA);
 
 document.querySelector('.close-modal').addEventListener('click', () => {
     document.getElementById('potaModal').style.display = 'none';
@@ -980,7 +937,7 @@ document.getElementById('closePotaModal').addEventListener('click', () => {
     document.getElementById('potaModal').style.display = 'none';
 });
 
-document.getElementById('downloadAllPotaBtn').addEventListener('click', downloadAllPotaImages);
+document.getElementById('downloadAllPotaBtn').addEventListener('click', downloadAllPota);
 
 window.addEventListener('click', (e) => {
     if (e.target === document.getElementById('potaModal')) {
