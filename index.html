@@ -2,1077 +2,248 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Caribbean QSL Network | CM7ADV</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CL7ADV QSL System - Caribbean QSL Network</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Segoe UI', 'Poppins', 'Pacifico', system-ui, -apple-system;
+            font-family: 'Segoe UI', system-ui;
+            background: linear-gradient(135deg, #023047, #006994, #00B4D8);
             min-height: 100vh;
-            overflow-x: hidden;
             color: white;
         }
-
-        /* Fondo de mar animado */
-        .ocean-bg {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -2;
-            background: linear-gradient(180deg, #023047 0%, #006994 40%, #00B4D8 100%);
-        }
-
-        .wave {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 120px;
-            background: repeating-linear-gradient(transparent 0px, transparent 97px, rgba(255,255,255,0.15) 97px, rgba(255,255,255,0.25) 100px);
-            animation: waveMove 4s infinite linear;
-            pointer-events: none;
-        }
-
-        .wave1 { animation-duration: 5s; opacity: 0.7; }
-        .wave2 { animation-duration: 7s; opacity: 0.5; bottom: -20px; }
-        .wave3 { animation-duration: 9s; opacity: 0.3; bottom: -40px; }
-
-        @keyframes waveMove {
-            0% { background-position-x: 0; }
-            100% { background-position-x: 200px; }
-        }
-
-        /* Gaviotas */
-        .gaviotas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 10;
-        }
-
-        .gaviota {
-            position: absolute;
-            font-size: 2.2rem;
-            animation: fly 14s infinite ease-in-out;
-            filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));
-        }
-
-        .g1 { top: 8%; left: -5%; animation-delay: 0s; }
-        .g2 { top: 18%; left: -10%; animation-delay: 2s; animation-duration: 16s; }
-        .g3 { top: 5%; left: -15%; animation-delay: 4s; animation-duration: 12s; }
-        .g4 { top: 25%; left: -8%; animation-delay: 6s; animation-duration: 18s; }
-        .g5 { top: 12%; left: -12%; animation-delay: 8s; animation-duration: 13s; }
-        .g6 { top: 30%; left: -20%; animation-delay: 10s; animation-duration: 15s; }
-        .g7 { top: 3%; left: -25%; animation-delay: 1s; animation-duration: 11s; }
-        .g8 { top: 22%; left: -18%; animation-delay: 3s; animation-duration: 17s; }
-
-        @keyframes fly {
-            0% { transform: translateX(0) translateY(0) rotate(0deg); }
-            20% { transform: translateX(25vw) translateY(-25px) rotate(5deg); }
-            40% { transform: translateX(50vw) translateY(15px) rotate(-3deg); }
-            60% { transform: translateX(75vw) translateY(-15px) rotate(4deg); }
-            80% { transform: translateX(100vw) translateY(10px) rotate(-2deg); }
-            100% { transform: translateX(120vw) translateY(0) rotate(0deg); }
-        }
-
-        /* Sol */
-        .sun {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            width: 90px;
-            height: 90px;
-            background: radial-gradient(circle, #FFE066, #FF9F1C);
-            border-radius: 50%;
-            box-shadow: 0 0 60px rgba(255, 209, 102, 0.9);
-            animation: sunGlow 3s infinite alternate;
-            z-index: 5;
-        }
-
-        @keyframes sunGlow {
-            0% { transform: scale(1); opacity: 0.9; box-shadow: 0 0 40px #FFD166; }
-            100% { transform: scale(1.08); opacity: 1; box-shadow: 0 0 80px #FFE066; }
-        }
-
-        /* Nubes */
-        .cloud {
-            position: fixed;
-            background: rgba(255,255,255,0.85);
-            border-radius: 100px;
-            z-index: 4;
-            pointer-events: none;
-        }
-
-        .cloud1 { width: 120px; height: 70px; top: 60px; left: 10%; animation: cloudFloat 25s infinite linear; }
-        .cloud2 { width: 90px; height: 50px; top: 100px; left: 60%; animation: cloudFloat 30s infinite linear reverse; }
-        .cloud3 { width: 150px; height: 80px; top: 130px; left: 80%; animation: cloudFloat 35s infinite linear; }
-        .cloud::before, .cloud::after {
-            content: '';
-            position: absolute;
-            background: inherit;
-            border-radius: 50%;
-        }
-        .cloud::before { width: 50px; height: 50px; top: -25px; left: 15px; }
-        .cloud::after { width: 70px; height: 70px; top: -35px; left: 45px; }
-
-        @keyframes cloudFloat {
-            from { transform: translateX(-100px); }
-            to { transform: translateX(calc(100vw + 100px)); }
-        }
-
-        /* PANTALLA DE BIENVENIDA */
-        .welcome-screen {
-            position: relative;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            z-index: 20;
-        }
-
-        .content-welcome {
-            background: linear-gradient(135deg, rgba(0,0,0,0.6), rgba(0,100,148,0.7));
-            backdrop-filter: blur(12px);
-            padding: 3rem 2rem;
-            border-radius: 70px;
-            margin: 2rem;
-            animation: fadeInUp 1s cubic-bezier(0.2, 0.9, 0.4, 1.1);
-            border: 2px solid rgba(255,215,150,0.5);
-            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
-        }
-
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(60px) scale(0.9); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-
-        .welcome-screen h1 {
-            font-size: 2.5rem;
-            text-shadow: 3px 3px 6px rgba(0,0,0,0.6);
-            letter-spacing: 2px;
-            background: linear-gradient(45deg, #FFE6B0, #FFFFFF);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-
-        .logo-caribbean span {
-            font-size: 4rem;
-            margin: 0 0.6rem;
-            display: inline-block;
-            animation: float 3s infinite;
-            filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3));
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-18px) rotate(5deg); }
-        }
-
-        .network-name {
-            font-size: 2.2rem;
-            margin: 1.2rem 0;
-            background: linear-gradient(45deg, #FFD166, #FF6B6B, #FFD166);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            font-weight: bold;
-        }
-
-        .signature {
-            font-size: 1.4rem;
-            font-style: italic;
-        }
-
-        .call {
-            color: #FFD166;
-            font-weight: bold;
-            font-size: 1.6rem;
-            text-shadow: 0 0 8px rgba(0,0,0,0.5);
-        }
-
-        .style-tag {
-            background: rgba(0,0,0,0.5);
-            display: inline-block;
-            padding: 0.4rem 1.5rem;
-            border-radius: 40px;
-            margin: 1rem 0;
-            font-size: 1rem;
-            backdrop-filter: blur(4px);
-        }
-
-        .caribbean-btn {
-            background: linear-gradient(45deg, #FF6B6B, #F4A261);
-            border: none;
-            padding: 14px 35px;
-            font-size: 1.2rem;
-            font-weight: bold;
-            border-radius: 60px;
-            cursor: pointer;
-            transition: all 0.3s;
-            color: white;
-            margin-top: 1rem;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-        }
-
-        .caribbean-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 12px 30px rgba(0,0,0,0.4);
-            background: linear-gradient(45deg, #FF5252, #FF8C42);
-        }
-
-        /* APP PRINCIPAL */
-        .main-app {
-            max-width: 1000px;
-            margin: 0 auto;
+        .header {
+            background: rgba(0,0,0,0.6);
             padding: 1rem;
-            position: relative;
-            z-index: 30;
-            min-height: 100vh;
-        }
-
-        header {
-            background: linear-gradient(135deg, rgba(0,0,0,0.8), rgba(0,80,120,0.8));
-            backdrop-filter: blur(12px);
-            border-radius: 40px;
-            padding: 1.2rem;
-            margin-bottom: 1rem;
             text-align: center;
-            border: 1px solid rgba(255,215,0,0.3);
+            backdrop-filter: blur(10px);
         }
-
-        .header-title {
-            font-size: 1.6rem;
-            font-weight: bold;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
         }
-
-        .badge {
-            background: linear-gradient(45deg, #FF6B6B, #C0392B);
-            padding: 0.3rem 1rem;
-            border-radius: 30px;
-            font-size: 0.9rem;
-            font-weight: bold;
-        }
-
-        /* TABS */
-        .tabs {
-            display: flex;
-            gap: 0.8rem;
-            margin-bottom: 1rem;
-            flex-wrap: wrap;
-        }
-
-        .tab-btn {
-            background: rgba(0, 0, 0, 0.7);
-            color: white;
-            border: none;
-            padding: 12px 28px;
-            font-size: 1rem;
-            border-radius: 40px;
-            cursor: pointer;
-            flex: 1;
-            transition: all 0.3s;
-            backdrop-filter: blur(8px);
-            font-weight: bold;
-        }
-
-        .tab-btn.active {
-            background: linear-gradient(45deg, #FF6B6B, #F4A261);
-            font-weight: bold;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
-            transform: translateY(-2px);
-        }
-
-        .tab-content {
-            display: none;
-            background: rgba(255, 248, 225, 0.95);
-            border-radius: 35px;
-            padding: 1.8rem;
-            backdrop-filter: blur(8px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        }
-
-        .tab-content.active {
-            display: block;
-            animation: slideIn 0.4s ease;
-        }
-
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* BUSCADOR */
         .search-box {
             display: flex;
-            gap: 0.8rem;
-            margin-bottom: 1.5rem;
+            gap: 0.5rem;
+            margin: 2rem 0;
             flex-wrap: wrap;
         }
-
         .search-box input {
             flex: 1;
-            padding: 14px 20px;
-            border: 2px solid #00B4D8;
+            padding: 1rem;
             border-radius: 50px;
-            font-size: 1rem;
-            outline: none;
-            transition: all 0.2s;
-            background: white;
-        }
-
-        .search-box input:focus {
-            border-color: #FF6B6B;
-            box-shadow: 0 0 0 3px rgba(255,107,107,0.2);
-        }
-
-        .search-box button {
-            background: linear-gradient(45deg, #2A9D8F, #006994);
             border: none;
-            padding: 0 28px;
+            font-size: 1.1rem;
+        }
+        .search-box button {
+            padding: 1rem 2rem;
             border-radius: 50px;
-            cursor: pointer;
-            font-weight: bold;
+            background: #FF6B6B;
+            border: none;
             color: white;
-            transition: all 0.2s;
+            font-weight: bold;
+            cursor: pointer;
         }
-
-        .search-box button:hover {
-            transform: scale(1.02);
-            background: linear-gradient(45deg, #1B7A6E, #005A7A);
-        }
-
-        /* RESULTADOS - GALERÍA DE QSLs */
-        .results {
-            background: transparent;
-            border-radius: 25px;
-            max-height: 550px;
-            overflow-y: auto;
-            color: #2c3e2f;
-        }
-
-        .results-title {
-            font-size: 1.4rem;
-            margin-bottom: 1rem;
-            color: #C0392B;
-            border-left: 5px solid #FF6B6B;
-            padding-left: 15px;
-        }
-
         .qsl-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 1.5rem;
             margin-top: 1rem;
         }
-
         .qsl-card {
             background: white;
             border-radius: 20px;
             overflow: hidden;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-            transition: all 0.3s;
+            color: #333;
+            transition: transform 0.2s;
             cursor: pointer;
-            border: 1px solid rgba(0,0,0,0.1);
         }
-
         .qsl-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.25);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
         }
-
-        .qsl-image {
+        .qsl-card img {
             width: 100%;
             height: 220px;
             object-fit: cover;
-            background: #f0f0f0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 3rem;
-            background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
         }
-
-        .qsl-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            background: #fff8f0;
-        }
-
         .qsl-info {
             padding: 1rem;
         }
-
-        .qsl-info h4 {
+        .qsl-info h3 {
             color: #2A9D8F;
-            margin-bottom: 0.3rem;
         }
-
-        .qsl-info p {
-            font-size: 0.85rem;
-            color: #555;
-            margin: 5px 0;
-        }
-
-        .download-btn {
-            display: inline-block;
-            background: linear-gradient(45deg, #2A9D8F, #006994);
+        .btn-download {
+            background: #2A9D8F;
             color: white;
-            padding: 8px 16px;
-            border-radius: 30px;
-            text-decoration: none;
-            font-size: 0.8rem;
-            margin-top: 8px;
-            transition: all 0.2s;
             border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            margin-top: 0.5rem;
             cursor: pointer;
+            width: 100%;
         }
-
-        .download-btn:hover {
-            background: linear-gradient(45deg, #1B7A6E, #005A7A);
-            transform: scale(1.02);
-        }
-
-        .no-results {
+        .loading, .error {
             text-align: center;
             padding: 2rem;
-            color: #C0392B;
             font-size: 1.2rem;
         }
-
-        .upload-area {
-            margin: 1.5rem 0;
-            padding: 1.5rem;
-            background: linear-gradient(135deg, #f5f0e0, #efe6d5);
-            border-radius: 25px;
-            text-align: center;
-            border: 2px dashed #2A9D8F;
-        }
-
-        .secondary-btn {
-            background: linear-gradient(45deg, #F4A261, #E76F51);
-            border: none;
-            padding: 10px 24px;
-            border-radius: 40px;
-            cursor: pointer;
-            margin-top: 10px;
-            color: white;
-            font-weight: bold;
-        }
-
-        .history-panel {
-            margin-top: 1.5rem;
-            background: rgba(0,0,0,0.7);
-            backdrop-filter: blur(10px);
-            border-radius: 25px;
-            padding: 0.8rem;
-        }
-
-        .history-panel details summary {
-            cursor: pointer;
-            padding: 0.8rem;
-            font-weight: bold;
-        }
-
-        .history-list {
-            padding: 0.8rem;
-            font-size: 0.85rem;
-            max-height: 150px;
-            overflow-y: auto;
-        }
-
         footer {
             text-align: center;
-            font-size: 0.7rem;
-            margin-top: 1.5rem;
-            opacity: 0.8;
+            margin-top: 3rem;
+            padding: 1rem;
+            background: rgba(0,0,0,0.5);
         }
-
-        .suggestions {
-            background: white;
-            border-radius: 20px;
-            margin-top: -10px;
-            margin-bottom: 15px;
-            max-height: 160px;
-            overflow-y: auto;
-            color: #333;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-
-        .suggestion-item {
-            padding: 10px 15px;
-            cursor: pointer;
-            border-bottom: 1px solid #eee;
-            transition: background 0.1s;
-        }
-
-        .suggestion-item:hover {
-            background: linear-gradient(90deg, #FFF0E0, #FFE0C0);
-        }
-
-        .loading {
-            text-align: center;
-            padding: 2rem;
-            font-size: 1.2rem;
-        }
-
         @media (max-width: 700px) {
             .qsl-grid { grid-template-columns: 1fr; }
-            .tab-btn { font-size: 0.85rem; padding: 10px 15px; }
-            .search-box { flex-direction: column; }
-            .welcome-screen h1 { font-size: 1.5rem; }
         }
     </style>
 </head>
 <body>
-
-<div class="ocean-bg">
-    <div class="wave wave1"></div>
-    <div class="wave wave2"></div>
-    <div class="wave wave3"></div>
-</div>
-
-<div class="gaviotas">
-    <div class="gaviota g1">🕊️</div>
-    <div class="gaviota g2">🕊️</div>
-    <div class="gaviota g3">🕊️</div>
-    <div class="gaviota g4">🕊️</div>
-    <div class="gaviota g5">🕊️</div>
-    <div class="gaviota g6">🕊️</div>
-    <div class="gaviota g7">🕊️</div>
-    <div class="gaviota g8">🕊️</div>
-</div>
-
-<div class="sun"></div>
-<div class="cloud cloud1"></div>
-<div class="cloud cloud2"></div>
-<div class="cloud cloud3"></div>
-
-<!-- PANTALLA DE BIENVENIDA -->
-<div id="welcomeScreen" class="welcome-screen">
-    <div class="content-welcome">
-        <h1>BIENVENIDOS COLEGAS<br>RADIOPERADORES</h1>
-        <div class="logo-caribbean">
-            <span>🌴</span>
-            <span>📻</span>
-            <span>📡</span>
-            <span>🦀</span>
-            <span>🐠</span>
-        </div>
-        <h2 class="network-name">CARIBBEAN QSL NETWORK</h2>
-        <p class="signature">73's de <strong class="call">CM7ADV</strong></p>
-        <p class="style-tag">🎵 ESTILO DEL CARIBE - MÚLTIPLES QSLs por INDICATIVO 🎵</p>
-        <button id="enterAppBtn" class="caribbean-btn">🌊 ENTRAR AL SISTEMA 🌊</button>
-    </div>
-</div>
-
-<!-- APP PRINCIPAL -->
-<div id="mainApp" class="main-app" style="display: none;">
-    <header>
-        <div class="header-title">
-            <span>🏝️ CARIBBEAN QSL NETWORK</span>
-            <span class="badge">CM7ADV · QSL MULTI-FORMATO</span>
-        </div>
-        <div class="wave-decoration"></div>
-    </header>
-
-    <div class="tabs">
-        <button class="tab-btn active" data-tab="pota">📡 QSLs por POTA / INDICATIVO</button>
-        <button class="tab-btn" data-tab="contactos">📻 QSLs por CONTACTOS QSO</button>
+    <div class="header">
+        <h1>🏝️ CL7ADV - CARIBBEAN QSL NETWORK</h1>
+        <p>73's desde el Caribe | Sistema de búsqueda rápida de QSLs</p>
     </div>
 
-    <!-- SISTEMA POTA / BÚSQUEDA POR INDICATIVO -->
-    <div id="potaTab" class="tab-content active">
+    <div class="container">
         <div class="search-box">
-            <input type="text" id="potaSearch" placeholder="🔍 Busca por INDICATIVO (CM7ADV, KP4ABC, HK3XYZ) o código POTA (CM-0001)..." autocomplete="off">
-            <button id="potaSearchBtn">🔎 BUSCAR QSLs</button>
+            <input type="text" id="searchInput" placeholder="Buscar por indicativo (CM7ADV, KP4ABC...) o código POTA (CM-0001)..." autocomplete="off">
+            <button id="searchBtn">🔍 BUSCAR QSLs</button>
         </div>
-        <div id="potaSuggestions" class="suggestions"></div>
-        <div id="potaResults" class="results"></div>
-    </div>
-
-    <!-- SISTEMA CONTACTOS QSO -->
-    <div id="contactosTab" class="tab-content">
-        <div class="search-box">
-            <input type="text" id="qsoSearch" placeholder="📻 Busca por indicativo: CM7ADV, KP4ABC, HK3XYZ...">
-            <button id="qsoSearchBtn">🔎 BUSCAR QSLs POR QSO</button>
+        <div id="results" class="results">
+            <div class="loading">🌊 Cargando QSLs desde el repositorio...</div>
         </div>
-        <div class="upload-area">
-            <p>📂 O sube tu log (ADIF / CSV / TXT) para buscar múltiples QSLs</p>
-            <input type="file" id="logFile" accept=".adi,.adif,.csv,.txt">
-            <button id="uploadLogBtn" class="secondary-btn">📤 PROCESAR LOG Y BUSCAR QSLs</button>
-        </div>
-        <div id="qsoResults" class="results"></div>
-        <div id="bulkDownload" style="display:none;">
-            <button id="downloadAllBtn" class="caribbean-btn" style="width:100%; margin-top:1rem;">📦 DESCARGAR TODAS LAS QSLs (LOTE)</button>
-        </div>
-    </div>
-
-    <!-- HISTORIAL -->
-    <div class="history-panel">
-        <details>
-            <summary>📜 HISTORIAL DE BÚSQUEDA / QSLs DESCARGADAS</summary>
-            <div id="historyList" class="history-list"></div>
-        </details>
     </div>
 
     <footer>
-        <p>🇨🇺 Caribbean QSL Network · 73's CM7ADV · Sistema multi-QSL con imágenes JPG/PNG 🇵🇷🇩🇴🇯🇲🇨🇼</p>
+        <p>📡 QSLs alojadas en: <strong>github.com/cl7adv/cl7adv-qsl/img/</strong> | 📻 CL7ADV</p>
     </footer>
-</div>
 
-<script>
-    // ========== BASE DE DATOS DE QSLs CON IMÁGENES JPG/PNG ==========
-    // Cada QSL puede tener imagen JPG/PNG, PDF, o ambos
-    const QSL_DB = {
-        // QSLs organizadas por indicativo/parque
-        qsls: [
-            { 
-                id: 1, 
-                indicativo: "CM7ADV", 
-                tipo: "POTA", 
-                parque: "CM-0001",
-                nombre_parque: "Alejandro de Humboldt, Cuba",
-                fecha: "2024-10-15", 
-                banda: "20M", 
-                modo: "SSB",
-                imagen: "https://picsum.photos/id/104/400/300", // imagen JPG de ejemplo
-                qsl_pdf: "#",
-                descripcion: "Activación POTA CM-0001 - Costa norte"
-            },
-            { 
-                id: 2, 
-                indicativo: "CM7ADV", 
-                tipo: "POTA", 
-                parque: "CM-0001",
-                nombre_parque: "Alejandro de Humboldt, Cuba",
-                fecha: "2024-10-10", 
-                banda: "40M", 
-                modo: "FT8",
-                imagen: "https://picsum.photos/id/15/400/300",
-                qsl_pdf: "#",
-                descripcion: "Segunda activación - Modo digital"
-            },
-            { 
-                id: 3, 
-                indicativo: "CM7ADV", 
-                tipo: "CONTACTO", 
-                qso_con: "KP4ABC",
-                fecha: "2024-10-15", 
-                hora: "1830Z",
-                banda: "20M", 
-                modo: "SSB",
-                imagen: "https://picsum.photos/id/96/400/300",
-                qsl_pdf: "#",
-                confirmado: true,
-                descripcion: "QSO con Puerto Rico"
-            },
-            { 
-                id: 4, 
-                indicativo: "CM7ADV", 
-                tipo: "CONTACTO", 
-                qso_con: "HK3XYZ",
-                fecha: "2024-10-14", 
-                hora: "2015Z",
-                banda: "40M", 
-                modo: "FT8",
-                imagen: "https://picsum.photos/id/25/400/300",
-                qsl_pdf: "#",
-                confirmado: true,
-                descripcion: "QSO con Colombia - Modo FT8"
-            },
-            { 
-                id: 5, 
-                indicativo: "CM7ADV", 
-                tipo: "CONTACTO", 
-                qso_con: "CO2YYY",
-                fecha: "2024-10-12", 
-                hora: "1500Z",
-                banda: "15M", 
-                modo: "CW",
-                imagen: "https://picsum.photos/id/42/400/300",
-                qsl_pdf: null,
-                confirmado: false,
-                descripcion: "QSO pendiente de confirmación"
-            },
-            { 
-                id: 6, 
-                indicativo: "KP4ABC", 
-                tipo: "POTA", 
-                parque: "K-1234",
-                nombre_parque: "Everglades National Park, USA",
-                fecha: "2024-09-20", 
-                banda: "15M", 
-                modo: "CW",
-                imagen: "https://picsum.photos/id/127/400/300",
-                qsl_pdf: "#",
-                descripcion: "Activación desde los Everglades"
-            },
-            { 
-                id: 7, 
-                indicativo: "KP4ABC", 
-                tipo: "CONTACTO", 
-                qso_con: "CM7ADV",
-                fecha: "2024-10-15", 
-                hora: "1830Z",
-                banda: "20M", 
-                modo: "SSB",
-                imagen: "https://picsum.photos/id/99/400/300",
-                qsl_pdf: "#",
-                confirmado: true,
-                descripcion: "QSL desde Puerto Rico"
-            },
-            { 
-                id: 8, 
-                indicativo: "HK3XYZ", 
-                tipo: "POTA", 
-                parque: "VE-0010",
-                nombre_parque: "Parque Nacional Morrocoy, Venezuela",
-                fecha: "2024-08-05", 
-                banda: "10M", 
-                modo: "SSB",
-                imagen: "https://picsum.photos/id/29/400/300",
-                qsl_pdf: "#",
-                descripcion: "Activación en la costa venezolana"
-            },
-            { 
-                id: 9, 
-                indicativo: "HK3XYZ", 
-                tipo: "CONTACTO", 
-                qso_con: "CM7ADV",
-                fecha: "2024-10-14", 
-                hora: "2015Z",
-                banda: "40M", 
-                modo: "FT8",
-                imagen: "https://picsum.photos/id/116/400/300",
-                qsl_pdf: "#",
-                confirmado: true,
-                descripcion: "QSL confirmada desde Colombia"
-            },
-            { 
-                id: 10, 
-                indicativo: "9Y4ZZZ", 
-                tipo: "CONTACTO", 
-                qso_con: "CM7ADV",
-                fecha: "2024-10-10", 
-                hora: "2200Z",
-                banda: "80M", 
-                modo: "SSB",
-                imagen: "https://picsum.photos/id/52/400/300",
-                qsl_pdf: "#",
-                confirmado: true,
-                descripcion: "QSO con Trinidad y Tobago"
-            },
-            { 
-                id: 11, 
-                indicativo: "CM2XXX", 
-                tipo: "POTA", 
-                parque: "CM-0001",
-                nombre_parque: "Alejandro de Humboldt, Cuba",
-                fecha: "2024-10-10", 
-                banda: "40M", 
-                modo: "FT8",
-                imagen: "https://picsum.photos/id/155/400/300",
-                qsl_pdf: "#",
-                descripcion: "Operador visitante en el parque"
+    <script>
+        // Configuración de tu repositorio
+        const GITHUB_USER = "cl7adv";
+        const REPO_NAME = "cl7adv-qsl";
+        const RAW_BASE = `https://raw.githubusercontent.com/${GITHUB_USER}/${REPO_NAME}/main/img/`;
+        
+        let qslDatabase = [];
+
+        // Cargar el índice de QSLs
+        async function cargarQSLs() {
+            try {
+                // Intentar cargar el archivo index.json que DEBES crear en /img/index.json
+                const response = await fetch(`${RAW_BASE}index.json`);
+                if (!response.ok) throw new Error("Index no encontrado");
+                const data = await response.json();
+                qslDatabase = data.qsls;
+                mostrarResultados(qslDatabase, "📚 TODAS LAS QSLS DISPONIBLES");
+                return true;
+            } catch (error) {
+                console.warn("No se encontró index.json, usando datos de ejemplo");
+                // Datos de ejemplo para que veas cómo funciona (cámbialos por tus QSLs reales)
+                qslDatabase = [
+                    {
+                        id: "qsl001",
+                        indicativo: "CL7ADV",
+                        tipo: "POTA",
+                        parque: "CM-0001",
+                        nombre_parque: "Parque Alejandro de Humboldt",
+                        contacto: null,
+                        fecha: "2024-10-15",
+                        banda: "20M",
+                        modo: "SSB",
+                        imagen_url: "https://picsum.photos/id/104/400/300",
+                        descripcion: "Activación desde Cuba"
+                    },
+                    {
+                        id: "qsl002",
+                        indicativo: "CL7ADV",
+                        tipo: "CONTACTO",
+                        contacto: "KP4ABC",
+                        fecha: "2024-10-15",
+                        banda: "20M",
+                        modo: "SSB",
+                        imagen_url: "https://picsum.photos/id/96/400/300",
+                        descripcion: "QSO con Puerto Rico"
+                    }
+                ];
+                mostrarResultados(qslDatabase, "📚 QSLs de demostración (crea /img/index.json con tus QSLs reales)");
+                return false;
             }
-        ],
-
-        // POTA por código de parque
-        pota_parques: {
-            "CM-0001": { nombre: "Parque Nacional Alejandro de Humboldt", pais: "Cuba" },
-            "K-1234": { nombre: "Everglades National Park", pais: "USA" },
-            "VE-0010": { nombre: "Parque Nacional Morrocoy", pais: "Venezuela" }
         }
-    };
 
-    // Historial
-    let searchHistory = JSON.parse(localStorage.getItem("qsl_history_caribbean") || "[]");
-    let currentQSLsToDownload = [];
-
-    // ========== INICIALIZACIÓN ==========
-    document.addEventListener("DOMContentLoaded", () => {
-        document.getElementById("enterAppBtn").addEventListener("click", () => {
-            document.getElementById("welcomeScreen").style.display = "none";
-            document.getElementById("mainApp").style.display = "block";
-        });
-        
-        // Pestañas
-        document.querySelectorAll(".tab-btn").forEach(btn => {
-            btn.addEventListener("click", () => {
-                document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-                btn.classList.add("active");
-                const tab = btn.dataset.tab;
-                document.querySelectorAll(".tab-content").forEach(tc => tc.classList.remove("active"));
-                document.getElementById(`${tab}Tab`).classList.add("active");
+        function buscarQSLs(texto) {
+            if (!texto) return qslDatabase;
+            texto = texto.toUpperCase().trim();
+            
+            return qslDatabase.filter(qsl => {
+                // Buscar por indicativo
+                if (qsl.indicativo.toUpperCase().includes(texto)) return true;
+                // Buscar por código POTA
+                if (qsl.parque && qsl.parque.toUpperCase().includes(texto)) return true;
+                // Buscar por contacto
+                if (qsl.contacto && qsl.contacto.toUpperCase().includes(texto)) return true;
+                return false;
             });
-        });
-        
-        // Búsqueda POTA/Indicativo
-        document.getElementById("potaSearchBtn").addEventListener("click", () => {
-            const texto = document.getElementById("potaSearch").value.trim().toUpperCase();
-            if(texto) buscarPorIndicativoOPOTA(texto);
-        });
-        
-        document.getElementById("potaSearch").addEventListener("keypress", (e) => {
-            if(e.key === "Enter") document.getElementById("potaSearchBtn").click();
-        });
-        
-        // Sugerencias
-        document.getElementById("potaSearch").addEventListener("input", (e) => {
-            const texto = e.target.value.trim().toUpperCase();
-            if(texto.length < 2) {
-                document.getElementById("potaSuggestions").innerHTML = "";
+        }
+
+        function mostrarResultados(qsls, titulo) {
+            const container = document.getElementById("results");
+            if (!qsls || qsls.length === 0) {
+                container.innerHTML = `<div class="error">❌ No se encontraron QSLs para esa búsqueda.<br>📡 Prueba con: CL7ADV, KP4ABC, CM-0001</div>`;
                 return;
             }
-            const sugerencias = [];
-            // Sugerencias por indicativo
-            QSL_DB.qsls.forEach(q => {
-                if(q.indicativo.toUpperCase().includes(texto) && !sugerencias.includes(q.indicativo.toUpperCase())) {
-                    sugerencias.push(q.indicativo.toUpperCase());
-                }
-            });
-            // Sugerencias por código POTA
-            Object.keys(QSL_DB.pota_parques).forEach(p => {
-                if(p.includes(texto)) sugerencias.push(p);
-            });
-            mostrarSugerencias(sugerencias.slice(0, 8));
-        });
-        
-        // Búsqueda QSO
-        document.getElementById("qsoSearchBtn").addEventListener("click", () => {
-            const texto = document.getElementById("qsoSearch").value.trim().toUpperCase();
-            if(texto) buscarPorQSO(texto);
-        });
-        
-        // Subir log
-        document.getElementById("uploadLogBtn").addEventListener("click", () => {
-            const file = document.getElementById("logFile").files[0];
-            if(file) procesarLog(file);
-            else alert("🌊 Selecciona un archivo ADIF/CSV/TXT primero, colega");
-        });
-        
-        // Descarga masiva
-        document.getElementById("downloadAllBtn")?.addEventListener("click", descargarTodasQSLs);
-        
-        mostrarHistorial();
-    });
 
-    // ========== BÚSQUEDA POR INDICATIVO O POTA ==========
-    function buscarPorIndicativoOPOTA(texto) {
-        let qslsEncontradas = [];
-        let tipoBusqueda = "";
-        
-        // Verificar si es código POTA
-        if(QSL_DB.pota_parques[texto]) {
-            tipoBusqueda = `Parque ${texto} - ${QSL_DB.pota_parques[texto].nombre}`;
-            qslsEncontradas = QSL_DB.qsls.filter(q => q.parque === texto);
-        } else {
-            // Buscar por indicativo
-            tipoBusqueda = `Indicativo ${texto}`;
-            qslsEncontradas = QSL_DB.qsls.filter(q => q.indicativo.toUpperCase() === texto);
-        }
-        
-        if(qslsEncontradas.length === 0) {
-            document.getElementById("potaResults").innerHTML = `<div class="no-results">❌ No se encontraron QSLs para ${texto}<br>📡 Prueba con: CM7ADV, KP4ABC, HK3XYZ, CM-0001, K-1234, VE-0010</div>`;
-            return;
-        }
-        
-        agregarAlHistorial(`🔍 Búsqueda: ${tipoBusqueda} - ${qslsEncontradas.length} QSLs encontradas`);
-        mostrarGaleriaQSLs(qslsEncontradas, "potaResults", `📸 QSLs encontradas para ${tipoBusqueda} (${qslsEncontradas.length})`);
-    }
-    
-    // ========== BÚSQUEDA POR CONTACTOS QSO ==========
-    function buscarPorQSO(texto) {
-        const indicativo = texto.toUpperCase();
-        const qslsEncontradas = QSL_DB.qsls.filter(q => 
-            (q.tipo === "CONTACTO" && (q.indicativo.toUpperCase() === indicativo || q.qso_con?.toUpperCase() === indicativo))
-        );
-        
-        if(qslsEncontradas.length === 0) {
-            document.getElementById("qsoResults").innerHTML = `<div class="no-results">❌ No se encontraron QSOs para ${texto}<br>📻 Prueba con: CM7ADV, KP4ABC, HK3XYZ</div>`;
-            document.getElementById("bulkDownload").style.display = "none";
-            return;
-        }
-        
-        agregarAlHistorial(`📻 Búsqueda QSO: ${indicativo} - ${qslsEncontradas.length} QSLs`);
-        mostrarGaleriaQSLs(qslsEncontradas, "qsoResults", `📻 QSLs de contactos para ${indicativo} (${qslsEncontradas.length})`);
-        
-        const confirmadas = qslsEncontradas.filter(q => q.confirmado !== false);
-        if(confirmadas.length > 0) {
-            currentQSLsToDownload = confirmadas;
-            document.getElementById("bulkDownload").style.display = "block";
-        } else {
-            document.getElementById("bulkDownload").style.display = "none";
-        }
-    }
-    
-    // ========== MOSTRAR GALERÍA DE QSLs CON IMÁGENES ==========
-    function mostrarGaleriaQSLs(qsls, containerId, titulo) {
-        if(!qsls || qsls.length === 0) return;
-        
-        let html = `<div class="results-title">${titulo}</div>`;
-        html += `<div class="qsl-grid">`;
-        
-        qsls.forEach(qsl => {
-            const tieneImagen = qsl.imagen && (qsl.imagen.endsWith('.jpg') || qsl.imagen.endsWith('.png') || qsl.imagen.includes('picsum'));
-            const imagenSrc = tieneImagen ? qsl.imagen : "https://picsum.photos/id/20/400/300";
-            const tipoIcono = qsl.tipo === "POTA" ? "🏞️" : "📻";
-            const tituloQSL = qsl.tipo === "POTA" ? `POTA: ${qsl.parque}` : `QSO con: ${qsl.qso_con || "Desconocido"}`;
+            let html = `<h2 style="margin-bottom:1rem;">${titulo} (${qsls.length})</h2>`;
+            html += `<div class="qsl-grid">`;
             
-            html += `
-                <div class="qsl-card" onclick="descargarQSLIndividual(${qsl.id})">
-                    <div class="qsl-image">
-                        <img src="${imagenSrc}" alt="QSL ${qsl.indicativo}" loading="lazy" onerror="this.src='https://picsum.photos/id/42/400/300'">
-                    </div>
-                    <div class="qsl-info">
-                        <h4>${tipoIcono} ${qsl.indicativo} - ${tituloQSL}</h4>
-                        <p>📅 ${qsl.fecha} | 🎚️ ${qsl.banda} | 📡 ${qsl.modo}</p>
-                        <p>📝 ${qsl.descripcion || "QSL disponible"}</p>
-                        ${qsl.confirmado === false ? '<p style="color:#FF6B6B;">⏳ Pendiente de confirmación</p>' : ''}
-                        <button class="download-btn" onclick="event.stopPropagation(); descargarQSLIndividual(${qsl.id})">📥 DESCARGAR QSL (${tieneImagen ? "JPG/PNG" : "PDF"})</button>
-                    </div>
-                </div>
-            `;
-        });
-        
-        html += `</div>`;
-        document.getElementById(containerId).innerHTML = html;
-    }
-    
-    // ========== DESCARGAR QSL INDIVIDUAL ==========
-    function descargarQSLIndividual(id) {
-        const qsl = QSL_DB.qsls.find(q => q.id === id);
-        if(!qsl) return;
-        
-        agregarAlHistorial(`📥 Descargada QSL: ${qsl.indicativo} - ${qsl.fecha} (${qsl.tipo})`);
-        
-        // Si tiene imagen real, descargarla; si no, simular
-        if(qsl.imagen && (qsl.imagen.includes('picsum') || qsl.imagen.startsWith('http'))) {
-            // Simular descarga mostrando alerta
-            alert(`📡 DESCARGANDO QSL:\n${qsl.indicativo}\nFecha: ${qsl.fecha}\nFormato: ${qsl.imagen.includes('.jpg') ? 'JPG' : 'PNG'}\n\n🌊 73's desde el Caribe, ${qsl.indicativo}`);
-            
-            // Abrir imagen en nueva pestaña (simula descarga)
-            window.open(qsl.imagen, '_blank');
-        } else if(qsl.qsl_pdf && qsl.qsl_pdf !== "#") {
-            const link = document.createElement("a");
-            link.href = qsl.qsl_pdf;
-            link.download = `QSL_${qsl.indicativo}_${qsl.fecha}.pdf`;
-            link.click();
-        } else {
-            alert(`📻 QSL de ${qsl.indicativo}\n📅 ${qsl.fecha} ${qsl.banda} ${qsl.modo}\n🌴 QSL electrónica disponible en el sistema. 73's!`);
-        }
-    }
-    
-    // ========== PROCESAR LOG ==========
-    function procesarLog(file) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const contenido = e.target.result.toUpperCase();
-            // Extraer indicativos comunes del log (simulación)
-            const indicativosPosibles = ["CM7ADV", "KP4ABC", "HK3XYZ", "9Y4ZZZ", "CO2YYY", "PJ4AAA"];
-            let qslsEncontradas = [];
-            
-            indicativosPosibles.forEach(call => {
-                if(contenido.includes(call)) {
-                    const qslsCall = QSL_DB.qsls.filter(q => 
-                        q.indicativo.toUpperCase() === call || q.qso_con?.toUpperCase() === call
-                    );
-                    qslsEncontradas.push(...qslsCall);
-                }
-            });
-            
-            // Eliminar duplicados por id
-            qslsEncontradas = qslsEncontradas.filter((v,i,a) => a.findIndex(t => t.id === v.id) === i);
-            
-            if(qslsEncontradas.length > 0) {
-                agregarAlHistorial(`📁 LOG procesado: ${file.name} - ${qslsEncontradas.length} QSLs encontradas`);
-                mostrarGaleriaQSLs(qslsEncontradas, "qsoResults", `📋 LOG: ${file.name} - ${qslsEncontradas.length} QSLs coincidentes`);
+            qsls.forEach(qsl => {
+                const tipoIcono = qsl.tipo === "POTA" ? "🏞️" : "📻";
+                const tituloQSL = qsl.tipo === "POTA" ? `POTA: ${qsl.parque}` : `QSO con: ${qsl.contacto}`;
+                const imagenSrc = qsl.imagen_url || "https://picsum.photos/id/42/400/300";
                 
-                const confirmadas = qslsEncontradas.filter(q => q.confirmado !== false);
-                if(confirmadas.length > 0) {
-                    currentQSLsToDownload = confirmadas;
-                    document.getElementById("bulkDownload").style.display = "block";
-                }
-            } else {
-                document.getElementById("qsoResults").innerHTML = `<div class="no-results">⚠️ No se encontraron QSLs para los contactos de tu log</div>`;
-                document.getElementById("bulkDownload").style.display = "none";
-            }
-        };
-        reader.readAsText(file);
-    }
-    
-    // ========== DESCARGAR LOTE ==========
-    function descargarTodasQSLs() {
-        if(currentQSLsToDownload && currentQSLsToDownload.length > 0) {
-            agregarAlHistorial(`📦 Descarga masiva: ${currentQSLsToDownload.length} QSLs`);
-            alert(`🌊 DESCARGANDO LOTE: ${currentQSLsToDownload.length} QSLs\n📡 Cada QSL se abrirá en una nueva pestaña\n\n73's desde Caribbean QSL Network`);
-            
-            currentQSLsToDownload.forEach((qsl, idx) => {
-                setTimeout(() => {
-                    if(qsl.imagen) {
-                        window.open(qsl.imagen, '_blank');
-                    } else {
-                        alert(`📻 ${qsl.indicativo} - ${qsl.fecha}\nQSL disponible en el sistema`);
-                    }
-                }, idx * 800);
+                html += `
+                    <div class="qsl-card" onclick="descargarQSL('${qsl.id}')">
+                        <img src="${imagenSrc}" alt="QSL ${qsl.indicativo}" loading="lazy" onerror="this.src='https://picsum.photos/id/20/400/300'">
+                        <div class="qsl-info">
+                            <h3>${tipoIcono} ${qsl.indicativo}</h3>
+                            <p><strong>${tituloQSL}</strong></p>
+                            <p>📅 ${qsl.fecha} | 🎚️ ${qsl.banda} | 📡 ${qsl.modo}</p>
+                            <p>📝 ${qsl.descripcion || "QSL disponible"}</p>
+                            <button class="btn-download" onclick="event.stopPropagation(); descargarQSL('${qsl.id}')">📥 DESCARGAR QSL</button>
+                        </div>
+                    </div>
+                `;
             });
-        } else {
-            alert("🌊 No hay QSLs disponibles para descargar en lote");
+            
+            html += `</div>`;
+            container.innerHTML = html;
         }
-    }
-    
-    // ========== SUGERENCIAS ==========
-    function mostrarSugerencias(sugerencias) {
-        let html = "";
-        sugerencias.forEach(sug => {
-            html += `<div class="suggestion-item" onclick="seleccionarSugerencia('${sug}')">${sug}</div>`;
+
+        function descargarQSL(id) {
+            const qsl = qslDatabase.find(q => q.id === id);
+            if (qsl && qsl.imagen_url) {
+                window.open(qsl.imagen_url, '_blank');
+                alert(`🌊 Descargando QSL de ${qsl.indicativo}\n📅 ${qsl.fecha}\n¡73's desde el Caribe!`);
+            } else {
+                alert("📻 QSL electrónica disponible. Contacta a CL7ADV para obtenerla.");
+            }
+        }
+
+        // Eventos
+        document.getElementById("searchBtn").addEventListener("click", () => {
+            const texto = document.getElementById("searchInput").value;
+            const resultados = buscarQSLs(texto);
+            const titulo = texto ? `🔍 Resultados para "${texto}"` : "📚 TODAS LAS QSLS";
+            mostrarResultados(resultados, titulo);
         });
-        document.getElementById("potaSuggestions").innerHTML = html;
-    }
-    
-    function seleccionarSugerencia(texto) {
-        document.getElementById("potaSearch").value = texto;
-        document.getElementById("potaSuggestions").innerHTML = "";
-        buscarPorIndicativoOPOTA(texto);
-    }
-    window.seleccionarSugerencia = seleccionarSugerencia;
-    window.descargarQSLIndividual = descargarQSLIndividual;
-    
-    // ========== HISTORIAL ==========
-    function agregarAlHistorial(item) {
-        const timestamp = new Date().toLocaleString();
-        searchHistory.unshift(`${timestamp} - ${item}`);
-        if(searchHistory.length > 15) searchHistory.pop();
-        localStorage.setItem("qsl_history_caribbean", JSON.stringify(searchHistory));
-        mostrarHistorial();
-    }
-    
-    function mostrarHistorial() {
-        const container = document.getElementById("historyList");
-        if(!container) return;
-        if(searchHistory.length === 0) {
-            container.innerHTML = "<div>🌴 No hay búsquedas recientes aún</div>";
-            return;
-        }
-        container.innerHTML = searchHistory.map(h => `<div>🏝️ ${h}</div>`).join("");
-    }
-</script>
+        
+        document.getElementById("searchInput").addEventListener("keypress", (e) => {
+            if (e.key === "Enter") document.getElementById("searchBtn").click();
+        });
+
+        // Inicializar
+        cargarQSLs();
+    </script>
 </body>
 </html>
