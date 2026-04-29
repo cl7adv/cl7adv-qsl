@@ -2,948 +2,1077 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Zona Caribeña QSL - CM7ADV | POTA Mode</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Caribbean QSL Network | CM7ADV</title>
     <style>
-        :root {
-            --caribbean-cyan: #00f2ff;
-            --caribbean-pink: #ff007a;
-            --caribbean-gold: #ffcc00;
-            --pota-green: #00ff88;
-            --deep-ocean: #000814;
-            --glass-bg: rgba(0, 15, 30, 0.92);
-            --border-glow: rgba(0, 242, 255, 0.4);
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
-        body { 
-            margin: 0; 
-            font-family: 'Segoe UI', 'Orbitron', sans-serif; 
-            background: var(--deep-ocean); 
-            color: #fff; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
+        body {
+            font-family: 'Segoe UI', 'Poppins', 'Pacifico', system-ui, -apple-system;
             min-height: 100vh;
-            overflow: hidden;
+            overflow-x: hidden;
+            color: white;
         }
 
-        #bg-canvas {
+        /* Fondo de mar animado */
+        .ocean-bg {
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -1;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            background: linear-gradient(180deg, #023047 0%, #006994 40%, #00B4D8 100%);
+        }
+
+        .wave {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 120px;
+            background: repeating-linear-gradient(transparent 0px, transparent 97px, rgba(255,255,255,0.15) 97px, rgba(255,255,255,0.25) 100px);
+            animation: waveMove 4s infinite linear;
             pointer-events: none;
         }
 
-        #sunrise-layer {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(to bottom, #001a2e, #fb8c00, #ffeb3b);
-            z-index: 10000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            animation: fadeOutSunrise 4s forwards;
-            animation-delay: 2s;
-            pointer-events: none;
+        .wave1 { animation-duration: 5s; opacity: 0.7; }
+        .wave2 { animation-duration: 7s; opacity: 0.5; bottom: -20px; }
+        .wave3 { animation-duration: 9s; opacity: 0.3; bottom: -40px; }
+
+        @keyframes waveMove {
+            0% { background-position-x: 0; }
+            100% { background-position-x: 200px; }
         }
 
-        .sun {
-            width: 150px; height: 150px;
-            background: #fffde7;
-            border-radius: 50%;
-            box-shadow: 0 0 100px #ffeb3b;
-            transform: translateY(100px);
-            animation: rise 3s ease-out forwards;
-        }
-
-        @keyframes rise { to { transform: translateY(-50px); } }
-        @keyframes fadeOutSunrise { to { opacity: 0; visibility: hidden; } }
-
-        .station-copyright {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            font-size: 0.65rem;
-            color: var(--caribbean-cyan);
-            letter-spacing: 3px;
-            z-index: 1000;
-            text-transform: uppercase;
-            font-weight: 900;
-            background: rgba(0,0,0,0.7);
-            padding: 8px 15px;
-            border-left: 3px solid var(--caribbean-pink);
-        }
-
-        .visitor-counter {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1000;
-            background: rgba(0, 15, 30, 0.8);
-            padding: 5px;
-            border-radius: 8px;
-            border: 1px solid var(--border-glow);
-            backdrop-filter: blur(10px);
-        }
-
-        #inactivity-timer {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            font-size: 0.7rem;
-            color: var(--caribbean-pink);
-            background: rgba(0,0,0,0.6);
-            padding: 5px 12px;
-            border-radius: 20px;
-            z-index: 1000;
-            display: none;
-        }
-
-        #welcome-screen {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at center, #001a2e 0%, #000 100%);
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.8s cubic-bezier(0.87, 0, 0.13, 1);
-            padding: 20px;
-            text-align: center;
-        }
-
-        .radar-circle {
-            position: absolute;
-            width: min(600px, 90vw); height: min(600px, 90vw);
-            border: 1px solid rgba(0, 242, 255, 0.1);
-            border-radius: 50%;
-            pointer-events: none;
-        }
-        .radar-sweep {
-            position: absolute;
-            width: min(300px, 45vw); height: min(300px, 45vw);
-            background: conic-gradient(from 0deg, transparent 270deg, rgba(0, 242, 255, 0.3) 360deg);
-            top: 50%; left: 50%;
-            transform-origin: 0 0;
-            animation: sweep 4s linear infinite;
-            border-radius: 0 100% 0 0;
-            pointer-events: none;
-        }
-        @keyframes sweep { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-
-        .welcome-msg {
-            position: relative;
-            z-index: 10001;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            max-width: 600px;
-        }
-
-        .main-title {
-            font-size: clamp(1.2rem, 6vw, 3rem);
-            font-weight: 900;
-            text-transform: uppercase;
-            background: linear-gradient(to bottom, #fff 40%, var(--caribbean-cyan));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            letter-spacing: 4px;
-            margin-bottom: 10px;
-        }
-
-        .subtitle {
-            font-size: clamp(0.7rem, 3vw, 0.9rem);
-            letter-spacing: 3px;
-            color: var(--caribbean-pink);
-            font-weight: bold;
-            margin-bottom: 40px;
-        }
-
-        #start-app {
-            padding: 18px 45px;
-            background: transparent;
-            color: #fff;
-            border: 2px solid var(--caribbean-cyan);
-            cursor: pointer;
-            text-transform: uppercase;
-            letter-spacing: 4px;
-            border-radius: 4px;
-            font-weight: bold;
-            transition: 0.3s;
-        }
-        #start-app:hover { background: var(--caribbean-cyan); color: #000; box-shadow: 0 0 30px var(--caribbean-cyan); }
-
-        .container { 
-            width: 95%; max-width: 1000px; padding: 30px; 
-            background: var(--glass-bg); border-radius: 12px;
-            border: 1px solid var(--border-glow); text-align: center;
-            display: none; backdrop-filter: blur(20px);
-            max-height: 90vh; overflow-y: auto;
-        }
-
-        /* Modal POTA - Versión Ultra Simple */
-        .modal {
-            display: none;
+        /* Gaviotas */
+        .gaviotas {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.95);
-            backdrop-filter: blur(15px);
-            z-index: 20000;
-            justify-content: center;
-            align-items: center;
+            pointer-events: none;
+            z-index: 10;
         }
 
-        .modal-content {
-            background: linear-gradient(135deg, rgba(0, 40, 30, 0.95), rgba(0, 20, 15, 0.98));
-            border: 2px solid var(--pota-green);
-            border-radius: 20px;
-            padding: 20px;
-            width: 90%;
-            max-width: 800px;
-            max-height: 85vh;
-            overflow-y: auto;
+        .gaviota {
+            position: absolute;
+            font-size: 2.2rem;
+            animation: fly 14s infinite ease-in-out;
+            filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));
+        }
+
+        .g1 { top: 8%; left: -5%; animation-delay: 0s; }
+        .g2 { top: 18%; left: -10%; animation-delay: 2s; animation-duration: 16s; }
+        .g3 { top: 5%; left: -15%; animation-delay: 4s; animation-duration: 12s; }
+        .g4 { top: 25%; left: -8%; animation-delay: 6s; animation-duration: 18s; }
+        .g5 { top: 12%; left: -12%; animation-delay: 8s; animation-duration: 13s; }
+        .g6 { top: 30%; left: -20%; animation-delay: 10s; animation-duration: 15s; }
+        .g7 { top: 3%; left: -25%; animation-delay: 1s; animation-duration: 11s; }
+        .g8 { top: 22%; left: -18%; animation-delay: 3s; animation-duration: 17s; }
+
+        @keyframes fly {
+            0% { transform: translateX(0) translateY(0) rotate(0deg); }
+            20% { transform: translateX(25vw) translateY(-25px) rotate(5deg); }
+            40% { transform: translateX(50vw) translateY(15px) rotate(-3deg); }
+            60% { transform: translateX(75vw) translateY(-15px) rotate(4deg); }
+            80% { transform: translateX(100vw) translateY(10px) rotate(-2deg); }
+            100% { transform: translateX(120vw) translateY(0) rotate(0deg); }
+        }
+
+        /* Sol */
+        .sun {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 90px;
+            height: 90px;
+            background: radial-gradient(circle, #FFE066, #FF9F1C);
+            border-radius: 50%;
+            box-shadow: 0 0 60px rgba(255, 209, 102, 0.9);
+            animation: sunGlow 3s infinite alternate;
+            z-index: 5;
+        }
+
+        @keyframes sunGlow {
+            0% { transform: scale(1); opacity: 0.9; box-shadow: 0 0 40px #FFD166; }
+            100% { transform: scale(1.08); opacity: 1; box-shadow: 0 0 80px #FFE066; }
+        }
+
+        /* Nubes */
+        .cloud {
+            position: fixed;
+            background: rgba(255,255,255,0.85);
+            border-radius: 100px;
+            z-index: 4;
+            pointer-events: none;
+        }
+
+        .cloud1 { width: 120px; height: 70px; top: 60px; left: 10%; animation: cloudFloat 25s infinite linear; }
+        .cloud2 { width: 90px; height: 50px; top: 100px; left: 60%; animation: cloudFloat 30s infinite linear reverse; }
+        .cloud3 { width: 150px; height: 80px; top: 130px; left: 80%; animation: cloudFloat 35s infinite linear; }
+        .cloud::before, .cloud::after {
+            content: '';
+            position: absolute;
+            background: inherit;
+            border-radius: 50%;
+        }
+        .cloud::before { width: 50px; height: 50px; top: -25px; left: 15px; }
+        .cloud::after { width: 70px; height: 70px; top: -35px; left: 45px; }
+
+        @keyframes cloudFloat {
+            from { transform: translateX(-100px); }
+            to { transform: translateX(calc(100vw + 100px)); }
+        }
+
+        /* PANTALLA DE BIENVENIDA */
+        .welcome-screen {
             position: relative;
-            box-shadow: 0 0 50px rgba(0, 255, 136, 0.3);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            z-index: 20;
         }
 
-        .modal-header {
+        .content-welcome {
+            background: linear-gradient(135deg, rgba(0,0,0,0.6), rgba(0,100,148,0.7));
+            backdrop-filter: blur(12px);
+            padding: 3rem 2rem;
+            border-radius: 70px;
+            margin: 2rem;
+            animation: fadeInUp 1s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            border: 2px solid rgba(255,215,150,0.5);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(60px) scale(0.9); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .welcome-screen h1 {
+            font-size: 2.5rem;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.6);
+            letter-spacing: 2px;
+            background: linear-gradient(45deg, #FFE6B0, #FFFFFF);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .logo-caribbean span {
+            font-size: 4rem;
+            margin: 0 0.6rem;
+            display: inline-block;
+            animation: float 3s infinite;
+            filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3));
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-18px) rotate(5deg); }
+        }
+
+        .network-name {
+            font-size: 2.2rem;
+            margin: 1.2rem 0;
+            background: linear-gradient(45deg, #FFD166, #FF6B6B, #FFD166);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: bold;
+        }
+
+        .signature {
+            font-size: 1.4rem;
+            font-style: italic;
+        }
+
+        .call {
+            color: #FFD166;
+            font-weight: bold;
+            font-size: 1.6rem;
+            text-shadow: 0 0 8px rgba(0,0,0,0.5);
+        }
+
+        .style-tag {
+            background: rgba(0,0,0,0.5);
+            display: inline-block;
+            padding: 0.4rem 1.5rem;
+            border-radius: 40px;
+            margin: 1rem 0;
+            font-size: 1rem;
+            backdrop-filter: blur(4px);
+        }
+
+        .caribbean-btn {
+            background: linear-gradient(45deg, #FF6B6B, #F4A261);
+            border: none;
+            padding: 14px 35px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 60px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: white;
+            margin-top: 1rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .caribbean-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.4);
+            background: linear-gradient(45deg, #FF5252, #FF8C42);
+        }
+
+        /* APP PRINCIPAL */
+        .main-app {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 1rem;
+            position: relative;
+            z-index: 30;
+            min-height: 100vh;
+        }
+
+        header {
+            background: linear-gradient(135deg, rgba(0,0,0,0.8), rgba(0,80,120,0.8));
+            backdrop-filter: blur(12px);
+            border-radius: 40px;
+            padding: 1.2rem;
+            margin-bottom: 1rem;
+            text-align: center;
+            border: 1px solid rgba(255,215,0,0.3);
+        }
+
+        .header-title {
+            font-size: 1.6rem;
+            font-weight: bold;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid var(--pota-green);
-        }
-
-        .modal-header h2 {
-            color: var(--pota-green);
-            margin: 0;
-            font-size: clamp(1.2rem, 4vw, 2rem);
-            text-transform: uppercase;
-            letter-spacing: 3px;
-        }
-
-        .close-modal {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid var(--pota-green);
-            color: var(--pota-green);
-            font-size: 28px;
-            cursor: pointer;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s;
-        }
-
-        .close-modal:hover {
-            background: var(--pota-green);
-            color: #000;
-            transform: rotate(90deg);
-        }
-
-        /* Área de búsqueda POTA - Simplificada al máximo */
-        .pota-search-area {
-            background: rgba(0, 0, 0, 0.5);
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 25px;
-            border: 1px solid rgba(0, 255, 136, 0.3);
-        }
-
-        .pota-search-box {
-            display: flex;
-            gap: 15px;
             flex-wrap: wrap;
-            justify-content: center;
         }
 
-        .pota-search-box input {
-            flex: 2;
-            min-width: 250px;
-            padding: 18px 20px;
-            font-size: 1.8rem;
-            background: rgba(0, 0, 0, 0.7);
-            border: 2px solid var(--pota-green);
-            color: var(--pota-green);
-            border-radius: 15px;
-            text-transform: uppercase;
-            text-align: center;
+        .badge {
+            background: linear-gradient(45deg, #FF6B6B, #C0392B);
+            padding: 0.3rem 1rem;
+            border-radius: 30px;
+            font-size: 0.9rem;
             font-weight: bold;
-            letter-spacing: 3px;
-            outline: none;
         }
 
-        .pota-search-box input:focus {
-            box-shadow: 0 0 25px rgba(0, 255, 136, 0.4);
-            transform: scale(1.02);
-        }
-
-        .pota-search-box button {
-            padding: 18px 35px;
-            background: var(--pota-green);
-            border: none;
-            color: #000;
-            font-weight: bold;
-            font-size: 1.3rem;
-            border-radius: 15px;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-transform: uppercase;
-        }
-
-        .pota-search-box button:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 25px var(--pota-green);
-        }
-
-        .pota-resultado {
-            margin-top: 20px;
-            text-align: center;
-        }
-
-        .pota-card-simple {
-            background: rgba(0, 0, 0, 0.7);
-            border: 2px solid rgba(0, 255, 136, 0.5);
-            border-radius: 15px;
-            padding: 20px;
-            margin: 20px auto;
-            max-width: 500px;
-            transition: all 0.3s;
-        }
-
-        .pota-card-simple:hover {
-            transform: scale(1.02);
-            border-color: var(--pota-green);
-            box-shadow: 0 0 30px rgba(0, 255, 136, 0.3);
-        }
-
-        .pota-card-simple img {
-            width: 100%;
-            border-radius: 12px;
-            cursor: pointer;
-            margin: 10px 0;
-        }
-
-        .pota-badge-simple {
-            display: inline-block;
-            background: var(--pota-green);
-            color: #000;
-            padding: 5px 15px;
-            border-radius: 25px;
-            font-size: 0.8rem;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-
-        .modal-buttons {
+        /* TABS */
+        .tabs {
             display: flex;
-            gap: 15px;
-            justify-content: center;
-            margin-top: 25px;
-            padding-top: 15px;
-            border-top: 1px solid rgba(0, 255, 136, 0.3);
+            gap: 0.8rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
         }
 
-        .modal-btn {
-            padding: 12px 25px;
-            background: transparent;
-            border: 1px solid var(--pota-green);
-            color: var(--pota-green);
+        .tab-btn {
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            font-size: 1rem;
+            border-radius: 40px;
             cursor: pointer;
-            border-radius: 8px;
-            font-weight: bold;
-            text-transform: uppercase;
+            flex: 1;
             transition: all 0.3s;
+            backdrop-filter: blur(8px);
+            font-weight: bold;
         }
 
-        .modal-btn:hover {
-            background: var(--pota-green);
-            color: #000;
+        .tab-btn.active {
+            background: linear-gradient(45deg, #FF6B6B, #F4A261);
+            font-weight: bold;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            transform: translateY(-2px);
         }
 
-        .pota-float-btn {
-            position: fixed;
-            bottom: 30px;
-            left: 30px;
-            width: 70px;
-            height: 70px;
-            background: linear-gradient(135deg, #00ff88, #00cc66);
-            border-radius: 50%;
+        .tab-content {
+            display: none;
+            background: rgba(255, 248, 225, 0.95);
+            border-radius: 35px;
+            padding: 1.8rem;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: slideIn 0.4s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* BUSCADOR */
+        .search-box {
+            display: flex;
+            gap: 0.8rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .search-box input {
+            flex: 1;
+            padding: 14px 20px;
+            border: 2px solid #00B4D8;
+            border-radius: 50px;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.2s;
+            background: white;
+        }
+
+        .search-box input:focus {
+            border-color: #FF6B6B;
+            box-shadow: 0 0 0 3px rgba(255,107,107,0.2);
+        }
+
+        .search-box button {
+            background: linear-gradient(45deg, #2A9D8F, #006994);
+            border: none;
+            padding: 0 28px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            color: white;
+            transition: all 0.2s;
+        }
+
+        .search-box button:hover {
+            transform: scale(1.02);
+            background: linear-gradient(45deg, #1B7A6E, #005A7A);
+        }
+
+        /* RESULTADOS - GALERÍA DE QSLs */
+        .results {
+            background: transparent;
+            border-radius: 25px;
+            max-height: 550px;
+            overflow-y: auto;
+            color: #2c3e2f;
+        }
+
+        .results-title {
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+            color: #C0392B;
+            border-left: 5px solid #FF6B6B;
+            padding-left: 15px;
+        }
+
+        .qsl-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .qsl-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            transition: all 0.3s;
+            cursor: pointer;
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .qsl-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.25);
+        }
+
+        .qsl-image {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            background: #f0f0f0;
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 3rem;
+            background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+        }
+
+        .qsl-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: #fff8f0;
+        }
+
+        .qsl-info {
+            padding: 1rem;
+        }
+
+        .qsl-info h4 {
+            color: #2A9D8F;
+            margin-bottom: 0.3rem;
+        }
+
+        .qsl-info p {
+            font-size: 0.85rem;
+            color: #555;
+            margin: 5px 0;
+        }
+
+        .download-btn {
+            display: inline-block;
+            background: linear-gradient(45deg, #2A9D8F, #006994);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-size: 0.8rem;
+            margin-top: 8px;
+            transition: all 0.2s;
+            border: none;
             cursor: pointer;
-            z-index: 1001;
-            box-shadow: 0 0 20px rgba(0, 255, 136, 0.6);
-            transition: all 0.3s;
-            animation: pulse 2s infinite;
-            font-size: 35px;
         }
 
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(0, 255, 136, 0.6); }
-            50% { transform: scale(1.1); box-shadow: 0 0 40px rgba(0, 255, 136, 0.9); }
+        .download-btn:hover {
+            background: linear-gradient(45deg, #1B7A6E, #005A7A);
+            transform: scale(1.02);
         }
 
-        .pota-float-btn:hover { transform: scale(1.15); }
-
-        #search-overlay {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85); backdrop-filter: blur(10px);
-            z-index: 2000; flex-direction: column; align-items: center; justify-content: center;
-            color: var(--caribbean-cyan);
+        .no-results {
+            text-align: center;
+            padding: 2rem;
+            color: #C0392B;
+            font-size: 1.2rem;
         }
 
-        .search-area { display: grid; grid-template-columns: 1fr; gap: 20px; }
-        @media (min-width: 768px) { .search-area { grid-template-columns: 3fr 1fr; } }
-
-        #indicativo { 
-            padding: 15px; font-size: 1.8rem; border: 1px solid rgba(0, 242, 255, 0.3); 
-            background: rgba(0,0,0,0.5); color: var(--caribbean-cyan); font-weight: 900; 
-            text-transform: uppercase; text-align: center; border-radius: 4px;
-            outline: none;
+        .upload-area {
+            margin: 1.5rem 0;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #f5f0e0, #efe6d5);
+            border-radius: 25px;
+            text-align: center;
+            border: 2px dashed #2A9D8F;
         }
 
-        #buscarBtn { 
-            padding: 18px 40px; background: var(--caribbean-pink); 
-            color: #fff; border: none; cursor: pointer; font-weight: 900; 
-            text-transform: uppercase; border-radius: 4px;
+        .secondary-btn {
+            background: linear-gradient(45deg, #F4A261, #E76F51);
+            border: none;
+            padding: 10px 24px;
+            border-radius: 40px;
+            cursor: pointer;
+            margin-top: 10px;
+            color: white;
+            font-weight: bold;
         }
 
-        #resultado { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 25px; margin-top: 30px; }
-        
-        .qsl-card { 
-            background: rgba(255, 255, 255, 0.02); padding: 12px; 
-            border: 1px solid rgba(255,255,255,0.1); border-radius: 8px;
-            transition: 0.3s;
-        }
-        .qsl-card:hover { border-color: var(--caribbean-cyan); transform: translateY(-5px); }
-        .qsl-card img { width: 100%; border-radius: 4px; cursor: pointer; margin-bottom: 10px; }
-        
-        .btn-individual { width: 100%; padding: 10px; background: transparent; color: #fff; border: 1px solid var(--caribbean-cyan); cursor: pointer; border-radius: 4px; }
-
-        .action-btns { display: flex; gap: 15px; justify-content: center; margin-top: 30px; }
-        #btnZip, #btnVolver { padding: 16px 30px; border: none; font-weight: 900; cursor: pointer; display: none; border-radius: 4px; text-transform: uppercase; }
-        #btnZip { background: #fff; color: #000; }
-        #btnVolver { background: rgba(255,255,255,0.1); color: #fff; }
-
-        .loader-spin {
-            width: 50px; height: 50px; border: 3px solid transparent;
-            border-top-color: var(--caribbean-cyan); border-radius: 50%;
-            animation: spin 1s linear infinite; margin-bottom: 20px;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        #thanks-msg {
-            position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
-            background: var(--caribbean-cyan); color: #000; padding: 10px 25px;
-            border-radius: 4px; font-weight: 900;
-            display: none; z-index: 5000;
+        .history-panel {
+            margin-top: 1.5rem;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 25px;
+            padding: 0.8rem;
         }
 
-        footer { margin-top: 40px; font-size: 0.65rem; color: #3d5a69; letter-spacing: 2px; }
+        .history-panel details summary {
+            cursor: pointer;
+            padding: 0.8rem;
+            font-weight: bold;
+        }
+
+        .history-list {
+            padding: 0.8rem;
+            font-size: 0.85rem;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        footer {
+            text-align: center;
+            font-size: 0.7rem;
+            margin-top: 1.5rem;
+            opacity: 0.8;
+        }
+
+        .suggestions {
+            background: white;
+            border-radius: 20px;
+            margin-top: -10px;
+            margin-bottom: 15px;
+            max-height: 160px;
+            overflow-y: auto;
+            color: #333;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .suggestion-item {
+            padding: 10px 15px;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+            transition: background 0.1s;
+        }
+
+        .suggestion-item:hover {
+            background: linear-gradient(90deg, #FFF0E0, #FFE0C0);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            font-size: 1.2rem;
+        }
+
+        @media (max-width: 700px) {
+            .qsl-grid { grid-template-columns: 1fr; }
+            .tab-btn { font-size: 0.85rem; padding: 10px 15px; }
+            .search-box { flex-direction: column; }
+            .welcome-screen h1 { font-size: 1.5rem; }
+        }
     </style>
 </head>
 <body>
 
-    <canvas id="bg-canvas"></canvas>
-    <div id="sunrise-layer"><div class="sun"></div></div>
-    <div class="station-copyright">CM7ADV // DX-TERMINAL // POTA MODE</div>
+<div class="ocean-bg">
+    <div class="wave wave1"></div>
+    <div class="wave wave2"></div>
+    <div class="wave wave3"></div>
+</div>
 
-    <div class="visitor-counter">
-        <a href="https://info.flagcounter.com/BrfY">
-            <img src="https://s01.flagcounter.com/count2/BrfY/bg_26A8FF/txt_000000/border_FF1259/columns_2/maxflags_15/viewers_0/labels_0/pageviews_0/flags_0/percent_0/" alt="Flag Counter">
-        </a>
+<div class="gaviotas">
+    <div class="gaviota g1">🕊️</div>
+    <div class="gaviota g2">🕊️</div>
+    <div class="gaviota g3">🕊️</div>
+    <div class="gaviota g4">🕊️</div>
+    <div class="gaviota g5">🕊️</div>
+    <div class="gaviota g6">🕊️</div>
+    <div class="gaviota g7">🕊️</div>
+    <div class="gaviota g8">🕊️</div>
+</div>
+
+<div class="sun"></div>
+<div class="cloud cloud1"></div>
+<div class="cloud cloud2"></div>
+<div class="cloud cloud3"></div>
+
+<!-- PANTALLA DE BIENVENIDA -->
+<div id="welcomeScreen" class="welcome-screen">
+    <div class="content-welcome">
+        <h1>BIENVENIDOS COLEGAS<br>RADIOPERADORES</h1>
+        <div class="logo-caribbean">
+            <span>🌴</span>
+            <span>📻</span>
+            <span>📡</span>
+            <span>🦀</span>
+            <span>🐠</span>
+        </div>
+        <h2 class="network-name">CARIBBEAN QSL NETWORK</h2>
+        <p class="signature">73's de <strong class="call">CM7ADV</strong></p>
+        <p class="style-tag">🎵 ESTILO DEL CARIBE - MÚLTIPLES QSLs por INDICATIVO 🎵</p>
+        <button id="enterAppBtn" class="caribbean-btn">🌊 ENTRAR AL SISTEMA 🌊</button>
     </div>
-    
-    <div id="inactivity-timer">REINICIO EN: <span id="time-left">10</span>s</div>
-    <div id="thanks-msg">¡GRACIAS POR DESCARGAR! 73s</div>
+</div>
 
-    <!-- Botón flotante POTA -->
-    <div class="pota-float-btn" id="potaFloatBtn">🏞️</div>
+<!-- APP PRINCIPAL -->
+<div id="mainApp" class="main-app" style="display: none;">
+    <header>
+        <div class="header-title">
+            <span>🏝️ CARIBBEAN QSL NETWORK</span>
+            <span class="badge">CM7ADV · QSL MULTI-FORMATO</span>
+        </div>
+        <div class="wave-decoration"></div>
+    </header>
 
-    <!-- Modal POTA - Ultra Simple -->
-    <div id="potaModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>🏞️ BUSCADOR POTA</h2>
-                <div class="close-modal">&times;</div>
-            </div>
-            
-            <div class="pota-search-area">
-                <div class="pota-search-box">
-                    <input type="text" id="potaCallInput" placeholder="EJ: W3SB" maxlength="20" autocomplete="off">
-                    <button id="potaSearchBtn">🔍 BUSCAR</button>
-                </div>
-                <div style="font-size: 0.8rem; text-align: center; margin-top: 12px; color: var(--pota-green);">
-                    💡 ESCRIBE EL INDICATIVO Y PRESIONA BUSCAR
-                </div>
-            </div>
-            
-            <div id="potaResultado" class="pota-resultado"></div>
-            
-            <div class="modal-buttons">
-                <button class="modal-btn" id="downloadAllPotaBtn">📦 DESCARGAR TODAS</button>
-                <button class="modal-btn" id="closePotaModal">CERRAR</button>
-            </div>
+    <div class="tabs">
+        <button class="tab-btn active" data-tab="pota">📡 QSLs por POTA / INDICATIVO</button>
+        <button class="tab-btn" data-tab="contactos">📻 QSLs por CONTACTOS QSO</button>
+    </div>
+
+    <!-- SISTEMA POTA / BÚSQUEDA POR INDICATIVO -->
+    <div id="potaTab" class="tab-content active">
+        <div class="search-box">
+            <input type="text" id="potaSearch" placeholder="🔍 Busca por INDICATIVO (CM7ADV, KP4ABC, HK3XYZ) o código POTA (CM-0001)..." autocomplete="off">
+            <button id="potaSearchBtn">🔎 BUSCAR QSLs</button>
+        </div>
+        <div id="potaSuggestions" class="suggestions"></div>
+        <div id="potaResults" class="results"></div>
+    </div>
+
+    <!-- SISTEMA CONTACTOS QSO -->
+    <div id="contactosTab" class="tab-content">
+        <div class="search-box">
+            <input type="text" id="qsoSearch" placeholder="📻 Busca por indicativo: CM7ADV, KP4ABC, HK3XYZ...">
+            <button id="qsoSearchBtn">🔎 BUSCAR QSLs POR QSO</button>
+        </div>
+        <div class="upload-area">
+            <p>📂 O sube tu log (ADIF / CSV / TXT) para buscar múltiples QSLs</p>
+            <input type="file" id="logFile" accept=".adi,.adif,.csv,.txt">
+            <button id="uploadLogBtn" class="secondary-btn">📤 PROCESAR LOG Y BUSCAR QSLs</button>
+        </div>
+        <div id="qsoResults" class="results"></div>
+        <div id="bulkDownload" style="display:none;">
+            <button id="downloadAllBtn" class="caribbean-btn" style="width:100%; margin-top:1rem;">📦 DESCARGAR TODAS LAS QSLs (LOTE)</button>
         </div>
     </div>
 
-    <div id="search-overlay">
-        <div class="loader-spin"></div>
-        <div id="overlay-text">ACCEDIENDO A LA BASE DE DATOS...</div>
+    <!-- HISTORIAL -->
+    <div class="history-panel">
+        <details>
+            <summary>📜 HISTORIAL DE BÚSQUEDA / QSLs DESCARGADAS</summary>
+            <div id="historyList" class="history-list"></div>
+        </details>
     </div>
 
-    <div id="welcome-screen">
-        <div class="radar-circle"></div>
-        <div class="radar-sweep"></div>
-        <div class="welcome-msg">
-            <div class="main-title">BIENVENIDOS COLEGAS RADIOPERADORES</div>
-            <div class="subtitle">CARIBBEAN QSL NETWORK • 73's DE CM7ADV</div>
-            <button id="start-app">ENTRAR A LA TERMINAL</button>
-        </div>
-    </div>
-
-    <div class="container" id="main-container">
-        <div class="header-box">
-            <h1 style="color:var(--caribbean-cyan); letter-spacing:5px; margin-bottom: 30px;">ZONA CARIBEÑA</h1>
-        </div>
-
-        <div id="search-interface">
-            <div class="search-area">
-                <div style="display:flex; flex-direction:column; gap:15px;">
-                    <input type="text" id="indicativo" placeholder="CALLSIGN (Ej: CO7ZZ)" maxlength="15" autocomplete="off">
-                    <button id="buscarBtn">CONSULTAR QSL</button>
-                </div>
-                <div style="background:rgba(0,0,0,0.3); padding:10px; border-radius:5px; text-align:left;">
-                    <div style="font-size:0.6rem; color:#5a7d8c; margin-bottom: 8px;">LOGS RECIENTES</div>
-                    <ul id="history-list" style="list-style:none; padding:0; font-size:0.8rem; color:var(--caribbean-cyan);"></ul>
-                </div>
-            </div>
-        </div>
-
-        <div id="resultado"></div>
-
-        <div class="action-btns">
-            <button id="btnZip">DESCARGAR PACK (.ZIP)</button>
-            <button id="btnVolver">NUEVA CONSULTA</button>
-        </div>
-
-        <footer>
-            73'S DE CM7ADV • ALFRED • CAMAGÜEY, CUBA<br>
-            <span style="opacity: 0.4;">SISTEMA DE GESTIÓN DE TARJETAS QSL // 2026 // POTA ACTIVADO</span>
-        </footer>
-    </div>
+    <footer>
+        <p>🇨🇺 Caribbean QSL Network · 73's CM7ADV · Sistema multi-QSL con imágenes JPG/PNG 🇵🇷🇩🇴🇯🇲🇨🇼</p>
+    </footer>
+</div>
 
 <script>
-const REPO_URL = "https://raw.githubusercontent.com/cl7adv/cl7adv-qsl/main/img/";
+    // ========== BASE DE DATOS DE QSLs CON IMÁGENES JPG/PNG ==========
+    // Cada QSL puede tener imagen JPG/PNG, PDF, o ambos
+    const QSL_DB = {
+        // QSLs organizadas por indicativo/parque
+        qsls: [
+            { 
+                id: 1, 
+                indicativo: "CM7ADV", 
+                tipo: "POTA", 
+                parque: "CM-0001",
+                nombre_parque: "Alejandro de Humboldt, Cuba",
+                fecha: "2024-10-15", 
+                banda: "20M", 
+                modo: "SSB",
+                imagen: "https://picsum.photos/id/104/400/300", // imagen JPG de ejemplo
+                qsl_pdf: "#",
+                descripcion: "Activación POTA CM-0001 - Costa norte"
+            },
+            { 
+                id: 2, 
+                indicativo: "CM7ADV", 
+                tipo: "POTA", 
+                parque: "CM-0001",
+                nombre_parque: "Alejandro de Humboldt, Cuba",
+                fecha: "2024-10-10", 
+                banda: "40M", 
+                modo: "FT8",
+                imagen: "https://picsum.photos/id/15/400/300",
+                qsl_pdf: "#",
+                descripcion: "Segunda activación - Modo digital"
+            },
+            { 
+                id: 3, 
+                indicativo: "CM7ADV", 
+                tipo: "CONTACTO", 
+                qso_con: "KP4ABC",
+                fecha: "2024-10-15", 
+                hora: "1830Z",
+                banda: "20M", 
+                modo: "SSB",
+                imagen: "https://picsum.photos/id/96/400/300",
+                qsl_pdf: "#",
+                confirmado: true,
+                descripcion: "QSO con Puerto Rico"
+            },
+            { 
+                id: 4, 
+                indicativo: "CM7ADV", 
+                tipo: "CONTACTO", 
+                qso_con: "HK3XYZ",
+                fecha: "2024-10-14", 
+                hora: "2015Z",
+                banda: "40M", 
+                modo: "FT8",
+                imagen: "https://picsum.photos/id/25/400/300",
+                qsl_pdf: "#",
+                confirmado: true,
+                descripcion: "QSO con Colombia - Modo FT8"
+            },
+            { 
+                id: 5, 
+                indicativo: "CM7ADV", 
+                tipo: "CONTACTO", 
+                qso_con: "CO2YYY",
+                fecha: "2024-10-12", 
+                hora: "1500Z",
+                banda: "15M", 
+                modo: "CW",
+                imagen: "https://picsum.photos/id/42/400/300",
+                qsl_pdf: null,
+                confirmado: false,
+                descripcion: "QSO pendiente de confirmación"
+            },
+            { 
+                id: 6, 
+                indicativo: "KP4ABC", 
+                tipo: "POTA", 
+                parque: "K-1234",
+                nombre_parque: "Everglades National Park, USA",
+                fecha: "2024-09-20", 
+                banda: "15M", 
+                modo: "CW",
+                imagen: "https://picsum.photos/id/127/400/300",
+                qsl_pdf: "#",
+                descripcion: "Activación desde los Everglades"
+            },
+            { 
+                id: 7, 
+                indicativo: "KP4ABC", 
+                tipo: "CONTACTO", 
+                qso_con: "CM7ADV",
+                fecha: "2024-10-15", 
+                hora: "1830Z",
+                banda: "20M", 
+                modo: "SSB",
+                imagen: "https://picsum.photos/id/99/400/300",
+                qsl_pdf: "#",
+                confirmado: true,
+                descripcion: "QSL desde Puerto Rico"
+            },
+            { 
+                id: 8, 
+                indicativo: "HK3XYZ", 
+                tipo: "POTA", 
+                parque: "VE-0010",
+                nombre_parque: "Parque Nacional Morrocoy, Venezuela",
+                fecha: "2024-08-05", 
+                banda: "10M", 
+                modo: "SSB",
+                imagen: "https://picsum.photos/id/29/400/300",
+                qsl_pdf: "#",
+                descripcion: "Activación en la costa venezolana"
+            },
+            { 
+                id: 9, 
+                indicativo: "HK3XYZ", 
+                tipo: "CONTACTO", 
+                qso_con: "CM7ADV",
+                fecha: "2024-10-14", 
+                hora: "2015Z",
+                banda: "40M", 
+                modo: "FT8",
+                imagen: "https://picsum.photos/id/116/400/300",
+                qsl_pdf: "#",
+                confirmado: true,
+                descripcion: "QSL confirmada desde Colombia"
+            },
+            { 
+                id: 10, 
+                indicativo: "9Y4ZZZ", 
+                tipo: "CONTACTO", 
+                qso_con: "CM7ADV",
+                fecha: "2024-10-10", 
+                hora: "2200Z",
+                banda: "80M", 
+                modo: "SSB",
+                imagen: "https://picsum.photos/id/52/400/300",
+                qsl_pdf: "#",
+                confirmado: true,
+                descripcion: "QSO con Trinidad y Tobago"
+            },
+            { 
+                id: 11, 
+                indicativo: "CM2XXX", 
+                tipo: "POTA", 
+                parque: "CM-0001",
+                nombre_parque: "Alejandro de Humboldt, Cuba",
+                fecha: "2024-10-10", 
+                banda: "40M", 
+                modo: "FT8",
+                imagen: "https://picsum.photos/id/155/400/300",
+                qsl_pdf: "#",
+                descripcion: "Operador visitante en el parque"
+            }
+        ],
 
-let historyData = JSON.parse(localStorage.getItem('qsl_history') || '[]');
-let inactivityTimer, countdownInterval;
-let timeLeft = 10;
-let isAppStarted = false;
-let isShowingResults = false;
-let currentPotaImages = [];
-
-// Canvas y partículas
-const canvas = document.getElementById('bg-canvas');
-const ctx = canvas.getContext('2d');
-let particles = [];
-const mouse = { x: -100, y: -100 };
-
-window.addEventListener('mousemove', (e) => { mouse.x = e.x; mouse.y = e.y; });
-
-function resizeCanvas() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-}
-window.addEventListener('resize', resizeCanvas);
-resizeCanvas();
-
-class Particle {
-    constructor() { this.reset(); }
-    reset() {
-        this.x = Math.random() * canvas.width;
-        this.y = Math.random() * canvas.height;
-        this.size = Math.random() * 2 + 0.5;
-        this.speedX = Math.random() * 0.5 - 0.25;
-        this.speedY = Math.random() * 0.5 - 0.25;
-        this.opacity = Math.random() * 0.5;
-    }
-    update() {
-        this.x += this.speedX;
-        this.y += this.speedY;
-        const dx = mouse.x - this.x;
-        const dy = mouse.y - this.y;
-        const dist = Math.sqrt(dx*dx + dy*dy);
-        if (dist < 100) {
-            this.x -= dx / 50;
-            this.y -= dy / 50;
+        // POTA por código de parque
+        pota_parques: {
+            "CM-0001": { nombre: "Parque Nacional Alejandro de Humboldt", pais: "Cuba" },
+            "K-1234": { nombre: "Everglades National Park", pais: "USA" },
+            "VE-0010": { nombre: "Parque Nacional Morrocoy", pais: "Venezuela" }
         }
-        if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) this.reset();
-    }
-    draw() {
-        ctx.fillStyle = `rgba(0, 242, 255, ${this.opacity})`;
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fill();
-    }
-}
+    };
 
-function initParticles() {
-    for (let i = 0; i < 100; i++) particles.push(new Particle());
-}
+    // Historial
+    let searchHistory = JSON.parse(localStorage.getItem("qsl_history_caribbean") || "[]");
+    let currentQSLsToDownload = [];
 
-function animateParticles() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    particles.forEach(p => { p.update(); p.draw(); });
-    requestAnimationFrame(animateParticles);
-}
-
-initParticles();
-animateParticles();
-
-function resetInactivity() {
-    if (!isAppStarted || !isShowingResults) {
-        document.getElementById('inactivity-timer').style.display = "none";
-        clearInterval(countdownInterval);
-        clearTimeout(inactivityTimer);
-        return;
-    }
-    document.getElementById('inactivity-timer').style.display = "none";
-    clearInterval(countdownInterval);
-    clearTimeout(inactivityTimer);
-    inactivityTimer = setTimeout(startCountdown, 20000);
-}
-
-function startCountdown() {
-    if (!isShowingResults) return;
-    timeLeft = 10;
-    document.getElementById('inactivity-timer').style.display = "block";
-    document.getElementById('time-left').innerText = timeLeft;
-    countdownInterval = setInterval(() => {
-        timeLeft--;
-        document.getElementById('time-left').innerText = timeLeft;
-        if (timeLeft <= 0) {
-            clearInterval(countdownInterval);
-            returnToStart();
-        }
-    }, 1000);
-}
-
-function returnToStart() {
-    isAppStarted = false;
-    isShowingResults = false;
-    location.reload();
-}
-
-['mousedown', 'mousemove', 'keypress', 'touchstart'].forEach(evt => {
-    window.addEventListener(evt, resetInactivity);
-});
-
-document.getElementById("start-app").addEventListener("click", (e) => {
-    e.preventDefault();
-    isAppStarted = true;
-    document.getElementById("welcome-screen").style.opacity = "0";
-    setTimeout(() => {
-        document.getElementById("welcome-screen").style.display = "none";
-        document.getElementById("main-container").style.display = "block";
-        updateHistoryUI();
-        resetInactivity();
-    }, 800);
-});
-
-function updateHistoryUI() {
-    const list = document.getElementById('history-list');
-    list.innerHTML = historyData.slice(0,5).map(h => `<li style="cursor:pointer; margin-bottom:8px; border-bottom: 1px solid rgba(255,255,255,0.03); padding-bottom:4px;" onclick="quickSearch('${h}')">${h}</li>`).join('');
-}
-
-function quickSearch(call) {
-    document.getElementById('indicativo').value = call;
-    document.getElementById('buscarBtn').click();
-}
-
-// FUNCIÓN SIMPLIFICADA - Busca la QSL directamente
-async function buscarQSL(call) {
-    const formatos = ["png", "jpg", "jpeg", "gif", "webp"];
-    const variantes = [
-        `${call}`,
-        `QSL_${call}`,
-        `${call}-pota`,
-        `${call}_pota`,
-        `QSL_${call}-pota`,
-        `QSL_${call}_pota`
-    ];
-    
-    for (const formato of formatos) {
-        for (const variante of variantes) {
-            const url = `${REPO_URL}${variante}.${formato}`;
-            const existe = await new Promise(resolve => {
-                const img = new Image();
-                img.onload = () => resolve(true);
-                img.onerror = () => resolve(false);
-                img.src = url;
+    // ========== INICIALIZACIÓN ==========
+    document.addEventListener("DOMContentLoaded", () => {
+        document.getElementById("enterAppBtn").addEventListener("click", () => {
+            document.getElementById("welcomeScreen").style.display = "none";
+            document.getElementById("mainApp").style.display = "block";
+        });
+        
+        // Pestañas
+        document.querySelectorAll(".tab-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+                document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+                btn.classList.add("active");
+                const tab = btn.dataset.tab;
+                document.querySelectorAll(".tab-content").forEach(tc => tc.classList.remove("active"));
+                document.getElementById(`${tab}Tab`).classList.add("active");
             });
-            if (existe) return url;
+        });
+        
+        // Búsqueda POTA/Indicativo
+        document.getElementById("potaSearchBtn").addEventListener("click", () => {
+            const texto = document.getElementById("potaSearch").value.trim().toUpperCase();
+            if(texto) buscarPorIndicativoOPOTA(texto);
+        });
+        
+        document.getElementById("potaSearch").addEventListener("keypress", (e) => {
+            if(e.key === "Enter") document.getElementById("potaSearchBtn").click();
+        });
+        
+        // Sugerencias
+        document.getElementById("potaSearch").addEventListener("input", (e) => {
+            const texto = e.target.value.trim().toUpperCase();
+            if(texto.length < 2) {
+                document.getElementById("potaSuggestions").innerHTML = "";
+                return;
+            }
+            const sugerencias = [];
+            // Sugerencias por indicativo
+            QSL_DB.qsls.forEach(q => {
+                if(q.indicativo.toUpperCase().includes(texto) && !sugerencias.includes(q.indicativo.toUpperCase())) {
+                    sugerencias.push(q.indicativo.toUpperCase());
+                }
+            });
+            // Sugerencias por código POTA
+            Object.keys(QSL_DB.pota_parques).forEach(p => {
+                if(p.includes(texto)) sugerencias.push(p);
+            });
+            mostrarSugerencias(sugerencias.slice(0, 8));
+        });
+        
+        // Búsqueda QSO
+        document.getElementById("qsoSearchBtn").addEventListener("click", () => {
+            const texto = document.getElementById("qsoSearch").value.trim().toUpperCase();
+            if(texto) buscarPorQSO(texto);
+        });
+        
+        // Subir log
+        document.getElementById("uploadLogBtn").addEventListener("click", () => {
+            const file = document.getElementById("logFile").files[0];
+            if(file) procesarLog(file);
+            else alert("🌊 Selecciona un archivo ADIF/CSV/TXT primero, colega");
+        });
+        
+        // Descarga masiva
+        document.getElementById("downloadAllBtn")?.addEventListener("click", descargarTodasQSLs);
+        
+        mostrarHistorial();
+    });
+
+    // ========== BÚSQUEDA POR INDICATIVO O POTA ==========
+    function buscarPorIndicativoOPOTA(texto) {
+        let qslsEncontradas = [];
+        let tipoBusqueda = "";
+        
+        // Verificar si es código POTA
+        if(QSL_DB.pota_parques[texto]) {
+            tipoBusqueda = `Parque ${texto} - ${QSL_DB.pota_parques[texto].nombre}`;
+            qslsEncontradas = QSL_DB.qsls.filter(q => q.parque === texto);
+        } else {
+            // Buscar por indicativo
+            tipoBusqueda = `Indicativo ${texto}`;
+            qslsEncontradas = QSL_DB.qsls.filter(q => q.indicativo.toUpperCase() === texto);
+        }
+        
+        if(qslsEncontradas.length === 0) {
+            document.getElementById("potaResults").innerHTML = `<div class="no-results">❌ No se encontraron QSLs para ${texto}<br>📡 Prueba con: CM7ADV, KP4ABC, HK3XYZ, CM-0001, K-1234, VE-0010</div>`;
+            return;
+        }
+        
+        agregarAlHistorial(`🔍 Búsqueda: ${tipoBusqueda} - ${qslsEncontradas.length} QSLs encontradas`);
+        mostrarGaleriaQSLs(qslsEncontradas, "potaResults", `📸 QSLs encontradas para ${tipoBusqueda} (${qslsEncontradas.length})`);
+    }
+    
+    // ========== BÚSQUEDA POR CONTACTOS QSO ==========
+    function buscarPorQSO(texto) {
+        const indicativo = texto.toUpperCase();
+        const qslsEncontradas = QSL_DB.qsls.filter(q => 
+            (q.tipo === "CONTACTO" && (q.indicativo.toUpperCase() === indicativo || q.qso_con?.toUpperCase() === indicativo))
+        );
+        
+        if(qslsEncontradas.length === 0) {
+            document.getElementById("qsoResults").innerHTML = `<div class="no-results">❌ No se encontraron QSOs para ${texto}<br>📻 Prueba con: CM7ADV, KP4ABC, HK3XYZ</div>`;
+            document.getElementById("bulkDownload").style.display = "none";
+            return;
+        }
+        
+        agregarAlHistorial(`📻 Búsqueda QSO: ${indicativo} - ${qslsEncontradas.length} QSLs`);
+        mostrarGaleriaQSLs(qslsEncontradas, "qsoResults", `📻 QSLs de contactos para ${indicativo} (${qslsEncontradas.length})`);
+        
+        const confirmadas = qslsEncontradas.filter(q => q.confirmado !== false);
+        if(confirmadas.length > 0) {
+            currentQSLsToDownload = confirmadas;
+            document.getElementById("bulkDownload").style.display = "block";
+        } else {
+            document.getElementById("bulkDownload").style.display = "none";
         }
     }
-    return null;
-}
-
-function showThanks() {
-    const msg = document.getElementById('thanks-msg');
-    msg.style.display = 'block';
-    setTimeout(() => { msg.style.display = 'none'; }, 3000);
-}
-
-// ========== FUNCIÓN POTA - SIMPLIFICADA: ESCRIBE INDICATIVO Y CARGA ==========
-async function buscarPOTA() {
-    const callInput = document.getElementById('potaCallInput');
-    const call = callInput.value.trim().toUpperCase();
     
-    if (!call) {
-        alert("✏️ ESCRIBE UN INDICATIVO (Ej: W3SB)");
-        return;
-    }
-    
-    const resultadoDiv = document.getElementById('potaResultado');
-    resultadoDiv.innerHTML = '<div style="padding: 40px;"><div class="loader-spin"></div><p style="color: var(--pota-green);">🔍 BUSCANDO QSL PARA ' + call + '...</p></div>';
-    
-    const qslUrl = await buscarQSL(call);
-    currentPotaImages = qslUrl ? [qslUrl] : [];
-    
-    if (!qslUrl) {
-        resultadoDiv.innerHTML = `
-            <div style="padding: 40px; text-align: center;">
-                <div style="font-size: 3rem; margin-bottom: 20px;">🏞️</div>
-                <h3 style="color: var(--pota-green);">NO SE ENCONTRÓ QSL</h3>
-                <p>Para el indicativo: <strong style="color: #fff; font-size: 1.2rem;">${call}</strong></p>
-                <p style="font-size: 0.8rem; margin-top: 15px;">💡 Verifica que la imagen esté en el repositorio</p>
-                <button onclick="buscarPOTA()" style="margin-top: 20px; padding: 10px 25px; background: var(--pota-green); border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
-                🔄 REINTENTAR
-                </button>
-            </div>
-        `;
-    } else {
-        const fileName = qslUrl.split('/').pop();
-        resultadoDiv.innerHTML = `
-            <div class="pota-card-simple">
-                <div style="text-align: center;">
-                    <span class="pota-badge-simple">🏞️ QSL POTA - ${call}</span>
+    // ========== MOSTRAR GALERÍA DE QSLs CON IMÁGENES ==========
+    function mostrarGaleriaQSLs(qsls, containerId, titulo) {
+        if(!qsls || qsls.length === 0) return;
+        
+        let html = `<div class="results-title">${titulo}</div>`;
+        html += `<div class="qsl-grid">`;
+        
+        qsls.forEach(qsl => {
+            const tieneImagen = qsl.imagen && (qsl.imagen.endsWith('.jpg') || qsl.imagen.endsWith('.png') || qsl.imagen.includes('picsum'));
+            const imagenSrc = tieneImagen ? qsl.imagen : "https://picsum.photos/id/20/400/300";
+            const tipoIcono = qsl.tipo === "POTA" ? "🏞️" : "📻";
+            const tituloQSL = qsl.tipo === "POTA" ? `POTA: ${qsl.parque}` : `QSO con: ${qsl.qso_con || "Desconocido"}`;
+            
+            html += `
+                <div class="qsl-card" onclick="descargarQSLIndividual(${qsl.id})">
+                    <div class="qsl-image">
+                        <img src="${imagenSrc}" alt="QSL ${qsl.indicativo}" loading="lazy" onerror="this.src='https://picsum.photos/id/42/400/300'">
+                    </div>
+                    <div class="qsl-info">
+                        <h4>${tipoIcono} ${qsl.indicativo} - ${tituloQSL}</h4>
+                        <p>📅 ${qsl.fecha} | 🎚️ ${qsl.banda} | 📡 ${qsl.modo}</p>
+                        <p>📝 ${qsl.descripcion || "QSL disponible"}</p>
+                        ${qsl.confirmado === false ? '<p style="color:#FF6B6B;">⏳ Pendiente de confirmación</p>' : ''}
+                        <button class="download-btn" onclick="event.stopPropagation(); descargarQSLIndividual(${qsl.id})">📥 DESCARGAR QSL (${tieneImagen ? "JPG/PNG" : "PDF"})</button>
+                    </div>
                 </div>
-                <img src="${qslUrl}" alt="QSL ${call}" onclick="window.open('${qslUrl}')" style="width: 100%; border-radius: 12px; margin: 15px 0;">
-                <div style="font-family: monospace; font-size: 0.75rem; text-align: center; margin: 10px 0; background: rgba(0,0,0,0.5); padding: 8px; border-radius: 8px;">
-                    📄 ${fileName}
-                </div>
-                <div style="display: flex; gap: 12px; margin-top: 15px;">
-                    <button onclick="descargarPOTA('${qslUrl}')" 
-                            style="flex: 1; background: var(--pota-green); border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1rem;">
-                        📥 DESCARGAR
-                    </button>
-                    <button onclick="window.open('${qslUrl}')" 
-                            style="flex: 1; background: transparent; border: 2px solid var(--pota-green); color: var(--pota-green); padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold;">
-                        🔍 VER
-                    </button>
-                </div>
-            </div>
-            <div style="text-align: center; margin-top: 15px; color: var(--pota-green);">
-                ✅ QSL encontrada para ${call}
-            </div>
-        `;
-    }
-}
-
-async function descargarPOTA(url) {
-    try {
-        const response = await fetch(url);
-        const blob = await response.blob();
-        const blobUrl = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = blobUrl;
-        a.download = url.split('/').pop();
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(blobUrl);
-        showThanks();
-    } catch (e) {
-        window.open(url, '_blank');
-        showThanks();
-    }
-}
-
-async function downloadAllPota() {
-    if (currentPotaImages.length === 0) {
-        alert("No hay QSL para descargar");
-        return;
+            `;
+        });
+        
+        html += `</div>`;
+        document.getElementById(containerId).innerHTML = html;
     }
     
-    const btn = document.querySelector('#downloadAllPotaBtn');
-    const originalText = btn.innerText;
-    btn.innerText = "📦 ZIP...";
-    btn.disabled = true;
-    
-    try {
-        const zip = new JSZip();
-        for (let url of currentPotaImages) {
-            const response = await fetch(url);
-            const blob = await response.blob();
-            zip.file(url.split('/').pop(), blob);
+    // ========== DESCARGAR QSL INDIVIDUAL ==========
+    function descargarQSLIndividual(id) {
+        const qsl = QSL_DB.qsls.find(q => q.id === id);
+        if(!qsl) return;
+        
+        agregarAlHistorial(`📥 Descargada QSL: ${qsl.indicativo} - ${qsl.fecha} (${qsl.tipo})`);
+        
+        // Si tiene imagen real, descargarla; si no, simular
+        if(qsl.imagen && (qsl.imagen.includes('picsum') || qsl.imagen.startsWith('http'))) {
+            // Simular descarga mostrando alerta
+            alert(`📡 DESCARGANDO QSL:\n${qsl.indicativo}\nFecha: ${qsl.fecha}\nFormato: ${qsl.imagen.includes('.jpg') ? 'JPG' : 'PNG'}\n\n🌊 73's desde el Caribe, ${qsl.indicativo}`);
+            
+            // Abrir imagen en nueva pestaña (simula descarga)
+            window.open(qsl.imagen, '_blank');
+        } else if(qsl.qsl_pdf && qsl.qsl_pdf !== "#") {
+            const link = document.createElement("a");
+            link.href = qsl.qsl_pdf;
+            link.download = `QSL_${qsl.indicativo}_${qsl.fecha}.pdf`;
+            link.click();
+        } else {
+            alert(`📻 QSL de ${qsl.indicativo}\n📅 ${qsl.fecha} ${qsl.banda} ${qsl.modo}\n🌴 QSL electrónica disponible en el sistema. 73's!`);
         }
-        const content = await zip.generateAsync({type:"blob"});
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(content);
-        link.download = `POTA_${Date.now()}.zip`;
-        link.click();
-        showThanks();
-    } catch (err) {}
-    finally {
-        btn.innerText = originalText;
-        btn.disabled = false;
     }
-}
-
-// ========== BÚSQUEDA NORMAL ==========
-document.getElementById("buscarBtn").addEventListener("click", async () => {
-    const call = document.getElementById('indicativo').value.trim().toUpperCase();
-    if (!call) return;
-
-    if(!historyData.includes(call)) {
-        historyData.unshift(call);
-        localStorage.setItem('qsl_history', JSON.stringify(historyData));
-        updateHistoryUI();
-    }
-
-    const overlay = document.getElementById("search-overlay");
-    overlay.style.display = "flex";
-    document.getElementById("search-interface").style.display = "none";
-    document.getElementById("resultado").innerHTML = "";
-    isShowingResults = false;
-
-    const qslUrl = await buscarQSL(call);
-    overlay.style.display = "none";
     
-    const res = document.getElementById('resultado');
-    if (!qslUrl) {
-        res.innerHTML = `<div style="grid-column: 1/-1; color:var(--caribbean-pink); padding:40px;">NO HAY QSL PARA: <strong>${call}</strong></div>`;
-        setTimeout(() => document.getElementById("btnVolver").click(), 3000);
-    } else {
-        res.innerHTML = `
-            <div class="qsl-card">
-                <img src="${qslUrl}" onclick="window.open('${qslUrl}')">
-                <button class="btn-individual" onclick="descargarIndividual('${qslUrl}')">GUARDAR IMAGEN</button>
-            </div>
-        `;
-        document.getElementById("btnZip").style.display = "block";
-        document.getElementById("btnVolver").style.display = "block";
-        isShowingResults = true;
-        resetInactivity();
+    // ========== PROCESAR LOG ==========
+    function procesarLog(file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const contenido = e.target.result.toUpperCase();
+            // Extraer indicativos comunes del log (simulación)
+            const indicativosPosibles = ["CM7ADV", "KP4ABC", "HK3XYZ", "9Y4ZZZ", "CO2YYY", "PJ4AAA"];
+            let qslsEncontradas = [];
+            
+            indicativosPosibles.forEach(call => {
+                if(contenido.includes(call)) {
+                    const qslsCall = QSL_DB.qsls.filter(q => 
+                        q.indicativo.toUpperCase() === call || q.qso_con?.toUpperCase() === call
+                    );
+                    qslsEncontradas.push(...qslsCall);
+                }
+            });
+            
+            // Eliminar duplicados por id
+            qslsEncontradas = qslsEncontradas.filter((v,i,a) => a.findIndex(t => t.id === v.id) === i);
+            
+            if(qslsEncontradas.length > 0) {
+                agregarAlHistorial(`📁 LOG procesado: ${file.name} - ${qslsEncontradas.length} QSLs encontradas`);
+                mostrarGaleriaQSLs(qslsEncontradas, "qsoResults", `📋 LOG: ${file.name} - ${qslsEncontradas.length} QSLs coincidentes`);
+                
+                const confirmadas = qslsEncontradas.filter(q => q.confirmado !== false);
+                if(confirmadas.length > 0) {
+                    currentQSLsToDownload = confirmadas;
+                    document.getElementById("bulkDownload").style.display = "block";
+                }
+            } else {
+                document.getElementById("qsoResults").innerHTML = `<div class="no-results">⚠️ No se encontraron QSLs para los contactos de tu log</div>`;
+                document.getElementById("bulkDownload").style.display = "none";
+            }
+        };
+        reader.readAsText(file);
     }
-});
-
-async function descargarIndividual(url) {
-    try {
-        const response = await fetch(url);
-        const blob = await response.blob();
-        const blobUrl = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = blobUrl;
-        a.download = url.split('/').pop();
-        a.click();
-        URL.revokeObjectURL(blobUrl);
-        showThanks();
-    } catch (e) {
-        window.open(url, '_blank');
-        showThanks();
-    }
-}
-
-document.getElementById("btnVolver").addEventListener("click", () => {
-    isShowingResults = false;
-    document.getElementById("search-interface").style.display = "block";
-    document.getElementById("resultado").innerHTML = "";
-    document.getElementById("btnZip").style.display = "none";
-    document.getElementById("btnVolver").style.display = "none";
-    document.getElementById("indicativo").value = "";
-    resetInactivity();
-});
-
-document.getElementById("btnZip").addEventListener("click", async () => {
-    const btn = document.getElementById("btnZip");
-    const originalText = btn.innerText;
-    btn.innerText = "PROCESANDO...";
-    btn.disabled = true;
-    try {
-        const imgs = document.querySelectorAll(".qsl-card img");
-        const zip = new JSZip();
-        for (let img of imgs) {
-            const response = await fetch(img.src);
-            const blob = await response.blob();
-            zip.file(img.src.split('/').pop(), blob);
+    
+    // ========== DESCARGAR LOTE ==========
+    function descargarTodasQSLs() {
+        if(currentQSLsToDownload && currentQSLsToDownload.length > 0) {
+            agregarAlHistorial(`📦 Descarga masiva: ${currentQSLsToDownload.length} QSLs`);
+            alert(`🌊 DESCARGANDO LOTE: ${currentQSLsToDownload.length} QSLs\n📡 Cada QSL se abrirá en una nueva pestaña\n\n73's desde Caribbean QSL Network`);
+            
+            currentQSLsToDownload.forEach((qsl, idx) => {
+                setTimeout(() => {
+                    if(qsl.imagen) {
+                        window.open(qsl.imagen, '_blank');
+                    } else {
+                        alert(`📻 ${qsl.indicativo} - ${qsl.fecha}\nQSL disponible en el sistema`);
+                    }
+                }, idx * 800);
+            });
+        } else {
+            alert("🌊 No hay QSLs disponibles para descargar en lote");
         }
-        const content = await zip.generateAsync({type:"blob"});
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(content);
-        link.download = `QSL_PACK_${Date.now()}.zip`;
-        link.click();
-        showThanks();
-    } catch (err) {}
-    finally {
-        btn.innerText = originalText;
-        btn.disabled = false;
     }
-});
-
-document.getElementById("indicativo").addEventListener("keypress", (e) => {
-    if (e.key === "Enter") document.getElementById("buscarBtn").click();
-});
-
-// Evento Enter en POTA
-document.getElementById("potaCallInput").addEventListener("keypress", (e) => {
-    if (e.key === "Enter") buscarPOTA();
-});
-
-// Eventos POTA
-document.getElementById('potaFloatBtn').addEventListener('click', () => {
-    document.getElementById('potaModal').style.display = 'flex';
-    document.getElementById('potaCallInput').value = '';
-    document.getElementById('potaResultado').innerHTML = `
-        <div style="padding: 40px; text-align: center;">
-            <div style="font-size: 3rem;">🏞️</div>
-            <p style="color: var(--pota-green); margin-top: 10px;">ESCRIBE EL INDICATIVO</p>
-            <p style="font-size: 0.9rem;">Ejemplo: W3SB, CM7ADV, CO7POTA</p>
-        </div>
-    `;
-    currentPotaImages = [];
-});
-
-document.getElementById('potaSearchBtn').addEventListener('click', buscarPOTA);
-
-document.querySelector('.close-modal').addEventListener('click', () => {
-    document.getElementById('potaModal').style.display = 'none';
-});
-
-document.getElementById('closePotaModal').addEventListener('click', () => {
-    document.getElementById('potaModal').style.display = 'none';
-});
-
-document.getElementById('downloadAllPotaBtn').addEventListener('click', downloadAllPota);
-
-window.addEventListener('click', (e) => {
-    if (e.target === document.getElementById('potaModal')) {
-        document.getElementById('potaModal').style.display = 'none';
+    
+    // ========== SUGERENCIAS ==========
+    function mostrarSugerencias(sugerencias) {
+        let html = "";
+        sugerencias.forEach(sug => {
+            html += `<div class="suggestion-item" onclick="seleccionarSugerencia('${sug}')">${sug}</div>`;
+        });
+        document.getElementById("potaSuggestions").innerHTML = html;
     }
-});
+    
+    function seleccionarSugerencia(texto) {
+        document.getElementById("potaSearch").value = texto;
+        document.getElementById("potaSuggestions").innerHTML = "";
+        buscarPorIndicativoOPOTA(texto);
+    }
+    window.seleccionarSugerencia = seleccionarSugerencia;
+    window.descargarQSLIndividual = descargarQSLIndividual;
+    
+    // ========== HISTORIAL ==========
+    function agregarAlHistorial(item) {
+        const timestamp = new Date().toLocaleString();
+        searchHistory.unshift(`${timestamp} - ${item}`);
+        if(searchHistory.length > 15) searchHistory.pop();
+        localStorage.setItem("qsl_history_caribbean", JSON.stringify(searchHistory));
+        mostrarHistorial();
+    }
+    
+    function mostrarHistorial() {
+        const container = document.getElementById("historyList");
+        if(!container) return;
+        if(searchHistory.length === 0) {
+            container.innerHTML = "<div>🌴 No hay búsquedas recientes aún</div>";
+            return;
+        }
+        container.innerHTML = searchHistory.map(h => `<div>🏝️ ${h}</div>`).join("");
+    }
 </script>
 </body>
 </html>
