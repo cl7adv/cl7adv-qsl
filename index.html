@@ -2,8 +2,8 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CL7ADV - Caribbean QSL Network | Sistema de QSLs</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>CM7ADV - Caribbean QSL Network</title>
     <style>
         * {
             margin: 0;
@@ -12,33 +12,192 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #023047 0%, #006994 50%, #00B4D8 100%);
+            font-family: 'Segoe UI', 'Poppins', system-ui, -apple-system;
             min-height: 100vh;
-            color: #fff;
+            color: white;
+            position: relative;
+        }
+
+        /* FONDO DE PLAYA DE CUBA */
+        .cuba-beach-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            background-image: url('https://images.pexels.com/photos/457882/pexels-photo-457882.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        
+        /* Overlay para mejorar legibilidad */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(0,0,0,0.5), rgba(0,50,70,0.6));
+            z-index: -1;
+        }
+        
+        /* Capa de olas animadas */
+        .waves-layer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            background: repeating-linear-gradient(transparent 0px, transparent 97px, rgba(255,255,255,0.15) 97px, rgba(255,255,255,0.25) 100px);
+            animation: waveMove 4s infinite linear;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        @keyframes waveMove {
+            0% { background-position-x: 0; }
+            100% { background-position-x: 200px; }
+        }
+
+        /* RELOJ EN ESQUINA SUPERIOR DERECHA */
+        .clock {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            padding: 10px 18px;
+            border-radius: 50px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.2rem;
+            font-weight: bold;
+            z-index: 100;
+            border: 1px solid rgba(255,215,0,0.5);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            letter-spacing: 2px;
+        }
+        
+        .clock span {
+            color: #FFD166;
+        }
+        
+        .date {
+            font-size: 0.7rem;
+            margin-top: 3px;
+            text-align: center;
+            color: #ccc;
         }
 
         /* Encabezado */
         .header {
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(0, 0, 0, 0.6);
             backdrop-filter: blur(10px);
-            padding: 1.5rem;
+            padding: 1rem;
             text-align: center;
             border-bottom: 3px solid #FFD166;
             box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
 
         .header h1 {
-            font-size: 2rem;
+            font-size: 1.8rem;
             background: linear-gradient(45deg, #FFD166, #FF6B6B);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
         }
+        
+        .header .call {
+            color: #FFD166;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
 
-        .header p {
-            margin-top: 0.5rem;
-            font-style: italic;
+        /* Botón Temas de Radio */
+        .radio-topics-btn {
+            position: fixed;
+            bottom: 25px;
+            right: 20px;
+            background: linear-gradient(45deg, #FF6B6B, #F4A261);
+            border: none;
+            padding: 14px 20px;
+            border-radius: 60px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 100;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .radio-topics-btn:hover {
+            transform: scale(1.05);
+            background: linear-gradient(45deg, #FF5252, #FF8C42);
+        }
+
+        /* Modal de Temas de Radio */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(8px);
+            z-index: 200;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background: linear-gradient(135deg, #1a2a3a, #0d1b2a);
+            border-radius: 30px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding: 1.5rem;
+            color: white;
+            border: 2px solid #FFD166;
+            position: relative;
+        }
+        
+        .modal-content h2 {
+            color: #FFD166;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        
+        .modal-content h3 {
+            color: #FF6B6B;
+            margin-top: 1rem;
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: #FF6B6B;
+        }
+        
+        .topic-item {
+            background: rgba(255,255,255,0.1);
+            padding: 12px;
+            border-radius: 15px;
+            margin: 10px 0;
+            border-left: 4px solid #FFD166;
+        }
+        
+        .topic-item strong {
+            color: #FFD166;
         }
 
         /* Buscador */
@@ -50,10 +209,10 @@
 
         .search-box {
             display: flex;
-            gap: 1rem;
+            gap: 0.8rem;
             flex-wrap: wrap;
-            background: rgba(255,255,255,0.15);
-            backdrop-filter: blur(5px);
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(8px);
             padding: 1rem;
             border-radius: 60px;
         }
@@ -95,6 +254,9 @@
             margin: 1rem 0;
             padding: 0.5rem;
             border-left: 5px solid #FFD166;
+            background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(4px);
+            border-radius: 10px;
         }
 
         .qsl-grid {
@@ -105,10 +267,10 @@
         }
 
         .qsl-card {
-            background: white;
+            background: rgba(255,255,255,0.95);
             border-radius: 20px;
             overflow: hidden;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
             transition: all 0.3s;
             cursor: pointer;
             color: #333;
@@ -116,13 +278,13 @@
 
         .qsl-card:hover {
             transform: translateY(-8px);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
         }
 
         .qsl-image {
             width: 100%;
-            height: 250px;
-            background: #f0f0f0;
+            height: 220px;
+            background: #e0e0e0;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -151,7 +313,7 @@
 
         .qsl-info p {
             margin: 0.3rem 0;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
         }
 
         .badge {
@@ -184,37 +346,104 @@
         .loading, .error, .no-results {
             text-align: center;
             padding: 3rem;
-            background: rgba(255,255,255,0.1);
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(8px);
             border-radius: 30px;
-            backdrop-filter: blur(5px);
         }
 
         footer {
             text-align: center;
             margin-top: 3rem;
-            padding: 1.5rem;
+            padding: 1rem;
             background: rgba(0,0,0,0.5);
-            font-size: 0.8rem;
+            font-size: 0.7rem;
         }
 
         @media (max-width: 700px) {
             .search-box { flex-direction: column; border-radius: 30px; }
             .qsl-grid { grid-template-columns: 1fr; }
-            .header h1 { font-size: 1.3rem; }
+            .header h1 { font-size: 1.2rem; }
+            .clock { font-size: 0.9rem; padding: 6px 12px; top: 10px; right: 10px; }
+            .radio-topics-btn { padding: 10px 16px; font-size: 0.8rem; bottom: 15px; right: 15px; }
         }
     </style>
 </head>
 <body>
 
+<!-- Fondo de playa de Cuba -->
+<div class="cuba-beach-bg"></div>
+<div class="overlay"></div>
+<div class="waves-layer"></div>
+
+<!-- RELOJ EN ESQUINA -->
+<div class="clock">
+    <span id="hora">--:--:--</span>
+    <div class="date" id="fecha">--/--/----</div>
+</div>
+
+<!-- BOTÓN TEMAS DE RADIO -->
+<button class="radio-topics-btn" id="radioTopicsBtn">
+    📻 Temas de Radio 🎙️
+</button>
+
+<!-- MODAL TEMAS DE RADIO -->
+<div id="radioModal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal" id="closeModal">&times;</span>
+        <h2>📻 PEQUEÑOS TEMAS DE LA RADIO</h2>
+        <p style="text-align:center; margin-bottom:1rem;">Consejos y curiosidades para el radioaficionado</p>
+        
+        <div class="topic-item">
+            <strong>📡 Propagación en el Caribe</strong><br>
+            Las bandas de 10m y 15m suelen abrirse mejor de 9am a 2pm hora local. El índice solar SFI sobre 150 es excelente.
+        </div>
+        
+        <div class="topic-item">
+            <strong>🔊 Modos Digitales FT8/FT4</strong><br>
+            Perfectos para QSOs de baja potencia (QRP). Usa frecuencias: 14.074 MHz (20m) y 7.074 MHz (40m).
+        </div>
+        
+        <div class="topic-item">
+            <strong>🌊 Efecto "Mar Caribe"</strong><br>
+            La humedad puede reducir la potencia efectiva. Revisa tus conectores y usa cable de calidad RG-213.
+        </div>
+        
+        <div class="topic-item">
+            <strong>🏝️ POTA en Cuba</strong><br>
+            Parques como Alejandro de Humboldt (CM-0001) son ideales para activar. Lleva baterías extras.
+        </div>
+        
+        <div class="topic-item">
+            <strong>📻 QRP (Baja Potencia)</strong><br>
+            Con 5 watts puedes cruzar el Atlántico en condiciones favorables. Antena dipolo bien elevada.
+        </div>
+        
+        <div class="topic-item">
+            <strong>🛠️ Mantenimiento básico</strong><br>
+            Limpia conectores con alcohol isopropílico, revisa la ROE mensualmente, protege tu equipo de la salinidad.
+        </div>
+        
+        <div class="topic-item">
+            <strong>🎧 El código Q</strong><br>
+            QTH = ubicación, QSL = acuse de recibo, QRM = interferencia, QRN = ruido atmosférico.
+        </div>
+        
+        <div class="topic-item">
+            <strong>🌞 Ciclo Solar 25</strong><br>
+            Estamos en el máximo (2024-2026). ¡Aprovecha las bandas altas de 10m y 12m!
+        </div>
+    </div>
+</div>
+
 <div class="header">
     <h1>🏝️ CARIBBEAN QSL NETWORK</h1>
-    <p>📻 CL7ADV - Sistema de descarga rápida de QSLs desde GitHub</p>
-    <p style="font-size:0.8rem; margin-top:0.5rem;">73's desde el Caribe 🌊</p>
+    <p>📻 <span class="call">CM7ADV</span> - Sistema de descarga rápida de QSLs desde GitHub</p>
+    <p style="font-size:0.7rem; margin-top:0.3rem;">🇨🇺 Playas de Cuba - 73's desde el Caribe 🌊</p>
 </div>
 
 <div class="search-container">
     <div class="search-box">
-        <input type="text" id="searchInput" placeholder="🔍 Busca por indicativo: CL7ADV, KP4ABC, CM7ADV... o código POTA: CM-0001..." autocomplete="off">
+        <input type="text" id="searchInput" placeholder="🔍 Busca por indicativo: CM7ADV, KP4ABC... o código POTA: CM-0001..." autocomplete="off">
         <button id="searchBtn">🔎 BUSCAR QSLs</button>
     </div>
 </div>
@@ -222,73 +451,93 @@
 <div class="container" id="resultsContainer">
     <div class="loading">
         <span>🌊 Cargando QSLs desde el repositorio...</span><br>
-        <span style="font-size:0.8rem;">📁 github.com/cl7adv/cl7adv-qsl</span>
+        <span style="font-size:0.8rem;">📁 github.com/cm7adv/cm7adv-qsl (o cl7adv/cl7adv-qsl)</span>
     </div>
 </div>
 
 <footer>
-    <p>📡 QSLs alojadas en: <strong>github.com/cl7adv/cl7adv-qsl</strong> | 📻 CL7ADV | 🇨🇺🇵🇷🇩🇴🇯🇲🇨🇼</p>
+    <p>📡 QSLs alojadas en: <strong>github.com/cm7adv/cm7adv-qsl</strong> | 📻 CM7ADV | 🇨🇺 Varadero - La Habana - Santiago de Cuba 🇨🇺</p>
+    <p style="margin-top:5px;">🌴 73's para toda la comunidad radioaficionada del Caribe 🌴</p>
 </footer>
 
 <script>
     // ============================================
-    // CONFIGURACIÓN DE TU REPOSITORIO
+    // CONFIGURACIÓN - INDICATIVO CORREGIDO: CM7ADV
     // ============================================
-    const GITHUB_USER = "cl7adv";
-    const REPO_NAME = "cl7adv-qsl";
+    // Intentar primero con cm7adv, si no, probar con cl7adv
+    const REPOSITORIOS = [
+        { user: "cm7adv", repo: "cm7adv-qsl" },
+        { user: "cl7adv", repo: "cl7adv-qsl" }
+    ];
+    
     const BRANCH = "main";
-    
-    // URLs de la API de GitHub (para listar archivos)
-    const API_URL = `https://api.github.com/repos/${GITHUB_USER}/${REPO_NAME}/contents/`;
-    const RAW_BASE = `https://raw.githubusercontent.com/${GITHUB_USER}/${REPO_NAME}/${BRANCH}/`;
-    
     let todasLasQSLs = [];
     let estaCargando = false;
+    let repositorioActivo = null;
 
     // ============================================
-    // OBTENER TODOS LOS ARCHIVOS DE LA CARPETA /img
+    // RELOJ EN TIEMPO REAL
     // ============================================
-    async function obtenerArchivosDeCarpeta(ruta = "") {
+    function actualizarReloj() {
+        const ahora = new Date();
+        const horas = ahora.getHours().toString().padStart(2, '0');
+        const minutos = ahora.getMinutes().toString().padStart(2, '0');
+        const segundos = ahora.getSeconds().toString().padStart(2, '0');
+        document.getElementById('hora').textContent = `${horas}:${minutos}:${segundos}`;
+        
+        const opciones = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('fecha').textContent = ahora.toLocaleDateString('es-ES', opciones);
+    }
+    
+    setInterval(actualizarReloj, 1000);
+    actualizarReloj();
+
+    // ============================================
+    // MODAL TEMAS DE RADIO
+    // ============================================
+    const modal = document.getElementById('radioModal');
+    const btnModal = document.getElementById('radioTopicsBtn');
+    const closeModal = document.getElementById('closeModal');
+    
+    btnModal.onclick = () => modal.style.display = 'flex';
+    closeModal.onclick = () => modal.style.display = 'none';
+    window.onclick = (e) => { if (e.target === modal) modal.style.display = 'none'; };
+
+    // ============================================
+    // FUNCIONES DE GITHUB API
+    // ============================================
+    async function obtenerArchivosDeCarpeta(user, repo, ruta = "") {
         try {
-            const url = `${API_URL}${ruta}`;
+            const url = `https://api.github.com/repos/${user}/${repo}/contents/${ruta}`;
             console.log("Consultando:", url);
             const response = await fetch(url);
             
             if (!response.ok) {
-                console.warn(`Error ${response.status} al obtener ${ruta}`);
-                return [];
+                console.warn(`Error ${response.status} al obtener ${ruta} de ${user}/${repo}`);
+                return null;
             }
             
             const archivos = await response.json();
             return archivos;
         } catch (error) {
             console.error("Error fetching:", error);
-            return [];
+            return null;
         }
     }
 
-    // ============================================
-    // PROCESAR TODAS LAS IMÁGENES EN /img Y SUBCARPETAS
-    // ============================================
-    async function cargarTodasLasImagenes() {
-        if (estaCargando) return;
-        estaCargando = true;
-        
-        mostrarLoading("🌊 Escaneando el repositorio en busca de QSLs...");
-        
-        const carpetas = ["img", ""]; // Buscar en /img y en raíz
-        let todasLasImagenes = [];
+    async function cargarQSLsDeRepositorio(user, repo) {
+        const imagenes = [];
+        const carpetas = ["img", ""];
+        const RAW_BASE = `https://raw.githubusercontent.com/${user}/${repo}/${BRANCH}/`;
         
         for (const carpeta of carpetas) {
-            const archivos = await obtenerArchivosDeCarpeta(carpeta);
+            const archivos = await obtenerArchivosDeCarpeta(user, repo, carpeta);
             
             if (archivos && Array.isArray(archivos)) {
                 for (const archivo of archivos) {
-                    // Filtrar solo imágenes JPG, PNG, JPEG, GIF
                     if (archivo.type === "file" && /\.(jpg|jpeg|png|gif)$/i.test(archivo.name)) {
-                        // Extraer metadatos del nombre del archivo
-                        const metadata = extraerMetadatos(archivo.name, carpeta);
-                        todasLasImagenes.push({
+                        const metadata = extraerMetadatos(archivo.name);
+                        imagenes.push({
                             id: archivo.sha,
                             nombre: archivo.name,
                             url_raw: `${RAW_BASE}${carpeta}${archivo.name}`,
@@ -296,54 +545,96 @@
                             ...metadata
                         });
                     }
-                    // Si hay subcarpetas, entrar recursivamente
                     if (archivo.type === "dir") {
-                        const subArchivos = await obtenerArchivosDeCarpeta(`${carpeta}${archivo.name}/`);
-                        for (const sub of subArchivos) {
-                            if (sub.type === "file" && /\.(jpg|jpeg|png|gif)$/i.test(sub.name)) {
-                                const metadata = extraerMetadatos(sub.name, `${carpeta}${archivo.name}/`);
-                                todasLasImagenes.push({
-                                    id: sub.sha,
-                                    nombre: sub.name,
-                                    url_raw: `${RAW_BASE}${carpeta}${archivo.name}/${sub.name}`,
-                                    url_github: sub.html_url,
-                                    ...metadata
-                                });
+                        const subArchivos = await obtenerArchivosDeCarpeta(user, repo, `${carpeta}${archivo.name}/`);
+                        if (subArchivos && Array.isArray(subArchivos)) {
+                            for (const sub of subArchivos) {
+                                if (sub.type === "file" && /\.(jpg|jpeg|png|gif)$/i.test(sub.name)) {
+                                    const metadata = extraerMetadatos(sub.name);
+                                    imagenes.push({
+                                        id: sub.sha,
+                                        nombre: sub.name,
+                                        url_raw: `${RAW_BASE}${carpeta}${archivo.name}/${sub.name}`,
+                                        url_github: sub.html_url,
+                                        ...metadata
+                                    });
+                                }
                             }
                         }
                     }
                 }
             }
         }
+        return imagenes;
+    }
+
+    async function cargarTodasLasImagenes() {
+        if (estaCargando) return;
+        estaCargando = true;
         
-        todasLasQSLs = todasLasImagenes;
-        console.log(`✅ Encontradas ${todasLasQSLs.length} QSLs en el repositorio`);
+        mostrarLoading("🌊 Escaneando repositorios en busca de QSLs de CM7ADV...");
         
-        if (todasLasQSLs.length === 0) {
-            mostrarMensajeError("⚠️ No se encontraron imágenes QSL en /img o en la raíz.\n\n📌 Asegúrate de:\n1. Tener la carpeta 'img' en tu repositorio\n2. Subir archivos .jpg o .png allí\n3. GitHub Pages activado");
-        } else {
-            mostrarTodasLasQSLs();
+        for (const repo of REPOSITORIOS) {
+            console.log(`Intentando con: ${repo.user}/${repo.repo}`);
+            const qsls = await cargarQSLsDeRepositorio(repo.user, repo.repo);
+            if (qsls && qsls.length > 0) {
+                todasLasQSLs = qsls;
+                repositorioActivo = repo;
+                console.log(`✅ Encontradas ${todasLasQSLs.length} QSLs en ${repo.user}/${repo.repo}`);
+                break;
+            }
         }
         
+        if (todasLasQSLs.length === 0) {
+            // Datos de demostración si no encuentra el repositorio
+            todasLasQSLs = [
+                {
+                    id: "demo1",
+                    nombre: "CM7ADV_POTA_CM0001_20241015.jpg",
+                    url_raw: "https://picsum.photos/id/104/400/300",
+                    indicativo: "CM7ADV",
+                    tipo: "POTA",
+                    parque: "CM-0001",
+                    contacto: null,
+                    fecha: "2024-10-15"
+                },
+                {
+                    id: "demo2",
+                    nombre: "CM7ADV_CONTACTO_KP4ABC_20241015.png",
+                    url_raw: "https://picsum.photos/id/96/400/300",
+                    indicativo: "CM7ADV",
+                    tipo: "CONTACTO",
+                    parque: null,
+                    contacto: "KP4ABC",
+                    fecha: "2024-10-15"
+                },
+                {
+                    id: "demo3",
+                    nombre: "KP4ABC_QSL.jpg",
+                    url_raw: "https://picsum.photos/id/127/400/300",
+                    indicativo: "KP4ABC",
+                    tipo: "CONTACTO",
+                    parque: null,
+                    contacto: "CM7ADV",
+                    fecha: "2024-09-20"
+                }
+            ];
+            mostrarMensajeError("⚠️ No se encontró el repositorio con QSLs.\n\nMostrando QSLs de demostración.\n📌 Asegúrate de tener la carpeta 'img' en:\ngithub.com/cm7adv/cm7adv-qsl");
+        }
+        
+        mostrarTodasLasQSLs();
         estaCargando = false;
     }
 
-    // ============================================
-    // EXTRAER METADATOS DEL NOMBRE DEL ARCHIVO
-    // Ejemplos esperados:
-    // - CL7ADV_POTA_CM0001_20241015.jpg
-    // - CL7ADV_CONTACTO_KP4ABC_20241015.png
-    // - KP4ABC_QSL.jpg
-    // ============================================
-    function extraerMetadatos(nombreArchivo, ruta) {
+    function extraerMetadatos(nombreArchivo) {
         const nombreSinExt = nombreArchivo.replace(/\.(jpg|jpeg|png|gif)$/i, "");
         const partes = nombreSinExt.split("_");
         
-        let indicativo = partes[0]?.toUpperCase() || "CL7ADV";
+        let indicativo = partes[0]?.toUpperCase() || "CM7ADV";
         let tipo = partes[1]?.toUpperCase() === "POTA" ? "POTA" : "CONTACTO";
         let parque = null;
         let contacto = null;
-        let fecha = "";
+        let fecha = partes[3] || "";
         
         if (tipo === "POTA" && partes[2]) {
             parque = partes[2].toUpperCase();
@@ -353,7 +644,6 @@
             fecha = partes[3] || "";
         }
         
-        // Si no se pudo extraer bien, usar valores por defecto
         if (!parque && !contacto && partes[1]) {
             contacto = partes[1].toUpperCase();
         }
@@ -368,9 +658,6 @@
         };
     }
 
-    // ============================================
-    // MOSTRAR TODAS LAS QSLs O FILTRADAS
-    // ============================================
     function mostrarQSLs(qsls, titulo = "📚 TODAS LAS QSLs DISPONIBLES") {
         const container = document.getElementById("resultsContainer");
         
@@ -379,9 +666,9 @@
                 <div class="no-results">
                     ❌ No se encontraron QSLs<br><br>
                     📌 Sugerencias:<br>
-                    - Prueba con: CL7ADV, KP4ABC, CM-0001<br>
+                    - Prueba con: CM7ADV, KP4ABC, CM-0001<br>
                     - Asegúrate de tener imágenes en la carpeta /img<br>
-                    - Los nombres deben ser como: CL7ADV_POTA_CM0001.jpg
+                    - Nombres como: CM7ADV_POTA_CM0001.jpg
                 </div>
             `;
             return;
@@ -397,13 +684,13 @@
             html += `
                 <div class="qsl-card">
                     <div class="qsl-image">
-                        <img src="${qsl.url_raw}" alt="QSL ${qsl.indicativo}" loading="lazy" onerror="this.src='https://via.placeholder.com/400x250?text=QSL+${qsl.indicativo}'">
+                        <img src="${qsl.url_raw}" alt="QSL ${qsl.indicativo}" loading="lazy" onerror="this.src='https://picsum.photos/id/42/400/300'">
                     </div>
                     <div class="qsl-info">
                         <h3>${tipoIcono} ${qsl.indicativo}</h3>
                         <p><span class="badge">${qsl.tipo}</span> ${tituloQSL}</p>
                         <p>📅 ${qsl.fecha || "Fecha no especificada"}</p>
-                        <p>📄 Archivo: ${qsl.nombre}</p>
+                        <p>📄 ${qsl.nombre}</p>
                         <button class="btn-download" onclick="descargarQSL('${qsl.url_raw}', '${qsl.indicativo}', '${qsl.fecha}')">📥 DESCARGAR QSL</button>
                     </div>
                 </div>
@@ -415,7 +702,7 @@
     }
 
     function mostrarTodasLasQSLs() {
-        mostrarQSLs(todasLasQSLs, `📚 BIBLIOTECA DE QSLs (${todasLasQSLs.length} imágenes encontradas)`);
+        mostrarQSLs(todasLasQSLs, `📚 BIBLIOTECA DE QSLs - CM7ADV (${todasLasQSLs.length} imágenes)`);
     }
 
     function buscarQSLs(texto) {
@@ -445,7 +732,7 @@
     function mostrarMensajeError(mensaje) {
         document.getElementById("resultsContainer").innerHTML = `
             <div class="error">
-                ❌ ${mensaje}
+                ❌ ${mensaje.replace(/\n/g, '<br>')}
             </div>
         `;
     }
