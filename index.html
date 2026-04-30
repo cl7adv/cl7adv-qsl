@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>CM7ADV - Caribbean QSL Network</title>
+    <title>CM7ADV - Caribbean QSL Network | Sistema de QSLs</title>
     <style>
         * {
             margin: 0;
@@ -12,9 +12,9 @@
         }
 
         body {
-            font-family: 'Segoe UI', 'Poppins', system-ui, -apple-system;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             min-height: 100vh;
-            color: white;
+            color: #fff;
             position: relative;
         }
 
@@ -32,36 +32,17 @@
             background-repeat: no-repeat;
         }
         
-        /* Overlay para mejorar legibilidad */
         .overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, rgba(0,0,0,0.5), rgba(0,50,70,0.6));
+            background: linear-gradient(135deg, rgba(0,0,0,0.4), rgba(0,50,70,0.5));
             z-index: -1;
         }
-        
-        /* Capa de olas animadas */
-        .waves-layer {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 100px;
-            background: repeating-linear-gradient(transparent 0px, transparent 97px, rgba(255,255,255,0.15) 97px, rgba(255,255,255,0.25) 100px);
-            animation: waveMove 4s infinite linear;
-            pointer-events: none;
-            z-index: 1;
-        }
-        
-        @keyframes waveMove {
-            0% { background-position-x: 0; }
-            100% { background-position-x: 200px; }
-        }
 
-        /* RELOJ EN ESQUINA SUPERIOR DERECHA */
+        /* RELOJ EN ESQUINA */
         .clock {
             position: fixed;
             top: 20px;
@@ -71,12 +52,11 @@
             padding: 10px 18px;
             border-radius: 50px;
             font-family: 'Courier New', monospace;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             font-weight: bold;
             z-index: 100;
             border: 1px solid rgba(255,215,0,0.5);
             box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            letter-spacing: 2px;
         }
         
         .clock span {
@@ -84,45 +64,21 @@
         }
         
         .date {
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             margin-top: 3px;
             text-align: center;
             color: #ccc;
         }
 
-        /* Encabezado */
-        .header {
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(10px);
-            padding: 1rem;
-            text-align: center;
-            border-bottom: 3px solid #FFD166;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-        }
-
-        .header h1 {
-            font-size: 1.8rem;
-            background: linear-gradient(45deg, #FFD166, #FF6B6B);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-        
-        .header .call {
-            color: #FFD166;
-            font-weight: bold;
-            font-size: 1.2rem;
-        }
-
-        /* Botón Temas de Radio */
+        /* BOTÓN TEMAS DE RADIO */
         .radio-topics-btn {
             position: fixed;
             bottom: 25px;
             right: 20px;
             background: linear-gradient(45deg, #FF6B6B, #F4A261);
             border: none;
-            padding: 14px 20px;
-            border-radius: 60px;
+            padding: 12px 20px;
+            border-radius: 50px;
             color: white;
             font-weight: bold;
             cursor: pointer;
@@ -132,15 +88,14 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
         }
         
         .radio-topics-btn:hover {
             transform: scale(1.05);
-            background: linear-gradient(45deg, #FF5252, #FF8C42);
         }
 
-        /* Modal de Temas de Radio */
+        /* MODAL */
         .modal {
             display: none;
             position: fixed;
@@ -148,7 +103,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.85);
+            background: rgba(0,0,0,0.9);
             backdrop-filter: blur(8px);
             z-index: 200;
             justify-content: center;
@@ -174,11 +129,6 @@
             text-align: center;
         }
         
-        .modal-content h3 {
-            color: #FF6B6B;
-            margin-top: 1rem;
-        }
-        
         .close-modal {
             position: absolute;
             top: 15px;
@@ -200,6 +150,29 @@
             color: #FFD166;
         }
 
+        /* Encabezado */
+        .header {
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            padding: 1.2rem;
+            text-align: center;
+            border-bottom: 3px solid #FFD166;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            background: linear-gradient(45deg, #FFD166, #FF6B6B);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .header .call {
+            color: #FFD166;
+            font-weight: bold;
+        }
+
         /* Buscador */
         .search-container {
             max-width: 800px;
@@ -209,7 +182,7 @@
 
         .search-box {
             display: flex;
-            gap: 0.8rem;
+            gap: 1rem;
             flex-wrap: wrap;
             background: rgba(0,0,0,0.5);
             backdrop-filter: blur(8px);
@@ -243,7 +216,7 @@
             transform: scale(1.02);
         }
 
-        /* Contenedor de resultados */
+        /* Resultados */
         .container {
             max-width: 1200px;
             margin: 0 auto;
@@ -270,7 +243,7 @@
             background: rgba(255,255,255,0.95);
             border-radius: 20px;
             overflow: hidden;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
             transition: all 0.3s;
             cursor: pointer;
             color: #333;
@@ -278,13 +251,13 @@
 
         .qsl-card:hover {
             transform: translateY(-8px);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
         }
 
         .qsl-image {
             width: 100%;
             height: 220px;
-            background: #e0e0e0;
+            background: #f0f0f0;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -363,8 +336,8 @@
             .search-box { flex-direction: column; border-radius: 30px; }
             .qsl-grid { grid-template-columns: 1fr; }
             .header h1 { font-size: 1.2rem; }
-            .clock { font-size: 0.9rem; padding: 6px 12px; top: 10px; right: 10px; }
-            .radio-topics-btn { padding: 10px 16px; font-size: 0.8rem; bottom: 15px; right: 15px; }
+            .clock { font-size: 0.8rem; padding: 6px 12px; top: 10px; right: 10px; }
+            .radio-topics-btn { padding: 8px 16px; font-size: 0.75rem; bottom: 15px; right: 15px; }
         }
     </style>
 </head>
@@ -373,7 +346,6 @@
 <!-- Fondo de playa de Cuba -->
 <div class="cuba-beach-bg"></div>
 <div class="overlay"></div>
-<div class="waves-layer"></div>
 
 <!-- RELOJ EN ESQUINA -->
 <div class="clock">
@@ -386,52 +358,21 @@
     📻 Temas de Radio 🎙️
 </button>
 
-<!-- MODAL TEMAS DE RADIO -->
+<!-- MODAL -->
 <div id="radioModal" class="modal">
     <div class="modal-content">
         <span class="close-modal" id="closeModal">&times;</span>
         <h2>📻 PEQUEÑOS TEMAS DE LA RADIO</h2>
-        <p style="text-align:center; margin-bottom:1rem;">Consejos y curiosidades para el radioaficionado</p>
+        <p style="text-align:center; margin-bottom:1rem;">Consejos para el radioaficionado</p>
         
-        <div class="topic-item">
-            <strong>📡 Propagación en el Caribe</strong><br>
-            Las bandas de 10m y 15m suelen abrirse mejor de 9am a 2pm hora local. El índice solar SFI sobre 150 es excelente.
-        </div>
-        
-        <div class="topic-item">
-            <strong>🔊 Modos Digitales FT8/FT4</strong><br>
-            Perfectos para QSOs de baja potencia (QRP). Usa frecuencias: 14.074 MHz (20m) y 7.074 MHz (40m).
-        </div>
-        
-        <div class="topic-item">
-            <strong>🌊 Efecto "Mar Caribe"</strong><br>
-            La humedad puede reducir la potencia efectiva. Revisa tus conectores y usa cable de calidad RG-213.
-        </div>
-        
-        <div class="topic-item">
-            <strong>🏝️ POTA en Cuba</strong><br>
-            Parques como Alejandro de Humboldt (CM-0001) son ideales para activar. Lleva baterías extras.
-        </div>
-        
-        <div class="topic-item">
-            <strong>📻 QRP (Baja Potencia)</strong><br>
-            Con 5 watts puedes cruzar el Atlántico en condiciones favorables. Antena dipolo bien elevada.
-        </div>
-        
-        <div class="topic-item">
-            <strong>🛠️ Mantenimiento básico</strong><br>
-            Limpia conectores con alcohol isopropílico, revisa la ROE mensualmente, protege tu equipo de la salinidad.
-        </div>
-        
-        <div class="topic-item">
-            <strong>🎧 El código Q</strong><br>
-            QTH = ubicación, QSL = acuse de recibo, QRM = interferencia, QRN = ruido atmosférico.
-        </div>
-        
-        <div class="topic-item">
-            <strong>🌞 Ciclo Solar 25</strong><br>
-            Estamos en el máximo (2024-2026). ¡Aprovecha las bandas altas de 10m y 12m!
-        </div>
+        <div class="topic-item"><strong>📡 Propagación Caribeña</strong><br>Bandas de 10m y 15m abren de 9am a 2pm. Índice SFI >150 = excelente.</div>
+        <div class="topic-item"><strong>🔊 FT8/FT4</strong><br>Frecuencias: 14.074 MHz (20m) y 7.074 MHz (40m). Perfecto para QRP.</div>
+        <div class="topic-item"><strong>🌊 Efecto marítimo</strong><br>La salinidad afecta conectores. Usa protección anticorrosión.</div>
+        <div class="topic-item"><strong>🏝️ POTA en Cuba</strong><br>Parque Alejandro de Humboldt (CM-0001) es ideal para activar.</div>
+        <div class="topic-item"><strong>📻 QRP</strong><br>Con 5 watts cruzas el Atlántico en buenas condiciones.</div>
+        <div class="topic-item"><strong>🛠️ Mantenimiento</strong><br>Limpia conectores con alcohol isopropílico mensualmente.</div>
+        <div class="topic-item"><strong>🎧 Código Q</strong><br>QTH=ubicación, QSL=acuse, QRM=interferencia, QRN=ruido.</div>
+        <div class="topic-item"><strong>🌞 Ciclo Solar 25</strong><br>Máximo 2024-2026. ¡Aprovecha 10m y 12m!</div>
     </div>
 </div>
 
@@ -451,7 +392,7 @@
 <div class="container" id="resultsContainer">
     <div class="loading">
         <span>🌊 Cargando QSLs desde el repositorio...</span><br>
-        <span style="font-size:0.8rem;">📁 github.com/cm7adv/cm7adv-qsl (o cl7adv/cl7adv-qsl)</span>
+        <span style="font-size:0.8rem;">📁 github.com/cm7adv/cm7adv-qsl</span>
     </div>
 </div>
 
@@ -462,9 +403,9 @@
 
 <script>
     // ============================================
-    // CONFIGURACIÓN - INDICATIVO CORREGIDO: CM7ADV
+    // CONFIGURACIÓN - REPOSITORIO CORRECTO
+    // USA AMBOS REPOSITORIOS PARA MÁXIMA COMPATIBILIDAD
     // ============================================
-    // Intentar primero con cm7adv, si no, probar con cl7adv
     const REPOSITORIOS = [
         { user: "cm7adv", repo: "cm7adv-qsl" },
         { user: "cl7adv", repo: "cl7adv-qsl" }
@@ -473,7 +414,7 @@
     const BRANCH = "main";
     let todasLasQSLs = [];
     let estaCargando = false;
-    let repositorioActivo = null;
+    let repoActivo = null;
 
     // ============================================
     // RELOJ EN TIEMPO REAL
@@ -579,14 +520,14 @@
             const qsls = await cargarQSLsDeRepositorio(repo.user, repo.repo);
             if (qsls && qsls.length > 0) {
                 todasLasQSLs = qsls;
-                repositorioActivo = repo;
+                repoActivo = repo;
                 console.log(`✅ Encontradas ${todasLasQSLs.length} QSLs en ${repo.user}/${repo.repo}`);
                 break;
             }
         }
         
         if (todasLasQSLs.length === 0) {
-            // Datos de demostración si no encuentra el repositorio
+            // Datos de demostración con imágenes reales de placeholder
             todasLasQSLs = [
                 {
                     id: "demo1",
@@ -610,19 +551,30 @@
                 },
                 {
                     id: "demo3",
-                    nombre: "KP4ABC_QSL.jpg",
-                    url_raw: "https://picsum.photos/id/127/400/300",
-                    indicativo: "KP4ABC",
+                    nombre: "CM7ADV_CONTACTO_HK3XYZ_20241014.jpg",
+                    url_raw: "https://picsum.photos/id/25/400/300",
+                    indicativo: "CM7ADV",
                     tipo: "CONTACTO",
                     parque: null,
-                    contacto: "CM7ADV",
+                    contacto: "HK3XYZ",
+                    fecha: "2024-10-14"
+                },
+                {
+                    id: "demo4",
+                    nombre: "KP4ABC_POTA_K1234.jpg",
+                    url_raw: "https://picsum.photos/id/127/400/300",
+                    indicativo: "KP4ABC",
+                    tipo: "POTA",
+                    parque: "K-1234",
+                    contacto: null,
                     fecha: "2024-09-20"
                 }
             ];
             mostrarMensajeError("⚠️ No se encontró el repositorio con QSLs.\n\nMostrando QSLs de demostración.\n📌 Asegúrate de tener la carpeta 'img' en:\ngithub.com/cm7adv/cm7adv-qsl");
+        } else {
+            mostrarTodasLasQSLs();
         }
         
-        mostrarTodasLasQSLs();
         estaCargando = false;
     }
 
