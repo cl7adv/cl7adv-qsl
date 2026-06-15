@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>CM7ADV - Caribbean QSL Network</title>
+    <title>CM7ADV - Caribbean QSL Network | Sube tus QSLs</title>
     <style>
         * {
             margin: 0;
@@ -61,7 +61,7 @@
         .clock span { color: #FFD166; }
         .date { font-size: 0.6rem; text-align: center; color: #ccc; }
 
-        /* BOTÓN TEMAS */
+        /* BOTONES FLOTANTES */
         .radio-topics-btn {
             position: fixed;
             bottom: 25px;
@@ -79,9 +79,29 @@
             font-size: 0.8rem;
         }
         
-        .radio-topics-btn:hover { transform: scale(1.05); }
+        .upload-qsl-btn {
+            position: fixed;
+            bottom: 25px;
+            left: 20px;
+            background: linear-gradient(45deg, #2A9D8F, #006994);
+            border: none;
+            padding: 10px 18px;
+            border-radius: 50px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 100;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            transition: all 0.3s;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .radio-topics-btn:hover, .upload-qsl-btn:hover { transform: scale(1.05); }
 
-        /* MODAL */
+        /* MODAL GENERAL */
         .modal {
             display: none;
             position: fixed;
@@ -113,6 +133,60 @@
         .close-modal { position: absolute; top: 15px; right: 20px; font-size: 1.8rem; cursor: pointer; color: #FF6B6B; }
         .topic-item { background: rgba(255,255,255,0.1); padding: 12px; border-radius: 15px; margin: 10px 0; border-left: 4px solid #FFD166; }
         .topic-item strong { color: #FFD166; }
+
+        /* FORMULARIO SUBIDA */
+        .upload-form-group {
+            margin-bottom: 1rem;
+        }
+        .upload-form-group label {
+            display: block;
+            margin-bottom: 0.4rem;
+            font-weight: bold;
+            color: #FFD166;
+        }
+        .upload-form-group input, .upload-form-group select {
+            width: 100%;
+            padding: 0.7rem;
+            border-radius: 50px;
+            border: none;
+            background: rgba(255,255,255,0.9);
+            color: #333;
+            font-size: 0.9rem;
+        }
+        .upload-form-group input[type="file"] {
+            background: rgba(255,255,255,0.9);
+            padding: 0.5rem;
+        }
+        .btn-subir-qsl {
+            background: linear-gradient(45deg, #2A9D8F, #006994);
+            width: 100%;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 50px;
+            color: white;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 0.5rem;
+        }
+        .btn-subir-qsl:hover { opacity: 0.9; }
+        .preview-img {
+            max-width: 100%;
+            max-height: 120px;
+            border-radius: 12px;
+            margin-top: 8px;
+            border: 2px solid #FFD166;
+        }
+        .delete-local-btn {
+            background: #c44536;
+            margin-top: 0.3rem;
+            font-size: 0.7rem;
+            padding: 0.3rem;
+        }
+        .local-badge {
+            background: #2A9D8F;
+            margin-left: 5px;
+        }
 
         /* HEADER */
         .header {
@@ -198,6 +272,7 @@
             box-shadow: 0 10px 25px rgba(0,0,0,0.2);
             transition: all 0.3s;
             color: #333;
+            position: relative;
         }
 
         .qsl-card:hover { transform: translateY(-5px); box-shadow: 0 15px 35px rgba(0,0,0,0.3); }
@@ -302,7 +377,9 @@
             .qsl-grid { grid-template-columns: 1fr; }
             .header h1 { font-size: 1.2rem; }
             .clock { font-size: 0.7rem; padding: 5px 10px; top: 10px; right: 10px; }
-            .radio-topics-btn { padding: 8px 14px; font-size: 0.7rem; bottom: 15px; right: 15px; }
+            .radio-topics-btn, .upload-qsl-btn { padding: 8px 14px; font-size: 0.7rem; bottom: 15px; }
+            .upload-qsl-btn { left: 15px; }
+            .radio-topics-btn { right: 15px; }
         }
     </style>
 </head>
@@ -317,10 +394,13 @@
     <div class="date" id="fecha">--/--/----</div>
 </div>
 
-<!-- BOTÓN TEMAS -->
+<!-- BOTÓN TEMAS DE RADIO -->
 <button class="radio-topics-btn" id="radioTopicsBtn">📻 Temas de Radio</button>
 
-<!-- MODAL -->
+<!-- BOTÓN SUBIR QSL (nuevo) -->
+<button class="upload-qsl-btn" id="uploadQslBtn">➕ Subir QSL</button>
+
+<!-- MODAL TEMAS DE RADIO -->
 <div id="radioModal" class="modal">
     <div class="modal-content">
         <span class="close-modal" id="closeModal">&times;</span>
@@ -336,9 +416,45 @@
     </div>
 </div>
 
+<!-- MODAL SUBIR QSL (nuevo) -->
+<div id="uploadModal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal" id="closeUploadModal">&times;</span>
+        <h2>📤 SUBIR NUEVA QSL</h2>
+        <form id="uploadForm">
+            <div class="upload-form-group">
+                <label>📡 Indicativo *</label>
+                <input type="text" id="qslIndicativo" placeholder="Ej: CM7ADV, KP4ABC" required>
+            </div>
+            <div class="upload-form-group">
+                <label>🏷️ Tipo *</label>
+                <select id="qslTipo">
+                    <option value="CONTACTO">Contacto (DX)</option>
+                    <option value="POTA">POTA (Parque)</option>
+                </select>
+            </div>
+            <div class="upload-form-group" id="campoExtraContainer">
+                <label id="extraLabel">📞 Contacto *</label>
+                <input type="text" id="qslExtra" placeholder="Ej: HK3XYZ / CM-0001" required>
+            </div>
+            <div class="upload-form-group">
+                <label>📅 Fecha (opcional)</label>
+                <input type="date" id="qslFecha">
+            </div>
+            <div class="upload-form-group">
+                <label>🖼️ Imagen QSL (jpg/png/gif) *</label>
+                <input type="file" id="qslImagen" accept="image/jpeg,image/png,image/gif" required>
+                <div id="imagePreview"></div>
+            </div>
+            <button type="submit" class="btn-subir-qsl">✅ Guardar QSL localmente</button>
+        </form>
+        <p style="font-size: 0.7rem; text-align: center; margin-top: 12px;">📌 Las QSLs subidas se guardan en tu navegador (IndexedDB).</p>
+    </div>
+</div>
+
 <div class="header">
     <h1>🏝️ CARIBBEAN QSL NETWORK</h1>
-    <p>📻 <span class="call">CM7ADV</span> - Busca y descarga QSLs</p>
+    <p>📻 <span class="call">CM7ADV</span> - Busca y descarga QSLs | Sube tus propias tarjetas</p>
     <p style="font-size:0.65rem;">🇨🇺 Playas de Cuba - 73's desde el Caribe 🌊</p>
 </div>
 
@@ -352,35 +468,42 @@
 <div class="container" id="resultsContainer">
     <div class="welcome-message">
         <h3>🏝️ BIENVENIDO AL SISTEMA DE QSLs</h3>
-        <p>Ingresa un indicativo o código POTA para buscar sus QSLs</p>
+        <p>Ingresa un indicativo o código POTA para buscar sus QSLs (repositorio + tus subidas)</p>
         <div class="suggestions">
-            <div class="suggestion-chip" onclick="buscarSugerencia('CM7ADV')">📡 CM7ADV</div>
-            <div class="suggestion-chip" onclick="buscarSugerencia('KP4ABC')">📡 KP4ABC</div>
-            <div class="suggestion-chip" onclick="buscarSugerencia('HK3XYZ')">📡 HK3XYZ</div>
-            <div class="suggestion-chip" onclick="buscarSugerencia('CM-0001')">🏞️ CM-0001</div>
+            <div class="suggestion-chip" data-callsign="CM7ADV">📡 CM7ADV</div>
+            <div class="suggestion-chip" data-callsign="KP4ABC">📡 KP4ABC</div>
+            <div class="suggestion-chip" data-callsign="HK3XYZ">📡 HK3XYZ</div>
+            <div class="suggestion-chip" data-callsign="CM-0001">🏞️ CM-0001</div>
         </div>
     </div>
 </div>
 
 <footer>
-    <p>📡 Repositorio: github.com/cm7adv/cm7adv-qsl | 📻 CM7ADV | 🇨🇺 73's para todos</p>
+    <p>📡 Repositorio: github.com/cm7adv/cm7adv-qsl | 📻 CM7ADV | 🇨🇺 Sube tus QSLs (guardado local) | 73's</p>
 </footer>
 
 <script>
     // ============================================
-    // CONFIGURACIÓN - REPOSITORIOS
+    // 1. CONFIGURACIÓN GLOBAL
     // ============================================
     const REPOSITORIOS = [
         { user: "cm7adv", repo: "cm7adv-qsl" },
         { user: "cl7adv", repo: "cl7adv-qsl" }
     ];
-    
     const BRANCH = "main";
-    let todasLasQSLs = [];
+    let todasLasQSLs = [];          // QSLs desde GitHub
+    let qslsLocales = [];           // QSLs subidas por usuario (con blob)
     let qslsCargadas = false;
+    let localesCargados = false;
+    let activeObjectUrls = [];       // para revocar URLs al cambiar resultados
+    
+    // IndexedDB
+    const DB_NAME = "QSL_CM7ADV_DB";
+    const STORE_NAME = "qsls";
+    let db = null;
 
     // ============================================
-    // RELOJ
+    // 2. RELOJ Y MODALES (EXISTENTES)
     // ============================================
     function actualizarReloj() {
         const ahora = new Date();
@@ -390,16 +513,81 @@
     setInterval(actualizarReloj, 1000);
     actualizarReloj();
 
-    // ============================================
-    // MODAL
-    // ============================================
-    const modal = document.getElementById('radioModal');
-    document.getElementById('radioTopicsBtn').onclick = () => modal.style.display = 'flex';
-    document.getElementById('closeModal').onclick = () => modal.style.display = 'none';
-    window.onclick = (e) => { if (e.target === modal) modal.style.display = 'none'; };
+    const modalRadio = document.getElementById('radioModal');
+    const modalUpload = document.getElementById('uploadModal');
+    document.getElementById('radioTopicsBtn').onclick = () => modalRadio.style.display = 'flex';
+    document.getElementById('closeModal').onclick = () => modalRadio.style.display = 'none';
+    document.getElementById('uploadQslBtn').onclick = () => modalUpload.style.display = 'flex';
+    document.getElementById('closeUploadModal').onclick = () => modalUpload.style.display = 'none';
+    window.onclick = (e) => { if (e.target === modalRadio) modalRadio.style.display = 'none'; if (e.target === modalUpload) modalUpload.style.display = 'none'; };
 
     // ============================================
-    // FUNCIONES DE CARGA (SOLO UNA VEZ AL INICIO)
+    // 3. INDEXEDDB: INICIALIZAR Y OPERACIONES
+    // ============================================
+    function initIndexedDB() {
+        return new Promise((resolve, reject) => {
+            const request = indexedDB.open(DB_NAME, 1);
+            request.onerror = () => reject("Error al abrir IndexedDB");
+            request.onsuccess = (e) => {
+                db = e.target.result;
+                resolve(db);
+            };
+            request.onupgradeneeded = (e) => {
+                const dbTemp = e.target.result;
+                if (!dbTemp.objectStoreNames.contains(STORE_NAME)) {
+                    const store = dbTemp.createObjectStore(STORE_NAME, { keyPath: "id", autoIncrement: true });
+                    store.createIndex("indicativo", "indicativo", { unique: false });
+                }
+            };
+        });
+    }
+
+    async function guardarQSLEnIndexedDB(qslData) {
+        return new Promise((resolve, reject) => {
+            const transaction = db.transaction([STORE_NAME], "readwrite");
+            const store = transaction.objectStore(STORE_NAME);
+            const request = store.add(qslData);
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => reject("Error guardando QSL");
+        });
+    }
+
+    async function eliminarQSLDeIndexedDB(id) {
+        return new Promise((resolve, reject) => {
+            const transaction = db.transaction([STORE_NAME], "readwrite");
+            const store = transaction.objectStore(STORE_NAME);
+            const request = store.delete(id);
+            request.onsuccess = () => resolve();
+            request.onerror = () => reject();
+        });
+    }
+
+    async function cargarQSLsLocalesDesdeDB() {
+        return new Promise((resolve, reject) => {
+            if (!db) return resolve([]);
+            const transaction = db.transaction([STORE_NAME], "readonly");
+            const store = transaction.objectStore(STORE_NAME);
+            const request = store.getAll();
+            request.onsuccess = () => {
+                const items = request.result;
+                const qsls = items.map(item => ({
+                    id: item.id,
+                    indicativo: item.indicativo,
+                    tipo: item.tipo,
+                    detalle: item.detalle,      // contacto o parque
+                    fecha: item.fecha || "Fecha no especificada",
+                    blob: item.blob,
+                    nombreArchivo: item.nombreArchivo,
+                    esLocal: true
+                }));
+                resolve(qsls);
+            };
+            request.onerror = () => resolve([]);
+        });
+    }
+
+    // ============================================
+    // 4. CARGA DE QSLs DESDE GITHUB (SIN CAMBIOS)
     // ============================================
     async function obtenerArchivosDeCarpeta(user, repo, ruta = "") {
         try {
@@ -407,79 +595,7 @@
             const response = await fetch(url);
             if (!response.ok) return null;
             return await response.json();
-        } catch (error) {
-            return null;
-        }
-    }
-
-    async function cargarQSLsDeRepositorio(user, repo) {
-        const imagenes = [];
-        const carpetas = ["img", ""];
-        const RAW_BASE = `https://raw.githubusercontent.com/${user}/${repo}/${BRANCH}/`;
-        
-        for (const carpeta of carpetas) {
-            const archivos = await obtenerArchivosDeCarpeta(user, repo, carpeta);
-            if (archivos && Array.isArray(archivos)) {
-                for (const archivo of archivos) {
-                    if (archivo.type === "file" && /\.(jpg|jpeg|png|gif)$/i.test(archivo.name)) {
-                        const metadata = extraerMetadatos(archivo.name);
-                        imagenes.push({
-                            id: archivo.sha,
-                            nombre: archivo.name,
-                            url_raw: `${RAW_BASE}${carpeta}${archivo.name}`,
-                            ...metadata
-                        });
-                    }
-                    if (archivo.type === "dir") {
-                        const subArchivos = await obtenerArchivosDeCarpeta(user, repo, `${carpeta}${archivo.name}/`);
-                        if (subArchivos && Array.isArray(subArchivos)) {
-                            for (const sub of subArchivos) {
-                                if (sub.type === "file" && /\.(jpg|jpeg|png|gif)$/i.test(sub.name)) {
-                                    const metadata = extraerMetadatos(sub.name);
-                                    imagenes.push({
-                                        id: sub.sha,
-                                        nombre: sub.name,
-                                        url_raw: `${RAW_BASE}${carpeta}${archivo.name}/${sub.name}`,
-                                        ...metadata
-                                    });
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return imagenes;
-    }
-
-    async function cargarTodasLasImagenes() {
-        if (qslsCargadas) return;
-        
-        mostrarMensaje("🌊 Cargando base de datos de QSLs...", "loading");
-        
-        for (const repo of REPOSITORIOS) {
-            const qsls = await cargarQSLsDeRepositorio(repo.user, repo.repo);
-            if (qsls && qsls.length > 0) {
-                todasLasQSLs = qsls;
-                console.log(`✅ Cargadas ${todasLasQSLs.length} QSLs desde ${repo.user}/${repo.repo}`);
-                break;
-            }
-        }
-        
-        qslsCargadas = true;
-        
-        if (todasLasQSLs.length === 0) {
-            // QSLs de demostración
-            todasLasQSLs = [
-                { id: "demo1", nombre: "CM7ADV_POTA_CM0001_20241015.jpg", url_raw: "https://picsum.photos/id/104/400/300", indicativo: "CM7ADV", tipo: "POTA", parque: "CM-0001", contacto: null, fecha: "2024-10-15" },
-                { id: "demo2", nombre: "CM7ADV_CONTACTO_KP4ABC_20241015.png", url_raw: "https://picsum.photos/id/96/400/300", indicativo: "CM7ADV", tipo: "CONTACTO", parque: null, contacto: "KP4ABC", fecha: "2024-10-15" },
-                { id: "demo3", nombre: "CM7ADV_CONTACTO_HK3XYZ_20241014.jpg", url_raw: "https://picsum.photos/id/25/400/300", indicativo: "CM7ADV", tipo: "CONTACTO", parque: null, contacto: "HK3XYZ", fecha: "2024-10-14" },
-                { id: "demo4", nombre: "KP4ABC_POTA_K1234.jpg", url_raw: "https://picsum.photos/id/127/400/300", indicativo: "KP4ABC", tipo: "POTA", parque: "K-1234", contacto: null, fecha: "2024-09-20" }
-            ];
-            mostrarMensaje("⚠️ Usando QSLs de demostración. Sube tus imágenes a la carpeta /img", "error");
-        } else {
-            mostrarMensaje("🏝️ QSLs cargadas. Busca un indicativo para ver sus QSLs", "welcome");
-        }
+        } catch { return null; }
     }
 
     function extraerMetadatos(nombreArchivo) {
@@ -494,56 +610,150 @@
         return { indicativo, tipo, parque, contacto, fecha: fecha || "Fecha no especificada" };
     }
 
+    async function cargarQSLsDeRepositorio(user, repo) {
+        const imagenes = [];
+        const carpetas = ["img", ""];
+        const RAW_BASE = `https://raw.githubusercontent.com/${user}/${repo}/${BRANCH}/`;
+        for (const carpeta of carpetas) {
+            const archivos = await obtenerArchivosDeCarpeta(user, repo, carpeta);
+            if (archivos && Array.isArray(archivos)) {
+                for (const archivo of archivos) {
+                    if (archivo.type === "file" && /\.(jpg|jpeg|png|gif)$/i.test(archivo.name)) {
+                        const metadata = extraerMetadatos(archivo.name);
+                        imagenes.push({
+                            id: archivo.sha,
+                            nombre: archivo.name,
+                            url_raw: `${RAW_BASE}${carpeta}${archivo.name}`,
+                            indicativo: metadata.indicativo,
+                            tipo: metadata.tipo,
+                            parque: metadata.parque,
+                            contacto: metadata.contacto,
+                            fecha: metadata.fecha,
+                            esLocal: false
+                        });
+                    }
+                    if (archivo.type === "dir") {
+                        const subArchivos = await obtenerArchivosDeCarpeta(user, repo, `${carpeta}${archivo.name}/`);
+                        if (subArchivos && Array.isArray(subArchivos)) {
+                            for (const sub of subArchivos) {
+                                if (sub.type === "file" && /\.(jpg|jpeg|png|gif)$/i.test(sub.name)) {
+                                    const metadata = extraerMetadatos(sub.name);
+                                    imagenes.push({
+                                        id: sub.sha,
+                                        nombre: sub.name,
+                                        url_raw: `${RAW_BASE}${carpeta}${archivo.name}/${sub.name}`,
+                                        indicativo: metadata.indicativo,
+                                        tipo: metadata.tipo,
+                                        parque: metadata.parque,
+                                        contacto: metadata.contacto,
+                                        fecha: metadata.fecha,
+                                        esLocal: false
+                                    });
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return imagenes;
+    }
+
+    async function cargarTodasLasImagenesRemotas() {
+        if (qslsCargadas) return;
+        for (const repo of REPOSITORIOS) {
+            const qsls = await cargarQSLsDeRepositorio(repo.user, repo.repo);
+            if (qsls && qsls.length > 0) {
+                todasLasQSLs = qsls;
+                console.log(`✅ Cargadas ${todasLasQSLs.length} QSLs desde repositorio`);
+                break;
+            }
+        }
+        if (todasLasQSLs.length === 0) {
+            todasLasQSLs = [
+                { id: "demo1", nombre: "CM7ADV_POTA_CM0001_20241015.jpg", url_raw: "https://picsum.photos/id/104/400/300", indicativo: "CM7ADV", tipo: "POTA", parque: "CM-0001", contacto: null, fecha: "2024-10-15", esLocal: false },
+                { id: "demo2", nombre: "CM7ADV_CONTACTO_KP4ABC_20241015.png", url_raw: "https://picsum.photos/id/96/400/300", indicativo: "CM7ADV", tipo: "CONTACTO", parque: null, contacto: "KP4ABC", fecha: "2024-10-15", esLocal: false },
+                { id: "demo3", nombre: "CM7ADV_CONTACTO_HK3XYZ_20241014.jpg", url_raw: "https://picsum.photos/id/25/400/300", indicativo: "CM7ADV", tipo: "CONTACTO", parque: null, contacto: "HK3XYZ", fecha: "2024-10-14", esLocal: false },
+                { id: "demo4", nombre: "KP4ABC_POTA_K1234.jpg", url_raw: "https://picsum.photos/id/127/400/300", indicativo: "KP4ABC", tipo: "POTA", parque: "K-1234", contacto: null, fecha: "2024-09-20", esLocal: false }
+            ];
+            mostrarMensaje("⚠️ Usando QSLs de demostración. Sube tus propias imágenes", "error");
+        }
+        qslsCargadas = true;
+    }
+
     // ============================================
-    // MOSTRAR RESULTADOS DE BÚSQUEDA
+    // 5. MOSTRAR RESULTADOS (UNIFICADO)
     // ============================================
-    function mostrarResultadosBusqueda(texto) {
-        if (!todasLasQSLs.length) {
-            mostrarMensaje("⏳ Cargando base de datos, intenta de nuevo...", "loading");
-            cargarTodasLasImagenes().then(() => mostrarResultadosBusqueda(texto));
-            return;
+    function revocarUrlsAnteriores() {
+        activeObjectUrls.forEach(url => URL.revokeObjectURL(url));
+        activeObjectUrls = [];
+    }
+
+    async function mostrarResultadosBusqueda(texto) {
+        if (!db) await initIndexedDB();
+        if (!qslsCargadas) await cargarTodasLasImagenesRemotas();
+        if (!localesCargados) {
+            qslsLocales = await cargarQSLsLocalesDesdeDB();
+            localesCargados = true;
         }
         
         const busqueda = texto.toUpperCase().trim();
-        const resultados = todasLasQSLs.filter(qsl => {
-            return qsl.indicativo?.toUpperCase().includes(busqueda) ||
-                   qsl.parque?.toUpperCase().includes(busqueda) ||
-                   qsl.contacto?.toUpperCase().includes(busqueda);
+        // Combinar repositorio + locales
+        const todas = [...todasLasQSLs, ...qslsLocales];
+        const resultados = todas.filter(qsl => {
+            const indicativoMatch = qsl.indicativo?.toUpperCase().includes(busqueda);
+            const parqueMatch = qsl.parque?.toUpperCase().includes(busqueda);
+            const contactoMatch = qsl.contacto?.toUpperCase().includes(busqueda);
+            return indicativoMatch || parqueMatch || contactoMatch;
         });
         
         if (resultados.length === 0) {
             mostrarMensaje(`❌ No se encontraron QSLs para "${texto}"<br><br>📌 Sugerencias: CM7ADV, KP4ABC, HK3XYZ, CM-0001`, "error");
+            revocarUrlsAnteriores();
             return;
         }
         
         let html = `<div class="results-header"><h2>📸 QSLs encontradas para "${busqueda}" (${resultados.length})</h2></div>`;
         html += `<div class="qsl-grid">`;
         
-        resultados.forEach(qsl => {
+        revocarUrlsAnteriores(); // limpiar URLs viejas
+        
+        for (const qsl of resultados) {
+            let imageUrl = qsl.url_raw;
+            let isBlob = false;
+            if (qsl.esLocal && qsl.blob) {
+                const blobUrl = URL.createObjectURL(qsl.blob);
+                imageUrl = blobUrl;
+                activeObjectUrls.push(blobUrl);
+                isBlob = true;
+            }
             const tipoIcono = qsl.tipo === "POTA" ? "🏞️" : "📻";
             const tituloQSL = qsl.tipo === "POTA" ? `POTA: ${qsl.parque || "N/A"}` : `Contacto: ${qsl.contacto || "N/A"}`;
+            const badgeLocal = qsl.esLocal ? '<span class="badge local-badge">📀 Local</span>' : '';
             
             html += `
-                <div class="qsl-card">
+                <div class="qsl-card" data-id="${qsl.id || ''}" data-local="${qsl.esLocal}">
                     <div class="qsl-image">
-                        <img src="${qsl.url_raw}" alt="QSL ${qsl.indicativo}" loading="lazy" onerror="this.src='https://picsum.photos/id/42/400/300'">
+                        <img src="${imageUrl}" alt="QSL ${qsl.indicativo}" loading="lazy" onerror="this.src='https://picsum.photos/id/42/400/300'">
                     </div>
                     <div class="qsl-info">
-                        <h3>${tipoIcono} ${qsl.indicativo}</h3>
+                        <h3>${tipoIcono} ${qsl.indicativo} ${badgeLocal}</h3>
                         <p><span class="badge">${qsl.tipo}</span> ${tituloQSL}</p>
                         <p>📅 ${qsl.fecha}</p>
-                        <button class="btn-download" onclick="descargarQSL('${qsl.url_raw}', '${qsl.indicativo}')">📥 DESCARGAR QSL</button>
-                    </div>
-                </div>
+                        <button class="btn-download" onclick="descargarQSL('${imageUrl}', '${qsl.indicativo}')">📥 DESCARGAR QSL</button>
             `;
-        });
-        
+            if (qsl.esLocal && qsl.id) {
+                html += `<button class="btn-download delete-local-btn" onclick="eliminarQSLLocal(${qsl.id}, '${qsl.indicativo}')">🗑️ Eliminar QSL</button>`;
+            }
+            html += `</div></div>`;
+        }
         html += `</div>`;
         document.getElementById("resultsContainer").innerHTML = html;
     }
 
     function mostrarMensaje(mensaje, tipo) {
         const container = document.getElementById("resultsContainer");
+        revocarUrlsAnteriores();
         if (tipo === "loading") {
             container.innerHTML = `<div class="loading"><span>${mensaje}</span><br><span style="font-size:0.7rem;">⏳ Un momento...</span></div>`;
         } else if (tipo === "error") {
@@ -553,36 +763,137 @@
         }
     }
 
-    function descargarQSL(url, indicativo) {
+    window.descargarQSL = (url, indicativo) => {
         window.open(url, '_blank');
-    }
-
-    function buscarSugerencia(texto) {
+    };
+    
+    window.eliminarQSLLocal = async (id, indicativo) => {
+        if (!confirm(`¿Eliminar esta QSL de ${indicativo}? (solo de tu almacenamiento local)`)) return;
+        await eliminarQSLDeIndexedDB(id);
+        qslsLocales = qslsLocales.filter(q => q.id !== id);
+        localesCargados = true;
+        const textoActual = document.getElementById("searchInput").value.trim();
+        if (textoActual) await mostrarResultadosBusqueda(textoActual);
+        else mostrarMensaje("QSL eliminada correctamente. Puedes buscar nuevamente.", "welcome");
+    };
+    
+    window.buscarSugerencia = async (texto) => {
         document.getElementById("searchInput").value = texto;
-        mostrarResultadosBusqueda(texto);
-    }
+        await mostrarResultadosBusqueda(texto);
+    };
 
     // ============================================
-    // EVENTOS
+    // 6. SUBIR NUEVA QSL (FORMULARIO)
     // ============================================
-    document.getElementById("searchBtn").addEventListener("click", () => {
+    document.getElementById("qslTipo").addEventListener("change", function() {
+        const extraLabel = document.getElementById("extraLabel");
+        const inputExtra = document.getElementById("qslExtra");
+        if (this.value === "POTA") {
+            extraLabel.innerText = "🏞️ Código POTA *";
+            inputExtra.placeholder = "Ej: CM-0001, K-1234";
+        } else {
+            extraLabel.innerText = "📞 Indicativo Contacto *";
+            inputExtra.placeholder = "Ej: HK3XYZ, KP4ABC";
+        }
+    });
+    
+    document.getElementById("qslImagen").addEventListener("change", function(e) {
+        const previewDiv = document.getElementById("imagePreview");
+        if (this.files && this.files[0]) {
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                previewDiv.innerHTML = `<img src="${ev.target.result}" class="preview-img" alt="preview">`;
+            };
+            reader.readAsDataURL(this.files[0]);
+        } else previewDiv.innerHTML = "";
+    });
+    
+    document.getElementById("uploadForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const indicativo = document.getElementById("qslIndicativo").value.trim().toUpperCase();
+        if (!indicativo) return alert("Indicativo requerido");
+        const tipo = document.getElementById("qslTipo").value;
+        const extraRaw = document.getElementById("qslExtra").value.trim().toUpperCase();
+        if (!extraRaw) return alert("Completa el campo adicional (contacto o parque)");
+        let detalle = extraRaw;
+        let parque = null, contacto = null;
+        if (tipo === "POTA") parque = detalle;
+        else contacto = detalle;
+        
+        let fecha = document.getElementById("qslFecha").value;
+        if (!fecha) fecha = new Date().toISOString().slice(0,10);
+        
+        const fileInput = document.getElementById("qslImagen");
+        if (!fileInput.files.length) return alert("Selecciona una imagen");
+        const file = fileInput.files[0];
+        const blob = file;
+        const nombreArchivo = file.name;
+        
+        const nuevaQSL = {
+            indicativo: indicativo,
+            tipo: tipo,
+            detalle: detalle,
+            parque: parque,
+            contacto: contacto,
+            fecha: fecha,
+            blob: blob,
+            nombreArchivo: nombreArchivo,
+            esLocal: true
+        };
+        
+        try {
+            const idGuardado = await guardarQSLEnIndexedDB(nuevaQSL);
+            nuevaQSL.id = idGuardado;
+            qslsLocales.push(nuevaQSL);
+            localesCargados = true;
+            alert(`✅ QSL de ${indicativo} guardada exitosamente`);
+            document.getElementById("uploadForm").reset();
+            document.getElementById("imagePreview").innerHTML = "";
+            modalUpload.style.display = "none";
+            // Refrescar búsqueda si hay texto en el buscador
+            const textoBusqueda = document.getElementById("searchInput").value.trim();
+            if (textoBusqueda && textoBusqueda.toUpperCase() === indicativo) {
+                await mostrarResultadosBusqueda(textoBusqueda);
+            } else if (textoBusqueda) {
+                await mostrarResultadosBusqueda(textoBusqueda);
+            }
+        } catch (err) {
+            alert("Error al guardar la QSL: " + err);
+        }
+    });
+    
+    // ============================================
+    // 7. EVENTOS DEL BUSCADOR Y SUGERENCIAS
+    // ============================================
+    document.getElementById("searchBtn").addEventListener("click", async () => {
         const texto = document.getElementById("searchInput").value.trim();
         if (texto === "") {
             mostrarMensaje("🔍 Ingresa un indicativo para buscar (ej: CM7ADV, KP4ABC)", "welcome");
             return;
         }
-        mostrarResultadosBusqueda(texto);
+        await mostrarResultadosBusqueda(texto);
     });
-    
     document.getElementById("searchInput").addEventListener("keypress", (e) => {
         if (e.key === "Enter") document.getElementById("searchBtn").click();
     });
-
-    window.buscarSugerencia = buscarSugerencia;
-    window.descargarQSL = descargarQSL;
     
-    // Cargar base de datos en segundo plano
-    cargarTodasLasImagenes();
+    document.querySelectorAll(".suggestion-chip").forEach(chip => {
+        chip.addEventListener("click", (e) => {
+            const callsign = chip.getAttribute("data-callsign");
+            if (callsign) buscarSugerencia(callsign);
+        });
+    });
+    
+    // ============================================
+    // 8. INICIALIZACIÓN COMPLETA
+    // ============================================
+    (async () => {
+        await initIndexedDB();
+        await cargarTodasLasImagenesRemotas();
+        qslsLocales = await cargarQSLsLocalesDesdeDB();
+        localesCargados = true;
+        mostrarMensaje("🏝️ Base de datos lista. Busca un indicativo o sube tus propias QSLs", "welcome");
+    })();
 </script>
 </body>
 </html>
