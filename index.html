@@ -2,661 +2,532 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <title>CM7ADV · Buscador de QSLs</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>QSL Caribe - Descarga tus QSLs</title>
+    <!-- Google Fonts para estilo tropical -->
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Fredoka+One&family=Nunito:wght@400;700&display=swap" rel="stylesheet" />
+    <!-- Font Awesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        /* --- RESET Y ESTILOS GLOBALES --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
             min-height: 100vh;
-            color: #fff;
-            position: relative;
-        }
-
-        /* Fondo de Playa de Cuba (imagen + degradado) */
-        .beach-bg {
-            position: fixed;
-            inset: 0;
-            z-index: -2;
-            background-image: url('https://images.pexels.com/photos/457882/pexels-photo-457882.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-        }
-        .overlay {
-            position: fixed;
-            inset: 0;
-            z-index: -1;
-            background: linear-gradient(135deg, rgba(0,0,0,0.5), rgba(0,50,70,0.6));
-            backdrop-filter: blur(2px);
-        }
-
-        /* Reloj */
-        .clock {
-            position: fixed;
-            top: 16px;
-            right: 16px;
-            background: rgba(0,0,0,0.6);
-            backdrop-filter: blur(8px);
-            padding: 6px 14px;
-            border-radius: 40px;
-            font-family: 'Courier New', monospace;
-            font-size: 0.9rem;
-            border: 1px solid rgba(255,215,0,0.3);
-            z-index: 100;
-            text-align: center;
-            line-height: 1.3;
-        }
-        .clock span { color: #FFD166; }
-        .clock .date { font-size: 0.55rem; color: #aac; }
-
-        /* Botón Temas de Radio (opcional) */
-        .float-btn {
-            position: fixed;
-            bottom: 24px;
-            left: 20px;
-            padding: 10px 18px;
-            border: none;
-            border-radius: 50px;
-            font-weight: 600;
-            font-size: 0.8rem;
-            cursor: pointer;
-            z-index: 100;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
-            transition: all 0.2s;
-            background: linear-gradient(135deg, #f093fb, #f5576c);
-            color: #fff;
-        }
-        .float-btn:hover { transform: scale(1.05); }
-
-        /* Modal de Temas */
-        .modal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.8);
-            backdrop-filter: blur(6px);
-            z-index: 200;
+            background: linear-gradient(145deg, #ffe5b4 0%, #ffd699 50%, #f9c07a 100%);
+            font-family: 'Nunito', sans-serif;
+            display: flex;
             justify-content: center;
             align-items: center;
-            padding: 1rem;
-        }
-        .modal-content {
-            background: #1e2f3f;
-            border-radius: 32px;
-            max-width: 520px;
-            width: 100%;
-            max-height: 80vh;
-            overflow-y: auto;
-            padding: 1.8rem;
-            border: 1px solid rgba(255,215,0,0.2);
-            box-shadow: 0 20px 60px rgba(0,0,0,0.7);
+            padding: 20px;
             position: relative;
-            color: #eee;
         }
-        .modal-content h2 { color: #FFD166; text-align: center; margin-bottom: 1.2rem; font-weight: 300; letter-spacing: 1px; }
-        .close-modal {
-            position: sticky;
-            top: 0;
-            float: right;
-            font-size: 2rem;
-            cursor: pointer;
-            color: #f5576c;
-            line-height: 1;
+
+        /* Decoración de palmeras (solo CSS) */
+        body::before,
+        body::after {
+            content: "🌴";
+            font-size: 6rem;
+            position: absolute;
+            bottom: 20px;
+            opacity: 0.2;
+            transform: rotate(10deg);
+            user-select: none;
+            pointer-events: none;
+        }
+        body::before {
+            left: 20px;
+            transform: rotate(-10deg);
+        }
+        body::after {
+            right: 20px;
+            transform: rotate(20deg);
+        }
+
+        /* --- TARJETA PRINCIPAL --- */
+        .card {
+            max-width: 700px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(8px);
+            border-radius: 60px 60px 40px 40px;
+            padding: 2.5rem 2rem 2rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2), 0 8px 16px rgba(0, 0, 0, 0.1);
+            border: 3px solid #ffffff88;
+            position: relative;
+            transition: 0.3s;
+        }
+
+        /* --- ENCABEZADO --- */
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            font-family: 'Pacifico', cursive;
+            font-size: 3rem;
+            color: #1e6f5c;
+            text-shadow: 4px 4px 0 #f9c07a, 0 8px 12px rgba(0,0,0,0.1);
+            letter-spacing: 2px;
+            word-break: break-word;
+        }
+
+        .header .subtitle {
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.3rem;
+            color: #c44536;
+            background: #fde6c4;
+            display: inline-block;
+            padding: 0.2rem 2rem;
+            border-radius: 40px;
+            margin-top: 0.2rem;
+            box-shadow: inset 0 -3px 0 #b35d3a;
+        }
+
+        .header .sun {
+            font-size: 2.5rem;
+            display: block;
             margin-top: -0.5rem;
         }
-        .topic-item {
-            background: rgba(255,255,255,0.06);
-            padding: 12px 16px;
-            border-radius: 16px;
-            margin: 10px 0;
-            border-left: 4px solid #FFD166;
-        }
-        .topic-item strong { color: #FFD166; }
 
-        /* Header */
-        .header {
-            background: rgba(0,0,0,0.5);
-            backdrop-filter: blur(10px);
-            padding: 1.2rem 1rem;
-            text-align: center;
-            border-bottom: 2px solid rgba(255,215,0,0.3);
+        /* --- BUSCADOR --- */
+        .search-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            margin: 1.5rem 0 2rem;
         }
-        .header h1 {
-            font-size: 1.8rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, #FFD166, #FF6B6B);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-        .header .call { color: #FFD166; font-weight: 600; }
 
-        /* Buscador */
-        .search-container {
-            max-width: 720px;
-            margin: 2rem auto 1rem;
-            padding: 0 1rem;
-        }
         .search-box {
-            display: flex;
-            gap: 0.6rem;
-            background: rgba(0,0,0,0.5);
-            backdrop-filter: blur(8px);
-            padding: 0.6rem 0.6rem 0.6rem 1.5rem;
-            border-radius: 60px;
-            border: 1px solid rgba(255,215,0,0.15);
-            flex-wrap: wrap;
-        }
-        .search-box input {
-            flex: 1;
-            padding: 0.8rem 0.2rem;
-            border: none;
-            background: transparent;
-            font-size: 1rem;
-            color: #fff;
-            outline: none;
-            min-width: 160px;
-        }
-        .search-box input::placeholder { color: rgba(255,255,255,0.5); }
-        .search-box button {
-            padding: 0.8rem 1.8rem;
-            background: linear-gradient(135deg, #FF6B6B, #F4A261);
-            border: none;
-            border-radius: 40px;
-            color: #fff;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .search-box button:hover { filter: brightness(1.1); transform: scale(1.02); }
-
-        /* Sugerencias (autocompletado) */
-        .suggestions-list {
-            list-style: none;
-            margin: 0.4rem 1.5rem 0;
-            padding: 0.3rem 0;
-            background: rgba(0,0,0,0.7);
-            backdrop-filter: blur(8px);
-            border-radius: 20px;
-            max-height: 180px;
-            overflow-y: auto;
-            display: none;
-        }
-        .suggestions-list li {
-            padding: 0.6rem 1.2rem;
-            cursor: pointer;
-            transition: 0.15s;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            font-size: 0.9rem;
-        }
-        .suggestions-list li:hover { background: rgba(255,215,0,0.15); }
-        .suggestions-list li:last-child { border-bottom: none; }
-
-        /* Resultados */
-        .container { max-width: 1100px; margin: 0 auto; padding: 0 1rem 2rem; }
-        .results-header {
-            margin: 1rem 0;
-            padding: 0.6rem 1rem;
-            background: rgba(0,0,0,0.3);
-            backdrop-filter: blur(4px);
-            border-radius: 16px;
-            border-left: 5px solid #FFD166;
-        }
-
-        .qsl-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-            gap: 1.5rem;
-            margin-top: 1.2rem;
-        }
-
-        .qsl-card {
-            background: rgba(255,255,255,0.97);
-            border-radius: 24px;
-            overflow: hidden;
-            box-shadow: 0 12px 30px rgba(0,0,0,0.25);
-            transition: all 0.3s ease;
-            color: #1e2f3f;
-            display: flex;
-            flex-direction: column;
-        }
-        .qsl-card:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.35);
-        }
-
-        .qsl-image {
-            width: 100%;
-            height: 200px;
-            background: #d0d8e0;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .qsl-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.3s;
-        }
-        .qsl-card:hover .qsl-image img { transform: scale(1.04); }
-
-        .qsl-info {
-            padding: 0.9rem 1rem 1rem;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
-        .qsl-info h3 {
-            font-size: 1.1rem;
-            color: #0b1a2b;
-            margin-bottom: 0.2rem;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            flex-wrap: wrap;
-        }
-        .qsl-info p { margin: 0.15rem 0; font-size: 0.8rem; color: #445; }
-        .badge {
-            display: inline-block;
-            background: #f5576c;
-            color: #fff;
-            padding: 0.1rem 0.6rem;
-            border-radius: 30px;
-            font-size: 0.6rem;
-            font-weight: 600;
-            letter-spacing: 0.3px;
-        }
-
-        .btn-download {
-            background: linear-gradient(135deg, #2A9D8F, #006994);
-            color: #fff;
-            border: none;
-            padding: 0.5rem 0.8rem;
-            border-radius: 30px;
-            width: 100%;
-            margin-top: 0.8rem;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.8rem;
-            transition: 0.2s;
-            text-align: center;
-            text-decoration: none;
-        }
-        .btn-download:hover { filter: brightness(1.1); }
-
-        /* Mensajes */
-        .message-box {
-            text-align: center;
-            padding: 2.5rem 1.5rem;
-            background: rgba(0,0,0,0.5);
-            backdrop-filter: blur(8px);
-            border-radius: 32px;
-            margin-top: 1.5rem;
-        }
-        .message-box h3 { color: #FFD166; margin-bottom: 0.6rem; }
-        .message-box .suggestions {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
             gap: 0.8rem;
-            margin-top: 1rem;
+            width: 100%;
         }
-        .chip {
-            background: rgba(255,255,255,0.15);
-            padding: 0.4rem 1.2rem;
-            border-radius: 40px;
+
+        .search-box input {
+            flex: 1 1 200px;
+            padding: 0.9rem 1.5rem;
+            border: none;
+            border-radius: 50px;
+            background: #fef9f0;
+            font-size: 1.2rem;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 700;
+            color: #1e3d3a;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05), inset 0 2px 6px rgba(0,0,0,0.05);
+            transition: 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            outline: 2px solid transparent;
+        }
+
+        .search-box input:focus {
+            outline: 2px solid #f9a825;
+            background: #ffffff;
+            box-shadow: 0 8px 16px rgba(249, 168, 37, 0.2);
+        }
+
+        .search-box input::placeholder {
+            text-transform: none;
+            font-weight: 400;
+            color: #a28b7a;
+            letter-spacing: 0;
+        }
+
+        .search-box button {
+            padding: 0.9rem 2.2rem;
+            border: none;
+            border-radius: 50px;
+            background: #f9a825;
+            color: #1e3d3a;
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.3rem;
             cursor: pointer;
             transition: 0.2s;
-            font-size: 0.8rem;
-            border: 1px solid transparent;
+            box-shadow: 0 6px 0 #c47d1a, 0 4px 12px rgba(249, 168, 37, 0.4);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
-        .chip:hover { background: #FF6B6B; border-color: #FFD166; }
 
-        /* Footer */
-        footer {
+        .search-box button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 0 #c47d1a, 0 8px 20px rgba(249, 168, 37, 0.5);
+        }
+
+        .search-box button:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 #c47d1a;
+        }
+
+        .search-box button i {
+            font-size: 1.2rem;
+        }
+
+        /* --- MENSAJE DE AYUDA --- */
+        .helper {
+            font-size: 0.95rem;
+            color: #4d3e34;
+            background: #fcf3e6cc;
+            padding: 0.3rem 1.5rem;
+            border-radius: 30px;
+            backdrop-filter: blur(4px);
+        }
+
+        .helper i {
+            color: #c44536;
+            margin-right: 6px;
+        }
+
+        /* --- RESULTADO --- */
+        .result-container {
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #ffffffcc;
+            border-radius: 40px;
+            padding: 1.5rem;
+            margin: 1rem 0 1.5rem;
+            box-shadow: inset 0 0 0 2px #ffffff, 0 8px 20px rgba(0,0,0,0.05);
+            transition: 0.3s;
+        }
+
+        .result-container .message {
+            font-size: 1.3rem;
+            color: #2e5d4e;
             text-align: center;
-            padding: 0.8rem;
-            background: rgba(0,0,0,0.4);
-            font-size: 0.6rem;
-            color: #aac;
-            border-top: 1px solid rgba(255,255,255,0.05);
+            padding: 1rem;
         }
 
-        /* Scroll */
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); }
-        ::-webkit-scrollbar-thumb { background: #FFD166; border-radius: 10px; }
+        .result-container .message i {
+            font-size: 2.5rem;
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #f9a825;
+        }
 
-        /* Responsive */
-        @media (max-width: 700px) {
-            .search-box { border-radius: 30px; padding: 0.5rem; flex-direction: column; align-items: stretch; }
-            .search-box input { padding: 0.8rem 1rem; background: rgba(255,255,255,0.1); border-radius: 30px; }
-            .search-box button { padding: 0.8rem; }
-            .header h1 { font-size: 1.3rem; }
-            .clock { font-size: 0.7rem; padding: 4px 12px; top: 10px; right: 10px; }
-            .float-btn { font-size: 0.7rem; padding: 8px 14px; bottom: 16px; left: 16px; }
-            .qsl-grid { grid-template-columns: 1fr; }
+        .result-container .qsl-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            width: 100%;
+        }
+
+        .result-container .qsl-card img {
+            max-width: 100%;
+            max-height: 400px;
+            border-radius: 24px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+            border: 4px solid #ffffff;
+            transition: 0.3s;
+            object-fit: contain;
+            background: #f3ede7;
+        }
+
+        .result-container .qsl-card img:hover {
+            transform: scale(1.02);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .result-container .qsl-card .download-btn {
+            background: #1e6f5c;
+            color: white;
+            padding: 0.7rem 2rem;
+            border-radius: 40px;
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.2rem;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 6px 0 #0f4a3d, 0 4px 12px rgba(30, 111, 92, 0.3);
+            transition: 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .result-container .qsl-card .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 0 #0f4a3d, 0 8px 20px rgba(30, 111, 92, 0.4);
+        }
+
+        .result-container .qsl-card .download-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 #0f4a3d;
+        }
+
+        /* --- FOOTER / FIRMA --- */
+        .footer {
+            margin-top: 1.8rem;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #3b2c22;
+            border-top: 2px dashed #dbb48b;
+            padding-top: 1.2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+
+        .footer .creator {
+            font-family: 'Pacifico', cursive;
+            font-size: 1.4rem;
+            color: #a64b2a;
+        }
+
+        .footer .creator span {
+            background: #fde6c4;
+            padding: 0 0.8rem;
+            border-radius: 30px;
+        }
+
+        .footer .collab {
+            font-weight: 700;
+            color: #1e6f5c;
+        }
+
+        .footer .collab i {
+            color: #f9a825;
+            margin: 0 4px;
+        }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 600px) {
+            .card {
+                padding: 1.8rem 1.2rem;
+                border-radius: 40px;
+            }
+            .header h1 {
+                font-size: 2.2rem;
+            }
+            .search-box input {
+                font-size: 1rem;
+                padding: 0.7rem 1.2rem;
+            }
+            .search-box button {
+                font-size: 1rem;
+                padding: 0.7rem 1.5rem;
+            }
+            .result-container .qsl-card img {
+                max-height: 250px;
+            }
+            .footer .creator {
+                font-size: 1.1rem;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            .search-box {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .search-box input {
+                text-align: center;
+            }
+        }
+
+        /* Animación sutil de olas */
+        .wave {
+            animation: wave 3s ease-in-out infinite;
+        }
+        @keyframes wave {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(6deg); }
         }
     </style>
 </head>
 <body>
 
-<!-- Fondo de Playa de Cuba -->
-<div class="beach-bg"></div>
-<div class="overlay"></div>
+    <div class="card">
+        <!-- ENCABEZADO -->
+        <div class="header">
+            <span class="sun wave">🌞</span>
+            <h1>QSL Caribe</h1>
+            <div class="subtitle">Descarga tus QSLs</div>
+        </div>
 
-<!-- Reloj -->
-<div class="clock">
-    <span id="hora">--:--:--</span>
-    <div class="date" id="fecha">--/--/----</div>
-</div>
+        <!-- BUSCADOR -->
+        <div class="search-section">
+            <div class="search-box">
+                <input type="text" id="callsignInput" placeholder="Ej. CM7ADV" maxlength="10" autofocus />
+                <button id="searchBtn"><i class="fas fa-search"></i> Buscar</button>
+            </div>
+            <div class="helper">
+                <i class="fas fa-info-circle"></i> Ingresa tu indicativo para ver tu QSL
+            </div>
+        </div>
 
-<!-- Botón Temas de Radio (opcional) -->
-<button class="float-btn" id="radioTopicsBtn">📻 Temas de Radio</button>
+        <!-- RESULTADO -->
+        <div class="result-container" id="resultContainer">
+            <div class="message" id="resultMessage">
+                <i class="fas fa-radio"></i>
+                <span>Esperando tu búsqueda...</span>
+            </div>
+            <div class="qsl-card" id="qslCard" style="display: none;">
+                <img id="qslImage" src="" alt="QSL" />
+                <a id="downloadLink" class="download-btn" download>
+                    <i class="fas fa-download"></i> Descargar QSL
+                </a>
+            </div>
+        </div>
 
-<!-- Modal Temas -->
-<div id="radioModal" class="modal">
-    <div class="modal-content">
-        <span class="close-modal" id="closeModal">&times;</span>
-        <h2>📻 Temas de Radio</h2>
-        <div class="topic-item"><strong>📡 Propagación Caribeña</strong><br>10m y 15m: 9am-2pm. SFI >150 = excelente.</div>
-        <div class="topic-item"><strong>🔊 FT8/FT4</strong><br>14.074 MHz (20m) y 7.074 MHz (40m). Ideal para QRP.</div>
-        <div class="topic-item"><strong>🌊 Efecto marítimo</strong><br>Protege conectores de la salinidad.</div>
-        <div class="topic-item"><strong>🏝️ POTA en Cuba</strong><br>Parque Alejandro de Humboldt (CM-0001).</div>
-        <div class="topic-item"><strong>📻 QRP</strong><br>5 watts cruzan el Atlántico en buenas condiciones.</div>
-        <div class="topic-item"><strong>🛠️ Mantenimiento</strong><br>Limpia conectores con alcohol isopropílico.</div>
-        <div class="topic-item"><strong>🎧 Código Q</strong><br>QTH=ubicación, QSL=acuse, QRM=interferencia.</div>
-        <div class="topic-item"><strong>🌞 Ciclo Solar 25</strong><br>Máximo 2024-2026. ¡Aprovecha 10m y 12m!</div>
-    </div>
-</div>
-
-<!-- Header -->
-<div class="header">
-    <h1>🏝️ CARIBBEAN QSL NETWORK</h1>
-    <p>📻 <span class="call">CM7ADV</span> · Busca y descarga QSLs de colegas</p>
-    <p style="font-size:0.65rem;opacity:0.7;">🇨🇺 Playas de Cuba · 73's desde el Caribe 🌊</p>
-</div>
-
-<!-- Buscador -->
-<div class="search-container">
-    <div class="search-box">
-        <input type="text" id="searchInput" placeholder="🔍 Ej: CA4NDW, AD4C, CA2LPO..." autocomplete="off" />
-        <button id="searchBtn">🔎 Buscar</button>
-    </div>
-    <ul class="suggestions-list" id="suggestionsList"></ul>
-</div>
-
-<!-- Resultados -->
-<div class="container" id="resultsContainer">
-    <div class="message-box">
-        <h3>🏝️ Bienvenido al buscador de QSLs</h3>
-        <p>Ingresa un indicativo para encontrar sus tarjetas QSL en el repositorio.</p>
-        <div class="suggestions">
-            <span class="chip" data-call="CA4NDW">📡 CA4NDW</span>
-            <span class="chip" data-call="AD4C">📡 AD4C</span>
-            <span class="chip" data-call="CA2LPO">📡 CA2LPO</span>
-            <span class="chip" data-call="CA4DHR">📡 CA4DHR</span>
+        <!-- FOOTER -->
+        <div class="footer">
+            <div class="creator">
+                <span>✧ CM7ADV - Cuba ✧</span>
+                <br />
+                <span style="font-family: 'Nunito', sans-serif; font-size: 0.9rem; font-weight: 400;">ZMR-Cuba</span>
+            </div>
+            <div class="collab">
+                <i class="fas fa-handshake"></i> Colaboradores: CO5ABC &amp; CO5WE <i class="fas fa-heart" style="color: #c44536;"></i>
+            </div>
+            <div style="font-size: 0.8rem; opacity: 0.7; margin-top: 4px;">
+                <i class="fas fa-code"></i> Hecho con <i class="fas fa-coffee"></i> y <i class="fas fa-umbrella-beach"></i>
+            </div>
         </div>
     </div>
-</div>
 
-<footer>
-    <p>📡 Repositorio: github.com/cl7adv/cl7adv-qsl · 📻 CM7ADV · 73's</p>
-</footer>
+    <script>
+        (function() {
+            "use strict";
 
-<script>
-    // ============================================================
-    //  CONFIGURACIÓN - REPOSITORIO CL7ADV
-    // ============================================================
-    const REPO_USER = "cl7adv";
-    const REPO_NAME = "cl7adv-qsl";
-    const BRANCH = "main";
-    const IMG_FOLDER = "img";
-    
-    // URL base para imágenes en raw
-    const RAW_BASE = `https://raw.githubusercontent.com/${REPO_USER}/${REPO_NAME}/${BRANCH}/${IMG_FOLDER}/`;
-    
-    let todasQSLs = [];
-    let isLoaded = false;
+            // ================================================================
+            //  BASE DE DATOS DE QSLs (cargando desde tu repositorio GitHub)
+            //  Todas las imágenes se sirven en formato RAW desde:
+            //  https://raw.githubusercontent.com/cl7adv/cl7adv-qsl/main/img/
+            // ================================================================
+            const qslDatabase = {
+                // --- Estaciones principales y colaboradores ---
+                "CM7ADV": "https://raw.githubusercontent.com/cl7adv/cl7adv-qsl/main/img/CM7ADV.jpg",
+                "CO5ABC": "https://raw.githubusercontent.com/cl7adv/cl7adv-qsl/main/img/CO5ABC.jpg",
+                "CO5WE": "https://raw.githubusercontent.com/cl7adv/cl7adv-qsl/main/img/CO5WE.jpg",
 
-    // ============================================================
-    //  CARGA DESDE GITHUB (API)
-    // ============================================================
-    async function fetchDirContents() {
-        try {
-            const url = `https://api.github.com/repos/${REPO_USER}/${REPO_NAME}/contents/${IMG_FOLDER}`;
-            const resp = await fetch(url);
-            if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-            return await resp.json();
-        } catch (error) {
-            console.warn("Error cargando desde GitHub:", error);
-            return null;
-        }
-    }
+                // --- Otras estaciones que tienes en tu carpeta img ---
+                "CA4NDW": "https://raw.githubusercontent.com/cl7adv/cl7adv-qsl/main/img/CA4NDW-1.jpg",
+                "AD4C": "https://raw.githubusercontent.com/cl7adv/cl7adv-qsl/main/img/AD4C.jpg",
+                "CA2LPO": "https://raw.githubusercontent.com/cl7adv/cl7adv-qsl/main/img/CA2LPO.jpg",
+                "CA4DHR": "https://raw.githubusercontent.com/cl7adv/cl7adv-qsl/main/img/CA4DHR.jpg",
+                "6CA4NDW": "https://raw.githubusercontent.com/cl7adv/cl7adv-qsl/main/img/6CA4NDW-19.jpg",
 
-    function extractCallsign(filename) {
-        // Eliminar extensión y números de versión (ej: CA4NDW-19.jpg → CA4NDW)
-        const base = filename.replace(/\.[^.]+$/, "");
-        // Tomar solo la parte alfabética + números hasta el primer guión o guión bajo
-        const match = base.match(/^([A-Za-z0-9]+)/);
-        return match ? match[1].toUpperCase() : null;
-    }
+                // ============================================================
+                //  ✏️ AGREGAR MÁS INDICATIVOS AQUÍ:
+                //  Copia esta línea y cambia "INDICATIVO" y "archivo.jpg"
+                //  "INDICATIVO": "https://raw.githubusercontent.com/cl7adv/cl7adv-qsl/main/img/archivo.jpg",
+                // ============================================================
+            };
 
-    async function cargarQSLs() {
-        if (isLoaded) return;
-        
-        const files = await fetchDirContents();
-        const qsls = [];
-        
-        if (files && Array.isArray(files)) {
-            for (const file of files) {
-                if (file.type === "file" && /\.(jpg|jpeg|png|gif)$/i.test(file.name)) {
-                    const callsign = extractCallsign(file.name);
-                    if (callsign) {
-                        qsls.push({
-                            id: file.sha,
-                            nombre: file.name,
-                            url_raw: RAW_BASE + file.name,
-                            indicativo: callsign,
-                            fecha: "2024", // Podríamos extraerla del nombre si tiene formato
-                        });
-                    }
+            // --- ELEMENTOS DOM ---
+            const input = document.getElementById('callsignInput');
+            const searchBtn = document.getElementById('searchBtn');
+            const resultContainer = document.getElementById('resultContainer');
+            const resultMessage = document.getElementById('resultMessage');
+            const qslCard = document.getElementById('qslCard');
+            const qslImage = document.getElementById('qslImage');
+            const downloadLink = document.getElementById('downloadLink');
+
+            // --- FUNCIÓN PRINCIPAL DE BÚSQUEDA ---
+            function buscarQSL() {
+                let callsign = input.value.trim().toUpperCase();
+
+                // Limpiar espacios y caracteres extraños (solo letras y números)
+                callsign = callsign.replace(/[^A-Z0-9]/g, '');
+
+                if (callsign === '') {
+                    mostrarMensaje('📻', 'Por favor, ingresa un indicativo válido.');
+                    return;
+                }
+
+                // Buscar en la base de datos
+                const imageUrl = qslDatabase[callsign];
+
+                if (imageUrl) {
+                    // Mostrar la QSL
+                    mostrarQSL(callsign, imageUrl);
+                } else {
+                    // No encontrado: mensaje cordial
+                    mostrarMensaje('🌊', `¡Hola ${callsign}! Aún no tenemos tu QSL en nuestro sistema. ¡Contacta a CM7ADV para agregarla!`);
                 }
             }
-            console.log(`✅ Cargadas ${qsls.length} QSLs desde el repositorio`);
-        } else {
-            // Fallback a datos de demostración si no se puede conectar
-            console.warn("⚠️ Usando QSLs de demostración");
-            qsls.push(
-                { id: "d1", nombre: "CA4NDW-19.jpg", url_raw: "https://picsum.photos/id/104/400/300", indicativo: "CA4NDW", fecha: "2024" },
-                { id: "d2", nombre: "AD4C-1.jpg", url_raw: "https://picsum.photos/id/96/400/300", indicativo: "AD4C", fecha: "2024" },
-                { id: "d3", nombre: "CA2LPO.jpg", url_raw: "https://picsum.photos/id/25/400/300", indicativo: "CA2LPO", fecha: "2024" },
-                { id: "d4", nombre: "CA4DHR.jpg", url_raw: "https://picsum.photos/id/127/400/300", indicativo: "CA4DHR", fecha: "2024" }
-            );
-        }
-        
-        todasQSLs = qsls;
-        isLoaded = true;
-    }
 
-    // ============================================================
-    //  RENDERIZADO
-    // ============================================================
-    function renderizarResultados(busqueda, resultados) {
-        const container = document.getElementById("resultsContainer");
+            // --- MOSTRAR MENSAJE (sin QSL) ---
+            function mostrarMensaje(icono, texto) {
+                resultMessage.style.display = 'block';
+                resultMessage.innerHTML = `<i class="fas ${icono}"></i><span>${texto}</span>`;
+                qslCard.style.display = 'none';
+                // Limpiar imagen para evitar mostrar la anterior
+                qslImage.src = '';
+                downloadLink.href = '#';
+            }
 
-        if (resultados.length === 0) {
-            container.innerHTML = `
-                <div class="message-box">
-                    <h3>❌ No se encontraron QSLs para "${busqueda}"</h3>
-                    <p>Prueba con otro indicativo.</p>
-                    <div class="suggestions">
-                        <span class="chip" data-call="CA4NDW">📡 CA4NDW</span>
-                        <span class="chip" data-call="AD4C">📡 AD4C</span>
-                        <span class="chip" data-call="CA2LPO">📡 CA2LPO</span>
-                    </div>
-                </div>
-            `;
-            return;
-        }
+            // --- MOSTRAR QSL CON DESCARGA ---
+            function mostrarQSL(callsign, url) {
+                resultMessage.style.display = 'none';
+                qslCard.style.display = 'flex';
 
-        let html = `
-            <div class="results-header">
-                <h2 style="font-weight:400;">📸 ${resultados.length} QSL${resultados.length>1?'s':''} para "${busqueda}"</h2>
-            </div>
-            <div class="qsl-grid">
-        `;
+                // Configurar imagen
+                qslImage.src = url;
+                qslImage.alt = `QSL de ${callsign}`;
 
-        for (const qsl of resultados) {
-            html += `
-                <div class="qsl-card">
-                    <div class="qsl-image">
-                        <img src="${qsl.url_raw}" alt="QSL ${qsl.indicativo}" loading="lazy" onerror="this.src='https://picsum.photos/id/42/400/300'" />
-                    </div>
-                    <div class="qsl-info">
-                        <h3>📻 ${qsl.indicativo}</h3>
-                        <p><span class="badge">QSL</span> ${qsl.nombre}</p>
-                        <p>📅 ${qsl.fecha}</p>
-                        <a href="${qsl.url_raw}" target="_blank" class="btn-download">📥 Descargar QSL</a>
-                    </div>
-                </div>
-            `;
-        }
-        html += `</div>`;
-        container.innerHTML = html;
-    }
+                // Configurar enlace de descarga: usando fetch para obtener el blob
+                // y forzar la descarga con el nombre correcto.
+                async function prepararDescarga() {
+                    try {
+                        const response = await fetch(url);
+                        if (!response.ok) throw new Error('Error al obtener la imagen');
+                        const blob = await response.blob();
+                        const blobUrl = URL.createObjectURL(blob);
+                        // Determinar extensión desde el Content-Type o la URL
+                        let ext = 'jpg';
+                        if (blob.type.includes('png')) ext = 'png';
+                        else if (blob.type.includes('jpeg')) ext = 'jpg';
+                        else if (blob.type.includes('gif')) ext = 'gif';
+                        downloadLink.href = blobUrl;
+                        downloadLink.download = `QSL_${callsign}.${ext}`;
+                    } catch (error) {
+                        // Fallback: usar la URL directa (puede funcionar en algunos navegadores)
+                        console.warn('Descarga con fetch falló, usando URL directa.', error);
+                        downloadLink.href = url;
+                        downloadLink.download = `QSL_${callsign}.jpg`;
+                    }
+                }
+                prepararDescarga();
 
-    function mostrarMensaje(mensaje, sub = "") {
-        const container = document.getElementById("resultsContainer");
-        container.innerHTML = `
-            <div class="message-box">
-                <h3>${mensaje}</h3>
-                ${sub ? `<p>${sub}</p>` : ''}
-                <div class="suggestions">
-                    <span class="chip" data-call="CA4NDW">📡 CA4NDW</span>
-                    <span class="chip" data-call="AD4C">📡 AD4C</span>
-                    <span class="chip" data-call="CA2LPO">📡 CA2LPO</span>
-                </div>
-            </div>
-        `;
-    }
+                // También configuramos el enlace inmediatamente por si el usuario hace clic rápido
+                downloadLink.href = url;
+                downloadLink.download = `QSL_${callsign}.jpg`;
+            }
 
-    // ============================================================
-    //  BÚSQUEDA PRINCIPAL
-    // ============================================================
-    async function buscar(texto) {
-        if (!texto.trim()) { mostrarMensaje("🔍 Ingresa un indicativo para buscar"); return; }
-        const busqueda = texto.trim().toUpperCase();
+            // --- EVENTOS ---
+            searchBtn.addEventListener('click', buscarQSL);
 
-        if (!isLoaded) {
-            mostrarMensaje("⏳ Cargando base de datos...", "Un momento por favor");
-            await cargarQSLs();
-        }
-
-        const resultados = todasQSLs.filter(q => {
-            const ind = q.indicativo?.toUpperCase() || "";
-            return ind.includes(busqueda);
-        });
-
-        renderizarResultados(busqueda, resultados);
-    }
-
-    // ============================================================
-    //  AUTOCOMPLETADO (sugerencias)
-    // ============================================================
-    async function actualizarSugerencias(texto) {
-        const list = document.getElementById("suggestionsList");
-        if (!texto.trim()) { list.style.display = "none"; return; }
-        
-        if (!isLoaded) await cargarQSLs();
-        
-        const busqueda = texto.trim().toUpperCase();
-        const set = new Set();
-        todasQSLs.forEach(q => {
-            if (q.indicativo?.toUpperCase().includes(busqueda)) set.add(q.indicativo);
-        });
-        const sugerencias = Array.from(set).slice(0, 8);
-        if (sugerencias.length === 0) { list.style.display = "none"; return; }
-        list.innerHTML = sugerencias.map(s => `<li data-value="${s}">${s}</li>`).join("");
-        list.style.display = "block";
-        list.querySelectorAll("li").forEach(li => {
-            li.addEventListener("click", () => {
-                document.getElementById("searchInput").value = li.dataset.value;
-                list.style.display = "none";
-                buscar(li.dataset.value);
+            input.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    buscarQSL();
+                }
             });
-        });
-    }
 
-    // ============================================================
-    //  EVENTOS DOM
-    // ============================================================
-    document.getElementById("searchBtn").addEventListener("click", () => {
-        const val = document.getElementById("searchInput").value.trim();
-        if (val) buscar(val);
-        else mostrarMensaje("🔍 Escribe un indicativo y presiona Buscar");
-    });
+            // Al cargar la página, enfocar el input y mostrar mensaje inicial
+            window.addEventListener('load', function() {
+                input.focus();
+                mostrarMensaje('fa-radio', 'Esperando tu búsqueda...');
+            });
 
-    document.getElementById("searchInput").addEventListener("input", (e) => {
-        const val = e.target.value.trim();
-        if (val.length >= 2) actualizarSugerencias(val);
-        else document.getElementById("suggestionsList").style.display = "none";
-    });
+        })();
+    </script>
 
-    document.getElementById("searchInput").addEventListener("keydown", (e) => {
-        if (e.key === "Enter") {
-            e.preventDefault();
-            document.getElementById("searchBtn").click();
-        }
-        if (e.key === "Escape") {
-            document.getElementById("suggestionsList").style.display = "none";
-        }
-    });
-
-    // Cerrar sugerencias al hacer clic fuera
-    document.addEventListener("click", (e) => {
-        if (!e.target.closest(".search-box") && !e.target.closest(".suggestions-list")) {
-            document.getElementById("suggestionsList").style.display = "none";
-        }
-    });
-
-    // Chips de sugerencia
-    document.querySelectorAll(".chip[data-call]").forEach(chip => {
-        chip.addEventListener("click", () => {
-            const call = chip.dataset.call;
-            document.getElementById("searchInput").value = call;
-            buscar(call);
-        });
-    });
-
-    // Modales de Temas
-    const modalRadio = document.getElementById("radioModal");
-    document.getElementById("radioTopicsBtn").onclick = () => modalRadio.style.display = "flex";
-    document.getElementById("closeModal").onclick = () => modalRadio.style.display = "none";
-    window.onclick = (e) => {
-        if (e.target === modalRadio) modalRadio.style.display = "none";
-    };
-
-    // Reloj
-    function actualizarReloj() {
-        const ahora = new Date();
-        document.getElementById("hora").textContent = ahora.toLocaleTimeString("es-ES");
-        document.getElementById("fecha").textContent = ahora.toLocaleDateString("es-ES", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
-    }
-    setInterval(actualizarReloj, 1000);
-    actualizarReloj();
-
-    // ============================================================
-    //  INICIO - CARGA AUTOMÁTICA
-    // ============================================================
-    (async () => {
-        mostrarMensaje("⏳ Cargando base de datos...", "Conectando con el repositorio");
-        await cargarQSLs();
-        mostrarMensaje("🏝️ Base de datos lista. Busca un indicativo.", "Ej: CA4NDW, AD4C, CA2LPO");
-    })();
-</script>
 </body>
 </html>
