@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>QSL Caribe 3D · Buscador de QSLs</title>
+    <title>QSL Caribe · Buscador de QSLs</title>
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -14,7 +14,7 @@
 
     <style>
         /* ============================================================
-           RESET Y ESTILOS GLOBALES
+           RESET Y ESTILOS GLOBALES (simplificados y elegantes)
            ============================================================ */
         * {
             margin: 0;
@@ -29,182 +29,195 @@
             align-items: center;
             padding: 20px;
             font-family: 'Inter', sans-serif;
-            background: #0f0e17;
-            perspective: 1200px;
+            background: #0b0a12;
+            /* Fondo base oscuro */
+            background-image: radial-gradient(ellipse at 20% 30%, rgba(40, 60, 120, 0.15) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 70%, rgba(200, 100, 30, 0.08) 0%, transparent 50%);
             overflow-x: hidden;
         }
 
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background:
-                radial-gradient(ellipse at 20% 50%, rgba(255, 140, 0, 0.25) 0%, transparent 60%),
-                radial-gradient(ellipse at 80% 50%, rgba(0, 180, 255, 0.15) 0%, transparent 60%),
-                linear-gradient(145deg, #0f0e17 0%, #1a1a2e 40%, #16213e 80%, #0f0e17 100%);
-            z-index: -2;
-        }
-
-        body::after {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at 30% 40%, rgba(255, 255, 255, 0.03) 0%, transparent 70%);
-            z-index: -1;
-        }
-
-        /* Elementos flotantes */
+        /* Elementos flotantes (más sutiles) */
         .floating {
             position: fixed;
             pointer-events: none;
             z-index: 0;
-            font-size: 4rem;
-            opacity: 0.12;
-            filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.3));
-            animation: float3D 8s ease-in-out infinite alternate;
+            font-size: 3rem;
+            opacity: 0.08;
+            filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.2));
+            animation: floatSoft 12s ease-in-out infinite alternate;
         }
         .floating-1 {
-            top: 10%;
-            left: 5%;
+            top: 8%;
+            left: 4%;
             animation-delay: 0s;
-            font-size: 6rem;
         }
         .floating-2 {
-            bottom: 15%;
-            right: 5%;
-            animation-delay: 2s;
-            font-size: 5rem;
+            bottom: 12%;
+            right: 4%;
+            animation-delay: 3s;
         }
         .floating-3 {
-            top: 30%;
-            right: 8%;
-            animation-delay: 4s;
-            font-size: 3.5rem;
+            top: 35%;
+            right: 6%;
+            animation-delay: 6s;
+            font-size: 2.2rem;
         }
         .floating-4 {
             bottom: 30%;
-            left: 8%;
-            animation-delay: 1s;
-            font-size: 4.5rem;
+            left: 5%;
+            animation-delay: 2s;
+            font-size: 2.8rem;
         }
 
-        @keyframes float3D {
+        @keyframes floatSoft {
             0% {
-                transform: translateY(0) rotate(0deg) scale(1);
+                transform: translateY(0) rotate(0deg);
             }
             100% {
-                transform: translateY(-30px) rotate(10deg) scale(1.1);
+                transform: translateY(-20px) rotate(6deg);
             }
         }
 
-        /* Tarjeta principal 3D */
+        /* Tarjeta principal (sin 3D, elegante) */
         .card-3d {
             max-width: 880px;
             width: 100%;
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(14px);
-            -webkit-backdrop-filter: blur(14px);
-            border-radius: 48px;
-            padding: 2.5rem 2.5rem 2rem;
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 40px;
+            padding: 2.8rem 2.8rem 2.2rem;
             box-shadow:
-                0 40px 80px rgba(0, 0, 0, 0.6),
-                0 0 0 1px rgba(255, 255, 255, 0.05),
-                inset 0 0 80px rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.07);
-            transform: rotateY(4deg) rotateX(2deg) translateZ(20px);
-            transition: transform 0.4s ease, box-shadow 0.4s ease;
+                0 30px 80px rgba(0, 0, 0, 0.5),
+                0 0 0 1px rgba(255, 255, 255, 0.04),
+                inset 0 1px 0 rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.05);
             position: relative;
             z-index: 2;
-            animation: cardEntrance 0.8s ease-out;
-        }
-        .card-3d:hover {
-            transform: rotateY(2deg) rotateX(1deg) translateZ(30px);
-            box-shadow: 0 60px 100px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.1);
+            animation: cardFade 0.8s ease-out;
         }
 
-        @keyframes cardEntrance {
+        @keyframes cardFade {
             0% {
                 opacity: 0;
-                transform: rotateY(10deg) rotateX(5deg) translateZ(-100px);
+                transform: translateY(20px);
             }
             100% {
                 opacity: 1;
-                transform: rotateY(4deg) rotateX(2deg) translateZ(20px);
+                transform: translateY(0);
             }
         }
 
-        /* Sello QSL */
+        /* Sello QSL más discreto */
         .stamp-modern {
             position: absolute;
-            top: -10px;
-            right: 30px;
+            top: 12px;
+            right: 28px;
             font-family: 'Playfair Display', serif;
-            font-size: 4rem;
+            font-size: 2.2rem;
             font-style: italic;
-            color: rgba(255, 200, 100, 0.07);
-            transform: rotate(15deg);
-            text-shadow: 0 0 40px rgba(255, 200, 100, 0.05);
+            color: rgba(255, 200, 100, 0.06);
+            transform: rotate(12deg);
+            letter-spacing: 4px;
             pointer-events: none;
             z-index: 0;
-            letter-spacing: 8px;
         }
 
-        /* Header */
+        /* Header renovado */
         .header-modern {
             text-align: center;
-            margin-bottom: 1.8rem;
+            margin-bottom: 2rem;
             position: relative;
             z-index: 1;
         }
         .header-modern h1 {
             font-family: 'Inter', sans-serif;
             font-weight: 900;
-            font-size: 3.8rem;
-            background: linear-gradient(135deg, #f9d976, #f39c12, #e67e22);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            letter-spacing: -1px;
-            text-shadow: 0 0 60px rgba(243, 156, 18, 0.2);
-            margin-bottom: -0.2rem;
+            font-size: 3.4rem;
+            color: #f7d47c;
+            /* Dorado suave */
+            letter-spacing: -0.5px;
             line-height: 1.1;
+            margin-bottom: 0.2rem;
+            text-shadow: 0 0 40px rgba(247, 212, 124, 0.08);
         }
         .header-modern .subtitle {
-            font-weight: 700;
-            font-size: 1.1rem;
-            color: rgba(255, 255, 255, 0.6);
-            background: rgba(255, 255, 255, 0.04);
-            display: inline-block;
-            padding: 0.4rem 1.8rem;
-            border-radius: 60px;
-            backdrop-filter: blur(4px);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            letter-spacing: 2px;
+            font-weight: 600;
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.4);
+            letter-spacing: 3px;
             text-transform: uppercase;
-            margin-top: 0.3rem;
-        }
-        .header-modern .sun-icon {
-            font-size: 2.4rem;
             display: inline-block;
-            filter: drop-shadow(0 0 30px rgba(255, 200, 50, 0.2));
-            animation: pulseGlow 4s ease-in-out infinite;
+            padding: 0 1rem;
+            position: relative;
         }
-        @keyframes pulseGlow {
-            0%,
-            100% {
-                transform: scale(1) rotate(0deg);
-                filter: drop-shadow(0 0 20px rgba(255, 200, 50, 0.15));
-            }
-            50% {
-                transform: scale(1.1) rotate(8deg);
-                filter: drop-shadow(0 0 40px rgba(255, 200, 50, 0.3));
-            }
+        /* Línea decorativa bajo el subtítulo */
+        .header-modern .subtitle::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 2px;
+            background: rgba(247, 212, 124, 0.3);
+            border-radius: 2px;
+        }
+        .header-modern .subtitle i {
+            margin-right: 8px;
+            color: #f7d47c;
+            opacity: 0.5;
+        }
+
+        /* Barra de filtros (estilo refinado) */
+        .filter-bar {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem 0.8rem;
+            margin: 0.3rem 0 1.2rem;
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 60px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+        .filter-bar select,
+        .filter-bar .filter-btn {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            color: rgba(255, 255, 255, 0.6);
+            padding: 0.35rem 1.2rem;
+            border-radius: 40px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            outline: none;
+            backdrop-filter: blur(4px);
+        }
+        .filter-bar select:hover,
+        .filter-bar .filter-btn:hover {
+            background: rgba(255, 255, 255, 0.07);
+            color: #fff;
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+        .filter-bar select:focus {
+            border-color: #f7d47c;
+        }
+        .filter-bar .filter-btn.active {
+            background: rgba(247, 212, 124, 0.12);
+            border-color: #f7d47c;
+            color: #f7d47c;
+        }
+        .filter-bar .filter-btn i {
+            margin-right: 6px;
+        }
+        .filter-bar .fav-count {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.3);
+            margin-left: 4px;
         }
 
         /* Buscador */
@@ -212,8 +225,8 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 0.8rem;
-            margin: 1rem 0 1.8rem;
+            gap: 0.6rem;
+            margin: 0.3rem 0 1.2rem;
             position: relative;
             z-index: 3;
         }
@@ -226,69 +239,64 @@
         }
         .search-box input {
             flex: 1 1 240px;
-            padding: 0.9rem 1.8rem;
+            padding: 0.8rem 1.8rem;
             border: none;
             border-radius: 60px;
             background: rgba(255, 255, 255, 0.04);
             backdrop-filter: blur(6px);
             font-family: 'Inter', sans-serif;
-            font-size: 1.1rem;
-            font-weight: 700;
+            font-size: 1rem;
+            font-weight: 600;
             color: #fff;
-            box-shadow: inset 0 4px 12px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.05);
+            box-shadow: inset 0 4px 12px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.04);
             transition: 0.3s;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
             outline: none;
-            border: 1px solid rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.04);
         }
         .search-box input::placeholder {
             text-transform: none;
             font-weight: 400;
-            color: rgba(255, 255, 255, 0.3);
+            color: rgba(255, 255, 255, 0.25);
             letter-spacing: 0;
         }
         .search-box input:focus {
-            background: rgba(255, 255, 255, 0.08);
-            box-shadow: inset 0 4px 12px rgba(0, 0, 0, 0.5), 0 0 0 2px rgba(243, 156, 18, 0.3);
-            border-color: rgba(243, 156, 18, 0.2);
+            background: rgba(255, 255, 255, 0.07);
+            box-shadow: inset 0 4px 12px rgba(0, 0, 0, 0.4), 0 0 0 2px rgba(247, 212, 124, 0.2);
+            border-color: rgba(247, 212, 124, 0.15);
         }
         .search-box button {
-            padding: 0.9rem 2.4rem;
+            padding: 0.8rem 2rem;
             border: none;
             border-radius: 60px;
-            background: linear-gradient(145deg, #f39c12, #e67e22);
-            color: #fff;
+            background: linear-gradient(145deg, #f7d47c, #e8b85a);
+            color: #0b0a12;
             font-family: 'Inter', sans-serif;
             font-weight: 700;
-            font-size: 1.1rem;
+            font-size: 1rem;
             cursor: pointer;
             transition: 0.25s;
-            box-shadow: 0 8px 24px rgba(243, 156, 18, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            box-shadow: 0 6px 20px rgba(247, 212, 124, 0.15);
             display: inline-flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
         }
         .search-box button:hover {
-            transform: translateY(-3px) scale(1.02);
-            box-shadow: 0 12px 32px rgba(243, 156, 18, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 10px 30px rgba(247, 212, 124, 0.25);
         }
         .search-box button:active {
-            transform: translateY(2px) scale(0.98);
-            box-shadow: 0 4px 12px rgba(243, 156, 18, 0.3);
-        }
-        .search-box button:focus-visible {
-            outline: 2px solid rgba(243, 156, 18, 0.6);
-            outline-offset: 3px;
+            transform: translateY(1px) scale(0.98);
         }
 
         .suggestions {
             list-style: none;
             background: rgba(255, 255, 255, 0.04);
             backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.05);
             border-radius: 20px;
             padding: 0.3rem 0;
             max-height: 200px;
@@ -300,46 +308,46 @@
             margin-top: -0.2rem;
         }
         .suggestions li {
-            padding: 0.6rem 1.5rem;
+            padding: 0.5rem 1.5rem;
             cursor: pointer;
             font-weight: 600;
-            color: rgba(255, 255, 255, 0.8);
+            color: rgba(255, 255, 255, 0.7);
             transition: 0.15s;
             display: flex;
             justify-content: space-between;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.02);
         }
         .suggestions li:last-child {
             border-bottom: none;
         }
         .suggestions li:hover,
         .suggestions li:focus {
-            background: rgba(255, 255, 255, 0.06);
+            background: rgba(255, 255, 255, 0.05);
             color: #fff;
         }
         .suggestions li small {
             font-weight: 400;
-            color: rgba(255, 255, 255, 0.3);
+            color: rgba(255, 255, 255, 0.25);
         }
 
         .helper {
-            font-size: 0.85rem;
-            color: rgba(255, 255, 255, 0.25);
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.15);
             background: rgba(255, 255, 255, 0.02);
-            padding: 0.2rem 1.5rem;
+            padding: 0.15rem 1.2rem;
             border-radius: 40px;
-            border: 1px solid rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.02);
         }
 
         /* Resultados */
         .result-container {
             min-height: 200px;
             background: rgba(255, 255, 255, 0.02);
-            backdrop-filter: blur(8px);
+            backdrop-filter: blur(6px);
             border-radius: 30px;
             padding: 1.8rem 1.5rem;
             margin: 1rem 0 1.8rem;
-            border: 1px solid rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.03);
             box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.2);
             display: flex;
             flex-direction: column;
@@ -350,17 +358,17 @@
         }
 
         .result-container .message {
-            font-size: 1.2rem;
-            color: rgba(255, 255, 255, 0.5);
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.4);
             text-align: center;
             padding: 1rem;
         }
         .result-container .message i {
-            font-size: 2.8rem;
+            font-size: 2.4rem;
             display: block;
             margin-bottom: 0.5rem;
-            color: #f39c12;
-            filter: drop-shadow(0 0 20px rgba(243, 156, 18, 0.2));
+            color: #f7d47c;
+            filter: drop-shadow(0 0 20px rgba(247, 212, 124, 0.08));
         }
 
         /* Grid */
@@ -380,18 +388,14 @@
             cursor: pointer;
             transition: 0.3s;
             text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.03);
             position: relative;
             overflow: hidden;
         }
         .grid-item:hover {
-            transform: translateY(-6px) scale(1.02);
-            border-color: rgba(243, 156, 18, 0.2);
+            transform: translateY(-4px) scale(1.01);
+            border-color: rgba(247, 212, 124, 0.15);
             box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
-        }
-        .grid-item:focus-visible {
-            outline: 2px solid #f39c12;
-            outline-offset: 4px;
         }
         .grid-item img {
             width: 100%;
@@ -404,13 +408,40 @@
         }
         .grid-item .callsign {
             font-weight: 700;
-            font-size: 1rem;
+            font-size: 0.95rem;
             color: #fff;
             margin-top: 8px;
         }
         .grid-item .banda {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.25);
+        }
+        .grid-item .fav-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(4px);
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
             color: rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            z-index: 2;
+        }
+        .grid-item .fav-btn:hover {
+            transform: scale(1.1);
+            color: #fff;
+        }
+        .grid-item .fav-btn.active {
+            color: #f7d47c;
+            text-shadow: 0 0 20px rgba(247, 212, 124, 0.2);
         }
 
         /* Detalle */
@@ -428,7 +459,7 @@
             padding: 16px 16px 50px;
             border-radius: 16px;
             box-shadow: 0 20px 48px rgba(0, 0, 0, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.04);
             max-width: 100%;
             display: inline-block;
             position: relative;
@@ -452,16 +483,16 @@
             position: absolute;
             bottom: 60px;
             right: 20px;
-            background: rgba(243, 156, 18, 0.15);
+            background: rgba(247, 212, 124, 0.08);
             backdrop-filter: blur(4px);
-            color: #f39c12;
+            color: #f7d47c;
             font-family: 'Playfair Display', serif;
             font-style: italic;
-            font-size: 1.2rem;
-            padding: 0.1rem 1rem;
+            font-size: 1.1rem;
+            padding: 0.1rem 0.8rem;
             border-radius: 30px;
-            transform: rotate(12deg);
-            border: 1px solid rgba(243, 156, 18, 0.1);
+            transform: rotate(10deg);
+            border: 1px solid rgba(247, 212, 124, 0.05);
             pointer-events: none;
             box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
         }
@@ -471,8 +502,8 @@
             flex-wrap: wrap;
             justify-content: center;
             gap: 0.6rem 1.5rem;
-            font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.5);
             background: rgba(255, 255, 255, 0.02);
             backdrop-filter: blur(4px);
             padding: 0.3rem 1.6rem;
@@ -481,7 +512,8 @@
         }
         .detail-view .meta i {
             margin-right: 6px;
-            color: #f39c12;
+            color: #f7d47c;
+            opacity: 0.6;
         }
 
         .detail-view .actions {
@@ -494,43 +526,40 @@
         .detail-view .actions .download-btn {
             background: linear-gradient(145deg, #2d8f6f, #1a6b52);
             color: #fff;
-            padding: 0.7rem 2rem;
+            padding: 0.7rem 1.8rem;
             border-radius: 60px;
             font-family: 'Inter', sans-serif;
             font-weight: 700;
-            font-size: 1rem;
+            font-size: 0.9rem;
             text-decoration: none;
             display: inline-flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             border: none;
             cursor: pointer;
-            box-shadow: 0 6px 20px rgba(45, 143, 111, 0.3);
+            box-shadow: 0 6px 20px rgba(45, 143, 111, 0.2);
             transition: 0.2s;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
         }
         .detail-view .actions .download-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 28px rgba(45, 143, 111, 0.4);
-        }
-        .detail-view .actions .download-btn:active {
-            transform: translateY(2px);
+            box-shadow: 0 10px 28px rgba(45, 143, 111, 0.3);
         }
         .detail-view .actions .share-btn {
             background: rgba(255, 255, 255, 0.03);
             backdrop-filter: blur(4px);
-            color: rgba(255, 255, 255, 0.7);
-            padding: 0.7rem 1.6rem;
+            color: rgba(255, 255, 255, 0.6);
+            padding: 0.7rem 1.4rem;
             border-radius: 60px;
             font-family: 'Inter', sans-serif;
             font-weight: 700;
-            font-size: 1rem;
+            font-size: 0.9rem;
             border: 1px solid rgba(255, 255, 255, 0.04);
             cursor: pointer;
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             transition: 0.2s;
         }
         .detail-view .actions .share-btn:hover {
@@ -540,13 +569,13 @@
         .detail-view .actions .nav-btn {
             background: rgba(255, 255, 255, 0.03);
             backdrop-filter: blur(4px);
-            color: rgba(255, 255, 255, 0.5);
-            padding: 0.7rem 1.2rem;
+            color: rgba(255, 255, 255, 0.4);
+            padding: 0.7rem 1rem;
             border-radius: 60px;
             border: 1px solid rgba(255, 255, 255, 0.04);
             cursor: pointer;
             transition: 0.2s;
-            font-size: 1rem;
+            font-size: 0.9rem;
         }
         .detail-view .actions .nav-btn:hover {
             background: rgba(255, 255, 255, 0.06);
@@ -559,8 +588,8 @@
         }
 
         .download-count {
-            font-size: 0.8rem;
-            color: rgba(255, 255, 255, 0.2);
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.15);
             margin-top: 0.2rem;
             background: rgba(255, 255, 255, 0.02);
             padding: 0.1rem 1.2rem;
@@ -571,10 +600,10 @@
         .back-to-grid {
             background: transparent;
             border: 1px solid rgba(255, 255, 255, 0.05);
-            color: rgba(255, 255, 255, 0.4);
+            color: rgba(255, 255, 255, 0.3);
             font-family: 'Inter', sans-serif;
             font-weight: 600;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             cursor: pointer;
             padding: 0.2rem 1.2rem;
             border-radius: 40px;
@@ -589,10 +618,10 @@
         /* Spinner */
         .spinner {
             display: inline-block;
-            width: 48px;
-            height: 48px;
-            border: 4px solid rgba(255, 255, 255, 0.05);
-            border-top-color: #f39c12;
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255, 255, 255, 0.05);
+            border-top-color: #f7d47c;
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
             margin: 1rem auto;
@@ -607,18 +636,18 @@
         .footer-modern {
             margin-top: 1.8rem;
             text-align: center;
-            font-size: 0.85rem;
-            color: rgba(255, 255, 255, 0.2);
-            border-top: 1px solid rgba(255, 255, 255, 0.03);
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.15);
+            border-top: 1px solid rgba(255, 255, 255, 0.02);
             padding-top: 1.2rem;
             display: flex;
             flex-direction: column;
-            gap: 0.3rem;
+            gap: 0.2rem;
         }
         .footer-modern .creator {
             font-weight: 700;
-            font-size: 1.2rem;
-            color: rgba(255, 255, 255, 0.3);
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.2);
         }
         .footer-modern .creator span {
             background: rgba(255, 255, 255, 0.02);
@@ -627,17 +656,18 @@
         }
         .footer-modern .collab {
             font-weight: 400;
-            color: rgba(255, 255, 255, 0.15);
+            color: rgba(255, 255, 255, 0.1);
         }
         .footer-modern .collab i {
-            color: #f39c12;
+            color: #f7d47c;
+            opacity: 0.3;
             margin: 0 4px;
         }
         .footer-modern .badge {
             display: flex;
             justify-content: center;
             gap: 1.2rem;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
         }
         .footer-modern .badge i {
             margin-right: 4px;
@@ -658,26 +688,32 @@
         /* Responsive */
         @media (max-width: 600px) {
             .card-3d {
-                padding: 1.5rem 1rem;
-                transform: rotateY(2deg) rotateX(1deg) translateZ(10px);
-            }
-            .card-3d:hover {
-                transform: rotateY(1deg) rotateX(0deg) translateZ(15px);
+                padding: 1.8rem 1.2rem;
             }
             .header-modern h1 {
                 font-size: 2.6rem;
             }
             .header-modern .subtitle {
-                font-size: 0.9rem;
-                padding: 0.2rem 1rem;
+                font-size: 0.8rem;
             }
             .search-box input {
-                font-size: 0.95rem;
+                font-size: 0.9rem;
                 padding: 0.7rem 1.2rem;
             }
             .search-box button {
-                font-size: 0.95rem;
+                font-size: 0.9rem;
                 padding: 0.7rem 1.4rem;
+            }
+            .filter-bar {
+                flex-direction: column;
+                align-items: stretch;
+                border-radius: 30px;
+                padding: 0.6rem;
+            }
+            .filter-bar select,
+            .filter-bar .filter-btn {
+                width: 100%;
+                text-align: center;
             }
             .grid-view {
                 grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
@@ -693,7 +729,7 @@
                 padding: 10px 10px 30px;
             }
             .detail-view .meta {
-                font-size: 0.8rem;
+                font-size: 0.75rem;
                 flex-direction: column;
                 align-items: center;
                 gap: 0.3rem;
@@ -702,12 +738,13 @@
                 font-size: 1rem;
             }
             .floating {
-                font-size: 2.5rem;
-                opacity: 0.08;
+                font-size: 2rem;
+                opacity: 0.05;
             }
-            .detail-view .actions .nav-btn {
-                padding: 0.5rem 1rem;
-                font-size: 0.9rem;
+            .stamp-modern {
+                font-size: 1.5rem;
+                top: 8px;
+                right: 16px;
             }
         }
 
@@ -730,10 +767,10 @@
 </head>
 <body>
 
-    <!-- Elementos flotantes -->
+    <!-- Elementos flotantes (sutiles) -->
     <div class="floating floating-1" aria-hidden="true">🌴</div>
-    <div class="floating floating-2" aria-hidden="true">☕</div>
-    <div class="floating floating-3" aria-hidden="true">🌊</div>
+    <div class="floating floating-2" aria-hidden="true">📡</div>
+    <div class="floating floating-3" aria-hidden="true">☕</div>
     <div class="floating floating-4" aria-hidden="true">⛵</div>
 
     <!-- Tarjeta principal -->
@@ -742,10 +779,21 @@
         <div class="stamp-modern" aria-hidden="true">QSL</div>
 
         <header class="header-modern">
-            <span class="sun-icon" aria-hidden="true"><i class="fas fa-sun"></i></span>
             <h1>QSL Caribe</h1>
-            <div class="subtitle"><i class="fas fa-qrcode" aria-hidden="true"></i> Buscador de QSLs 3D</div>
+            <div class="subtitle"><i class="fas fa-radio" aria-hidden="true"></i> Buscador de QSLs</div>
         </header>
+
+        <!-- Barra de filtros -->
+        <div class="filter-bar" id="filterBar">
+            <select id="filterBanda">
+                <option value="">Todas las bandas</option>
+            </select>
+            <select id="filterModo">
+                <option value="">Todos los modos</option>
+            </select>
+            <button class="filter-btn" id="favFilterBtn"><i class="fas fa-star"></i> Favoritos <span class="fav-count" id="favCount">(0)</span></button>
+            <button class="filter-btn" id="clearFiltersBtn"><i class="fas fa-times"></i> Limpiar</button>
+        </div>
 
         <!-- Buscador -->
         <section class="search-section" aria-label="Buscador de QSLs">
@@ -756,7 +804,7 @@
             </div>
             <ul class="suggestions" id="suggestionsList" role="listbox"></ul>
             <div class="helper" aria-hidden="true">
-                <i class="fas fa-info-circle"></i> Escribe el indicativo o parte de él
+                <i class="fas fa-info-circle"></i> Escribe el indicativo, operador o banda
             </div>
         </section>
 
@@ -768,7 +816,7 @@
             </div>
             <div class="grid-view" id="gridView" style="display:none;" role="list"></div>
             <div class="detail-view" id="detailView" role="region" aria-label="Detalle de QSL">
-                <button class="back-to-grid" id="backToGrid" style="display:none;" aria-label="Volver a la vista de todas las QSLs"><i class="fas fa-arrow-left" aria-hidden="true"></i> Ver todas</button>
+                <button class="back-to-grid" id="backToGrid" style="display:none;"><i class="fas fa-arrow-left" aria-hidden="true"></i> Ver todas</button>
                 <figure class="polaroid">
                     <img id="qslImage" src="" alt="QSL" />
                     <span class="stamp" aria-hidden="true">QSL</span>
@@ -797,7 +845,7 @@
     </main>
 
     <!-- ============================================================
-         JAVASCRIPT COMPLETO (carga desde GitHub + toda la lógica)
+         JAVASCRIPT COMPLETO (con filtros, favoritos, carga GitHub)
          ============================================================ -->
     <script>
         (function() {
@@ -826,6 +874,12 @@
             const prevBtn = document.getElementById('prevQslBtn');
             const nextBtn = document.getElementById('nextQslBtn');
 
+            const filterBanda = document.getElementById('filterBanda');
+            const filterModo = document.getElementById('filterModo');
+            const favFilterBtn = document.getElementById('favFilterBtn');
+            const clearFiltersBtn = document.getElementById('clearFiltersBtn');
+            const favCountSpan = document.getElementById('favCount');
+
             // ============================================================
             // 3. ESTADO
             // ============================================================
@@ -835,6 +889,9 @@
             let currentQsList = [];
             let currentQslIndex = 0;
             let currentCallsign = '';
+            let allQSLs = [];
+            let currentFilteredList = [];
+            let showingFavorites = false;
 
             // ============================================================
             // 4. UTILIDADES
@@ -859,8 +916,48 @@
                 return current + 1;
             }
 
+            function getFavorites() {
+                try {
+                    return JSON.parse(localStorage.getItem('qsl_favorites')) || [];
+                } catch {
+                    return [];
+                }
+            }
+
+            function saveFavorites(favs) {
+                localStorage.setItem('qsl_favorites', JSON.stringify(favs));
+                updateFavCount();
+            }
+
+            function isFavorite(qsl) {
+                const favs = getFavorites();
+                return favs.some(f => f.url === qsl.url);
+            }
+
+            function toggleFavorite(qsl) {
+                const favs = getFavorites();
+                const index = favs.findIndex(f => f.url === qsl.url);
+                if (index > -1) {
+                    favs.splice(index, 1);
+                } else {
+                    favs.push({
+                        url: qsl.url,
+                        callsign: qsl._callsign || qsl.operador || 'QSL',
+                        banda: qsl.banda || '',
+                        modo: qsl.modo || ''
+                    });
+                }
+                saveFavorites(favs);
+                return favs;
+            }
+
+            function updateFavCount() {
+                const favs = getFavorites();
+                favCountSpan.textContent = `(${favs.length})`;
+            }
+
             // ============================================================
-            // 5. CARGA DINÁMICA DESDE GITHUB
+            // 5. CARGA DESDE GITHUB
             // ============================================================
             async function cargarQSLsDesdeGitHub() {
                 if (dbLoaded) return qslDatabase;
@@ -920,7 +1017,6 @@
                 } catch (error) {
                     console.error('Error cargando QSLs desde GitHub:', error);
                     dbLoading = false;
-                    // Fallback a base de datos estática de respaldo
                     qslDatabase = getFallbackDatabase();
                     dbLoaded = true;
                     return qslDatabase;
@@ -942,7 +1038,61 @@
             }
 
             // ============================================================
-            // 6. RENDER FUNCTIONS
+            // 6. FILTROS
+            // ============================================================
+            function populateFilters() {
+                const bandas = new Set();
+                const modos = new Set();
+                Object.values(qslDatabase).forEach(qsls => {
+                    qsls.forEach(q => {
+                        if (q.banda) bandas.add(q.banda);
+                        if (q.modo) modos.add(q.modo);
+                    });
+                });
+                filterBanda.innerHTML = '<option value="">Todas las bandas</option>';
+                [...bandas].sort().forEach(b => {
+                    const opt = document.createElement('option');
+                    opt.value = b;
+                    opt.textContent = b;
+                    filterBanda.appendChild(opt);
+                });
+                filterModo.innerHTML = '<option value="">Todos los modos</option>';
+                [...modos].sort().forEach(m => {
+                    const opt = document.createElement('option');
+                    opt.value = m;
+                    opt.textContent = m;
+                    filterModo.appendChild(opt);
+                });
+            }
+
+            function applyFilters(qsls) {
+                const banda = filterBanda.value;
+                const modo = filterModo.value;
+                const favs = getFavorites();
+                const onlyFavs = showingFavorites;
+
+                return qsls.filter(q => {
+                    if (banda && q.banda !== banda) return false;
+                    if (modo && q.modo !== modo) return false;
+                    if (onlyFavs) {
+                        return favs.some(f => f.url === q.url);
+                    }
+                    return true;
+                });
+            }
+
+            function renderFiltered() {
+                const filtered = applyFilters(allQSLs);
+                currentFilteredList = filtered;
+                if (filtered.length === 0) {
+                    mostrarMensaje('fa-sad-tear', showingFavorites ? 'No tienes QSLs favoritas.' : 'No hay QSLs que coincidan con los filtros.');
+                    return;
+                }
+                mostrarGrid(filtered, '');
+            }
+
+            // ============================================================
+            // 7. RENDER
             // ============================================================
             function mostrarMensaje(icono, texto) {
                 resultMessage.style.display = 'block';
@@ -987,9 +1137,26 @@
                     bandaDiv.className = 'banda';
                     bandaDiv.textContent = `${qsl.banda || ''} ${qsl.modo || ''}`.trim();
 
+                    const favBtn = document.createElement('button');
+                    favBtn.className = 'fav-btn';
+                    favBtn.setAttribute('aria-label', 'Marcar como favorito');
+                    const isFav = isFavorite(qsl);
+                    favBtn.innerHTML = `<i class="fas ${isFav ? 'fa-star' : 'fa-star-o'}"></i>`;
+                    if (isFav) favBtn.classList.add('active');
+                    favBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        toggleFavorite(qsl);
+                        const nowFav = isFavorite(qsl);
+                        favBtn.innerHTML = `<i class="fas ${nowFav ? 'fa-star' : 'fa-star-o'}"></i>`;
+                        favBtn.classList.toggle('active', nowFav);
+                        updateFavCount();
+                        if (showingFavorites) renderFiltered();
+                    });
+
                     item.appendChild(img);
                     item.appendChild(callsignDiv);
                     item.appendChild(bandaDiv);
+                    item.appendChild(favBtn);
 
                     item.addEventListener('click', () => {
                         mostrarDetalle(qsls, index, displayName);
@@ -1006,6 +1173,7 @@
 
                 gridView.appendChild(fragment);
 
+                // Lazy loading
                 if ('IntersectionObserver' in window) {
                     const observer = new IntersectionObserver((entries) => {
                         entries.forEach(entry => {
@@ -1117,61 +1285,48 @@
             }
 
             // ============================================================
-            // 7. BÚSQUEDA
+            // 8. BÚSQUEDA
             // ============================================================
             async function buscarQSL() {
                 const raw = input.value.trim();
                 const clean = normalize(raw);
                 if (clean === '') {
-                    mostrarMensaje('fa-radio', 'Por favor, ingresa un indicativo válido.');
+                    mostrarMensaje('fa-radio', 'Por favor, ingresa un indicativo, operador o banda.');
                     return;
                 }
 
                 const db = await cargarQSLsDesdeGitHub();
                 const dbKeys = Object.keys(db);
 
-                const matchedKeys = dbKeys.filter(key =>
-                    key.includes(clean) || clean.includes(key)
-                );
-
-                if (matchedKeys.length === 0) {
-                    mostrarMensaje('fa-sad-tear', `¡Hola ${clean}! Aún no tenemos tu QSL en el sistema. Contacta a CM7ADV para agregarla.`);
-                    return;
-                }
-
-                if (matchedKeys.length === 1) {
-                    const key = matchedKeys[0];
-                    const qsls = db[key];
-                    qsls.forEach(q => q._callsign = key);
-                    if (qsls.length === 1) {
-                        mostrarDetalle(qsls, 0, key);
-                    } else {
-                        mostrarGrid(qsls, key);
-                    }
-                    return;
-                }
-
-                let allQSLs = [];
-                matchedKeys.forEach(key => {
+                let matchedQSLs = [];
+                dbKeys.forEach(key => {
                     const qsls = db[key];
                     qsls.forEach(q => {
-                        allQSLs.push({
-                            ...q,
-                            _callsign: key
-                        });
+                        const searchStr = `${key} ${q.operador || ''} ${q.banda || ''} ${q.modo || ''}`.toUpperCase();
+                        if (searchStr.includes(clean)) {
+                            matchedQSLs.push({
+                                ...q,
+                                _callsign: key
+                            });
+                        }
                     });
                 });
 
-                if (allQSLs.length === 0) {
-                    mostrarMensaje('fa-sad-tear', `No se encontraron QSLs para ${clean}.`);
+                if (matchedQSLs.length === 0) {
+                    mostrarMensaje('fa-sad-tear', `No se encontraron QSLs que coincidan con "${clean}".`);
                     return;
                 }
 
-                mostrarGrid(allQSLs, '');
+                allQSLs = matchedQSLs;
+                showingFavorites = false;
+                favFilterBtn.classList.remove('active');
+                filterBanda.value = '';
+                filterModo.value = '';
+                renderFiltered();
             }
 
             // ============================================================
-            // 8. SUGERENCIAS CON DEBOUNCE
+            // 9. SUGERENCIAS
             // ============================================================
             let debounceTimer;
 
@@ -1212,7 +1367,7 @@
                 debounceTimer = setTimeout(async () => {
                     const db = await cargarQSLsDesdeGitHub();
                     const matches = Object.keys(db).filter(key =>
-                        key.includes(clean) || clean.includes(key)
+                        key.includes(clean)
                     );
                     if (matches.length > 0) {
                         mostrarSugerencias(matches);
@@ -1229,7 +1384,7 @@
             });
 
             // ============================================================
-            // 9. EVENT LISTENERS
+            // 10. EVENT LISTENERS
             // ============================================================
             searchBtn.addEventListener('click', buscarQSL);
             input.addEventListener('keypress', function(e) {
@@ -1268,8 +1423,54 @@
                 }
             });
 
+            filterBanda.addEventListener('change', () => {
+                showingFavorites = false;
+                favFilterBtn.classList.remove('active');
+                renderFiltered();
+            });
+            filterModo.addEventListener('change', () => {
+                showingFavorites = false;
+                favFilterBtn.classList.remove('active');
+                renderFiltered();
+            });
+
+            favFilterBtn.addEventListener('click', function() {
+                showingFavorites = !showingFavorites;
+                this.classList.toggle('active', showingFavorites);
+                if (showingFavorites) {
+                    if (allQSLs.length === 0) {
+                        cargarQSLsDesdeGitHub().then(db => {
+                            let all = [];
+                            Object.keys(db).forEach(key => {
+                                db[key].forEach(q => {
+                                    all.push({ ...q, _callsign: key });
+                                });
+                            });
+                            allQSLs = all;
+                            renderFiltered();
+                        });
+                    } else {
+                        renderFiltered();
+                    }
+                } else {
+                    renderFiltered();
+                }
+            });
+
+            clearFiltersBtn.addEventListener('click', function() {
+                filterBanda.value = '';
+                filterModo.value = '';
+                showingFavorites = false;
+                favFilterBtn.classList.remove('active');
+                if (allQSLs.length > 0) {
+                    renderFiltered();
+                } else {
+                    mostrarMensaje('fa-radio', 'Esperando tu búsqueda...');
+                }
+            });
+
             // ============================================================
-            // 10. CARGA INICIAL
+            // 11. CARGA INICIAL
             // ============================================================
             window.addEventListener('load', async function() {
                 input.focus();
@@ -1277,6 +1478,17 @@
 
                 const db = await cargarQSLsDesdeGitHub();
                 const count = Object.keys(db).length;
+                populateFilters();
+                updateFavCount();
+
+                let all = [];
+                Object.keys(db).forEach(key => {
+                    db[key].forEach(q => {
+                        all.push({ ...q, _callsign: key });
+                    });
+                });
+                allQSLs = all;
+
                 mostrarMensaje('fa-radio', `✅ ${count} indicativos cargados. Esperando tu búsqueda...`);
 
                 const params = new URLSearchParams(window.location.search);
