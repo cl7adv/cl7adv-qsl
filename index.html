@@ -1,533 +1,757 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>QSL Caribe - Descarga tus QSLs</title>
-    <!-- Google Fonts para estilo tropical -->
-    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Fredoka+One&family=Nunito:wght@400;700&display=swap" rel="stylesheet" />
-    <!-- Font Awesome para iconos -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QSL Caribe - Buscador de QSLs</title>
+    <!-- Google Fonts (retro + moderna) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Permanent+Marker&family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <!-- Font Awesome 6 (gratis) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* --- RESET Y ESTILOS GLOBALES --- */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        /* --- RESET y variables --- */
+        * { margin:0; padding:0; box-sizing:border-box; }
         body {
-            min-height: 100vh;
-            background: linear-gradient(145deg, #ffe5b4 0%, #ffd699 50%, #f9c07a 100%);
-            font-family: 'Nunito', sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            position: relative;
+            min-height:100vh;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            padding:20px;
+            font-family:'Courier Prime', monospace;
+            /* Fondo con textura de papel (CSS puro) */
+            background-color: #e8d5b7;
+            background-image: 
+                linear-gradient(45deg, rgba(200,180,150,0.2) 25%, transparent 25%),
+                linear-gradient(-45deg, rgba(200,180,150,0.2) 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, rgba(200,180,150,0.2) 75%),
+                linear-gradient(-45deg, transparent 75%, rgba(200,180,150,0.2) 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
         }
 
-        /* Decoración de palmeras (solo CSS) */
-        body::before,
-        body::after {
-            content: "🌴";
-            font-size: 6rem;
-            position: absolute;
-            bottom: 20px;
-            opacity: 0.2;
-            transform: rotate(10deg);
-            user-select: none;
-            pointer-events: none;
-        }
-        body::before {
-            left: 20px;
-            transform: rotate(-10deg);
-        }
-        body::after {
-            right: 20px;
-            transform: rotate(20deg);
-        }
-
-        /* --- TARJETA PRINCIPAL --- */
+        /* --- Tarjeta principal (realista) --- */
         .card {
-            max-width: 700px;
-            width: 100%;
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(8px);
-            border-radius: 60px 60px 40px 40px;
-            padding: 2.5rem 2rem 2rem;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2), 0 8px 16px rgba(0, 0, 0, 0.1);
-            border: 3px solid #ffffff88;
-            position: relative;
-            transition: 0.3s;
+            max-width: 780px;
+            width:100%;
+            background: #fcf3e0;
+            background-image: radial-gradient(circle at 30% 40%, #fff6e5 0%, #f5e7d3 100%);
+            border-radius: 30px 30px 20px 20px;
+            padding: 2.2rem 2rem 1.8rem;
+            box-shadow: 
+                0 20px 40px rgba(0,0,0,0.3),
+                0 0 0 8px #dac09a,
+                0 0 0 12px #fcf3e0,
+                0 0 0 14px #b8956e;
+            position:relative;
+            transition: all 0.2s;
+            border: 2px solid #b8956e;
         }
 
-        /* --- ENCABEZADO --- */
+        /* Sello decorativo "QSL" */
+        .card::before {
+            content: "QSL";
+            position:absolute;
+            top: -10px;
+            right: 20px;
+            font-family:'Permanent Marker', cursive;
+            font-size:3.5rem;
+            color:#b34b3a;
+            opacity:0.15;
+            transform: rotate(12deg);
+            text-shadow: 4px 4px 0 #e0b48c;
+            pointer-events:none;
+            z-index:0;
+        }
+
+        /* --- Encabezado --- */
         .header {
-            text-align: center;
-            margin-bottom: 2rem;
+            text-align:center;
+            margin-bottom:1.2rem;
+            position:relative;
+            z-index:1;
         }
-
         .header h1 {
-            font-family: 'Pacifico', cursive;
-            font-size: 3rem;
-            color: #1e6f5c;
-            text-shadow: 4px 4px 0 #f9c07a, 0 8px 12px rgba(0,0,0,0.1);
-            letter-spacing: 2px;
-            word-break: break-word;
+            font-family:'Permanent Marker', cursive;
+            font-size:3.2rem;
+            color:#2c5f4f;
+            letter-spacing:2px;
+            text-shadow: 3px 3px 0 #dbb48b, 0 6px 12px rgba(0,0,0,0.1);
+            margin-bottom:-0.2rem;
         }
-
         .header .subtitle {
-            font-family: 'Fredoka One', cursive;
-            font-size: 1.3rem;
-            color: #c44536;
-            background: #fde6c4;
-            display: inline-block;
-            padding: 0.2rem 2rem;
-            border-radius: 40px;
-            margin-top: 0.2rem;
-            box-shadow: inset 0 -3px 0 #b35d3a;
+            font-family:'Fredoka One', cursive;
+            font-size:1.2rem;
+            background:#c44536;
+            color:#fcf3e0;
+            display:inline-block;
+            padding:0.1rem 2rem;
+            border-radius:40px;
+            letter-spacing:2px;
+            box-shadow: inset 0 -4px 0 #8f3226;
+            margin-top:0.2rem;
         }
-
         .header .sun {
-            font-size: 2.5rem;
-            display: block;
-            margin-top: -0.5rem;
-        }
-
-        /* --- BUSCADOR --- */
-        .search-section {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 1rem;
-            margin: 1.5rem 0 2rem;
-        }
-
-        .search-box {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 0.8rem;
-            width: 100%;
-        }
-
-        .search-box input {
-            flex: 1 1 200px;
-            padding: 0.9rem 1.5rem;
-            border: none;
-            border-radius: 50px;
-            background: #fef9f0;
-            font-size: 1.2rem;
-            font-family: 'Nunito', sans-serif;
-            font-weight: 700;
-            color: #1e3d3a;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.05), inset 0 2px 6px rgba(0,0,0,0.05);
-            transition: 0.2s;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            outline: 2px solid transparent;
-        }
-
-        .search-box input:focus {
-            outline: 2px solid #f9a825;
-            background: #ffffff;
-            box-shadow: 0 8px 16px rgba(249, 168, 37, 0.2);
-        }
-
-        .search-box input::placeholder {
-            text-transform: none;
-            font-weight: 400;
-            color: #a28b7a;
-            letter-spacing: 0;
-        }
-
-        .search-box button {
-            padding: 0.9rem 2.2rem;
-            border: none;
-            border-radius: 50px;
-            background: #f9a825;
-            color: #1e3d3a;
-            font-family: 'Fredoka One', cursive;
-            font-size: 1.3rem;
-            cursor: pointer;
-            transition: 0.2s;
-            box-shadow: 0 6px 0 #c47d1a, 0 4px 12px rgba(249, 168, 37, 0.4);
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .search-box button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 0 #c47d1a, 0 8px 20px rgba(249, 168, 37, 0.5);
-        }
-
-        .search-box button:active {
-            transform: translateY(4px);
-            box-shadow: 0 2px 0 #c47d1a;
-        }
-
-        .search-box button i {
-            font-size: 1.2rem;
-        }
-
-        /* --- MENSAJE DE AYUDA --- */
-        .helper {
-            font-size: 0.95rem;
-            color: #4d3e34;
-            background: #fcf3e6cc;
-            padding: 0.3rem 1.5rem;
-            border-radius: 30px;
-            backdrop-filter: blur(4px);
-        }
-
-        .helper i {
-            color: #c44536;
-            margin-right: 6px;
-        }
-
-        /* --- RESULTADO --- */
-        .result-container {
-            min-height: 200px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            background: #ffffffcc;
-            border-radius: 40px;
-            padding: 1.5rem;
-            margin: 1rem 0 1.5rem;
-            box-shadow: inset 0 0 0 2px #ffffff, 0 8px 20px rgba(0,0,0,0.05);
-            transition: 0.3s;
-        }
-
-        .result-container .message {
-            font-size: 1.3rem;
-            color: #2e5d4e;
-            text-align: center;
-            padding: 1rem;
-        }
-
-        .result-container .message i {
-            font-size: 2.5rem;
-            display: block;
-            margin-bottom: 0.5rem;
-            color: #f9a825;
-        }
-
-        .result-container .qsl-card {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 1rem;
-            width: 100%;
-        }
-
-        .result-container .qsl-card img {
-            max-width: 100%;
-            max-height: 400px;
-            border-radius: 24px;
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
-            border: 4px solid #ffffff;
-            transition: 0.3s;
-            object-fit: contain;
-            background: #f3ede7;
-        }
-
-        .result-container .qsl-card img:hover {
-            transform: scale(1.02);
-            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3);
-        }
-
-        .result-container .qsl-card .download-btn {
-            background: #1e6f5c;
-            color: white;
-            padding: 0.7rem 2rem;
-            border-radius: 40px;
-            font-family: 'Fredoka One', cursive;
-            font-size: 1.2rem;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            box-shadow: 0 6px 0 #0f4a3d, 0 4px 12px rgba(30, 111, 92, 0.3);
-            transition: 0.2s;
-            border: none;
-            cursor: pointer;
-        }
-
-        .result-container .qsl-card .download-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 0 #0f4a3d, 0 8px 20px rgba(30, 111, 92, 0.4);
-        }
-
-        .result-container .qsl-card .download-btn:active {
-            transform: translateY(4px);
-            box-shadow: 0 2px 0 #0f4a3d;
-        }
-
-        /* --- FOOTER / FIRMA --- */
-        .footer {
-            margin-top: 1.8rem;
-            text-align: center;
-            font-size: 0.9rem;
-            color: #3b2c22;
-            border-top: 2px dashed #dbb48b;
-            padding-top: 1.2rem;
-            display: flex;
-            flex-direction: column;
-            gap: 0.3rem;
-        }
-
-        .footer .creator {
-            font-family: 'Pacifico', cursive;
-            font-size: 1.4rem;
-            color: #a64b2a;
-        }
-
-        .footer .creator span {
-            background: #fde6c4;
-            padding: 0 0.8rem;
-            border-radius: 30px;
-        }
-
-        .footer .collab {
-            font-weight: 700;
-            color: #1e6f5c;
-        }
-
-        .footer .collab i {
-            color: #f9a825;
-            margin: 0 4px;
-        }
-
-        /* --- RESPONSIVE --- */
-        @media (max-width: 600px) {
-            .card {
-                padding: 1.8rem 1.2rem;
-                border-radius: 40px;
-            }
-            .header h1 {
-                font-size: 2.2rem;
-            }
-            .search-box input {
-                font-size: 1rem;
-                padding: 0.7rem 1.2rem;
-            }
-            .search-box button {
-                font-size: 1rem;
-                padding: 0.7rem 1.5rem;
-            }
-            .result-container .qsl-card img {
-                max-height: 250px;
-            }
-            .footer .creator {
-                font-size: 1.1rem;
-            }
-        }
-
-        @media (max-width: 400px) {
-            .header h1 {
-                font-size: 1.8rem;
-            }
-            .search-box {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            .search-box input {
-                text-align: center;
-            }
-        }
-
-        /* Animación sutil de olas */
-        .wave {
-            animation: wave 3s ease-in-out infinite;
+            font-size:2.2rem;
+            display:inline-block;
+            animation: wave 4s ease-in-out infinite;
         }
         @keyframes wave {
-            0%, 100% { transform: rotate(0deg); }
-            50% { transform: rotate(6deg); }
+            0%,100%{ transform:rotate(-6deg) scale(1); }
+            50%{ transform:rotate(6deg) scale(1.1); }
+        }
+
+        /* --- Buscador mejorado --- */
+        .search-section {
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            gap:0.8rem;
+            margin:0.8rem 0 1.5rem;
+            z-index:2;
+            position:relative;
+        }
+        .search-box {
+            display:flex;
+            flex-wrap:wrap;
+            justify-content:center;
+            gap:0.6rem;
+            width:100%;
+        }
+        .search-box input {
+            flex:1 1 220px;
+            padding:0.8rem 1.5rem;
+            border:3px solid #b8956e;
+            border-radius:50px;
+            background:#fefcf7;
+            font-family:'Courier Prime', monospace;
+            font-size:1.2rem;
+            font-weight:700;
+            color:#2c3e3a;
+            box-shadow: inset 0 2px 6px rgba(0,0,0,0.1);
+            transition:0.2s;
+            text-transform:uppercase;
+            letter-spacing:1px;
+            outline:none;
+        }
+        .search-box input:focus {
+            border-color:#c44536;
+            box-shadow: 0 0 0 4px rgba(196,69,54,0.2), inset 0 2px 6px rgba(0,0,0,0.05);
+        }
+        .search-box input::placeholder {
+            text-transform:none;
+            font-weight:400;
+            color:#9a8a7a;
+            letter-spacing:0;
+        }
+        .search-box button {
+            padding:0.8rem 2rem;
+            border:none;
+            border-radius:50px;
+            background:#c44536;
+            color:#fcf3e0;
+            font-family:'Fredoka One', cursive;
+            font-size:1.2rem;
+            cursor:pointer;
+            transition:0.15s;
+            box-shadow: 0 6px 0 #8f3226, 0 4px 12px rgba(196,69,54,0.3);
+            display:inline-flex;
+            align-items:center;
+            gap:8px;
+        }
+        .search-box button:hover {
+            transform:translateY(-2px);
+            box-shadow: 0 8px 0 #8f3226, 0 8px 20px rgba(196,69,54,0.4);
+        }
+        .search-box button:active {
+            transform:translateY(4px);
+            box-shadow: 0 2px 0 #8f3226;
+        }
+
+        /* Sugerencias (autocompletado) */
+        .suggestions {
+            list-style:none;
+            background:#fefcf7;
+            border:2px solid #b8956e;
+            border-radius:20px;
+            padding:0.4rem 0;
+            max-height:200px;
+            overflow-y:auto;
+            width:100%;
+            max-width:400px;
+            display:none;
+            box-shadow:0 8px 20px rgba(0,0,0,0.15);
+            margin-top:-0.2rem;
+        }
+        .suggestions li {
+            padding:0.5rem 1.5rem;
+            cursor:pointer;
+            font-weight:700;
+            color:#2c3e3a;
+            transition:0.1s;
+            display:flex;
+            justify-content:space-between;
+            border-bottom:1px dashed #e3d4c0;
+        }
+        .suggestions li:last-child { border-bottom:none; }
+        .suggestions li:hover {
+            background:#e8d5b7;
+            color:#1e4f3d;
+        }
+        .suggestions li small {
+            font-weight:400;
+            color:#7a6b5c;
+        }
+
+        /* --- Área de resultado (tarjeta polaroid) --- */
+        .result-container {
+            min-height:200px;
+            background:#fefcf7;
+            border-radius:30px;
+            padding:1.8rem 1.5rem;
+            margin:1rem 0 1.5rem;
+            box-shadow: inset 0 0 0 3px #fff, 0 12px 30px rgba(0,0,0,0.1);
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            justify-content:center;
+            transition:0.3s;
+            position:relative;
+        }
+        .result-container .message {
+            font-size:1.3rem;
+            color:#2e5d4e;
+            text-align:center;
+            padding:1rem;
+        }
+        .result-container .message i {
+            font-size:2.8rem;
+            display:block;
+            margin-bottom:0.5rem;
+            color:#c44536;
+        }
+
+        /* Estilo Polaroid para la QSL */
+        .qsl-card {
+            display:none;
+            flex-direction:column;
+            align-items:center;
+            gap:0.8rem;
+            width:100%;
+            animation: fadeIn 0.5s ease;
+        }
+        @keyframes fadeIn {
+            0%{ opacity:0; transform:scale(0.95); }
+            100%{ opacity:1; transform:scale(1); }
+        }
+        .qsl-card .polaroid {
+            background:white;
+            padding:12px 12px 40px 12px;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.25), 0 4px 10px rgba(0,0,0,0.1);
+            border-radius:8px;
+            transform: rotate(-1deg) scale(1);
+            transition:0.3s;
+            max-width:100%;
+            display:inline-block;
+        }
+        .qsl-card .polaroid:hover {
+            transform: rotate(0deg) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+        .qsl-card .polaroid img {
+            display:block;
+            max-width:100%;
+            max-height:350px;
+            border-radius:4px;
+            object-fit:contain;
+            background:#f3ede7;
+        }
+        /* Sello superpuesto en la imagen (efecto) */
+        .qsl-card .polaroid .stamp {
+            position:absolute;
+            bottom:50px;
+            right:20px;
+            background:#c44536;
+            color:white;
+            font-family:'Permanent Marker', cursive;
+            font-size:1.2rem;
+            padding:0.1rem 0.8rem;
+            border-radius:30px;
+            transform:rotate(12deg);
+            opacity:0.5;
+            pointer-events:none;
+            box-shadow:0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .qsl-card .meta {
+            display:flex;
+            flex-wrap:wrap;
+            justify-content:center;
+            gap:0.8rem 1.5rem;
+            font-size:0.9rem;
+            color:#3b2c22;
+            background:#f5e7d3;
+            padding:0.3rem 1.2rem;
+            border-radius:40px;
+            width:fit-content;
+            margin:0 auto;
+        }
+        .qsl-card .meta i { margin-right:6px; color:#c44536; }
+
+        .qsl-card .actions {
+            display:flex;
+            flex-wrap:wrap;
+            justify-content:center;
+            gap:0.8rem;
+            margin-top:0.2rem;
+        }
+        .qsl-card .actions .download-btn {
+            background:#1e6f5c;
+            color:white;
+            padding:0.7rem 2rem;
+            border-radius:40px;
+            font-family:'Fredoka One', cursive;
+            font-size:1.1rem;
+            text-decoration:none;
+            display:inline-flex;
+            align-items:center;
+            gap:10px;
+            border:none;
+            cursor:pointer;
+            box-shadow: 0 6px 0 #0f4a3d, 0 4px 12px rgba(30,111,92,0.3);
+            transition:0.15s;
+        }
+        .qsl-card .actions .download-btn:hover {
+            transform:translateY(-2px);
+            box-shadow:0 8px 0 #0f4a3d, 0 8px 20px rgba(30,111,92,0.4);
+        }
+        .qsl-card .actions .download-btn:active {
+            transform:translateY(4px);
+            box-shadow:0 2px 0 #0f4a3d;
+        }
+        .qsl-card .actions .share-btn {
+            background:#3b4d61;
+            color:white;
+            padding:0.7rem 1.5rem;
+            border-radius:40px;
+            font-family:'Fredoka One', cursive;
+            font-size:1.1rem;
+            border:none;
+            cursor:pointer;
+            display:inline-flex;
+            align-items:center;
+            gap:8px;
+            box-shadow:0 4px 0 #1d2b38, 0 4px 12px rgba(59,77,97,0.3);
+            transition:0.15s;
+        }
+        .qsl-card .actions .share-btn:hover {
+            transform:translateY(-2px);
+            box-shadow:0 6px 0 #1d2b38;
+        }
+        .qsl-card .actions .share-btn:active {
+            transform:translateY(4px);
+            box-shadow:0 2px 0 #1d2b38;
+        }
+
+        /* Contador de descargas */
+        .download-count {
+            font-size:0.85rem;
+            color:#5a4c3e;
+            margin-top:0.2rem;
+            background:#e8d5b7;
+            padding:0.1rem 1rem;
+            border-radius:30px;
+            display:inline-block;
+        }
+
+        /* --- Footer mejorado --- */
+        .footer {
+            margin-top:1.2rem;
+            text-align:center;
+            font-size:0.9rem;
+            color:#3b2c22;
+            border-top:2px dashed #dbb48b;
+            padding-top:1rem;
+            display:flex;
+            flex-direction:column;
+            gap:0.4rem;
+        }
+        .footer .creator {
+            font-family:'Permanent Marker', cursive;
+            font-size:1.5rem;
+            color:#a64b2a;
+        }
+        .footer .creator span {
+            background:#fde6c4;
+            padding:0 0.8rem;
+            border-radius:30px;
+        }
+        .footer .collab {
+            font-weight:700;
+            color:#1e6f5c;
+        }
+        .footer .collab i {
+            color:#c44536;
+            margin:0 4px;
+        }
+        .footer .badge {
+            display:flex;
+            justify-content:center;
+            gap:1rem;
+            font-size:0.8rem;
+        }
+        .footer .badge i { margin-right:4px; }
+
+        /* --- Responsive --- */
+        @media (max-width:600px) {
+            .card { padding:1.5rem 1rem; }
+            .header h1 { font-size:2.4rem; }
+            .header .subtitle { font-size:1rem; padding:0.1rem 1rem; }
+            .search-box input { font-size:1rem; padding:0.6rem 1rem; }
+            .search-box button { font-size:1rem; padding:0.6rem 1.2rem; }
+            .qsl-card .polaroid img { max-height:200px; }
+            .qsl-card .polaroid { padding:8px 8px 25px 8px; }
+            .qsl-card .meta { font-size:0.8rem; flex-direction:column; align-items:center; gap:0.3rem; }
+            .footer .creator { font-size:1.2rem; }
+        }
+        @media (max-width:400px) {
+            .search-box { flex-direction:column; align-items:stretch; }
+            .search-box input { text-align:center; }
+            .suggestions { max-width:100%; }
         }
     </style>
 </head>
 <body>
 
-    <div class="card">
-        <!-- ENCABEZADO -->
-        <div class="header">
-            <span class="sun wave">🌞</span>
-            <h1>QSL Caribe</h1>
-            <div class="subtitle">Descarga tus QSLs</div>
-        </div>
+<div class="card">
 
-        <!-- BUSCADOR -->
-        <div class="search-section">
-            <div class="search-box">
-                <input type="text" id="callsignInput" placeholder="Ej. CM7ADV" maxlength="10" autofocus />
-                <button id="searchBtn"><i class="fas fa-search"></i> Buscar</button>
-            </div>
-            <div class="helper">
-                <i class="fas fa-info-circle"></i> Ingresa tu indicativo para ver tu QSL
-            </div>
-        </div>
+    <!-- Encabezado -->
+    <div class="header">
+        <span class="sun"><i class="fas fa-sun"></i></span>
+        <h1>QSL Caribe</h1>
+        <div class="subtitle"><i class="fas fa-qrcode"></i> Buscador de QSLs</div>
+    </div>
 
-        <!-- RESULTADO -->
-        <div class="result-container" id="resultContainer">
-            <div class="message" id="resultMessage">
-                <i class="fas fa-radio"></i>
-                <span>Esperando tu búsqueda...</span>
-            </div>
-            <div class="qsl-card" id="qslCard" style="display: none;">
-                <img id="qslImage" src="" alt="QSL" />
-                <a id="downloadLink" class="download-btn" download>
-                    <i class="fas fa-download"></i> Descargar QSL
-                </a>
-            </div>
+    <!-- Buscador con autocompletado -->
+    <div class="search-section">
+        <div class="search-box">
+            <input type="text" id="callsignInput" placeholder="Ej. CM7ADV, CO5..." maxlength="12" autofocus>
+            <button id="searchBtn"><i class="fas fa-search"></i> Buscar</button>
         </div>
-
-        <!-- FOOTER -->
-        <div class="footer">
-            <div class="creator">
-                <span>✧ CM7ADV - Cuba ✧</span>
-                <br />
-                <span style="font-family: 'Nunito', sans-serif; font-size: 0.9rem; font-weight: 400;">ZMR-Cuba</span>
-            </div>
-            <div class="collab">
-                <i class="fas fa-handshake"></i> Colaboradores: CO5ABC &amp; CO5WE <i class="fas fa-heart" style="color: #c44536;"></i>
-            </div>
-            <div style="font-size: 0.8rem; opacity: 0.7; margin-top: 4px;">
-                <i class="fas fa-code"></i> Hecho con <i class="fas fa-coffee"></i> y <i class="fas fa-umbrella-beach"></i>
-            </div>
+        <ul class="suggestions" id="suggestionsList"></ul>
+        <div class="helper">
+            <i class="fas fa-info-circle"></i> Escribe el indicativo o parte de él
         </div>
     </div>
 
-    <script>
-        (function() {
-            "use strict";
+    <!-- Resultado -->
+    <div class="result-container" id="resultContainer">
+        <div class="message" id="resultMessage">
+            <i class="fas fa-radio"></i>
+            <span>Esperando tu búsqueda...</span>
+        </div>
+        <div class="qsl-card" id="qslCard">
+            <div class="polaroid" style="position:relative;">
+                <img id="qslImage" src="" alt="QSL" />
+                <span class="stamp">QSL</span>
+            </div>
+            <div class="meta" id="qslMeta">
+                <!-- Se llena dinámicamente -->
+            </div>
+            <div class="actions">
+                <a id="downloadLink" class="download-btn" download><i class="fas fa-download"></i> Descargar</a>
+                <button class="share-btn" id="shareBtn"><i class="fas fa-share-alt"></i> Compartir</button>
+            </div>
+            <div class="download-count" id="downloadCount"><i class="fas fa-download"></i> Descargas: 0</div>
+        </div>
+    </div>
 
-            // ================================================================
-            //  BASE DE DATOS DE QSLs (cargando desde tu repositorio GitHub)
-            //  Todas las imágenes se sirven en formato RAW desde:
-            //  https://raw.githubusercontent.com/cl7adv/cl7adv-qsl/main/img/
-            // ================================================================
-            const qslDatabase = {
-                // --- Estaciones principales y colaboradores ---
-                "CM7ADV": "https://raw.githubusercontent.com/cl7adv/cl7adv-qsl/main/img/CM7ADV.jpg",
-                "CO5ABC": "https://raw.githubusercontent.com/cl7adv/cl7adv-qsl/main/img/CO5ABC.jpg",
-                "CO5WE": "https://raw.githubusercontent.com/cl7adv/cl7adv-qsl/main/img/CO5WE.jpg",
+    <!-- Footer -->
+    <div class="footer">
+        <div class="creator"><span>✧ CM7ADV - Cuba ✧</span></div>
+        <div class="collab">
+            <i class="fas fa-handshake"></i> Colaboradores: CO5ABC &amp; CO5WE <i class="fas fa-heart"></i>
+        </div>
+        <div class="badge">
+            <span><i class="fas fa-code"></i> Hecho con <i class="fas fa-coffee"></i></span>
+            <span><i class="fas fa-umbrella-beach"></i> Caribe</span>
+        </div>
+    </div>
+</div>
 
-                // --- Otras estaciones que tienes en tu carpeta img ---
-                "CA4NDW": "https://raw.githubusercontent.com/cl7adv/cl7adv-qsl/main/img/CA4NDW-1.jpg",
-                "AD4C": "https://raw.githubusercontent.com/cl7adv/cl7adv-qsl/main/img/AD4C.jpg",
-                "CA2LPO": "https://raw.githubusercontent.com/cl7adv/cl7adv-qsl/main/img/CA2LPO.jpg",
-                "CA4DHR": "https://raw.githubusercontent.com/cl7adv/cl7adv-qsl/main/img/CA4DHR.jpg",
-                "6CA4NDW": "https://raw.githubusercontent.com/cl7adv/cl7adv-qsl/main/img/6CA4NDW-19.jpg",
+<script>
+(function(){
+    "use strict";
 
-                // ============================================================
-                //  ✏️ AGREGAR MÁS INDICATIVOS AQUÍ:
-                //  Copia esta línea y cambia "INDICATIVO" y "archivo.jpg"
-                //  "INDICATIVO": "https://raw.githubusercontent.com/cl7adv/cl7adv-qsl/main/img/archivo.jpg",
-                // ============================================================
-            };
+    // ============================================================
+    // BASE DE DATOS DE QSLs (con metadatos adicionales)
+    // ============================================================
+    const qslDatabase = {
+        "CM7ADV": {
+            url: "https://raw.githubusercontent.com/cl7adv/cl7adv-qsl/main/img/CM7ADV.jpg",
+            banda: "40m",
+            modo: "SSB",
+            operador: "CM7ADV (Adrián)",
+            fecha: "2025-01-15"
+        },
+        "CO5ABC": {
+            url: "https://raw.githubusercontent.com/cl7adv/cl7adv-qsl/main/img/CO5ABC.jpg",
+            banda: "20m",
+            modo: "CW",
+            operador: "CO5ABC",
+            fecha: "2024-12-10"
+        },
+        "CO5WE": {
+            url: "https://raw.githubusercontent.com/cl7adv/cl7adv-qsl/main/img/CO5WE.jpg",
+            banda: "15m",
+            modo: "FT8",
+            operador: "CO5WE",
+            fecha: "2025-02-20"
+        },
+        "CA4NDW": {
+            url: "https://raw.githubusercontent.com/cl7adv/cl7adv-qsl/main/img/CA4NDW-1.jpg",
+            banda: "10m",
+            modo: "SSB",
+            operador: "CA4NDW",
+            fecha: "2024-11-05"
+        },
+        "AD4C": {
+            url: "https://raw.githubusercontent.com/cl7adv/cl7adv-qsl/main/img/AD4C.jpg",
+            banda: "80m",
+            modo: "AM",
+            operador: "AD4C",
+            fecha: "2025-03-01"
+        },
+        "CA2LPO": {
+            url: "https://raw.githubusercontent.com/cl7adv/cl7adv-qsl/main/img/CA2LPO.jpg",
+            banda: "2m",
+            modo: "FM",
+            operador: "CA2LPO",
+            fecha: "2024-09-22"
+        },
+        "CA4DHR": {
+            url: "https://raw.githubusercontent.com/cl7adv/cl7adv-qsl/main/img/CA4DHR.jpg",
+            banda: "6m",
+            modo: "SSB",
+            operador: "CA4DHR",
+            fecha: "2025-01-30"
+        },
+        "6CA4NDW": {
+            url: "https://raw.githubusercontent.com/cl7adv/cl7adv-qsl/main/img/6CA4NDW-19.jpg",
+            banda: "70cm",
+            modo: "DMR",
+            operador: "6CA4NDW",
+            fecha: "2024-08-14"
+        }
+        // ========================================================
+        // ✏️ AGREGAR MÁS AQUÍ con la misma estructura:
+        // "INDICATIVO": { url: "...", banda: "...", modo: "...", operador: "...", fecha: "..." },
+        // ========================================================
+    };
 
-            // --- ELEMENTOS DOM ---
-            const input = document.getElementById('callsignInput');
-            const searchBtn = document.getElementById('searchBtn');
-            const resultContainer = document.getElementById('resultContainer');
-            const resultMessage = document.getElementById('resultMessage');
-            const qslCard = document.getElementById('qslCard');
-            const qslImage = document.getElementById('qslImage');
-            const downloadLink = document.getElementById('downloadLink');
+    // --- DOM elements ---
+    const input = document.getElementById('callsignInput');
+    const searchBtn = document.getElementById('searchBtn');
+    const resultContainer = document.getElementById('resultContainer');
+    const resultMessage = document.getElementById('resultMessage');
+    const qslCard = document.getElementById('qslCard');
+    const qslImage = document.getElementById('qslImage');
+    const qslMeta = document.getElementById('qslMeta');
+    const downloadLink = document.getElementById('downloadLink');
+    const shareBtn = document.getElementById('shareBtn');
+    const downloadCountSpan = document.getElementById('downloadCount');
+    const suggestionsList = document.getElementById('suggestionsList');
 
-            // --- FUNCIÓN PRINCIPAL DE BÚSQUEDA ---
-            function buscarQSL() {
-                let callsign = input.value.trim().toUpperCase();
+    // --- Contador de descargas (localStorage) ---
+    let downloadCount = parseInt(localStorage.getItem('qslDownloadCount')) || 0;
+    downloadCountSpan.innerHTML = `<i class="fas fa-download"></i> Descargas: ${downloadCount}`;
 
-                // Limpiar espacios y caracteres extraños (solo letras y números)
-                callsign = callsign.replace(/[^A-Z0-9]/g, '');
+    function incrementDownloadCount() {
+        downloadCount++;
+        localStorage.setItem('qslDownloadCount', downloadCount);
+        downloadCountSpan.innerHTML = `<i class="fas fa-download"></i> Descargas: ${downloadCount}`;
+    }
 
-                if (callsign === '') {
-                    mostrarMensaje('📻', 'Por favor, ingresa un indicativo válido.');
-                    return;
-                }
+    // --- Mostrar mensaje (sin QSL) ---
+    function mostrarMensaje(icono, texto) {
+        resultMessage.style.display = 'block';
+        resultMessage.innerHTML = `<i class="fas ${icono}"></i><span>${texto}</span>`;
+        qslCard.style.display = 'none';
+        qslImage.src = '';
+        downloadLink.href = '#';
+        qslMeta.innerHTML = '';
+        suggestionsList.style.display = 'none';
+    }
 
-                // Buscar en la base de datos
-                const imageUrl = qslDatabase[callsign];
+    // --- Mostrar QSL con metadatos ---
+    function mostrarQSL(callsign, data) {
+        resultMessage.style.display = 'none';
+        qslCard.style.display = 'flex';
 
-                if (imageUrl) {
-                    // Mostrar la QSL
-                    mostrarQSL(callsign, imageUrl);
-                } else {
-                    // No encontrado: mensaje cordial
-                    mostrarMensaje('🌊', `¡Hola ${callsign}! Aún no tenemos tu QSL en nuestro sistema. ¡Contacta a CM7ADV para agregarla!`);
-                }
-            }
+        const url = data.url;
+        qslImage.src = url;
+        qslImage.alt = `QSL de ${callsign}`;
 
-            // --- MOSTRAR MENSAJE (sin QSL) ---
-            function mostrarMensaje(icono, texto) {
-                resultMessage.style.display = 'block';
-                resultMessage.innerHTML = `<i class="fas ${icono}"></i><span>${texto}</span>`;
-                qslCard.style.display = 'none';
-                // Limpiar imagen para evitar mostrar la anterior
-                qslImage.src = '';
-                downloadLink.href = '#';
-            }
+        // Metadatos
+        let metaHTML = '';
+        if (data.operador) metaHTML += `<span><i class="fas fa-user"></i> ${data.operador}</span>`;
+        if (data.banda) metaHTML += `<span><i class="fas fa-signal"></i> ${data.banda}</span>`;
+        if (data.modo) metaHTML += `<span><i class="fas fa-wave-square"></i> ${data.modo}</span>`;
+        if (data.fecha) metaHTML += `<span><i class="fas fa-calendar-alt"></i> ${data.fecha}</span>`;
+        qslMeta.innerHTML = metaHTML || '<span><i class="fas fa-tag"></i> QSL confirmada</span>';
 
-            // --- MOSTRAR QSL CON DESCARGA ---
-            function mostrarQSL(callsign, url) {
-                resultMessage.style.display = 'none';
-                qslCard.style.display = 'flex';
-
-                // Configurar imagen
-                qslImage.src = url;
-                qslImage.alt = `QSL de ${callsign}`;
-
-                // Configurar enlace de descarga: usando fetch para obtener el blob
-                // y forzar la descarga con el nombre correcto.
-                async function prepararDescarga() {
-                    try {
-                        const response = await fetch(url);
-                        if (!response.ok) throw new Error('Error al obtener la imagen');
-                        const blob = await response.blob();
-                        const blobUrl = URL.createObjectURL(blob);
-                        // Determinar extensión desde el Content-Type o la URL
-                        let ext = 'jpg';
-                        if (blob.type.includes('png')) ext = 'png';
-                        else if (blob.type.includes('jpeg')) ext = 'jpg';
-                        else if (blob.type.includes('gif')) ext = 'gif';
-                        downloadLink.href = blobUrl;
-                        downloadLink.download = `QSL_${callsign}.${ext}`;
-                    } catch (error) {
-                        // Fallback: usar la URL directa (puede funcionar en algunos navegadores)
-                        console.warn('Descarga con fetch falló, usando URL directa.', error);
-                        downloadLink.href = url;
-                        downloadLink.download = `QSL_${callsign}.jpg`;
-                    }
-                }
-                prepararDescarga();
-
-                // También configuramos el enlace inmediatamente por si el usuario hace clic rápido
+        // Preparar descarga (fetch blob para mejor compatibilidad)
+        async function prepararDescarga() {
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error('Error al obtener la imagen');
+                const blob = await response.blob();
+                const blobUrl = URL.createObjectURL(blob);
+                let ext = 'jpg';
+                if (blob.type.includes('png')) ext = 'png';
+                else if (blob.type.includes('gif')) ext = 'gif';
+                else if (blob.type.includes('jpeg')) ext = 'jpg';
+                downloadLink.href = blobUrl;
+                downloadLink.download = `QSL_${callsign}.${ext}`;
+            } catch (e) {
+                console.warn('Fallback a URL directa', e);
                 downloadLink.href = url;
                 downloadLink.download = `QSL_${callsign}.jpg`;
             }
+        }
+        prepararDescarga();
 
-            // --- EVENTOS ---
-            searchBtn.addEventListener('click', buscarQSL);
+        // Enlace directo por si el usuario hace clic rápido
+        downloadLink.href = url;
+        downloadLink.download = `QSL_${callsign}.jpg`;
+        // Incrementar contador al hacer clic en descargar
+        downloadLink.onclick = function(e) {
+            // Solo si el enlace tiene URL válida
+            if (downloadLink.href && downloadLink.href !== '#') {
+                incrementDownloadCount();
+            }
+        };
 
-            input.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    buscarQSL();
-                }
+        // Botón compartir (copia enlace)
+        shareBtn.onclick = function() {
+            const shareUrl = window.location.href + `?qsl=${callsign}`;
+            navigator.clipboard.writeText(shareUrl).then(() => {
+                alert('Enlace copiado al portapapeles: ' + shareUrl);
+            }).catch(() => {
+                alert('Comparte este enlace: ' + shareUrl);
             });
+        };
 
-            // Al cargar la página, enfocar el input y mostrar mensaje inicial
-            window.addEventListener('load', function() {
-                input.focus();
-                mostrarMensaje('fa-radio', 'Esperando tu búsqueda...');
+        // Ocultar sugerencias
+        suggestionsList.style.display = 'none';
+    }
+
+    // --- Búsqueda principal ---
+    function buscarQSL() {
+        let raw = input.value.trim().toUpperCase();
+        // Limpiar caracteres extraños
+        const clean = raw.replace(/[^A-Z0-9]/g, '');
+        if (clean === '') {
+            mostrarMensaje('fa-radio', 'Por favor, ingresa un indicativo válido.');
+            return;
+        }
+
+        // Buscar coincidencia exacta primero
+        if (qslDatabase[clean]) {
+            mostrarQSL(clean, qslDatabase[clean]);
+            return;
+        }
+
+        // Búsqueda por coincidencia parcial (prefijo o sufijo)
+        const matches = Object.keys(qslDatabase).filter(key => 
+            key.includes(clean) || clean.includes(key)
+        );
+
+        if (matches.length === 1) {
+            // Solo una coincidencia, mostrarla
+            const key = matches[0];
+            mostrarQSL(key, qslDatabase[key]);
+        } else if (matches.length > 1) {
+            // Múltiples coincidencias: mostrar sugerencias
+            mostrarSugerencias(matches);
+            mostrarMensaje('fa-search', `Se encontraron ${matches.length} coincidencias. Selecciona una de la lista.`);
+        } else {
+            mostrarMensaje('fa-sad-tear', `¡Hola ${clean}! Aún no tenemos tu QSL en nuestro sistema. Contacta a CM7ADV para agregarla.`);
+        }
+    }
+
+    // --- Mostrar sugerencias (autocompletado) ---
+    function mostrarSugerencias(matches) {
+        suggestionsList.innerHTML = '';
+        matches.forEach(key => {
+            const li = document.createElement('li');
+            li.innerHTML = `${key} <small>${qslDatabase[key].banda || ''} ${qslDatabase[key].modo || ''}</small>`;
+            li.addEventListener('click', function() {
+                input.value = key;
+                suggestionsList.style.display = 'none';
+                buscarQSL();
             });
+            suggestionsList.appendChild(li);
+        });
+        suggestionsList.style.display = 'block';
+    }
 
-        })();
-    </script>
+    // --- Evento de escritura para sugerencias en vivo ---
+    input.addEventListener('input', function() {
+        const raw = this.value.trim().toUpperCase();
+        const clean = raw.replace(/[^A-Z0-9]/g, '');
+        if (clean.length < 2) {
+            suggestionsList.style.display = 'none';
+            return;
+        }
+        const matches = Object.keys(qslDatabase).filter(key => 
+            key.includes(clean) || clean.includes(key)
+        );
+        if (matches.length > 0 && matches.length <= 8) {
+            mostrarSugerencias(matches);
+        } else if (matches.length > 8) {
+            // Demasiadas, mostrar solo primeras 8
+            mostrarSugerencias(matches.slice(0, 8));
+        } else {
+            suggestionsList.style.display = 'none';
+        }
+    });
+
+    // Clic fuera de sugerencias las oculta
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.search-section')) {
+            suggestionsList.style.display = 'none';
+        }
+    });
+
+    // --- Eventos de búsqueda ---
+    searchBtn.addEventListener('click', buscarQSL);
+    input.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            buscarQSL();
+        }
+    });
+
+    // --- Carga inicial ---
+    window.addEventListener('load', function() {
+        input.focus();
+        mostrarMensaje('fa-radio', 'Esperando tu búsqueda...');
+        // Si hay parámetro ?qsl= en URL, buscar automáticamente
+        const params = new URLSearchParams(window.location.search);
+        const qslParam = params.get('qsl');
+        if (qslParam) {
+            const key = qslParam.toUpperCase().replace(/[^A-Z0-9]/g, '');
+            if (qslDatabase[key]) {
+                input.value = key;
+                buscarQSL();
+            }
+        }
+    });
+
+})();
+</script>
 
 </body>
 </html>
