@@ -8,13 +8,13 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Playfair+Display:ital,wght@1,700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <!-- Font Awesome 6 -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
     <style>
         /* ============================================================
-           RESET Y ESTILOS GLOBALES (simplificados y elegantes)
+           RESET Y ESTILOS GLOBALES (Estilo playero claro)
            ============================================================ */
         * {
             margin: 0;
@@ -24,845 +24,603 @@
 
         body {
             min-height: 100vh;
+            background: #f5efe6; /* arena clara */
+            font-family: 'Inter', sans-serif;
+            color: #1e293b;
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 20px;
-            font-family: 'Inter', sans-serif;
-            background: #0b0a12;
-            /* Fondo base oscuro */
-            background-image: radial-gradient(ellipse at 20% 30%, rgba(40, 60, 120, 0.15) 0%, transparent 60%),
-                radial-gradient(ellipse at 80% 70%, rgba(200, 100, 30, 0.08) 0%, transparent 50%);
-            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(200, 230, 255, 0.2) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(255, 220, 180, 0.2) 0%, transparent 50%);
         }
 
-        /* Elementos flotantes (más sutiles) */
-        .floating {
-            position: fixed;
-            pointer-events: none;
-            z-index: 0;
-            font-size: 3rem;
-            opacity: 0.08;
-            filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.2));
-            animation: floatSoft 12s ease-in-out infinite alternate;
-        }
-        .floating-1 {
-            top: 8%;
-            left: 4%;
-            animation-delay: 0s;
-        }
-        .floating-2 {
-            bottom: 12%;
-            right: 4%;
-            animation-delay: 3s;
-        }
-        .floating-3 {
-            top: 35%;
-            right: 6%;
-            animation-delay: 6s;
-            font-size: 2.2rem;
-        }
-        .floating-4 {
-            bottom: 30%;
-            left: 5%;
-            animation-delay: 2s;
-            font-size: 2.8rem;
-        }
-
-        @keyframes floatSoft {
-            0% {
-                transform: translateY(0) rotate(0deg);
-            }
-            100% {
-                transform: translateY(-20px) rotate(6deg);
-            }
-        }
-
-        /* Tarjeta principal (sin 3D, elegante) */
+        /* Tarjeta principal */
         .card-3d {
-            max-width: 880px;
+            max-width: 1100px;
             width: 100%;
-            background: rgba(255, 255, 255, 0.04);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border-radius: 40px;
-            padding: 2.8rem 2.8rem 2.2rem;
-            box-shadow:
-                0 30px 80px rgba(0, 0, 0, 0.5),
-                0 0 0 1px rgba(255, 255, 255, 0.04),
-                inset 0 1px 0 rgba(255, 255, 255, 0.06);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            position: relative;
-            z-index: 2;
-            animation: cardFade 0.8s ease-out;
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 2.5rem 2.5rem 2rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.06), 0 8px 20px rgba(0, 0, 0, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(4px);
+            transition: all 0.2s;
         }
 
-        @keyframes cardFade {
-            0% {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Sello QSL más discreto */
-        .stamp-modern {
-            position: absolute;
-            top: 12px;
-            right: 28px;
-            font-family: 'Playfair Display', serif;
-            font-size: 2.2rem;
-            font-style: italic;
-            color: rgba(255, 200, 100, 0.06);
-            transform: rotate(12deg);
-            letter-spacing: 4px;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        /* Header renovado */
+        /* Encabezado */
         .header-modern {
-            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
             margin-bottom: 2rem;
-            position: relative;
-            z-index: 1;
+            border-bottom: 2px solid #e6dccf;
+            padding-bottom: 1rem;
         }
         .header-modern h1 {
-            font-family: 'Inter', sans-serif;
-            font-weight: 900;
-            font-size: 3.4rem;
-            color: #f7d47c;
-            /* Dorado suave */
+            font-weight: 800;
+            font-size: 2.2rem;
+            color: #0f2b4a; /* azul profundo */
             letter-spacing: -0.5px;
-            line-height: 1.1;
-            margin-bottom: 0.2rem;
-            text-shadow: 0 0 40px rgba(247, 212, 124, 0.08);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .header-modern h1 i {
+            color: #2a7faa; /* azul marino */
+            font-size: 2rem;
         }
         .header-modern .subtitle {
-            font-weight: 600;
-            font-size: 1rem;
-            color: rgba(255, 255, 255, 0.4);
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            display: inline-block;
-            padding: 0 1rem;
-            position: relative;
-        }
-        /* Línea decorativa bajo el subtítulo */
-        .header-modern .subtitle::after {
-            content: '';
-            position: absolute;
-            bottom: -6px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 40px;
-            height: 2px;
-            background: rgba(247, 212, 124, 0.3);
-            border-radius: 2px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: #5a6b7c;
+            background: #e9e0d5;
+            padding: 0.4rem 1rem;
+            border-radius: 30px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
         }
         .header-modern .subtitle i {
-            margin-right: 8px;
-            color: #f7d47c;
-            opacity: 0.5;
+            color: #2a7faa;
         }
 
-        /* Barra de filtros (estilo refinado) */
-        .filter-bar {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            align-items: center;
-            gap: 0.5rem 0.8rem;
-            margin: 0.3rem 0 1.2rem;
-            padding: 0.5rem 1rem;
-            background: rgba(255, 255, 255, 0.02);
-            border-radius: 60px;
-            border: 1px solid rgba(255, 255, 255, 0.04);
-        }
-        .filter-bar select,
-        .filter-bar .filter-btn {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            color: rgba(255, 255, 255, 0.6);
-            padding: 0.35rem 1.2rem;
-            border-radius: 40px;
-            font-family: 'Inter', sans-serif;
-            font-size: 0.8rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.2s;
-            outline: none;
-            backdrop-filter: blur(4px);
-        }
-        .filter-bar select:hover,
-        .filter-bar .filter-btn:hover {
-            background: rgba(255, 255, 255, 0.07);
-            color: #fff;
-            border-color: rgba(255, 255, 255, 0.1);
-        }
-        .filter-bar select:focus {
-            border-color: #f7d47c;
-        }
-        .filter-bar .filter-btn.active {
-            background: rgba(247, 212, 124, 0.12);
-            border-color: #f7d47c;
-            color: #f7d47c;
-        }
-        .filter-bar .filter-btn i {
-            margin-right: 6px;
-        }
-        .filter-bar .fav-count {
-            font-size: 0.75rem;
-            color: rgba(255, 255, 255, 0.3);
-            margin-left: 4px;
-        }
-
-        /* Buscador */
+        /* Barra de búsqueda y filtros */
         .search-section {
             display: flex;
             flex-direction: column;
-            align-items: center;
-            gap: 0.6rem;
-            margin: 0.3rem 0 1.2rem;
+            gap: 1rem;
+            margin-bottom: 1.8rem;
             position: relative;
-            z-index: 3;
         }
+
         .search-box {
             display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 0.8rem;
+            gap: 0.6rem;
             width: 100%;
         }
         .search-box input {
-            flex: 1 1 240px;
-            padding: 0.8rem 1.8rem;
-            border: none;
-            border-radius: 60px;
-            background: rgba(255, 255, 255, 0.04);
-            backdrop-filter: blur(6px);
-            font-family: 'Inter', sans-serif;
+            flex: 1;
+            padding: 0.8rem 1.2rem;
+            border: 1px solid #d4c9bc;
+            border-radius: 12px;
             font-size: 1rem;
-            font-weight: 600;
-            color: #fff;
-            box-shadow: inset 0 4px 12px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.04);
-            transition: 0.3s;
+            font-weight: 500;
+            color: #1e293b;
+            background: #fcf9f5;
+            transition: all 0.2s;
+            outline: none;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            outline: none;
-            border: 1px solid rgba(255, 255, 255, 0.04);
-        }
-        .search-box input::placeholder {
-            text-transform: none;
-            font-weight: 400;
-            color: rgba(255, 255, 255, 0.25);
-            letter-spacing: 0;
         }
         .search-box input:focus {
-            background: rgba(255, 255, 255, 0.07);
-            box-shadow: inset 0 4px 12px rgba(0, 0, 0, 0.4), 0 0 0 2px rgba(247, 212, 124, 0.2);
-            border-color: rgba(247, 212, 124, 0.15);
+            border-color: #2a7faa;
+            background: #ffffff;
+            box-shadow: 0 0 0 3px rgba(42, 127, 170, 0.15);
         }
         .search-box button {
-            padding: 0.8rem 2rem;
+            padding: 0.8rem 1.8rem;
+            background: #2a7faa;
+            color: #fff;
             border: none;
-            border-radius: 60px;
-            background: linear-gradient(145deg, #f7d47c, #e8b85a);
-            color: #0b0a12;
-            font-family: 'Inter', sans-serif;
-            font-weight: 700;
-            font-size: 1rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.95rem;
             cursor: pointer;
-            transition: 0.25s;
-            box-shadow: 0 6px 20px rgba(247, 212, 124, 0.15);
+            transition: all 0.2s;
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            white-space: nowrap;
         }
         .search-box button:hover {
-            transform: translateY(-2px) scale(1.02);
-            box-shadow: 0 10px 30px rgba(247, 212, 124, 0.25);
-        }
-        .search-box button:active {
-            transform: translateY(1px) scale(0.98);
+            background: #1f648a;
+            transform: translateY(-1px);
+            box-shadow: 0 8px 20px rgba(42, 127, 170, 0.25);
         }
 
+        .filter-bar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.6rem;
+            background: #f8f2ea;
+            padding: 0.5rem 1rem;
+            border-radius: 16px;
+            border: 1px solid #e0d4c8;
+        }
+        .filter-bar select,
+        .filter-bar .filter-btn {
+            background: transparent;
+            border: 1px solid #d4c9bc;
+            color: #1e293b;
+            padding: 0.4rem 1rem;
+            border-radius: 30px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            outline: none;
+        }
+        .filter-bar select:hover,
+        .filter-bar .filter-btn:hover {
+            background: #efe7dc;
+            border-color: #b8a99a;
+        }
+        .filter-bar select option {
+            background: #fff;
+            color: #1e293b;
+        }
+        .filter-bar .filter-btn.active {
+            background: #d2e3ed;
+            border-color: #2a7faa;
+            color: #2a7faa;
+        }
+        .filter-bar .filter-btn .fav-count {
+            font-weight: 600;
+        }
+        .filter-bar .helper {
+            font-size: 0.8rem;
+            color: #7a8b9c;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-left: auto;
+        }
+
+        /* Sugerencias */
         .suggestions {
             list-style: none;
-            background: rgba(255, 255, 255, 0.04);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 20px;
-            padding: 0.3rem 0;
+            background: #ffffff;
+            border: 1px solid #d4c9bc;
+            border-radius: 12px;
+            padding: 0.4rem 0;
             max-height: 200px;
             overflow-y: auto;
             width: 100%;
-            max-width: 400px;
             display: none;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-            margin-top: -0.2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+            position: absolute;
+            top: calc(100% + 4px);
+            left: 0;
+            z-index: 10;
         }
         .suggestions li {
-            padding: 0.5rem 1.5rem;
+            padding: 0.6rem 1.2rem;
             cursor: pointer;
-            font-weight: 600;
-            color: rgba(255, 255, 255, 0.7);
-            transition: 0.15s;
-            display: flex;
-            justify-content: space-between;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+            font-weight: 500;
+            color: #1e293b;
+            transition: all 0.1s;
         }
-        .suggestions li:last-child {
-            border-bottom: none;
-        }
-        .suggestions li:hover,
-        .suggestions li:focus {
-            background: rgba(255, 255, 255, 0.05);
-            color: #fff;
-        }
-        .suggestions li small {
-            font-weight: 400;
-            color: rgba(255, 255, 255, 0.25);
+        .suggestions li:hover {
+            background: #f0e8de;
+            color: #2a7faa;
         }
 
-        .helper {
-            font-size: 0.75rem;
-            color: rgba(255, 255, 255, 0.15);
-            background: rgba(255, 255, 255, 0.02);
-            padding: 0.15rem 1.2rem;
-            border-radius: 40px;
-            border: 1px solid rgba(255, 255, 255, 0.02);
-        }
-
-        /* Resultados */
+        /* Contenedor de resultados */
         .result-container {
-            min-height: 200px;
-            background: rgba(255, 255, 255, 0.02);
-            backdrop-filter: blur(6px);
-            border-radius: 30px;
-            padding: 1.8rem 1.5rem;
-            margin: 1rem 0 1.8rem;
-            border: 1px solid rgba(255, 255, 255, 0.03);
-            box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.2);
+            min-height: 300px;
+            background: #ffffff;
+            border-radius: 16px;
+            border: 1px solid #e0d4c8;
+            padding: 1.5rem 1.2rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Mensaje inicial */
+        .message {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            transition: 0.3s;
-            position: relative;
+            padding: 2.5rem 1rem;
+            color: #8a9baa;
+            text-align: center;
         }
-
-        .result-container .message {
+        .message i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #b8c9d6;
+        }
+        .message span {
+            font-weight: 500;
             font-size: 1.1rem;
-            color: rgba(255, 255, 255, 0.4);
-            text-align: center;
-            padding: 1rem;
-        }
-        .result-container .message i {
-            font-size: 2.4rem;
-            display: block;
-            margin-bottom: 0.5rem;
-            color: #f7d47c;
-            filter: drop-shadow(0 0 20px rgba(247, 212, 124, 0.08));
         }
 
-        /* Grid */
-        .grid-view {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
-            gap: 1.5rem;
+        /* Tabla de resultados */
+        .table-view {
+            display: none;
             width: 100%;
-            animation: fadeInUp 0.5s ease;
+            overflow-x: auto;
         }
-        .grid-item {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(6px);
-            border-radius: 20px;
-            padding: 12px 12px 16px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-            cursor: pointer;
-            transition: 0.3s;
-            text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.03);
-            position: relative;
-            overflow: hidden;
-        }
-        .grid-item:hover {
-            transform: translateY(-4px) scale(1.01);
-            border-color: rgba(247, 212, 124, 0.15);
-            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
-        }
-        .grid-item img {
+        .table-view table {
             width: 100%;
-            height: 130px;
-            object-fit: cover;
-            border-radius: 12px;
-            background: #1a1a2e;
-            display: block;
-            transition: opacity 0.3s;
-        }
-        .grid-item .callsign {
-            font-weight: 700;
+            border-collapse: collapse;
             font-size: 0.95rem;
-            color: #fff;
-            margin-top: 8px;
         }
-        .grid-item .banda {
-            font-size: 0.75rem;
-            color: rgba(255, 255, 255, 0.25);
+        .table-view th {
+            text-align: left;
+            padding: 0.8rem 0.6rem;
+            font-weight: 600;
+            color: #4a5b6a;
+            border-bottom: 2px solid #e0d4c8;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
-        .grid-item .fav-btn {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            background: rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(4px);
-            border: none;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            color: rgba(255, 255, 255, 0.3);
+        .table-view td {
+            padding: 0.8rem 0.6rem;
+            border-bottom: 1px solid #f0e8de;
+            vertical-align: middle;
+        }
+        .table-view tr {
             cursor: pointer;
-            transition: 0.2s;
+            transition: background 0.15s;
+        }
+        .table-view tr:hover {
+            background: #f8f2ea;
+        }
+        .table-view .callsign-col {
+            font-weight: 700;
+            color: #0f2b4a;
+        }
+        .table-view .banda-col,
+        .table-view .modo-col {
+            color: #4a5b6a;
+        }
+        .table-view .fav-cell button {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            color: #d4c9bc;
+            font-size: 1rem;
+            transition: color 0.2s;
+        }
+        .table-view .fav-cell button.active {
+            color: #f5b342;
+        }
+        .table-view .fav-cell button:hover {
+            color: #f5b342;
+        }
+        .table-view .actions-cell {
             display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.8rem;
-            z-index: 2;
+            gap: 0.4rem;
         }
-        .grid-item .fav-btn:hover {
-            transform: scale(1.1);
-            color: #fff;
+        .table-view .actions-cell .detail-btn {
+            background: #e9e0d5;
+            border: none;
+            border-radius: 6px;
+            padding: 0.2rem 0.8rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #2a7faa;
+            cursor: pointer;
+            transition: all 0.15s;
         }
-        .grid-item .fav-btn.active {
-            color: #f7d47c;
-            text-shadow: 0 0 20px rgba(247, 212, 124, 0.2);
+        .table-view .actions-cell .detail-btn:hover {
+            background: #d2e3ed;
+        }
+        .table-view .qsl-thumb {
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            border-radius: 6px;
+            background: #e0d4c8;
+            display: block;
         }
 
-        /* Detalle */
+        /* Vista detallada (polaroid) */
         .detail-view {
             display: none;
             flex-direction: column;
             align-items: center;
-            gap: 0.8rem;
+            gap: 1.2rem;
             width: 100%;
-            animation: fadeInUp 0.5s ease;
+            animation: fadeInUp 0.3s ease;
         }
         .detail-view .polaroid {
-            background: rgba(255, 255, 255, 0.04);
-            backdrop-filter: blur(6px);
-            padding: 16px 16px 50px;
-            border-radius: 16px;
-            box-shadow: 0 20px 48px rgba(0, 0, 0, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.04);
+            background: #fcf9f5;
+            padding: 12px 12px 40px;
+            border-radius: 8px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.02);
             max-width: 100%;
-            display: inline-block;
-            position: relative;
-            transition: 0.3s;
+            border: 1px solid #e0d4c8;
+            transition: transform 0.2s;
         }
         .detail-view .polaroid:hover {
             transform: scale(1.01);
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
         }
         .detail-view .polaroid img {
             display: block;
             max-width: 100%;
             max-height: 400px;
-            border-radius: 8px;
+            border-radius: 4px;
             object-fit: contain;
-            background: #1a1a2e;
-            filter: brightness(1.05) contrast(1.05);
-            transition: opacity 0.3s;
+            background: #f0e8de;
         }
-        .detail-view .polaroid .stamp {
-            position: absolute;
-            bottom: 60px;
-            right: 20px;
-            background: rgba(247, 212, 124, 0.08);
-            backdrop-filter: blur(4px);
-            color: #f7d47c;
-            font-family: 'Playfair Display', serif;
-            font-style: italic;
-            font-size: 1.1rem;
-            padding: 0.1rem 0.8rem;
-            border-radius: 30px;
-            transform: rotate(10deg);
-            border: 1px solid rgba(247, 212, 124, 0.05);
-            pointer-events: none;
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
-        }
-
         .detail-view .meta {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 0.6rem 1.5rem;
-            font-size: 0.85rem;
-            color: rgba(255, 255, 255, 0.5);
-            background: rgba(255, 255, 255, 0.02);
-            backdrop-filter: blur(4px);
-            padding: 0.3rem 1.6rem;
-            border-radius: 40px;
-            border: 1px solid rgba(255, 255, 255, 0.03);
+            gap: 0.8rem 1.6rem;
+            font-size: 0.95rem;
+            color: #4a5b6a;
+            background: #f8f2ea;
+            padding: 0.6rem 1.8rem;
+            border-radius: 30px;
+            border: 1px solid #e0d4c8;
         }
         .detail-view .meta i {
-            margin-right: 6px;
-            color: #f7d47c;
-            opacity: 0.6;
+            color: #2a7faa;
+            margin-right: 4px;
         }
-
         .detail-view .actions {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
+            align-items: center;
             gap: 0.8rem;
-            margin-top: 0.2rem;
         }
         .detail-view .actions .download-btn {
-            background: linear-gradient(145deg, #2d8f6f, #1a6b52);
+            background: #2a7faa;
             color: #fff;
-            padding: 0.7rem 1.8rem;
-            border-radius: 60px;
-            font-family: 'Inter', sans-serif;
-            font-weight: 700;
-            font-size: 0.9rem;
+            padding: 0.6rem 1.8rem;
+            border-radius: 30px;
+            font-weight: 600;
             text-decoration: none;
             display: inline-flex;
             align-items: center;
             gap: 8px;
+            transition: all 0.2s;
             border: none;
+            font-size: 0.9rem;
             cursor: pointer;
-            box-shadow: 0 6px 20px rgba(45, 143, 111, 0.2);
-            transition: 0.2s;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
         .detail-view .actions .download-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 28px rgba(45, 143, 111, 0.3);
+            background: #1f648a;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(42, 127, 170, 0.25);
         }
-        .detail-view .actions .share-btn {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(4px);
-            color: rgba(255, 255, 255, 0.6);
-            padding: 0.7rem 1.4rem;
-            border-radius: 60px;
-            font-family: 'Inter', sans-serif;
-            font-weight: 700;
-            font-size: 0.9rem;
-            border: 1px solid rgba(255, 255, 255, 0.04);
+        .detail-view .actions .share-btn,
+        .detail-view .actions .nav-btn {
+            background: #f0e8de;
+            border: 1px solid #e0d4c8;
+            color: #4a5b6a;
+            padding: 0.6rem 1.2rem;
+            border-radius: 30px;
             cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.9rem;
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            transition: 0.2s;
         }
-        .detail-view .actions .share-btn:hover {
-            background: rgba(255, 255, 255, 0.06);
-            color: #fff;
-        }
-        .detail-view .actions .nav-btn {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(4px);
-            color: rgba(255, 255, 255, 0.4);
-            padding: 0.7rem 1rem;
-            border-radius: 60px;
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            cursor: pointer;
-            transition: 0.2s;
-            font-size: 0.9rem;
-        }
-        .detail-view .actions .nav-btn:hover {
-            background: rgba(255, 255, 255, 0.06);
-            color: #fff;
+        .detail-view .actions .share-btn:hover,
+        .detail-view .actions .nav-btn:hover:not(:disabled) {
+            background: #e0d4c8;
+            color: #0f2b4a;
         }
         .detail-view .actions .nav-btn:disabled {
-            opacity: 0.2;
-            cursor: default;
-            pointer-events: none;
+            opacity: 0.3;
+            cursor: not-allowed;
         }
-
-        .download-count {
-            font-size: 0.75rem;
-            color: rgba(255, 255, 255, 0.15);
-            margin-top: 0.2rem;
-            background: rgba(255, 255, 255, 0.02);
-            padding: 0.1rem 1.2rem;
-            border-radius: 30px;
-            border: 1px solid rgba(255, 255, 255, 0.02);
-        }
-
         .back-to-grid {
             background: transparent;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            color: rgba(255, 255, 255, 0.3);
-            font-family: 'Inter', sans-serif;
+            border: none;
+            color: #2a7faa;
             font-weight: 600;
-            font-size: 0.85rem;
             cursor: pointer;
-            padding: 0.2rem 1.2rem;
-            border-radius: 40px;
-            transition: 0.2s;
-            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 0.4rem 1rem;
+            border-radius: 30px;
+            transition: background 0.2s;
         }
         .back-to-grid:hover {
-            color: #fff;
-            border-color: rgba(255, 255, 255, 0.1);
+            background: #f0e8de;
+        }
+        .download-count {
+            font-size: 0.8rem;
+            color: #8a9baa;
+        }
+
+        /* Footer — Firma de agua y colaboradores */
+        .footer-modern {
+            margin-top: 2.5rem;
+            text-align: center;
+            font-size: 0.85rem;
+            color: #8a9baa;
+            border-top: 2px solid #e6dccf;
+            padding-top: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            position: relative;
+        }
+        .footer-modern .watermark {
+            font-family: 'Inter', sans-serif;
+            font-weight: 800;
+            font-size: 1.4rem;
+            letter-spacing: 2px;
+            color: rgba(15, 43, 74, 0.08);
+            text-transform: uppercase;
+            position: absolute;
+            top: -0.2rem;
+            right: 1rem;
+            pointer-events: none;
+            transform: rotate(-3deg);
+        }
+        .footer-modern .creator {
+            font-weight: 600;
+            color: #0f2b4a;
+        }
+        .footer-modern .collab {
+            color: #4a5b6a;
+        }
+        .footer-modern .collab i {
+            color: #2a7faa;
+            margin: 0 4px;
+        }
+        .footer-modern .collab .highlight {
+            font-weight: 600;
+            color: #1f648a;
+        }
+        .footer-modern .badge {
+            font-size: 0.75rem;
+            color: #b8a99a;
         }
 
         /* Spinner */
         .spinner {
-            display: inline-block;
-            width: 40px;
-            height: 40px;
-            border: 3px solid rgba(255, 255, 255, 0.05);
-            border-top-color: #f7d47c;
+            width: 36px;
+            height: 36px;
+            border: 3px solid #e0d4c8;
+            border-top-color: #2a7faa;
             border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin: 1rem auto;
+            animation: spin 0.6s linear infinite;
+            margin: 1.5rem auto;
         }
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        /* Footer */
-        .footer-modern {
-            margin-top: 1.8rem;
-            text-align: center;
-            font-size: 0.8rem;
-            color: rgba(255, 255, 255, 0.15);
-            border-top: 1px solid rgba(255, 255, 255, 0.02);
-            padding-top: 1.2rem;
-            display: flex;
-            flex-direction: column;
-            gap: 0.2rem;
-        }
-        .footer-modern .creator {
-            font-weight: 700;
-            font-size: 1.1rem;
-            color: rgba(255, 255, 255, 0.2);
-        }
-        .footer-modern .creator span {
-            background: rgba(255, 255, 255, 0.02);
-            padding: 0 0.8rem;
-            border-radius: 30px;
-        }
-        .footer-modern .collab {
-            font-weight: 400;
-            color: rgba(255, 255, 255, 0.1);
-        }
-        .footer-modern .collab i {
-            color: #f7d47c;
-            opacity: 0.3;
-            margin: 0 4px;
-        }
-        .footer-modern .badge {
-            display: flex;
-            justify-content: center;
-            gap: 1.2rem;
-            font-size: 0.7rem;
-        }
-        .footer-modern .badge i {
-            margin-right: 4px;
-        }
-
-        /* Animaciones */
+        @keyframes spin { to { transform: rotate(360deg); } }
         @keyframes fadeInUp {
-            0% {
-                opacity: 0;
-                transform: translateY(20px) scale(0.96);
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
+            0% { opacity: 0; transform: translateY(10px); }
+            100% { opacity: 1; transform: translateY(0); }
         }
 
         /* Responsive */
-        @media (max-width: 600px) {
-            .card-3d {
-                padding: 1.8rem 1.2rem;
-            }
-            .header-modern h1 {
-                font-size: 2.6rem;
-            }
-            .header-modern .subtitle {
-                font-size: 0.8rem;
-            }
-            .search-box input {
-                font-size: 0.9rem;
-                padding: 0.7rem 1.2rem;
-            }
-            .search-box button {
-                font-size: 0.9rem;
-                padding: 0.7rem 1.4rem;
-            }
-            .filter-bar {
-                flex-direction: column;
-                align-items: stretch;
-                border-radius: 30px;
-                padding: 0.6rem;
-            }
-            .filter-bar select,
-            .filter-bar .filter-btn {
-                width: 100%;
-                text-align: center;
-            }
-            .grid-view {
-                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-                gap: 1rem;
-            }
-            .grid-item img {
-                height: 90px;
-            }
-            .detail-view .polaroid img {
-                max-height: 220px;
-            }
-            .detail-view .polaroid {
-                padding: 10px 10px 30px;
-            }
-            .detail-view .meta {
-                font-size: 0.75rem;
-                flex-direction: column;
-                align-items: center;
-                gap: 0.3rem;
-            }
-            .footer-modern .creator {
-                font-size: 1rem;
-            }
-            .floating {
-                font-size: 2rem;
-                opacity: 0.05;
-            }
-            .stamp-modern {
-                font-size: 1.5rem;
-                top: 8px;
-                right: 16px;
-            }
+        @media (max-width: 700px) {
+            .card-3d { padding: 1.5rem; }
+            .header-modern { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+            .header-modern h1 { font-size: 1.8rem; }
+            .filter-bar { flex-direction: column; align-items: stretch; }
+            .filter-bar .helper { margin-left: 0; }
+            .table-view table { font-size: 0.85rem; }
+            .table-view th, .table-view td { padding: 0.5rem 0.3rem; }
+            .detail-view .polaroid img { max-height: 240px; }
+            .footer-modern .watermark { display: none; }
         }
-
-        @media (max-width: 400px) {
-            .search-box {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            .search-box input {
-                text-align: center;
-            }
-            .suggestions {
-                max-width: 100%;
-            }
-            .grid-view {
-                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-            }
+        @media (max-width: 500px) {
+            .search-box { flex-direction: column; }
+            .search-box button { width: 100%; justify-content: center; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Elementos flotantes (sutiles) -->
-    <div class="floating floating-1" aria-hidden="true">🌴</div>
-    <div class="floating floating-2" aria-hidden="true">📡</div>
-    <div class="floating floating-3" aria-hidden="true">☕</div>
-    <div class="floating floating-4" aria-hidden="true">⛵</div>
-
-    <!-- Tarjeta principal -->
     <main class="card-3d" role="main">
-
-        <div class="stamp-modern" aria-hidden="true">QSL</div>
-
         <header class="header-modern">
-            <h1>QSL Caribe</h1>
-            <div class="subtitle"><i class="fas fa-radio" aria-hidden="true"></i> Buscador de QSLs</div>
+            <h1><i class="fas fa-umbrella-beach"></i> QSL Caribe</h1>
+            <div class="subtitle"><i class="fas fa-broadcast-tower"></i> Buscador de QSLs</div>
         </header>
 
-        <!-- Barra de filtros -->
-        <div class="filter-bar" id="filterBar">
-            <select id="filterBanda">
-                <option value="">Todas las bandas</option>
-            </select>
-            <select id="filterModo">
-                <option value="">Todos los modos</option>
-            </select>
-            <button class="filter-btn" id="favFilterBtn"><i class="fas fa-star"></i> Favoritos <span class="fav-count" id="favCount">(0)</span></button>
-            <button class="filter-btn" id="clearFiltersBtn"><i class="fas fa-times"></i> Limpiar</button>
-        </div>
-
-        <!-- Buscador -->
+        <!-- Barra de búsqueda y filtros -->
         <section class="search-section" aria-label="Buscador de QSLs">
             <div class="search-box" role="search">
-                <label for="callsignInput" class="visually-hidden" style="position:absolute;width:1px;height:1px;overflow:hidden;">Indicativo</label>
-                <input type="text" id="callsignInput" placeholder="Ej. CM7ADV, CO5..." maxlength="12" autofocus aria-autocomplete="list" aria-controls="suggestionsList" />
-                <button id="searchBtn" aria-label="Buscar QSL"><i class="fas fa-search" aria-hidden="true"></i> Buscar</button>
+                <input type="text" id="callsignInput" placeholder="Introduce indicativo (ej. CM7ADV, CO5...)" maxlength="12" autofocus />
+                <button id="searchBtn"><i class="fas fa-search"></i> Buscar</button>
             </div>
             <ul class="suggestions" id="suggestionsList" role="listbox"></ul>
-            <div class="helper" aria-hidden="true">
-                <i class="fas fa-info-circle"></i> Escribe el indicativo, operador o banda
+
+            <div class="filter-bar" id="filterBar">
+                <select id="filterBanda"><option value="">Todas las bandas</option></select>
+                <select id="filterModo"><option value="">Todos los modos</option></select>
+                <button class="filter-btn" id="favFilterBtn"><i class="fas fa-star"></i> Favoritos <span class="fav-count" id="favCount">(0)</span></button>
+                <button class="filter-btn" id="clearFiltersBtn"><i class="fas fa-undo-alt"></i> Limpiar</button>
+                <span class="helper"><i class="fas fa-info-circle"></i> Filtra por banda, modo o favoritos</span>
             </div>
         </section>
 
-        <!-- Resultados -->
+        <!-- Contenedor de resultados -->
         <section class="result-container" id="resultContainer" aria-live="polite">
             <div class="message" id="resultMessage">
-                <i class="fas fa-radio" aria-hidden="true"></i>
-                <span>Esperando tu búsqueda...</span>
+                <i class="fas fa-radio"></i>
+                <span>Listo para buscar QSLs</span>
             </div>
-            <div class="grid-view" id="gridView" style="display:none;" role="list"></div>
+
+            <!-- Vista tabla -->
+            <div class="table-view" id="tableView">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Indicativo</th>
+                            <th>Banda</th>
+                            <th>Modo</th>
+                            <th>QSL</th>
+                            <th style="width:60px;">Fav</th>
+                            <th style="width:90px;">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody"></tbody>
+                </table>
+            </div>
+
+            <!-- Vista detalle -->
             <div class="detail-view" id="detailView" role="region" aria-label="Detalle de QSL">
-                <button class="back-to-grid" id="backToGrid" style="display:none;"><i class="fas fa-arrow-left" aria-hidden="true"></i> Ver todas</button>
+                <button class="back-to-grid" id="backToGrid" style="display:none;"><i class="fas fa-arrow-left"></i> Volver a la lista</button>
                 <figure class="polaroid">
-                    <img id="qslImage" src="" alt="QSL" />
-                    <span class="stamp" aria-hidden="true">QSL</span>
+                    <img id="qslImage" src="" alt="Tarjeta QSL" />
+                    <span class="stamp" aria-hidden="true">CQ</span>
                 </figure>
                 <div class="meta" id="qslMeta"></div>
                 <div class="actions">
-                    <button class="nav-btn" id="prevQslBtn" aria-label="QSL anterior"><i class="fas fa-chevron-left"></i></button>
-                    <a id="downloadLink" class="download-btn" download><i class="fas fa-download" aria-hidden="true"></i> Descargar</a>
-                    <button class="share-btn" id="shareBtn" aria-label="Compartir enlace"><i class="fas fa-share-alt" aria-hidden="true"></i> Compartir</button>
-                    <button class="nav-btn" id="nextQslBtn" aria-label="QSL siguiente"><i class="fas fa-chevron-right"></i></button>
+                    <button class="nav-btn" id="prevQslBtn" aria-label="Anterior"><i class="fas fa-chevron-left"></i></button>
+                    <a id="downloadLink" class="download-btn" download><i class="fas fa-cloud-download-alt"></i> Obtener</a>
+                    <button class="share-btn" id="shareBtn"><i class="fas fa-share-nodes"></i> Compartir</button>
+                    <button class="nav-btn" id="nextQslBtn" aria-label="Siguiente"><i class="fas fa-chevron-right"></i></button>
                 </div>
-                <div class="download-count" id="downloadCount"><i class="fas fa-download" aria-hidden="true"></i> Descargas: 0</div>
+                <div class="download-count" id="downloadCount"><i class="fas fa-download"></i> Descargas: 0</div>
             </div>
         </section>
 
-        <!-- Footer -->
         <footer class="footer-modern">
-            <div class="creator"><span>✧ CM7ADV - Cuba ✧</span></div>
+            <div class="watermark" aria-hidden="true">CM7ADV</div>
+            <div class="creator"><i class="fas fa-signature"></i> Creador: <span>CM7ADV · Cuba</span></div>
             <div class="collab">
-                <i class="fas fa-handshake" aria-hidden="true"></i> Colaboradores: CO5ABC &amp; CO5WE <i class="fas fa-heart" aria-hidden="true"></i>
+                <i class="fas fa-handshake"></i> Estaciones colaboradoras: 
+                <span class="highlight">CO5ABC</span> &amp; <span class="highlight">CO5WE</span>
+                <i class="fas fa-heart" style="color:#e67e22;"></i>
             </div>
             <div class="badge">
-                <span><i class="fas fa-code" aria-hidden="true"></i> Hecho con <i class="fas fa-coffee" aria-hidden="true"></i> y <i class="fas fa-umbrella-beach" aria-hidden="true"></i></span>
+                <i class="fas fa-code"></i> Procesado con café, radiofrecuencia y brisa caribeña
             </div>
         </footer>
     </main>
 
-    <!-- ============================================================
-         JAVASCRIPT COMPLETO (con filtros, favoritos, carga GitHub)
-         ============================================================ -->
     <script>
         (function() {
             'use strict';
 
-            // ============================================================
-            // 1. CONFIGURACIÓN
-            // ============================================================
             const GITHUB_API_URL = 'https://api.github.com/repos/cl7adv/cl7adv-qsl/contents/img';
 
-            // ============================================================
-            // 2. DOM REFS
-            // ============================================================
             const input = document.getElementById('callsignInput');
             const searchBtn = document.getElementById('searchBtn');
             const resultMessage = document.getElementById('resultMessage');
-            const gridView = document.getElementById('gridView');
+            const tableView = document.getElementById('tableView');
+            const tableBody = document.getElementById('tableBody');
             const detailView = document.getElementById('detailView');
             const qslImage = document.getElementById('qslImage');
             const qslMeta = document.getElementById('qslMeta');
@@ -880,9 +638,6 @@
             const clearFiltersBtn = document.getElementById('clearFiltersBtn');
             const favCountSpan = document.getElementById('favCount');
 
-            // ============================================================
-            // 3. ESTADO
-            // ============================================================
             let qslDatabase = {};
             let dbLoaded = false;
             let dbLoading = false;
@@ -893,22 +648,10 @@
             let currentFilteredList = [];
             let showingFavorites = false;
 
-            // ============================================================
-            // 4. UTILIDADES
-            // ============================================================
-            function normalize(str) {
-                return str.trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
-            }
-
-            function getDownloadKey(callsign, index) {
-                return `qsl_dl_${callsign}_${index}`;
-            }
-
-            function getDownloadCount(callsign, index) {
-                const key = getDownloadKey(callsign, index);
-                return parseInt(localStorage.getItem(key)) || 0;
-            }
-
+            function normalize(str) { return str.trim().toUpperCase().replace(/[^A-Z0-9]/g, ''); }
+            function getDownloadKey(callsign, index) { return `qsl_dl_${callsign}_${index}`; }
+            function getDownloadCount(callsign, index) { return parseInt(localStorage.getItem(getDownloadKey(callsign, index))) || 0; }
+            
             function incrementDownloadCount(callsign, index) {
                 const key = getDownloadKey(callsign, index);
                 const current = getDownloadCount(callsign, index);
@@ -916,167 +659,78 @@
                 return current + 1;
             }
 
-            function getFavorites() {
-                try {
-                    return JSON.parse(localStorage.getItem('qsl_favorites')) || [];
-                } catch {
-                    return [];
-                }
-            }
-
-            function saveFavorites(favs) {
-                localStorage.setItem('qsl_favorites', JSON.stringify(favs));
-                updateFavCount();
-            }
-
-            function isFavorite(qsl) {
-                const favs = getFavorites();
-                return favs.some(f => f.url === qsl.url);
-            }
+            function getFavorites() { try { return JSON.parse(localStorage.getItem('qsl_favorites')) || []; } catch { return []; } }
+            function saveFavorites(favs) { localStorage.setItem('qsl_favorites', JSON.stringify(favs)); updateFavCount(); }
+            function isFavorite(qsl) { return getFavorites().some(f => f.url === qsl.url); }
 
             function toggleFavorite(qsl) {
                 const favs = getFavorites();
                 const index = favs.findIndex(f => f.url === qsl.url);
-                if (index > -1) {
-                    favs.splice(index, 1);
-                } else {
-                    favs.push({
-                        url: qsl.url,
-                        callsign: qsl._callsign || qsl.operador || 'QSL',
-                        banda: qsl.banda || '',
-                        modo: qsl.modo || ''
-                    });
-                }
+                if (index > -1) favs.splice(index, 1);
+                else favs.push({ url: qsl.url, callsign: qsl._callsign || qsl.operador || 'QSL', banda: qsl.banda || '', modo: qsl.modo || '' });
                 saveFavorites(favs);
                 return favs;
             }
 
-            function updateFavCount() {
-                const favs = getFavorites();
-                favCountSpan.textContent = `(${favs.length})`;
-            }
+            function updateFavCount() { favCountSpan.textContent = `(${getFavorites().length})`; }
 
-            // ============================================================
-            // 5. CARGA DESDE GITHUB
-            // ============================================================
             async function cargarQSLsDesdeGitHub() {
                 if (dbLoaded) return qslDatabase;
                 if (dbLoading) {
                     await new Promise(resolve => {
-                        const check = () => {
-                            if (dbLoaded || !dbLoading) resolve();
-                            else setTimeout(check, 100);
-                        };
+                        const check = () => { if (dbLoaded || !dbLoading) resolve(); else setTimeout(check, 100); };
                         check();
                     });
                     return qslDatabase;
                 }
-
                 dbLoading = true;
                 try {
                     const response = await fetch(GITHUB_API_URL);
-                    if (!response.ok) throw new Error(`Error ${response.status}: ${response.statusText}`);
+                    if (!response.ok) throw new Error(`Error ${response.status}`);
                     const files = await response.json();
-
-                    const imageFiles = files.filter(file => {
-                        const ext = file.name.split('.').pop().toLowerCase();
-                        return ['jpg', 'jpeg', 'png'].includes(ext);
-                    });
+                    const imageFiles = files.filter(file => ['jpg', 'jpeg', 'png'].includes(file.name.split('.').pop().toLowerCase()));
 
                     const newDb = {};
                     imageFiles.forEach(file => {
-                        let callsign = file.name.replace(/\.[^.]+$/, '');
-                        callsign = callsign.replace(/-\d+$/, '');
-                        callsign = callsign.toUpperCase();
+                        let callsign = file.name.replace(/\.[^.]+$/, '').replace(/-\d+$/, '').toUpperCase();
+                        if (!newDb[callsign]) newDb[callsign] = [];
 
-                        if (!newDb[callsign]) {
-                            newDb[callsign] = [];
-                        }
-
-                        let banda = '';
-                        let modo = '';
+                        let banda = '', modo = '';
                         const bandaMatch = file.name.match(/(\d+[mMcC])/);
                         if (bandaMatch) banda = bandaMatch[1];
                         const modoMatch = file.name.match(/(SSB|CW|FT8|FM|AM|DMR)/i);
                         if (modoMatch) modo = modoMatch[1].toUpperCase();
 
-                        newDb[callsign].push({
-                            url: file.download_url,
-                            banda: banda,
-                            modo: modo,
-                            operador: callsign,
-                            fecha: '',
-                            _filename: file.name
-                        });
+                        newDb[callsign].push({ url: file.download_url, banda, modo, operador: callsign, fecha: '', _filename: file.name });
                     });
-
-                    qslDatabase = newDb;
-                    dbLoaded = true;
-                    dbLoading = false;
-                    return qslDatabase;
-                } catch (error) {
-                    console.error('Error cargando QSLs desde GitHub:', error);
-                    dbLoading = false;
-                    qslDatabase = getFallbackDatabase();
-                    dbLoaded = true;
-                    return qslDatabase;
+                    qslDatabase = newDb; dbLoaded = true; dbLoading = false; return qslDatabase;
+                } catch (e) {
+                    dbLoading = false; qslDatabase = getFallbackDatabase(); dbLoaded = true; return qslDatabase;
                 }
             }
 
             function getFallbackDatabase() {
                 return {
-                    "CM7ADV": [
-                        { url: "https://raw.githubusercontent.com/cl7adv/cl7adv-qsl/main/img/CM7ADV.jpg", banda: "40m", modo: "SSB", operador: "CM7ADV (Adrián)", fecha: "2025-01-15" }
-                    ],
-                    "CO5ABC": [
-                        { url: "https://raw.githubusercontent.com/cl7adv/cl7adv-qsl/main/img/CO5ABC.jpg", banda: "20m", modo: "CW", operador: "CO5ABC", fecha: "2024-12-10" }
-                    ],
-                    "CO5WE": [
-                        { url: "https://raw.githubusercontent.com/cl7adv/cl7adv-qsl/main/img/CO5WE.jpg", banda: "15m", modo: "FT8", operador: "CO5WE", fecha: "2025-02-20" }
-                    ]
+                    "CM7ADV": [{ url: "https://raw.githubusercontent.com/cl7adv/cl7adv-qsl/main/img/CM7ADV.jpg", banda: "40m", modo: "SSB", operador: "CM7ADV (Alfred)", fecha: "2026-01-15" }],
+                    "CO5ABC": [{ url: "https://raw.githubusercontent.com/cl7adv/cl7adv-qsl/main/img/CO5ABC.jpg", banda: "20m", modo: "CW", operador: "CO5ABC", fecha: "2025-12-10" }]
                 };
             }
 
-            // ============================================================
-            // 6. FILTROS
-            // ============================================================
             function populateFilters() {
-                const bandas = new Set();
-                const modos = new Set();
-                Object.values(qslDatabase).forEach(qsls => {
-                    qsls.forEach(q => {
-                        if (q.banda) bandas.add(q.banda);
-                        if (q.modo) modos.add(q.modo);
-                    });
-                });
+                const bandas = new Set(), modos = new Set();
+                Object.values(qslDatabase).forEach(qsls => qsls.forEach(q => { if (q.banda) bandas.add(q.banda); if (q.modo) modos.add(q.modo); }));
                 filterBanda.innerHTML = '<option value="">Todas las bandas</option>';
-                [...bandas].sort().forEach(b => {
-                    const opt = document.createElement('option');
-                    opt.value = b;
-                    opt.textContent = b;
-                    filterBanda.appendChild(opt);
-                });
+                [...bandas].sort().forEach(b => { const opt = document.createElement('option'); opt.value = b; opt.textContent = b; filterBanda.appendChild(opt); });
                 filterModo.innerHTML = '<option value="">Todos los modos</option>';
-                [...modos].sort().forEach(m => {
-                    const opt = document.createElement('option');
-                    opt.value = m;
-                    opt.textContent = m;
-                    filterModo.appendChild(opt);
-                });
+                [...modos].sort().forEach(m => { const opt = document.createElement('option'); opt.value = m; opt.textContent = m; filterModo.appendChild(opt); });
             }
 
             function applyFilters(qsls) {
-                const banda = filterBanda.value;
-                const modo = filterModo.value;
-                const favs = getFavorites();
-                const onlyFavs = showingFavorites;
-
+                const banda = filterBanda.value, modo = filterModo.value, favs = getFavorites();
                 return qsls.filter(q => {
                     if (banda && q.banda !== banda) return false;
                     if (modo && q.modo !== modo) return false;
-                    if (onlyFavs) {
-                        return favs.some(f => f.url === q.url);
-                    }
+                    if (showingFavorites) return favs.some(f => f.url === q.url);
                     return true;
                 });
             }
@@ -1084,427 +738,229 @@
             function renderFiltered() {
                 const filtered = applyFilters(allQSLs);
                 currentFilteredList = filtered;
-                if (filtered.length === 0) {
-                    mostrarMensaje('fa-sad-tear', showingFavorites ? 'No tienes QSLs favoritas.' : 'No hay QSLs que coincidan con los filtros.');
-                    return;
-                }
-                mostrarGrid(filtered, '');
+                if (filtered.length === 0) { mostrarMensaje('fa-heart-crack', 'No hay QSLs con estos filtros.'); return; }
+                mostrarTabla(filtered, '');
             }
 
-            // ============================================================
-            // 7. RENDER
-            // ============================================================
             function mostrarMensaje(icono, texto) {
-                resultMessage.style.display = 'block';
-                resultMessage.innerHTML = `<i class="fas ${icono}" aria-hidden="true"></i><span>${texto}</span>`;
-                gridView.style.display = 'none';
+                resultMessage.style.display = 'flex';
+                resultMessage.innerHTML = `<i class="fas ${icono}"></i><span>${texto}</span>`;
+                tableView.style.display = 'none';
                 detailView.style.display = 'none';
                 suggestionsList.style.display = 'none';
             }
 
-            function mostrarGrid(qsls, callsign) {
-                if (!qsls || qsls.length === 0) {
-                    mostrarMensaje('fa-sad-tear', 'No se encontraron QSLs.');
-                    return;
-                }
+            function mostrarTabla(qsls, callsign) {
+                if (!qsls || qsls.length === 0) { mostrarMensaje('fa-ghost', 'Sin datos.'); return; }
                 resultMessage.style.display = 'none';
-                gridView.style.display = 'grid';
+                tableView.style.display = 'block';
                 detailView.style.display = 'none';
-                gridView.innerHTML = '';
+                tableBody.innerHTML = '';
                 currentQsList = qsls;
                 currentCallsign = callsign || 'QSL';
 
-                const fragment = document.createDocumentFragment();
-
                 qsls.forEach((qsl, index) => {
-                    const item = document.createElement('div');
-                    item.className = 'grid-item';
-                    item.setAttribute('role', 'listitem');
-                    item.setAttribute('tabindex', '0');
+                    const tr = document.createElement('tr');
                     const displayName = qsl._callsign || callsign || 'QSL';
-                    const img = document.createElement('img');
-                    img.dataset.src = qsl.url;
-                    img.alt = `QSL de ${displayName}`;
-                    img.loading = 'lazy';
-                    img.style.opacity = '0';
-                    img.style.background = '#1a1a2e';
-
-                    const callsignDiv = document.createElement('div');
-                    callsignDiv.className = 'callsign';
-                    callsignDiv.textContent = displayName;
-
-                    const bandaDiv = document.createElement('div');
-                    bandaDiv.className = 'banda';
-                    bandaDiv.textContent = `${qsl.banda || ''} ${qsl.modo || ''}`.trim();
-
-                    const favBtn = document.createElement('button');
-                    favBtn.className = 'fav-btn';
-                    favBtn.setAttribute('aria-label', 'Marcar como favorito');
                     const isFav = isFavorite(qsl);
-                    favBtn.innerHTML = `<i class="fas ${isFav ? 'fa-star' : 'fa-star-o'}"></i>`;
+
+                    // Callsign
+                    const tdCall = document.createElement('td');
+                    tdCall.className = 'callsign-col';
+                    tdCall.textContent = displayName;
+                    tr.appendChild(tdCall);
+
+                    // Banda
+                    const tdBanda = document.createElement('td');
+                    tdBanda.className = 'banda-col';
+                    tdBanda.textContent = qsl.banda || '—';
+                    tr.appendChild(tdBanda);
+
+                    // Modo
+                    const tdModo = document.createElement('td');
+                    tdModo.className = 'modo-col';
+                    tdModo.textContent = qsl.modo || '—';
+                    tr.appendChild(tdModo);
+
+                    // Thumbnail (QSL)
+                    const tdImg = document.createElement('td');
+                    const img = document.createElement('img');
+                    img.className = 'qsl-thumb';
+                    img.dataset.src = qsl.url;
+                    img.alt = `QSL ${displayName}`;
+                    img.style.opacity = '0';
+                    tdImg.appendChild(img);
+                    tr.appendChild(tdImg);
+
+                    // Favorito
+                    const tdFav = document.createElement('td');
+                    tdFav.className = 'fav-cell';
+                    const favBtn = document.createElement('button');
+                    favBtn.innerHTML = '<i class="fas fa-star"></i>';
                     if (isFav) favBtn.classList.add('active');
                     favBtn.addEventListener('click', (e) => {
                         e.stopPropagation();
                         toggleFavorite(qsl);
-                        const nowFav = isFavorite(qsl);
-                        favBtn.innerHTML = `<i class="fas ${nowFav ? 'fa-star' : 'fa-star-o'}"></i>`;
-                        favBtn.classList.toggle('active', nowFav);
-                        updateFavCount();
+                        favBtn.classList.toggle('active', isFavorite(qsl));
                         if (showingFavorites) renderFiltered();
                     });
+                    tdFav.appendChild(favBtn);
+                    tr.appendChild(tdFav);
 
-                    item.appendChild(img);
-                    item.appendChild(callsignDiv);
-                    item.appendChild(bandaDiv);
-                    item.appendChild(favBtn);
-
-                    item.addEventListener('click', () => {
+                    // Acción: Ver detalle
+                    const tdAction = document.createElement('td');
+                    tdAction.className = 'actions-cell';
+                    const detailBtn = document.createElement('button');
+                    detailBtn.className = 'detail-btn';
+                    detailBtn.textContent = 'Ver';
+                    detailBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
                         mostrarDetalle(qsls, index, displayName);
                     });
-                    item.addEventListener('keydown', (e) => {
-                        if (e.key === 'Enter' || e.key === ' ') {
-                            e.preventDefault();
-                            mostrarDetalle(qsls, index, displayName);
-                        }
-                    });
+                    tdAction.appendChild(detailBtn);
+                    tr.appendChild(tdAction);
 
-                    fragment.appendChild(item);
-                });
+                    // Al hacer clic en la fila (excepto botones) abre detalle
+                    tr.addEventListener('click', () => mostrarDetalle(qsls, index, displayName));
 
-                gridView.appendChild(fragment);
+                    tableBody.appendChild(tr);
 
-                // Lazy loading
-                if ('IntersectionObserver' in window) {
-                    const observer = new IntersectionObserver((entries) => {
-                        entries.forEach(entry => {
-                            if (entry.isIntersecting) {
-                                const img = entry.target;
-                                if (img.dataset.src) {
-                                    img.src = img.dataset.src;
-                                    img.onload = () => { img.style.opacity = '1'; };
-                                    delete img.dataset.src;
+                    // Cargar imagen con IntersectionObserver
+                    if ('IntersectionObserver' in window) {
+                        const obs = new IntersectionObserver((entries) => {
+                            entries.forEach(en => {
+                                if (en.isIntersecting) {
+                                    const im = en.target;
+                                    im.src = im.dataset.src;
+                                    im.onload = () => im.style.opacity = '1';
+                                    obs.unobserve(im);
                                 }
-                                observer.unobserve(img);
-                            }
+                            });
                         });
-                    }, { rootMargin: '0px 0px 100px 0px' });
-                    gridView.querySelectorAll('img[data-src]').forEach(img => observer.observe(img));
-                } else {
-                    gridView.querySelectorAll('img[data-src]').forEach(img => {
+                        obs.observe(img);
+                    } else {
                         img.src = img.dataset.src;
-                        delete img.dataset.src;
-                        img.onload = () => { img.style.opacity = '1'; };
-                    });
-                }
+                        img.onload = () => img.style.opacity = '1';
+                    }
+                });
             }
 
             function mostrarDetalle(qsls, index, callsign) {
-                if (!qsls || qsls.length === 0 || !qsls[index]) return;
                 const qsl = qsls[index];
                 const displayName = callsign || 'QSL';
-
-                resultMessage.style.display = 'none';
-                gridView.style.display = 'none';
+                tableView.style.display = 'none';
                 detailView.style.display = 'flex';
                 currentQsList = qsls;
                 currentQslIndex = index;
                 currentCallsign = displayName;
 
-                if (qsls.length > 1) {
-                    backToGridBtn.style.display = 'inline-block';
-                    backToGridBtn.innerHTML = `<i class="fas fa-arrow-left" aria-hidden="true"></i> Ver todas (${qsls.length})`;
-                } else {
-                    backToGridBtn.style.display = 'none';
-                }
-
+                backToGridBtn.style.display = qsls.length > 1 ? 'inline-flex' : 'none';
                 prevBtn.disabled = (index === 0);
                 nextBtn.disabled = (index === qsls.length - 1);
-                prevBtn.style.display = qsls.length > 1 ? 'inline-flex' : 'none';
-                nextBtn.style.display = qsls.length > 1 ? 'inline-flex' : 'none';
 
-                qslImage.alt = `QSL de ${displayName}`;
-                qslImage.src = '';
-                qslImage.style.opacity = '0';
-
-                const spinner = document.createElement('div');
-                spinner.className = 'spinner';
-                spinner.id = 'imgSpinner';
-                const parent = qslImage.parentNode;
-                parent.insertBefore(spinner, qslImage);
-
-                const img = new Image();
-                img.onload = () => {
-                    qslImage.src = img.src;
-                    qslImage.style.opacity = '1';
-                    const sp = document.getElementById('imgSpinner');
-                    if (sp) sp.remove();
-                };
-                img.onerror = () => {
-                    qslImage.src = '';
-                    qslImage.alt = `Error al cargar QSL de ${displayName}`;
-                    const sp = document.getElementById('imgSpinner');
-                    if (sp) sp.remove();
-                };
-                img.src = qsl.url;
+                qslImage.src = qsl.url;
+                qslImage.style.opacity = '1';
 
                 let metaHTML = '';
-                if (qsl.operador) metaHTML += `<span><i class="fas fa-user" aria-hidden="true"></i> ${qsl.operador}</span>`;
-                if (qsl.banda) metaHTML += `<span><i class="fas fa-signal" aria-hidden="true"></i> ${qsl.banda}</span>`;
-                if (qsl.modo) metaHTML += `<span><i class="fas fa-wave-square" aria-hidden="true"></i> ${qsl.modo}</span>`;
-                if (qsl.fecha) metaHTML += `<span><i class="fas fa-calendar-alt" aria-hidden="true"></i> ${qsl.fecha}</span>`;
-                qslMeta.innerHTML = metaHTML || '<span><i class="fas fa-tag" aria-hidden="true"></i> QSL confirmada</span>';
+                if (qsl.operador) metaHTML += `<span><i class="fas fa-user"></i> ${qsl.operador}</span>`;
+                if (qsl.banda) metaHTML += `<span><i class="fas fa-satellite"></i> ${qsl.banda}</span>`;
+                if (qsl.modo) metaHTML += `<span><i class="fas fa-wave-square"></i> ${qsl.modo}</span>`;
+                qslMeta.innerHTML = metaHTML || '<span><i class="fas fa-check-circle"></i> Enlace verificado</span>';
 
-                const dlCount = getDownloadCount(displayName, index);
-                downloadCountSpan.innerHTML = `<i class="fas fa-download" aria-hidden="true"></i> Descargas: ${dlCount}`;
-
+                downloadCountSpan.innerHTML = `<i class="fas fa-download"></i> Descargas: ${getDownloadCount(displayName, index)}`;
                 downloadLink.href = qsl.url;
                 downloadLink.download = `QSL_${displayName}.jpg`;
-                downloadLink.onclick = function(e) {
-                    const newCount = incrementDownloadCount(displayName, index);
-                    downloadCountSpan.innerHTML = `<i class="fas fa-download" aria-hidden="true"></i> Descargas: ${newCount}`;
+                
+                downloadLink.onclick = () => {
+                    downloadCountSpan.innerHTML = `<i class="fas fa-download"></i> Descargas: ${incrementDownloadCount(displayName, index)}`;
                 };
 
-                shareBtn.onclick = function() {
+                shareBtn.onclick = () => {
                     const shareUrl = window.location.href.split('?')[0] + `?qsl=${encodeURIComponent(displayName)}`;
-                    if (navigator.share) {
-                        navigator.share({
-                            title: `QSL de ${displayName}`,
-                            text: `¡Mira esta QSL de ${displayName}!`,
-                            url: shareUrl
-                        }).catch(() => {});
-                    } else {
-                        navigator.clipboard.writeText(shareUrl).then(() => {
-                            alert('Enlace copiado al portapapeles: ' + shareUrl);
-                        }).catch(() => {
-                            prompt('Copia este enlace:', shareUrl);
-                        });
-                    }
+                    if (navigator.share) navigator.share({ title: `QSL ${displayName}`, url: shareUrl }).catch(()=>{});
+                    else navigator.clipboard.writeText(shareUrl).then(() => alert('¡Enlace copiado!'));
                 };
-
-                suggestionsList.style.display = 'none';
             }
 
-            // ============================================================
-            // 8. BÚSQUEDA
-            // ============================================================
             async function buscarQSL() {
-                const raw = input.value.trim();
-                const clean = normalize(raw);
-                if (clean === '') {
-                    mostrarMensaje('fa-radio', 'Por favor, ingresa un indicativo, operador o banda.');
-                    return;
-                }
-
+                const clean = normalize(input.value);
+                if (!clean) return;
                 const db = await cargarQSLsDesdeGitHub();
-                const dbKeys = Object.keys(db);
-
-                let matchedQSLs = [];
-                dbKeys.forEach(key => {
-                    const qsls = db[key];
-                    qsls.forEach(q => {
-                        const searchStr = `${key} ${q.operador || ''} ${q.banda || ''} ${q.modo || ''}`.toUpperCase();
-                        if (searchStr.includes(clean)) {
-                            matchedQSLs.push({
-                                ...q,
-                                _callsign: key
-                            });
+                let matched = [];
+                Object.keys(db).forEach(key => {
+                    db[key].forEach(q => {
+                        if (`${key} ${q.operador||''} ${q.banda||''} ${q.modo||''}`.toUpperCase().includes(clean)) {
+                            matched.push({ ...q, _callsign: key });
                         }
                     });
                 });
-
-                if (matchedQSLs.length === 0) {
-                    mostrarMensaje('fa-sad-tear', `No se encontraron QSLs que coincidan con "${clean}".`);
-                    return;
-                }
-
-                allQSLs = matchedQSLs;
+                allQSLs = matched;
                 showingFavorites = false;
                 favFilterBtn.classList.remove('active');
-                filterBanda.value = '';
-                filterModo.value = '';
                 renderFiltered();
             }
 
-            // ============================================================
-            // 9. SUGERENCIAS
-            // ============================================================
             let debounceTimer;
-
-            function mostrarSugerencias(matches) {
-                suggestionsList.innerHTML = '';
-                matches.slice(0, 8).forEach(key => {
-                    const li = document.createElement('li');
-                    li.setAttribute('role', 'option');
-                    li.setAttribute('tabindex', '0');
-                    const count = qslDatabase[key].length;
-                    li.innerHTML = `${key} <small>${count} QSL${count>1?'s':''}</small>`;
-                    li.addEventListener('click', () => {
-                        input.value = key;
-                        suggestionsList.style.display = 'none';
-                        buscarQSL();
-                    });
-                    li.addEventListener('keydown', (e) => {
-                        if (e.key === 'Enter') {
-                            e.preventDefault();
-                            input.value = key;
-                            suggestionsList.style.display = 'none';
-                            buscarQSL();
-                        }
-                    });
-                    suggestionsList.appendChild(li);
-                });
-                suggestionsList.style.display = 'block';
-            }
-
             input.addEventListener('input', function() {
                 clearTimeout(debounceTimer);
-                const raw = this.value.trim();
-                const clean = normalize(raw);
-                if (clean.length < 2) {
-                    suggestionsList.style.display = 'none';
-                    return;
-                }
+                const clean = normalize(this.value);
+                if (clean.length < 2) { suggestionsList.style.display = 'none'; return; }
                 debounceTimer = setTimeout(async () => {
                     const db = await cargarQSLsDesdeGitHub();
-                    const matches = Object.keys(db).filter(key =>
-                        key.includes(clean)
-                    );
+                    const matches = Object.keys(db).filter(k => k.includes(clean));
                     if (matches.length > 0) {
-                        mostrarSugerencias(matches);
-                    } else {
-                        suggestionsList.style.display = 'none';
-                    }
-                }, 200);
+                        suggestionsList.innerHTML = '';
+                        matches.slice(0, 6).forEach(m => {
+                            const li = document.createElement('li');
+                            li.textContent = m;
+                            li.addEventListener('click', () => {
+                                input.value = m;
+                                suggestionsList.style.display = 'none';
+                                buscarQSL();
+                            });
+                            suggestionsList.appendChild(li);
+                        });
+                        suggestionsList.style.display = 'block';
+                    } else suggestionsList.style.display = 'none';
+                }, 250);
             });
 
-            document.addEventListener('click', function(e) {
-                if (!e.target.closest('.search-section')) {
-                    suggestionsList.style.display = 'none';
-                }
-            });
-
-            // ============================================================
-            // 10. EVENT LISTENERS
-            // ============================================================
             searchBtn.addEventListener('click', buscarQSL);
-            input.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    buscarQSL();
-                }
-            });
+            input.addEventListener('keypress', (e) => { if (e.key === 'Enter') buscarQSL(); });
+            backToGridBtn.addEventListener('click', () => mostrarTabla(currentQsList, currentCallsign));
+            
+            prevBtn.addEventListener('click', () => { if (currentQslIndex > 0) mostrarDetalle(currentQsList, currentQslIndex - 1, currentQsList[currentQslIndex - 1]._callsign); });
+            nextBtn.addEventListener('click', () => { if (currentQslIndex < currentQsList.length - 1) mostrarDetalle(currentQsList, currentQslIndex + 1, currentQsList[currentQslIndex + 1]._callsign); });
 
-            backToGridBtn.addEventListener('click', function() {
-                if (currentQsList && currentQsList.length > 0) {
-                    let callsign = currentCallsign || 'QSL';
-                    if (currentQsList.length > 0 && currentQsList[0]._callsign) {
-                        callsign = currentQsList[0]._callsign;
-                    }
-                    mostrarGrid(currentQsList, callsign);
-                } else {
-                    detailView.style.display = 'none';
-                    mostrarMensaje('fa-radio', 'Esperando tu búsqueda...');
-                }
-            });
-
-            prevBtn.addEventListener('click', function() {
-                if (currentQsList && currentQslIndex > 0) {
-                    const newIndex = currentQslIndex - 1;
-                    const displayName = currentQsList[newIndex]._callsign || currentCallsign || 'QSL';
-                    mostrarDetalle(currentQsList, newIndex, displayName);
-                }
-            });
-
-            nextBtn.addEventListener('click', function() {
-                if (currentQsList && currentQslIndex < currentQsList.length - 1) {
-                    const newIndex = currentQslIndex + 1;
-                    const displayName = currentQsList[newIndex]._callsign || currentCallsign || 'QSL';
-                    mostrarDetalle(currentQsList, newIndex, displayName);
-                }
-            });
-
-            filterBanda.addEventListener('change', () => {
-                showingFavorites = false;
-                favFilterBtn.classList.remove('active');
-                renderFiltered();
-            });
-            filterModo.addEventListener('change', () => {
-                showingFavorites = false;
-                favFilterBtn.classList.remove('active');
-                renderFiltered();
-            });
-
+            filterBanda.addEventListener('change', renderFiltered);
+            filterModo.addEventListener('change', renderFiltered);
+            
             favFilterBtn.addEventListener('click', function() {
                 showingFavorites = !showingFavorites;
                 this.classList.toggle('active', showingFavorites);
-                if (showingFavorites) {
-                    if (allQSLs.length === 0) {
-                        cargarQSLsDesdeGitHub().then(db => {
-                            let all = [];
-                            Object.keys(db).forEach(key => {
-                                db[key].forEach(q => {
-                                    all.push({ ...q, _callsign: key });
-                                });
-                            });
-                            allQSLs = all;
-                            renderFiltered();
-                        });
-                    } else {
-                        renderFiltered();
-                    }
-                } else {
-                    renderFiltered();
-                }
+                renderFiltered();
             });
 
-            clearFiltersBtn.addEventListener('click', function() {
+            clearFiltersBtn.addEventListener('click', () => {
                 filterBanda.value = '';
                 filterModo.value = '';
                 showingFavorites = false;
                 favFilterBtn.classList.remove('active');
-                if (allQSLs.length > 0) {
-                    renderFiltered();
-                } else {
-                    mostrarMensaje('fa-radio', 'Esperando tu búsqueda...');
-                }
+                mostrarMensaje('fa-radio', 'Filtros limpiados. Esperando búsqueda...');
+                allQSLs = [];
+                tableView.style.display = 'none';
+                detailView.style.display = 'none';
+                resultMessage.style.display = 'flex';
             });
 
-            // ============================================================
-            // 11. CARGA INICIAL
-            // ============================================================
-            window.addEventListener('load', async function() {
-                input.focus();
-                mostrarMensaje('fa-radio', 'Cargando QSLs desde GitHub...');
-
+            window.addEventListener('load', async () => {
                 const db = await cargarQSLsDesdeGitHub();
-                const count = Object.keys(db).length;
                 populateFilters();
                 updateFavCount();
-
-                let all = [];
-                Object.keys(db).forEach(key => {
-                    db[key].forEach(q => {
-                        all.push({ ...q, _callsign: key });
-                    });
-                });
-                allQSLs = all;
-
-                mostrarMensaje('fa-radio', `✅ ${count} indicativos cargados. Esperando tu búsqueda...`);
-
-                const params = new URLSearchParams(window.location.search);
-                const qslParam = params.get('qsl');
-                if (qslParam) {
-                    const key = normalize(qslParam);
-                    const matched = Object.keys(db).find(k => k.includes(key) || key.includes(k));
-                    if (matched) {
-                        input.value = matched;
-                        buscarQSL();
-                    } else {
-                        mostrarMensaje('fa-sad-tear', `No se encontró la QSL "${qslParam}"`);
-                    }
-                }
+                Object.keys(db).forEach(k => db[k].forEach(q => allQSLs.push({ ...q, _callsign: k })));
+                resultMessage.innerHTML = `<i class="fas fa-check-circle"></i><span>Base de datos lista. ${allQSLs.length} QSLs disponibles.</span>`;
+                resultMessage.style.display = 'flex';
             });
-
         })();
     </script>
 </body>
