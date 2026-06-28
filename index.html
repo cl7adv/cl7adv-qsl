@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>QSL Caribe · Buscador de QSLs</title>
+    <title data-i18n="app.title">QSL Caribe · Buscador de QSLs</title>
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -253,7 +253,7 @@
         .suggestions li:hover { background: #f8fafc; color: var(--caribe); }
 
         /* ============================================================
-           NUEVO: ÁREA DE AYUDA CON FLAG COUNTER INTEGRADO
+           NUEVO: ÁREA DE AYUDA CON FLAG COUNTER Y SELECTOR IDIOMA
            ============================================================ */
         .helper {
             font-size: 0.85rem;
@@ -274,7 +274,7 @@
             align-items: center;
             gap: 8px;
         }
-        /* Estilo para el contenedor del Flag Counter */
+        /* Flag Counter */
         .flag-counter-wrapper {
             display: flex;
             align-items: center;
@@ -300,6 +300,32 @@
             border-radius: 30px;
             height: 28px;
             display: block;
+        }
+
+        /* Selector de idioma */
+        .language-selector {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: #ffffff;
+            padding: 0.2rem 0.8rem 0.2rem 1rem;
+            border-radius: 30px;
+            border: 1px solid #eef2f5;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+        }
+        .language-selector select {
+            border: none;
+            background: transparent;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #1a1a2e;
+            outline: none;
+            cursor: pointer;
+            padding: 4px 0;
+        }
+        .language-selector select option {
+            font-weight: 400;
         }
 
         /* ============================================================
@@ -402,6 +428,7 @@
             .header-pano-overlay h1 { font-size: 2.6rem; }
             .flag-counter-wrapper { flex-direction: column; padding: 0.5rem; background: transparent; border: none; box-shadow: none; }
             .flag-counter-wrapper span { margin: 0 0 6px 0; }
+            .language-selector { padding: 0.2rem 0.6rem; }
         }
     </style>
 </head>
@@ -412,35 +439,44 @@
 
         <!-- CABECERA -->
         <div class="header-pano-container">
-            <!-- CAMBIA EL src POR TU IMAGEN -->
             <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1200&h=400&fit=crop" class="header-pano-img" alt="Panorámica Caribe" />
             <div class="header-pano-overlay">
                 <span class="sun-icon"><i class="fas fa-sun"></i></span>
-                <h1>QSL Caribe</h1>
-                <div class="subtitle"><i class="fas fa-qrcode"></i> Buscador de QSLs</div>
+                <h1 data-i18n="header.title">QSL Caribe</h1>
+                <div class="subtitle" data-i18n="header.subtitle">Buscador de QSLs</div>
             </div>
         </div>
 
         <!-- Buscador -->
         <section class="search-section">
             <div class="search-box">
-                <input type="text" id="callsignInput" placeholder="Ej. CM7ADV, CO5..." maxlength="12" autofocus />
-                <button id="searchBtn"><i class="fas fa-search"></i> Buscar</button>
-                <button id="resetBtn" class="reset-btn"><i class="fas fa-home"></i> Inicio</button>
+                <input type="text" id="callsignInput" placeholder="Ej. CM7ADV, CO5..." maxlength="12" autofocus data-i18n-placeholder="search.placeholder" />
+                <button id="searchBtn"><i class="fas fa-search"></i> <span data-i18n="search.button">Buscar</span></button>
+                <button id="resetBtn" class="reset-btn"><i class="fas fa-home"></i> <span data-i18n="reset.button">Inicio</span></button>
             </div>
             <ul class="suggestions" id="suggestionsList"></ul>
-            
+
             <!-- ============================================================
-                 ÁREA HELPER CON FLAG COUNTER ELEGANTE
+                 ÁREA HELPER CON FLAG COUNTER Y SELECTOR DE IDIOMA
                  ============================================================ -->
             <div class="helper">
-                <span class="helper-text"><i class="fas fa-info-circle"></i> Escribe el indicativo</span>
+                <span class="helper-text"><i class="fas fa-info-circle"></i> <span data-i18n="helper.text">Escribe el indicativo</span></span>
                 <div class="flag-counter-wrapper">
-                    <span>🌍 Visitantes</span>
-                    <!-- TU FLAG COUNTER AQUÍ -->
+                    <span data-i18n="helper.visitors">Visitantes</span>
                     <a href="https://info.flagcounter.com/NpPc">
                         <img src="https://s01.flagcounter.com/count2/NpPc/bg_FFFFFF/txt_000000/border_CCCCCC/columns_8/maxflags_250/viewers_0/labels_0/pageviews_0/flags_0/percent_0/" alt="Flag Counter" border="0" />
                     </a>
+                </div>
+                <!-- Selector de idioma -->
+                <div class="language-selector">
+                    <i class="fas fa-globe" style="color:var(--caribe);"></i>
+                    <select id="languageSelect">
+                        <option value="es">🇪🇸 Español</option>
+                        <option value="en">🇬🇧 English</option>
+                        <option value="zh">🇨🇳 中文</option>
+                        <option value="ja">🇯🇵 日本語</option>
+                        <option value="de">🇩🇪 Deutsch</option>
+                    </select>
                 </div>
             </div>
         </section>
@@ -449,14 +485,14 @@
         <section class="result-container" id="resultContainer">
             <div class="message" id="resultMessage">
                 <i class="fas fa-radio"></i>
-                <span>Esperando tu búsqueda...</span>
+                <span data-i18n="message.waiting">Esperando tu búsqueda...</span>
             </div>
 
             <!-- Filtros -->
             <div class="filters-bar" id="filtersBar">
                 <div class="filter-group">
-                    <select id="bandFilter"><option value="">Todas las bandas</option></select>
-                    <select id="modeFilter"><option value="">Todos los modos</option></select>
+                    <select id="bandFilter"><option value="" data-i18n="filters.all_bands">Todas las bandas</option></select>
+                    <select id="modeFilter"><option value="" data-i18n="filters.all_modes">Todos los modos</option></select>
                 </div>
                 <div class="view-toggle">
                     <button data-view="grid" id="viewGridBtn"><i class="fas fa-th-large"></i></button>
@@ -465,20 +501,26 @@
             </div>
 
             <div class="grid-actions" id="gridActions">
-                <button id="downloadAllBtn" class="download-btn"><i class="fas fa-file-archive"></i> Descargar filtradas ZIP</button>
+                <button id="downloadAllBtn" class="download-btn"><i class="fas fa-file-archive"></i> <span data-i18n="grid.download_zip">Descargar filtradas ZIP</span></button>
             </div>
 
             <div class="grid-view" id="gridView" style="display:none;" role="list"></div>
             <table class="table-view" id="tableView" style="display:none;">
                 <thead>
-                    <tr><th>Callsign</th><th>Banda</th><th>Modo</th><th>Fecha</th><th>Acción</th></tr>
+                    <tr>
+                        <th data-i18n="table.callsign">Callsign</th>
+                        <th data-i18n="table.band">Banda</th>
+                        <th data-i18n="table.mode">Modo</th>
+                        <th data-i18n="table.date">Fecha</th>
+                        <th data-i18n="table.action">Acción</th>
+                    </tr>
                 </thead>
                 <tbody id="tableBody"></tbody>
             </table>
 
             <!-- Detalle -->
             <div class="detail-view" id="detailView">
-                <button class="back-to-grid" id="backToGrid" style="display:none;"><i class="fas fa-arrow-left"></i> Ver todas</button>
+                <button class="back-to-grid" id="backToGrid" style="display:none;"><i class="fas fa-arrow-left"></i> <span data-i18n="detail.back">Ver todas</span></button>
                 <figure class="polaroid">
                     <img id="qslImage" src="" alt="QSL" />
                     <span class="stamp">QSL</span>
@@ -486,29 +528,187 @@
                 <div class="meta" id="qslMeta"></div>
                 <div class="actions">
                     <button class="nav-btn" id="prevQslBtn"><i class="fas fa-chevron-left"></i></button>
-                    <a id="downloadLink" class="download-btn" download><i class="fas fa-download"></i> Descargar</a>
-                    <button class="share-btn" id="shareBtn"><i class="fas fa-share-alt"></i> Compartir</button>
+                    <a id="downloadLink" class="download-btn" download><i class="fas fa-download"></i> <span data-i18n="detail.download">Descargar</span></a>
+                    <button class="share-btn" id="shareBtn"><i class="fas fa-share-alt"></i> <span data-i18n="detail.share">Compartir</span></button>
                     <button class="nav-btn" id="nextQslBtn"><i class="fas fa-chevron-right"></i></button>
                 </div>
-                <div class="download-count" id="downloadCount"><i class="fas fa-download"></i> Descargas: 0</div>
+                <div class="download-count" id="downloadCount"><i class="fas fa-download"></i> <span data-i18n="detail.downloads">Descargas:</span> 0</div>
             </div>
         </section>
 
         <!-- Footer -->
         <footer class="footer-modern">
-            <div class="creator"><span>✧ FRC-CAMAGUEY-CUBA/CM7ADV- Copyright ✧</span></div>
-            <div class="collab"><i class="fas fa-handshake"></i> : CO5ABC &amp; CO5WE <i class="fas fa-heart"></i></div>
+            <div class="creator" data-i18n="footer.creator">✧ FRC-CAMAGUEY-CUBA/CM7ADV- Copyright ✧</div>
+            <div class="collab"><i class="fas fa-handshake"></i> <span data-i18n="footer.collab">CO5ABC &amp; CO5WE</span> <i class="fas fa-heart"></i></div>
         </footer>
     </main>
 
     <!-- ============================================================
-         JAVASCRIPT (Funcionalidad completa + Carga GitHub)
+         JAVASCRIPT (Funcionalidad completa + Traducciones + Carga GitHub)
          ============================================================ -->
     <script>
         (function() {
             'use strict';
 
+            // ============================================================
+            // TRADUCCIONES
+            // ============================================================
+            const translations = {
+                es: {
+                    "app.title": "QSL Caribe · Buscador de QSLs",
+                    "header.title": "QSL Caribe",
+                    "header.subtitle": "Buscador de QSLs",
+                    "search.placeholder": "Ej. CM7ADV, CO5...",
+                    "search.button": "Buscar",
+                    "reset.button": "Inicio",
+                    "helper.text": "Escribe el indicativo",
+                    "helper.visitors": "Visitantes",
+                    "message.waiting": "Esperando tu búsqueda...",
+                    "message.enter": "Por favor, ingresa un indicativo válido.",
+                    "message.searching": "Buscando en la biblioteca caribeña...",
+                    "message.no_results": "Aún no tenemos tu QSL en nuestro archivo caribeño. Contacta con los operadores, gracias 73",
+                    "message.no_qsls": "No se encontraron QSLs.",
+                    "filters.all_bands": "Todas las bandas",
+                    "filters.all_modes": "Todos los modos",
+                    "grid.download_zip": "Descargar filtradas ZIP",
+                    "table.callsign": "Callsign",
+                    "table.band": "Banda",
+                    "table.mode": "Modo",
+                    "table.date": "Fecha",
+                    "table.action": "Acción",
+                    "table.view": "Ver",
+                    "detail.back": "Ver todas",
+                    "detail.download": "Descargar",
+                    "detail.share": "Compartir",
+                    "detail.downloads": "Descargas:",
+                    "footer.creator": "✧ FRC-CAMAGUEY-CUBA/CM7ADV- Copyright ✧",
+                    "footer.collab": "CO5ABC & CO5WE"
+                },
+                en: {
+                    "app.title": "QSL Caribbean · QSL Finder",
+                    "header.title": "QSL Caribbean",
+                    "header.subtitle": "QSL Finder",
+                    "search.placeholder": "e.g. CM7ADV, CO5...",
+                    "search.button": "Search",
+                    "reset.button": "Reset",
+                    "helper.text": "Enter callsign",
+                    "helper.visitors": "Visitors",
+                    "message.waiting": "Waiting for your search...",
+                    "message.enter": "Please enter a valid callsign.",
+                    "message.searching": "Searching in the Caribbean library...",
+                    "message.no_results": "We don't have your QSL in our Caribbean archive yet. Contact the operators, thanks 73",
+                    "message.no_qsls": "No QSLs found.",
+                    "filters.all_bands": "All bands",
+                    "filters.all_modes": "All modes",
+                    "grid.download_zip": "Download filtered ZIP",
+                    "table.callsign": "Callsign",
+                    "table.band": "Band",
+                    "table.mode": "Mode",
+                    "table.date": "Date",
+                    "table.action": "Action",
+                    "table.view": "View",
+                    "detail.back": "View all",
+                    "detail.download": "Download",
+                    "detail.share": "Share",
+                    "detail.downloads": "Downloads:",
+                    "footer.creator": "✧ FRC-CAMAGUEY-CUBA/CM7ADV- Copyright ✧",
+                    "footer.collab": "CO5ABC & CO5WE"
+                },
+                zh: {
+                    "app.title": "加勒比QSL · QSL搜索器",
+                    "header.title": "加勒比QSL",
+                    "header.subtitle": "QSL搜索器",
+                    "search.placeholder": "例如 CM7ADV, CO5...",
+                    "search.button": "搜索",
+                    "reset.button": "重置",
+                    "helper.text": "输入呼号",
+                    "helper.visitors": "访客",
+                    "message.waiting": "等待您的搜索...",
+                    "message.enter": "请输入有效的呼号。",
+                    "message.searching": "正在加勒比图书馆中搜索...",
+                    "message.no_results": "我们的加勒比档案中还没有您的QSL。请联系操作员，谢谢 73",
+                    "message.no_qsls": "未找到QSL。",
+                    "filters.all_bands": "所有波段",
+                    "filters.all_modes": "所有模式",
+                    "grid.download_zip": "下载筛选后的ZIP",
+                    "table.callsign": "呼号",
+                    "table.band": "波段",
+                    "table.mode": "模式",
+                    "table.date": "日期",
+                    "table.action": "操作",
+                    "table.view": "查看",
+                    "detail.back": "查看全部",
+                    "detail.download": "下载",
+                    "detail.share": "分享",
+                    "detail.downloads": "下载次数：",
+                    "footer.creator": "✧ FRC-CAMAGUEY-CUBA/CM7ADV- 版权所有 ✧",
+                    "footer.collab": "CO5ABC 与 CO5WE"
+                },
+                ja: {
+                    "app.title": "カリブQSL · QSL検索",
+                    "header.title": "カリブQSL",
+                    "header.subtitle": "QSL検索",
+                    "search.placeholder": "例 CM7ADV, CO5...",
+                    "search.button": "検索",
+                    "reset.button": "リセット",
+                    "helper.text": "コールサインを入力",
+                    "helper.visitors": "訪問者",
+                    "message.waiting": "検索をお待ちください...",
+                    "message.enter": "有効なコールサインを入力してください。",
+                    "message.searching": "カリブのライブラリを検索中...",
+                    "message.no_results": "まだカリブのアーカイブにあなたのQSLがありません。オペレーターに連絡してください、ありがとう 73",
+                    "message.no_qsls": "QSLが見つかりませんでした。",
+                    "filters.all_bands": "すべてのバンド",
+                    "filters.all_modes": "すべてのモード",
+                    "grid.download_zip": "フィルタリングされたZIPをダウンロード",
+                    "table.callsign": "コールサイン",
+                    "table.band": "バンド",
+                    "table.mode": "モード",
+                    "table.date": "日付",
+                    "table.action": "アクション",
+                    "table.view": "表示",
+                    "detail.back": "すべて表示",
+                    "detail.download": "ダウンロード",
+                    "detail.share": "共有",
+                    "detail.downloads": "ダウンロード数：",
+                    "footer.creator": "✧ FRC-CAMAGUEY-CUBA/CM7ADV- 著作権 ✧",
+                    "footer.collab": "CO5ABC & CO5WE"
+                },
+                de: {
+                    "app.title": "QSL Karibik · QSL-Suche",
+                    "header.title": "QSL Karibik",
+                    "header.subtitle": "QSL-Suche",
+                    "search.placeholder": "z.B. CM7ADV, CO5...",
+                    "search.button": "Suchen",
+                    "reset.button": "Zurücksetzen",
+                    "helper.text": "Rufzeichen eingeben",
+                    "helper.visitors": "Besucher",
+                    "message.waiting": "Warten auf Ihre Suche...",
+                    "message.enter": "Bitte geben Sie ein gültiges Rufzeichen ein.",
+                    "message.searching": "Suche in der karibischen Bibliothek...",
+                    "message.no_results": "Wir haben Ihre QSL noch nicht in unserem karibischen Archiv. Kontaktieren Sie die Betreiber, danke 73",
+                    "message.no_qsls": "Keine QSLs gefunden.",
+                    "filters.all_bands": "Alle Bänder",
+                    "filters.all_modes": "Alle Modi",
+                    "grid.download_zip": "Gefilterte ZIP herunterladen",
+                    "table.callsign": "Rufzeichen",
+                    "table.band": "Band",
+                    "table.mode": "Modus",
+                    "table.date": "Datum",
+                    "table.action": "Aktion",
+                    "table.view": "Ansehen",
+                    "detail.back": "Alle anzeigen",
+                    "detail.download": "Herunterladen",
+                    "detail.share": "Teilen",
+                    "detail.downloads": "Downloads:",
+                    "footer.creator": "✧ FRC-CAMAGUEY-CUBA/CM7ADV- Urheberrecht ✧",
+                    "footer.collab": "CO5ABC & CO5WE"
+                }
+            };
+
+            // ============================================================
             // DOM REFS
+            // ============================================================
             const input = document.getElementById('callsignInput');
             const searchBtn = document.getElementById('searchBtn');
             const resetBtn = document.getElementById('resetBtn');
@@ -533,16 +733,105 @@
             const modeFilter = document.getElementById('modeFilter');
             const viewGridBtn = document.getElementById('viewGridBtn');
             const viewTableBtn = document.getElementById('viewTableBtn');
+            const languageSelect = document.getElementById('languageSelect');
 
+            // ============================================================
             // ESTADO
+            // ============================================================
             let fullQsList = [];
             let filteredQsList = [];
             let currentQslIndex = 0;
             let currentCallsign = '';
             let currentView = 'table';
             let isSearching = false;
+            let currentLang = 'es';
 
+            // ============================================================
+            // FUNCIONES DE IDIOMA
+            // ============================================================
+            function t(key) {
+                return translations[currentLang] && translations[currentLang][key] ? translations[currentLang][key] : key;
+            }
+
+            function setLanguage(lang) {
+                if (!translations[lang]) lang = 'es';
+                currentLang = lang;
+                localStorage.setItem('qsl_language', lang);
+                languageSelect.value = lang;
+                updateUI();
+                // Actualizar el mensaje actual si está visible
+                updateCurrentMessage();
+            }
+
+            function updateUI() {
+                // Actualizar todos los elementos con data-i18n
+                document.querySelectorAll('[data-i18n]').forEach(el => {
+                    const key = el.getAttribute('data-i18n');
+                    if (key) {
+                        el.textContent = t(key);
+                    }
+                });
+                // Actualizar placeholders
+                document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+                    const key = el.getAttribute('data-i18n-placeholder');
+                    if (key) {
+                        el.placeholder = t(key);
+                    }
+                });
+                // Título de la página
+                document.title = t('app.title');
+                // Opciones de filtros que se agregan dinámicamente (las opciones estáticas ya están)
+                // Las opciones de filtro que se generan dinámicamente se actualizan al aplicar filtros
+                // Si hay filtros cargados, los actualizamos
+                if (fullQsList.length > 0) {
+                    populateFilters(fullQsList);
+                    applyFilters();
+                }
+                // Actualizar el texto del botón de descarga ZIP si está visible
+                if (filteredQsList.length > 1) {
+                    downloadAllBtn.innerHTML = `<i class="fas fa-file-archive"></i> ${t('grid.download_zip')} (${filteredQsList.length})`;
+                }
+                // Actualizar el contador de descargas en detalle
+                if (detailView.style.display !== 'none') {
+                    const displayName = currentCallsign || 'QSL';
+                    const dlCount = getDownloadCount(displayName, currentQslIndex);
+                    downloadCountSpan.innerHTML = `<i class="fas fa-download"></i> ${t('detail.downloads')} ${dlCount}`;
+                }
+            }
+
+            // Actualiza el mensaje actual (el que se muestra en resultMessage) según su contenido
+            function updateCurrentMessage() {
+                const messageSpan = resultMessage.querySelector('span');
+                if (!messageSpan) return;
+                // Verificar si el mensaje contiene alguna de las claves conocidas
+                const currentText = messageSpan.textContent;
+                // Intentar encontrar la clave correspondiente
+                const keys = [
+                    'message.waiting',
+                    'message.enter',
+                    'message.searching',
+                    'message.no_results',
+                    'message.no_qsls'
+                ];
+                for (let key of keys) {
+                    // Si el texto actual coincide con la traducción anterior (o con la clave)
+                    // Lo reemplazamos por la nueva traducción. Como no tenemos referencia, 
+                    // usamos el atributo data-i18n del span si existe.
+                    if (messageSpan.hasAttribute('data-i18n')) {
+                        const keyAttr = messageSpan.getAttribute('data-i18n');
+                        if (keyAttr) {
+                            messageSpan.textContent = t(keyAttr);
+                            // También actualizar el icono si es necesario? No.
+                            return;
+                        }
+                    }
+                }
+                // Si no tiene data-i18n, no hacemos nada.
+            }
+
+            // ============================================================
             // UTILIDADES
+            // ============================================================
             function normalize(str) { return str.trim().toUpperCase().replace(/[^A-Z0-9]/g, ''); }
             function getDownloadKey(callsign, index) { return `qsl_dl_${callsign}_${index}`; }
             function getDownloadCount(callsign, index) { return parseInt(localStorage.getItem(getDownloadKey(callsign, index))) || 0; }
@@ -583,12 +872,18 @@
             async function buscarQSL() {
                 const raw = input.value.trim();
                 const clean = normalize(raw);
-                if (clean === '') { mostrarMensaje('fa-radio', 'Por favor, ingresa un indicativo válido.'); return; }
+                if (clean === '') {
+                    mostrarMensajeClave('fa-radio', 'message.enter');
+                    return;
+                }
                 if (isSearching) return;
                 isSearching = true;
-                
+
                 resultMessage.style.display = 'block';
-                resultMessage.innerHTML = `<i class="fas fa-spinner fa-spin"></i><span>Buscando en la biblioteca caribeña...</span>`;
+                resultMessage.innerHTML = `<i class="fas fa-spinner fa-spin"></i><span data-i18n="message.searching">${t('message.searching')}</span>`;
+                // Aplicar traducción al span recién creado
+                const span = resultMessage.querySelector('span');
+                if (span) span.setAttribute('data-i18n', 'message.searching');
                 gridView.style.display = 'none';
                 tableView.style.display = 'none';
                 detailView.style.display = 'none';
@@ -597,27 +892,23 @@
 
                 let foundQSLs = await findQSLsFromGitHub(clean);
                 if (foundQSLs.length === 0) {
-                    mostrarMensaje('fa-heart', 
-                        `<span class="warm">Saludos, ${clean}!</span><br>
-                        Aún no tenemos tu QSL en nuestro archivo caribeño. Contacta con los operadores, gracias 
-                        <br> 
-                        <span style="font-size:0.9rem;color:#555;">73</span>`
-                    );
+                    resultMessage.innerHTML = `<i class="fas fa-heart"></i><span data-i18n="message.no_results">${t('message.no_results')}</span>`;
+                    const span = resultMessage.querySelector('span');
+                    if (span) span.setAttribute('data-i18n', 'message.no_results');
                     isSearching = false;
                     return;
                 }
                 foundQSLs.forEach(q => q._callsign = clean);
                 mostrarGrid(foundQSLs, clean);
-
                 isSearching = false;
             }
 
             // ============================================================
             // FUNCIONES DE RENDER
             // ============================================================
-            function mostrarMensaje(icono, texto) {
+            function mostrarMensajeClave(icono, clave) {
                 resultMessage.style.display = 'block';
-                resultMessage.innerHTML = `<i class="fas ${icono}"></i><span>${texto}</span>`;
+                resultMessage.innerHTML = `<i class="fas ${icono}"></i><span data-i18n="${clave}">${t(clave)}</span>`;
                 gridView.style.display = 'none';
                 tableView.style.display = 'none';
                 detailView.style.display = 'none';
@@ -626,7 +917,10 @@
             }
 
             function mostrarGrid(qsls, callsign) {
-                if (!qsls || qsls.length === 0) { mostrarMensaje('fa-sad-tear', 'No se encontraron QSLs.'); return; }
+                if (!qsls || qsls.length === 0) {
+                    mostrarMensajeClave('fa-sad-tear', 'message.no_qsls');
+                    return;
+                }
                 resultMessage.style.display = 'none';
                 detailView.style.display = 'none';
                 fullQsList = qsls;
@@ -641,10 +935,20 @@
             function populateFilters(qsls) {
                 const bands = [...new Set(qsls.map(q => q.banda).filter(Boolean))];
                 const modes = [...new Set(qsls.map(q => q.modo).filter(Boolean))];
-                bandFilter.innerHTML = '<option value="">Todas las bandas</option>';
-                bands.forEach(b => { bandFilter.innerHTML += `<option value="${b}">${b}</option>`; });
-                modeFilter.innerHTML = '<option value="">Todos los modos</option>';
-                modes.forEach(m => { modeFilter.innerHTML += `<option value="${m}">${m}</option>`; });
+                // Limpiar y agregar opciones traducidas
+                bandFilter.innerHTML = `<option value="" data-i18n="filters.all_bands">${t('filters.all_bands')}</option>`;
+                bands.forEach(b => {
+                    bandFilter.innerHTML += `<option value="${b}">${b}</option>`;
+                });
+                modeFilter.innerHTML = `<option value="" data-i18n="filters.all_modes">${t('filters.all_modes')}</option>`;
+                modes.forEach(m => {
+                    modeFilter.innerHTML += `<option value="${m}">${m}</option>`;
+                });
+                // Aplicar data-i18n a las opciones estáticas
+                const firstBandOpt = bandFilter.querySelector('option[value=""]');
+                if (firstBandOpt) firstBandOpt.setAttribute('data-i18n', 'filters.all_bands');
+                const firstModeOpt = modeFilter.querySelector('option[value=""]');
+                if (firstModeOpt) firstModeOpt.setAttribute('data-i18n', 'filters.all_modes');
             }
 
             function applyFilters() {
@@ -680,7 +984,7 @@
 
             function renderGrid() {
                 if (!filteredQsList || filteredQsList.length === 0) {
-                    gridView.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:#7a7f8a;padding:20px;">No hay resultados para estos filtros.</div>';
+                    gridView.innerHTML = `<div style="grid-column:1/-1;text-align:center;color:#7a7f8a;padding:20px;">${t('message.no_qsls')}</div>`;
                     return;
                 }
                 const fragment = document.createDocumentFragment();
@@ -710,7 +1014,7 @@
 
             function renderTable() {
                 if (!filteredQsList || filteredQsList.length === 0) {
-                    tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#7a7f8a;padding:20px;">No hay resultados para estos filtros.</td></tr>';
+                    tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:#7a7f8a;padding:20px;">${t('message.no_qsls')}</td></tr>`;
                     return;
                 }
                 let html = '';
@@ -723,8 +1027,8 @@
                         <td>${qsl.fecha || '-'}</td>
                         <td>
                             <div style="display:flex; gap:6px;">
-                                <a href="${qsl.url}" download="QSL_${displayName}.jpg" class="table-btn download-btn-row" title="Descargar"><i class="fas fa-download"></i></a>
-                                <button class="table-btn" data-index="${index}">Ver</button>
+                                <a href="${qsl.url}" download="QSL_${displayName}.jpg" class="table-btn download-btn-row" title="${t('detail.download')}"><i class="fas fa-download"></i></a>
+                                <button class="table-btn" data-index="${index}">${t('table.view')}</button>
                             </div>
                         </td>
                     </tr>`;
@@ -742,7 +1046,7 @@
             function updateZipButtonState() {
                 if (filteredQsList.length > 1) {
                     gridActions.style.display = 'flex';
-                    downloadAllBtn.innerHTML = `<i class="fas fa-file-archive"></i> Descargar filtradas (${filteredQsList.length}) ZIP`;
+                    downloadAllBtn.innerHTML = `<i class="fas fa-file-archive"></i> ${t('grid.download_zip')} (${filteredQsList.length})`;
                     downloadAllBtn.disabled = false;
                     downloadAllBtn.onclick = downloadAllAsZip;
                 } else {
@@ -765,7 +1069,7 @@
 
                 if (qsls.length > 1) {
                     backToGridBtn.style.display = 'inline-block';
-                    backToGridBtn.innerHTML = `<i class="fas fa-arrow-left"></i> Ver todas (${qsls.length})`;
+                    backToGridBtn.innerHTML = `<i class="fas fa-arrow-left"></i> ${t('detail.back')} (${qsls.length})`;
                 } else { backToGridBtn.style.display = 'none'; }
 
                 prevBtn.disabled = (index === 0);
@@ -791,20 +1095,21 @@
                 if (qsl.banda) metaHTML += `<span><i class="fas fa-signal"></i> ${qsl.banda}</span>`;
                 if (qsl.modo) metaHTML += `<span><i class="fas fa-wave-square"></i> ${qsl.modo}</span>`;
                 if (qsl.fecha) metaHTML += `<span><i class="fas fa-calendar-alt"></i> ${qsl.fecha}</span>`;
-                qslMeta.innerHTML = metaHTML || '<span><i class="fas fa-tag"></i> QSL confirmada</span>';
+                qslMeta.innerHTML = metaHTML || `<span><i class="fas fa-tag"></i> QSL confirmada</span>`;
 
                 const dlCount = getDownloadCount(displayName, index);
-                downloadCountSpan.innerHTML = `<i class="fas fa-download"></i> Descargas: ${dlCount}`;
+                downloadCountSpan.innerHTML = `<i class="fas fa-download"></i> ${t('detail.downloads')} ${dlCount}`;
                 downloadLink.href = qsl.url;
                 downloadLink.download = `QSL_${displayName}.jpg`;
                 downloadLink.onclick = () => {
-                    downloadCountSpan.innerHTML = `<i class="fas fa-download"></i> Descargas: ${incrementDownloadCount(displayName, index)}`;
+                    downloadCountSpan.innerHTML = `<i class="fas fa-download"></i> ${t('detail.downloads')} ${incrementDownloadCount(displayName, index)}`;
                 };
                 shareBtn.onclick = () => {
                     const shareUrl = window.location.href.split('?')[0] + `?callsign=${encodeURIComponent(displayName)}`;
                     if (navigator.share) navigator.share({ title: `QSL de ${displayName}`, url: shareUrl }).catch(() => {});
                     else navigator.clipboard.writeText(shareUrl).then(() => alert('Enlace copiado: ' + shareUrl)).catch(() => prompt('Copia este enlace:', shareUrl));
                 };
+                // Actualizar textos del detalle (ya están con data-i18n, pero al cambiar idioma se actualizan)
             }
 
             async function downloadAllAsZip() {
@@ -852,7 +1157,7 @@
                 filtersBar.style.display = 'none';
                 gridActions.style.display = 'none';
                 suggestionsList.style.display = 'none';
-                mostrarMensaje('fa-radio', 'Esperando tu búsqueda...');
+                mostrarMensajeClave('fa-radio', 'message.waiting');
                 input.focus();
             });
 
@@ -860,7 +1165,7 @@
                 if (fullQsList && fullQsList.length > 0) {
                     detailView.style.display = 'none';
                     mostrarGrid(fullQsList, currentCallsign);
-                } else { mostrarMensaje('fa-radio', 'Esperando tu búsqueda...'); }
+                } else { mostrarMensajeClave('fa-radio', 'message.waiting'); }
             });
             prevBtn.addEventListener('click', () => {
                 if (currentQslIndex > 0) mostrarDetalle(filteredQsList, currentQslIndex - 1, currentCallsign);
@@ -870,12 +1175,33 @@
             });
 
             // ============================================================
+            // SELECTOR DE IDIOMA
+            // ============================================================
+            languageSelect.addEventListener('change', function() {
+                setLanguage(this.value);
+            });
+
+            // ============================================================
             // CARGA INICIAL
             // ============================================================
             window.addEventListener('load', () => {
+                // Cargar idioma guardado o detectar navegador
+                const savedLang = localStorage.getItem('qsl_language');
+                if (savedLang && translations[savedLang]) {
+                    setLanguage(savedLang);
+                } else {
+                    // Detectar idioma del navegador (solo para español e inglés)
+                    const browserLang = navigator.language || navigator.userLanguage;
+                    const langCode = browserLang.split('-')[0];
+                    if (langCode === 'es') setLanguage('es');
+                    else if (langCode === 'en') setLanguage('en');
+                    else if (langCode === 'zh') setLanguage('zh');
+                    else if (langCode === 'ja') setLanguage('ja');
+                    else if (langCode === 'de') setLanguage('de');
+                    else setLanguage('es');
+                }
                 input.focus();
-                mostrarMensaje('fa-radio', 'Esperando tu búsqueda...');
-                
+
                 const params = new URLSearchParams(window.location.search);
                 const qslParam = params.get('callsign') || params.get('qsl');
                 if (qslParam) {
