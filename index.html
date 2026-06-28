@@ -50,7 +50,7 @@
         }
 
         /* ============================================================
-           MARCA DE AGUA "ALFRED 73"
+           MARCA DE AGUA "ZMR-CUBA"
            ============================================================ */
         .watermark-box {
             position: absolute;
@@ -76,7 +76,7 @@
         }
 
         /* ============================================================
-           COLORES MAR CARIBE (Cian / Azul Turquesa)
+           COLORES MAR CARIBE (Cian / Azul Celeste)
            ============================================================ */
         :root {
             --caribe: #0077b6;
@@ -408,7 +408,7 @@
 <body>
 
     <main class="card" role="main">
-        <div class="watermark-box" aria-hidden="true">ALFRED 73</div>
+        <div class="watermark-box" aria-hidden="true">Cuba</div>
 
         <!-- CABECERA -->
         <div class="header-pano-container">
@@ -496,8 +496,8 @@
 
         <!-- Footer -->
         <footer class="footer-modern">
-            <div class="creator"><span>✧ CM7ADV - Cuba ✧</span></div>
-            <div class="collab"><i class="fas fa-handshake"></i> Colaboradores: CO5ABC &amp; CO5WE <i class="fas fa-heart"></i></div>
+            <div class="creator"><span>✧ FRC-CAMAGUEY-CUBA/CM7ADV- Copyright ✧</span></div>
+            <div class="collab"><i class="fas fa-handshake"></i> : CO5ABC &amp; CO5WE <i class="fas fa-heart"></i></div>
         </footer>
     </main>
 
@@ -598,16 +598,17 @@
                 let foundQSLs = await findQSLsFromGitHub(clean);
                 if (foundQSLs.length === 0) {
                     mostrarMensaje('fa-heart', 
-                        `<span class="warm">¡Saludos, ${clean}!</span><br>
-                        Aún no tenemos tu QSL en nuestro archivo caribeño. 
-                        Si tienes una, ¡envíanosla para compartir! <br> 
-                        <span style="font-size:0.9rem;color:#555;">73, CM7ADV & equipo</span>`
+                        `<span class="warm">Saludos, ${clean}!</span><br>
+                        Aún no tenemos tu QSL en nuestro archivo caribeño. Contacta con los operadores, gracias 
+                        <br> 
+                        <span style="font-size:0.9rem;color:#555;">73</span>`
                     );
                     isSearching = false;
                     return;
                 }
                 foundQSLs.forEach(q => q._callsign = clean);
                 mostrarGrid(foundQSLs, clean);
+
                 isSearching = false;
             }
 
