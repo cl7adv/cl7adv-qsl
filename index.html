@@ -759,39 +759,30 @@
                 localStorage.setItem('qsl_language', lang);
                 languageSelect.value = lang;
                 updateUI();
-                // Actualizar el mensaje actual si está visible
                 updateCurrentMessage();
             }
 
             function updateUI() {
-                // Actualizar todos los elementos con data-i18n
                 document.querySelectorAll('[data-i18n]').forEach(el => {
                     const key = el.getAttribute('data-i18n');
                     if (key) {
                         el.textContent = t(key);
                     }
                 });
-                // Actualizar placeholders
                 document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
                     const key = el.getAttribute('data-i18n-placeholder');
                     if (key) {
                         el.placeholder = t(key);
                     }
                 });
-                // Título de la página
                 document.title = t('app.title');
-                // Opciones de filtros que se agregan dinámicamente (las opciones estáticas ya están)
-                // Las opciones de filtro que se generan dinámicamente se actualizan al aplicar filtros
-                // Si hay filtros cargados, los actualizamos
                 if (fullQsList.length > 0) {
                     populateFilters(fullQsList);
                     applyFilters();
                 }
-                // Actualizar el texto del botón de descarga ZIP si está visible
                 if (filteredQsList.length > 1) {
                     downloadAllBtn.innerHTML = `<i class="fas fa-file-archive"></i> ${t('grid.download_zip')} (${filteredQsList.length})`;
                 }
-                // Actualizar el contador de descargas en detalle
                 if (detailView.style.display !== 'none') {
                     const displayName = currentCallsign || 'QSL';
                     const dlCount = getDownloadCount(displayName, currentQslIndex);
@@ -799,34 +790,15 @@
                 }
             }
 
-            // Actualiza el mensaje actual (el que se muestra en resultMessage) según su contenido
             function updateCurrentMessage() {
                 const messageSpan = resultMessage.querySelector('span');
                 if (!messageSpan) return;
-                // Verificar si el mensaje contiene alguna de las claves conocidas
-                const currentText = messageSpan.textContent;
-                // Intentar encontrar la clave correspondiente
-                const keys = [
-                    'message.waiting',
-                    'message.enter',
-                    'message.searching',
-                    'message.no_results',
-                    'message.no_qsls'
-                ];
-                for (let key of keys) {
-                    // Si el texto actual coincide con la traducción anterior (o con la clave)
-                    // Lo reemplazamos por la nueva traducción. Como no tenemos referencia, 
-                    // usamos el atributo data-i18n del span si existe.
-                    if (messageSpan.hasAttribute('data-i18n')) {
-                        const keyAttr = messageSpan.getAttribute('data-i18n');
-                        if (keyAttr) {
-                            messageSpan.textContent = t(keyAttr);
-                            // También actualizar el icono si es necesario? No.
-                            return;
-                        }
+                if (messageSpan.hasAttribute('data-i18n')) {
+                    const keyAttr = messageSpan.getAttribute('data-i18n');
+                    if (keyAttr) {
+                        messageSpan.textContent = t(keyAttr);
                     }
                 }
-                // Si no tiene data-i18n, no hacemos nada.
             }
 
             // ============================================================
@@ -843,44 +815,89 @@
             }
 
             // ============================================================
-            // CARGA DINÁMICA DESDE GITHUB (CORREGIDA)
+            // CARGA DINÁMICA DESDE GITHUB USANDO API (NUEVO)
             // ============================================================
             async function findQSLsFromGitHub(callsign) {
-                // URL base corregida: ahora apunta a la carpeta "imagenes"
+                const baseRaw = 'https://raw.githubusercontent.com/cl7adv/cl7adv-qsl/main/imagenes/';
+                const apiUrl = 'https://api.github.com/repos/cl7adv/cl7adv-qsl/contents/imagenes';
+
+                try {
+                    // 1. Intentar obtener la lista de archivos desde la API
+                    const response = await fetch(apiUrl);
+                    if (!response.ok) throw new Error(`API responded with ${response.status}`);
+                    const data = await response.json();
+
+                    // data es un array de objetos con propiedades: name, path, download_url, etc.
+                    // Filtramos solo los archivos (no directorios) y que sean imágenes (jpg, jpeg, png, gif)
+                    const files = data.filter(item => item.type === 'file' && /\.(jpe?g|png|gif)$/i.test(item.name));
+
+                    // Ahora buscamos aquellos cuyo nombre contenga el callsign (insensible a mayúsculas)
+                    const lowerCallsign = callsign.toLowerCase();
+                    const matched = files.filter(file => file.name.toLowerCase().includes(lowerCallsign));
+
+                    if (matched.length === 0) {
+                        // Si no encuentra con la API, fallback al método antiguo de adivinación
+                        return fallbackFind(callsign);
+                    }
+
+                    // Construir resultados
+                    const results = matched.map(file => ({
+                        url: baseRaw + file.name, // Usamos raw para la imagen
+                        banda: 'N/A',
+                        modo: 'N/A',
+                        operador: callsign,
+                        fecha: '2026',
+                        // Guardamos el nombre original por si queremos extraer banda/modo después
+                        _filename: file.name
+                    }));
+
+                    // Intentar extraer banda y modo del nombre (opcional)
+                    results.forEach(q => {
+                        const name = q._filename;
+                        // Ejemplo: "CM7ADV-40m-FT8.jpg" -> banda=40m, modo=FT8
+                        const parts = name.replace(/\.[^.]+$/, '').split('-');
+                        if (parts.length >= 3) {
+                            q.banda = parts[1] || 'N/A';
+                            q.modo = parts[2] || 'N/A';
+                        }
+                        delete q._filename; // limpiar
+                    });
+
+                    return results;
+
+                } catch (error) {
+                    console.warn('Error al usar la API de GitHub, usando método de adivinación:', error);
+                    return fallbackFind(callsign);
+                }
+            }
+
+            // Método de respaldo (adivinación con HEAD)
+            async function fallbackFind(callsign) {
                 const baseUrl = 'https://raw.githubusercontent.com/cl7adv/cl7adv-qsl/main/imagenes/';
                 let results = [];
                 let index = 0;
 
-                // Función auxiliar para probar una URL con HEAD
                 const checkUrl = async (url) => {
                     try {
                         const response = await fetch(url, { method: 'HEAD' });
                         return response.ok;
-                    } catch {
-                        return false;
-                    }
+                    } catch { return false; }
                 };
 
-                // Intentamos hasta 10 archivos (0..9)
                 while (index < 10) {
                     let found = false;
-                    // Posibles nombres: callsign.jpg, callsign-1.jpg, ...
-                    // También probamos con minúsculas y con extensión .png
-                    const variants = [];
                     const baseName = index === 0 ? callsign : `${callsign}-${index}`;
-                    // Mayúsculas .jpg
-                    variants.push(`${baseName}.jpg`);
-                    // Minúsculas .jpg
-                    variants.push(`${baseName.toLowerCase()}.jpg`);
-                    // Mayúsculas .png
-                    variants.push(`${baseName}.png`);
-                    // Minúsculas .png
-                    variants.push(`${baseName.toLowerCase()}.png`);
-
+                    const variants = [
+                        `${baseName}.jpg`,
+                        `${baseName.toLowerCase()}.jpg`,
+                        `${baseName}.png`,
+                        `${baseName.toLowerCase()}.png`,
+                        `${baseName}.jpeg`,
+                        `${baseName.toLowerCase()}.jpeg`
+                    ];
                     for (const fileName of variants) {
                         const url = baseUrl + fileName;
                         if (await checkUrl(url)) {
-                            // Encontrado
                             results.push({
                                 url: url,
                                 banda: 'N/A',
@@ -892,13 +909,7 @@
                             break;
                         }
                     }
-
-                    if (!found) {
-                        // Si el primer archivo (sin índice) no existe, es probable que no haya más
-                        if (index === 0) break;
-                        // Si falla un archivo con índice, seguimos intentando con el siguiente índice
-                        // (puede haber huecos, pero paramos después de 10 intentos)
-                    }
+                    if (!found && index === 0) break;
                     index++;
                 }
                 return results;
@@ -919,7 +930,6 @@
 
                 resultMessage.style.display = 'block';
                 resultMessage.innerHTML = `<i class="fas fa-spinner fa-spin"></i><span data-i18n="message.searching">${t('message.searching')}</span>`;
-                // Aplicar traducción al span recién creado
                 const span = resultMessage.querySelector('span');
                 if (span) span.setAttribute('data-i18n', 'message.searching');
                 gridView.style.display = 'none';
@@ -942,7 +952,7 @@
             }
 
             // ============================================================
-            // FUNCIONES DE RENDER
+            // FUNCIONES DE RENDER (sin cambios)
             // ============================================================
             function mostrarMensajeClave(icono, clave) {
                 resultMessage.style.display = 'block';
@@ -973,7 +983,6 @@
             function populateFilters(qsls) {
                 const bands = [...new Set(qsls.map(q => q.banda).filter(Boolean))];
                 const modes = [...new Set(qsls.map(q => q.modo).filter(Boolean))];
-                // Limpiar y agregar opciones traducidas
                 bandFilter.innerHTML = `<option value="" data-i18n="filters.all_bands">${t('filters.all_bands')}</option>`;
                 bands.forEach(b => {
                     bandFilter.innerHTML += `<option value="${b}">${b}</option>`;
@@ -982,7 +991,6 @@
                 modes.forEach(m => {
                     modeFilter.innerHTML += `<option value="${m}">${m}</option>`;
                 });
-                // Aplicar data-i18n a las opciones estáticas
                 const firstBandOpt = bandFilter.querySelector('option[value=""]');
                 if (firstBandOpt) firstBandOpt.setAttribute('data-i18n', 'filters.all_bands');
                 const firstModeOpt = modeFilter.querySelector('option[value=""]');
@@ -1147,7 +1155,6 @@
                     if (navigator.share) navigator.share({ title: `QSL de ${displayName}`, url: shareUrl }).catch(() => {});
                     else navigator.clipboard.writeText(shareUrl).then(() => alert('Enlace copiado: ' + shareUrl)).catch(() => prompt('Copia este enlace:', shareUrl));
                 };
-                // Actualizar textos del detalle (ya están con data-i18n, pero al cambiar idioma se actualizan)
             }
 
             async function downloadAllAsZip() {
@@ -1212,9 +1219,6 @@
                 if (currentQslIndex < filteredQsList.length - 1) mostrarDetalle(filteredQsList, currentQslIndex + 1, currentCallsign);
             });
 
-            // ============================================================
-            // SELECTOR DE IDIOMA
-            // ============================================================
             languageSelect.addEventListener('change', function() {
                 setLanguage(this.value);
             });
@@ -1223,12 +1227,10 @@
             // CARGA INICIAL
             // ============================================================
             window.addEventListener('load', () => {
-                // Cargar idioma guardado o detectar navegador
                 const savedLang = localStorage.getItem('qsl_language');
                 if (savedLang && translations[savedLang]) {
                     setLanguage(savedLang);
                 } else {
-                    // Detectar idioma del navegador (solo para español e inglés)
                     const browserLang = navigator.language || navigator.userLanguage;
                     const langCode = browserLang.split('-')[0];
                     if (langCode === 'es') setLanguage('es');
