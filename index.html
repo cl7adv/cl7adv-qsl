@@ -843,24 +843,62 @@
             }
 
             // ============================================================
-            // CARGA DINÁMICA DESDE GITHUB
+            // CARGA DINÁMICA DESDE GITHUB (CORREGIDA)
             // ============================================================
             async function findQSLsFromGitHub(callsign) {
-                const baseUrl = 'https://raw.githubusercontent.com/cl7adv/cl7adv-qsl/main/img/';
+                // URL base corregida: ahora apunta a la carpeta "imagenes"
+                const baseUrl = 'https://raw.githubusercontent.com/cl7adv/cl7adv-qsl/main/imagenes/';
                 let results = [];
                 let index = 0;
-                while(index < 10) {
-                    let filename = `${callsign}.jpg`;
-                    if(index > 0) filename = `${callsign}-${index}.jpg`;
-                    const url = baseUrl + filename;
+
+                // Función auxiliar para probar una URL con HEAD
+                const checkUrl = async (url) => {
                     try {
                         const response = await fetch(url, { method: 'HEAD' });
-                        if(response.ok) {
-                            results.push({ url: url, banda: 'N/A', modo: 'N/A', operador: callsign, fecha: '2026' });
-                        } else {
-                            if(index === 0) break;
+                        return response.ok;
+                    } catch {
+                        return false;
+                    }
+                };
+
+                // Intentamos hasta 10 archivos (0..9)
+                while (index < 10) {
+                    let found = false;
+                    // Posibles nombres: callsign.jpg, callsign-1.jpg, ...
+                    // También probamos con minúsculas y con extensión .png
+                    const variants = [];
+                    const baseName = index === 0 ? callsign : `${callsign}-${index}`;
+                    // Mayúsculas .jpg
+                    variants.push(`${baseName}.jpg`);
+                    // Minúsculas .jpg
+                    variants.push(`${baseName.toLowerCase()}.jpg`);
+                    // Mayúsculas .png
+                    variants.push(`${baseName}.png`);
+                    // Minúsculas .png
+                    variants.push(`${baseName.toLowerCase()}.png`);
+
+                    for (const fileName of variants) {
+                        const url = baseUrl + fileName;
+                        if (await checkUrl(url)) {
+                            // Encontrado
+                            results.push({
+                                url: url,
+                                banda: 'N/A',
+                                modo: 'N/A',
+                                operador: callsign,
+                                fecha: '2026'
+                            });
+                            found = true;
+                            break;
                         }
-                    } catch(e) { if(index === 0) break; }
+                    }
+
+                    if (!found) {
+                        // Si el primer archivo (sin índice) no existe, es probable que no haya más
+                        if (index === 0) break;
+                        // Si falla un archivo con índice, seguimos intentando con el siguiente índice
+                        // (puede haber huecos, pero paramos después de 10 intentos)
+                    }
                     index++;
                 }
                 return results;
