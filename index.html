@@ -3,48 +3,181 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cuba QSL Buscador</title>
+<title>Cuba QSL Buscador · CM7ADV</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
 <style>
   *{margin:0;padding:0;box-sizing:border-box}
-  body{font-family:'Inter',sans-serif;background:linear-gradient(160deg,#f0f4f8 0%,#fff 100%);min-height:100vh;color:#1a1a2e}
-  header{text-align:center;padding:40px 20px 20px;background:linear-gradient(135deg,#0077b6,#00b4d8);color:#fff;border-radius:0 0 30px 30px;box-shadow:0 10px 30px rgba(0,119,182,.2)}
+  body{
+    font-family:'Inter',sans-serif;
+    background:linear-gradient(160deg,#f0f4f8 0%,#fff 100%);
+    min-height:100vh;color:#1a1a2e;display:flex;flex-direction:column;
+  }
+  /* ---------- Cabecera ---------- */
+  header{
+    text-align:center;padding:40px 20px 22px;
+    background:linear-gradient(135deg,#0077b6,#00b4d8);color:#fff;
+    border-radius:0 0 30px 30px;box-shadow:0 10px 30px rgba(0,119,182,.2);
+  }
   header h1{font-size:2.5rem;font-weight:900;letter-spacing:-1px;margin-bottom:6px}
   header p{opacity:.9;font-weight:500}
-  .search-container{max-width:900px;margin:-25px auto 30px;padding:0 20px;position:relative;z-index:10}
-  .search-box{background:#fff;border-radius:50px;padding:8px 8px 8px 24px;display:flex;align-items:center;gap:10px;box-shadow:0 8px 24px rgba(0,0,0,.1)}
-  .search-box input{flex:1;border:none;outline:none;font-size:1.1rem;font-family:inherit;font-weight:600;padding:10px 0;text-transform:uppercase;background:transparent;color:#1a1a2e}
+  /* ---------- Buscador ---------- */
+  .search-container{max-width:900px;margin:-25px auto 24px;padding:0 20px;position:relative;z-index:10}
+  .search-box{
+    background:#fff;border-radius:50px;padding:8px 8px 8px 24px;
+    display:flex;align-items:center;gap:10px;box-shadow:0 8px 24px rgba(0,0,0,.1);
+  }
+  .search-box input{
+    flex:1;border:none;outline:none;font-size:1.1rem;font-family:inherit;
+    font-weight:600;padding:10px 0;text-transform:uppercase;background:transparent;color:#1a1a2e;
+  }
   .search-box input::placeholder{text-transform:none;color:#999;font-weight:400}
-  .search-box button{padding:12px 24px;border:none;border-radius:50px;background:#0077b6;color:#fff;font-family:inherit;font-weight:700;cursor:pointer;transition:.2s}
+  .search-box button{
+    padding:12px 24px;border:none;border-radius:50px;background:#0077b6;color:#fff;
+    font-family:inherit;font-weight:700;cursor:pointer;transition:.2s;white-space:nowrap;
+  }
   .search-box button:hover{background:#006994}
-  .status{text-align:center;padding:16px 20px;color:#666;font-size:.9rem}
-  .status.error{color:#c00;font-weight:600}
+  /* ---------- Estado ---------- */
+  .status{text-align:center;padding:14px 20px;color:#666;font-size:.9rem;font-weight:500}
+  .status.error{color:#c00;font-weight:700}
   .status a{color:#0077b6;font-weight:700}
-  .grid{max-width:1400px;margin:0 auto 40px;padding:0 20px;display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:20px}
-  .card{background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,.06);cursor:pointer;transition:.2s;border:1px solid #eef2f5}
-  .card:hover{transform:translateY(-4px);box-shadow:0 12px 24px rgba(0,119,182,.15);border-color:#00b4d8}
-  .card img{width:100%;height:150px;object-fit:cover;display:block;background:#eef2f5}
-  .card-info{padding:10px 12px}
-  .card-callsign{font-weight:800;color:#0077b6;font-size:.9rem}
-  .card-filename{font-size:.7rem;color:#888;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .empty{grid-column:1 / -1;text-align:center;padding:60px 20px;color:#888;font-size:1.1rem}
-  .loader{grid-column:1 / -1;text-align:center;padding:60px 20px;color:#0077b6;font-weight:600;font-size:1rem}
-  .loader::after{content:'';display:inline-block;width:20px;height:20px;border:3px solid #eef2f5;border-top-color:#0077b6;border-radius:50%;animation:spin .8s linear infinite;margin-left:10px;vertical-align:middle}
+  .status .count{color:#0077b6;font-weight:800}
+  /* ---------- Grid ---------- */
+  .grid{
+    max-width:1400px;margin:0 auto 40px;padding:0 20px;
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:22px;
+  }
+  .card{
+    background:#fff;border-radius:16px;overflow:hidden;
+    box-shadow:0 4px 12px rgba(0,0,0,.06);transition:.2s;border:1px solid #eef2f5;
+    display:flex;flex-direction:column;
+  }
+  .card:hover{transform:translateY(-3px);box-shadow:0 12px 24px rgba(0,119,182,.15);border-color:#00b4d8}
+  .card-img-wrap{position:relative;cursor:pointer;overflow:hidden;background:#eef2f5}
+  .card img{width:100%;height:160px;object-fit:cover;display:block;transition:.3s}
+  .card:hover img{transform:scale(1.03)}
+  .card-info{padding:12px;flex:1;display:flex;flex-direction:column;gap:6px}
+  .card-callsign{font-weight:900;color:#0077b6;font-size:1rem;letter-spacing:.3px}
+  .card-filename{
+    font-size:.7rem;color:#888;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .card-actions{display:flex;gap:6px;margin-top:auto}
+  .btn-download{
+    flex:1;padding:8px 12px;border:none;border-radius:10px;
+    background:linear-gradient(145deg,#0077b6,#006994);color:#fff;
+    font-family:inherit;font-weight:700;font-size:.78rem;cursor:pointer;transition:.2s;
+    display:inline-flex;align-items:center;justify-content:center;gap:5px;
+  }
+  .btn-download:hover{background:linear-gradient(145deg,#006994,#004f70)}
+  .btn-download:disabled{opacity:.6;cursor:wait}
+  /* ---------- Estados vacíos ---------- */
+  .empty{
+    grid-column:1 / -1;text-align:center;padding:60px 20px;color:#666;
+  }
+  .empty .icon{font-size:4rem;margin-bottom:14px;display:block}
+  .empty h2{font-size:1.4rem;font-weight:800;color:#0077b6;margin-bottom:8px}
+  .empty p{font-size:.95rem;max-width:420px;margin:0 auto;line-height:1.5}
+  .loader{
+    grid-column:1 / -1;text-align:center;padding:60px 20px;
+    color:#0077b6;font-weight:600;font-size:1rem;
+  }
+  .loader::after{
+    content:'';display:inline-block;width:20px;height:20px;
+    border:3px solid #eef2f5;border-top-color:#0077b6;border-radius:50%;
+    animation:spin .8s linear infinite;margin-left:10px;vertical-align:middle;
+  }
   @keyframes spin{to{transform:rotate(360deg)}}
-  .lightbox{position:fixed;inset:0;background:rgba(0,0,0,.92);display:none;align-items:center;justify-content:center;z-index:1000;padding:20px}
+  /* ---------- Lightbox ---------- */
+  .lightbox{
+    position:fixed;inset:0;background:rgba(0,0,0,.93);display:none;
+    align-items:center;justify-content:center;z-index:1000;padding:20px;
+  }
   .lightbox.active{display:flex}
-  .lightbox img{max-width:100%;max-height:100%;border-radius:8px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
-  .lightbox-close{position:absolute;top:20px;right:20px;background:rgba(255,255,255,.2);border:none;color:#fff;font-size:2rem;width:50px;height:50px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1}
-  .lightbox-close:hover{background:rgba(255,255,255,.35)}
-  @media (max-width:600px){header h1{font-size:1.8rem}.search-box input{font-size:.95rem}}
+  .lightbox-inner{
+    max-width:95vw;max-height:95vh;display:flex;flex-direction:column;align-items:center;gap:12px;
+  }
+  .lightbox img{
+    max-width:100%;max-height:78vh;border-radius:10px;
+    box-shadow:0 20px 60px rgba(0,0,0,.5);object-fit:contain;background:#111;
+  }
+  .lightbox-bar{
+    display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.1);
+    padding:10px 18px;border-radius:50px;backdrop-filter:blur(8px);
+    max-width:100%;flex-wrap:wrap;justify-content:center;
+  }
+  .lightbox-name{color:#fff;font-weight:600;font-size:.9rem;word-break:break-all;max-width:60vw}
+  .lightbox-bar .btn-download{flex:0 0 auto;padding:9px 18px;font-size:.85rem}
+  .lightbox-close{
+    position:absolute;top:18px;right:18px;background:rgba(255,255,255,.15);border:none;
+    color:#fff;font-size:2rem;width:48px;height:48px;border-radius:50%;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;line-height:1;transition:.2s;
+  }
+  .lightbox-close:hover{background:rgba(255,255,255,.3);transform:rotate(90deg)}
+  /* ---------- Agradecimientos + Firma ---------- */
+  .thanks-wrap{max-width:900px;margin:0 auto 50px;padding:0 20px;text-align:center}
+  .thanks-btn{
+    display:inline-flex;align-items:center;gap:10px;padding:14px 32px;
+    border:2px solid #0077b6;background:#fff;color:#0077b6;
+    border-radius:50px;font-family:inherit;font-weight:800;font-size:1rem;
+    cursor:pointer;transition:.25s;letter-spacing:.5px;
+  }
+  .thanks-btn:hover{background:#0077b6;color:#fff;transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,119,182,.25)}
+  .thanks-btn .heart{font-size:1.2rem}
+  .thanks-panel{
+    margin-top:24px;background:#fff;border-radius:24px;padding:32px 26px;
+    box-shadow:0 12px 40px rgba(0,119,182,.12);border:1px solid #e3f2f9;
+    animation:slideDown .4s ease-out;
+  }
+  @keyframes slideDown{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+  .thanks-panel h3{
+    color:#0077b6;font-size:1.35rem;font-weight:900;margin-bottom:10px;
+    font-family:'Comic Neue','Comic Sans MS',cursive;
+  }
+  .thanks-panel p{
+    color:#4a5568;font-size:1rem;line-height:1.6;max-width:600px;margin:0 auto 22px;
+  }
+  .signature{
+    font-family:'Comic Neue','Comic Sans MS','Comic Sans',cursive;
+    color:#0077b6;display:inline-block;text-align:center;line-height:1.1;
+    margin-top:8px;
+  }
+  .sig-73{
+    font-size:1.6rem;font-weight:700;display:block;margin-bottom:2px;
+    transform:rotate(-3deg);
+  }
+  .sig-name{
+    font-size:2.6rem;font-weight:700;display:block;
+    text-shadow:3px 3px 0 rgba(0,119,182,.15);
+    transform:rotate(-2deg);
+  }
+  .sig-heart{
+    font-size:1.6rem;display:block;margin-top:6px;
+    animation:heartbeat 1.6s ease-in-out infinite;
+  }
+  @keyframes heartbeat{
+    0%,100%{transform:scale(1)}
+    20%{transform:scale(1.2)}
+    40%{transform:scale(1)}
+    60%{transform:scale(1.15)}
+  }
+  /* ---------- Responsive ---------- */
+  @media (max-width:600px){
+    header h1{font-size:1.8rem}
+    .search-box{flex-wrap:wrap;padding:12px}
+    .search-box input{font-size:.95rem;min-width:100%}
+    .search-box button{flex:1}
+    .grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px}
+    .card img{height:120px}
+    .sig-name{font-size:2rem}
+  }
 </style>
 </head>
 <body>
 
 <header>
   <h1>🇨🇺 Cuba QSL Buscador</h1>
-  <p>Busca tarjetas QSL por indicativo o nombre</p>
+  <p>Busca y descarga tus tarjetas QSL por indicativo o nombre</p>
 </header>
 
 <div class="search-container">
@@ -54,18 +187,49 @@
   </div>
 </div>
 
-<div class="status" id="status">Cargando imágenes...</div>
-<div class="grid" id="grid"><div class="loader">Cargando</div></div>
+<div class="status" id="status">Cargando lista de archivos...</div>
+<div class="grid" id="grid"></div>
 
+<!-- ================= Agradecimientos + Firma ================= -->
+<div class="thanks-wrap">
+  <button class="thanks-btn" id="thanksBtn">
+    <span class="heart">💙</span> Agradecimientos
+  </button>
+
+  <div class="thanks-panel" id="thanksPanel" hidden>
+    <h3>Gracias, amigos y colegas</h3>
+    <p>
+      A todos los radioaficionados, amigos y colegas que con sus aportes,
+      consejos y apoyo incondicional han hecho posible este proyecto.
+      Sin ustedes, este buscador de tarjetas QSL no existiría. ¡Mil gracias!
+    </p>
+    <div class="signature">
+      <span class="sig-73">73,</span>
+      <span class="sig-name">Alfred CM7ADV</span>
+      <span class="sig-heart">💙</span>
+    </div>
+  </div>
+</div>
+
+<!-- ================= Lightbox ================= -->
 <div class="lightbox" id="lightbox">
-  <button class="lightbox-close" id="lightboxClose">×</button>
-  <img id="lightboxImg" src="" alt="QSL">
+  <button class="lightbox-close" id="lightboxClose" title="Cerrar">×</button>
+  <div class="lightbox-inner">
+    <img id="lightboxImg" src="" alt="QSL">
+    <div class="lightbox-bar">
+      <span class="lightbox-name" id="lightboxName"></span>
+      <button class="btn-download" id="lightboxDownload">⬇ Descargar</button>
+    </div>
+  </div>
 </div>
 
 <script>
 (() => {
   'use strict';
 
+  /* ============================================================
+     CONFIGURACIÓN
+     ============================================================ */
   const REPO       = 'cl7adv/cl7adv-qsl';
   const BRANCH     = 'main';
   const DIR        = 'imagenes';
@@ -73,51 +237,66 @@
   const CDN_BASE   = `https://cdn.jsdelivr.net/gh/${REPO}@${BRANCH}/${DIR}/`;
   const RAW_BASE   = `https://raw.githubusercontent.com/${REPO}/${BRANCH}/${DIR}/`;
   const IMG_EXT    = /\.(jpe?g|png|gif|webp|bmp|avif)$/i;
-  const CACHE_KEY  = 'cuba-qsl-files-v3';
-  const CACHE_TTL  = 6 * 60 * 60 * 1000; // 6 horas
+  const CACHE_KEY  = 'cuba-qsl-files-v4';
+  const CACHE_TTL  = 6 * 60 * 60 * 1000; // 6 h
 
   const PLACEHOLDER = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(
     '<svg xmlns="http://www.w3.org/2000/svg" width="200" height="150">' +
     '<rect width="200" height="150" fill="#eef2f5"/>' +
-    '<text x="100" y="80" font-family="sans-serif" font-size="16" font-weight="700" fill="#9aa7b4" text-anchor="middle">QSL</text>' +
-    '<text x="100" y="100" font-family="sans-serif" font-size="11" fill="#b0bcc9" text-anchor="middle">sin imagen</text></svg>'
+    '<text x="100" y="82" font-family="sans-serif" font-size="16" font-weight="700" fill="#9aa7b4" text-anchor="middle">QSL</text>' +
+    '<text x="100" y="102" font-family="sans-serif" font-size="11" fill="#b0bcc9" text-anchor="middle">sin imagen</text></svg>'
   );
 
+  /* ============================================================
+     DOM
+     ============================================================ */
   const $ = id => document.getElementById(id);
-  const searchInput  = $('search');
-  const clearBtn     = $('clearBtn');
-  const statusEl     = $('status');
-  const gridEl       = $('grid');
-  const lightbox     = $('lightbox');
-  const lightboxImg  = $('lightboxImg');
-  const lightboxClose= $('lightboxClose');
+  const searchInput    = $('search');
+  const clearBtn       = $('clearBtn');
+  const statusEl       = $('status');
+  const gridEl         = $('grid');
+  const lightbox       = $('lightbox');
+  const lightboxImg    = $('lightboxImg');
+  const lightboxName   = $('lightboxName');
+  const lightboxClose  = $('lightboxClose');
+  const lightboxDownload = $('lightboxDownload');
+  const thanksBtn      = $('thanksBtn');
+  const thanksPanel    = $('thanksPanel');
 
-  let allCards = [];
+  /* ============================================================
+     ESTADO
+     ============================================================ */
+  let allCards = [];       // lista completa de archivos (solo metadatos, sin imágenes)
+  let currentCards = [];   // tarjetas visibles actualmente
+  let lightboxCard = null;
 
-  /* ---------- Extractor de indicativos ---------- */
+  /* ============================================================
+     UTILIDADES
+     ============================================================ */
   function extractCallsigns(filename) {
     const base = String(filename).replace(/\.[^.]+$/, '').toUpperCase();
     const tokens = base.split(/[^A-Z0-9]+/).filter(Boolean);
     const found = new Set();
-
     for (const tk of tokens) {
-      // CM7ADV, CO5ABC, W1AW, etc.
       if (/^[A-Z]{1,2}\d[A-Z]{1,4}$/.test(tk)) { found.add(tk); continue; }
-      // 4N1UBG, 2E0ABC, etc.
       if (/^\d[A-Z]{1,2}\d[A-Z]{1,4}$/.test(tk)) { found.add(tk); }
     }
-
     if (found.size === 0) {
-      const matches = base.match(/[A-Z]{1,2}\d[A-Z]{1,4}/g);
-      if (matches) matches.forEach(m => found.add(m));
+      const m = base.match(/[A-Z]{1,2}\d[A-Z]{1,4}/g);
+      if (m) m.forEach(x => found.add(x));
     }
     return [...found];
   }
 
-  /* ---------- Construir tarjeta ---------- */
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+    }[c]));
+  }
+
   function buildCard(file) {
     const callsigns = extractCallsigns(file.name);
-    const encoded   = encodeURIComponent(file.name);
+    const encoded = encodeURIComponent(file.name);
     return {
       name: file.name,
       url: CDN_BASE + encoded,
@@ -127,15 +306,10 @@
     };
   }
 
-  /* ---------- Escapar HTML ---------- */
-  function escapeHtml(s) {
-    return String(s).replace(/[&<>"']/g, c => ({
-      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
-    }[c]));
-  }
-
-  /* ---------- Cargar desde GitHub ---------- */
-  async function loadFromGitHub() {
+  /* ============================================================
+     CARGAR LISTA (solo metadatos, sin imágenes)
+     ============================================================ */
+  async function loadFileList() {
     // 1) Caché
     try {
       const cached = localStorage.getItem(CACHE_KEY);
@@ -143,8 +317,7 @@
         const { t, data } = JSON.parse(cached);
         if (Date.now() - t < CACHE_TTL && Array.isArray(data) && data.length) {
           allCards = data;
-          statusEl.textContent = `${allCards.length} tarjetas QSL cargadas (caché)`;
-          render(allCards);
+          showWelcome();
           return;
         }
       }
@@ -153,101 +326,237 @@
     // 2) API de GitHub
     try {
       const res = await fetch(API_URL, { headers: { 'Accept': 'application/vnd.github.v3+json' } });
-
       if (!res.ok) {
         let extra = '';
         if (res.status === 403) extra = ' (límite de peticiones de GitHub, espera unos minutos)';
         if (res.status === 404) extra = ' (repositorio o carpeta no encontrada)';
         throw new Error(`GitHub API ${res.status}${extra}`);
       }
-
       const files = await res.json();
       if (!Array.isArray(files)) throw new Error('Respuesta inesperada de GitHub');
 
-      const imageFiles = files.filter(f => f.type === 'file' && IMG_EXT.test(f.name));
-      if (imageFiles.length === 0) throw new Error('La carpeta imagenes/ está vacía');
+      const images = files.filter(f => f.type === 'file' && IMG_EXT.test(f.name));
+      if (images.length === 0) throw new Error('La carpeta imagenes/ está vacía');
 
-      allCards = imageFiles.map(buildCard).sort((a, b) => {
+      allCards = images.map(buildCard).sort((a, b) => {
         const ca = a.callsigns[0] || '~';
         const cb = b.callsigns[0] || '~';
         return ca.localeCompare(cb) || a.name.localeCompare(b.name);
       });
 
       try { localStorage.setItem(CACHE_KEY, JSON.stringify({ t: Date.now(), data: allCards })); } catch (e) {}
+      showWelcome();
 
-      statusEl.textContent = `${allCards.length} tarjetas QSL cargadas`;
-      render(allCards);
     } catch (err) {
       console.error('[CubaQSL]', err);
       statusEl.className = 'status error';
       statusEl.innerHTML = `❌ ${escapeHtml(err.message)} · <a href="#" id="retryLink">Reintentar</a>`;
-      gridEl.innerHTML = '';
+      gridEl.innerHTML = `
+        <div class="empty">
+          <span class="icon">⚠️</span>
+          <h2>No se pudo cargar la lista</h2>
+          <p>${escapeHtml(err.message)}</p>
+        </div>`;
       const rl = document.getElementById('retryLink');
-      if (rl) rl.addEventListener('click', ev => { ev.preventDefault(); statusEl.className = 'status'; statusEl.textContent = 'Cargando...'; loadFromGitHub(); });
+      if (rl) rl.addEventListener('click', ev => {
+        ev.preventDefault();
+        statusEl.className = 'status';
+        statusEl.textContent = 'Cargando lista de archivos...';
+        gridEl.innerHTML = '<div class="loader">Cargando</div>';
+        loadFileList();
+      });
     }
   }
 
-  /* ---------- Render ---------- */
-  function render(cards) {
+  /* ============================================================
+     BIENVENIDA (sin cargar imágenes)
+     ============================================================ */
+  function showWelcome() {
+    statusEl.className = 'status';
+    statusEl.innerHTML =
+      `📚 <span class="count">${allCards.length}</span> tarjetas QSL disponibles · Escribe un indicativo para buscar`;
+    gridEl.innerHTML = `
+      <div class="empty">
+        <span class="icon">📻</span>
+        <h2>Escribe tu indicativo</h2>
+        <p>Al escribir tu señal o nombre aparecerán <strong>solo las imágenes que coincidan</strong>, listas para ver y descargar.</p>
+      </div>`;
+    currentCards = [];
+  }
+
+  /* ============================================================
+     RENDER DE TARJETAS
+     ============================================================ */
+  function renderCards(cards, queryLabel) {
+    currentCards = cards;
+
     if (cards.length === 0) {
-      gridEl.innerHTML = '<div class="empty">🔍 No se encontraron QSLs</div>';
+      statusEl.className = 'status error';
+      statusEl.innerHTML = `🔍 Sin resultados para "<strong>${escapeHtml(queryLabel)}</strong>"`;
+      gridEl.innerHTML = `
+        <div class="empty">
+          <span class="icon">🔍</span>
+          <h2>Sin resultados</h2>
+          <p>No encontramos QSLs para <strong>${escapeHtml(queryLabel)}</strong>.<br>Revisa la ortografía del indicativo.</p>
+        </div>`;
       return;
     }
+
+    statusEl.className = 'status';
+    statusEl.innerHTML =
+      cards.length === 1
+        ? `🎯 <span class="count">1</span> QSL encontrada para "<strong>${escapeHtml(queryLabel)}</strong>"`
+        : `🎯 <span class="count">${cards.length}</span> QSLs encontradas para "<strong>${escapeHtml(queryLabel)}</strong>"`;
+
     gridEl.innerHTML = cards.map((c, i) => `
-      <div class="card" data-index="${i}">
-        <img src="${escapeHtml(c.url)}" alt="${escapeHtml(c.name)}" loading="lazy"
-             onerror="if(!this.dataset.fb1){this.dataset.fb1=1;this.src='${escapeHtml(c.urlFallback)}'}else{this.onerror=null;this.src='${PLACEHOLDER}'}">
+      <div class="card">
+        <div class="card-img-wrap" data-open="${i}">
+          <img src="${escapeHtml(c.url)}" alt="${escapeHtml(c.name)}" loading="lazy"
+               onerror="if(!this.dataset.fb){this.dataset.fb=1;this.src='${escapeHtml(c.urlFallback)}'}else{this.onerror=null;this.src='${PLACEHOLDER}'}">
+        </div>
         <div class="card-info">
           <div class="card-callsign">${escapeHtml(c.callsigns.join(' · ') || '—')}</div>
           <div class="card-filename" title="${escapeHtml(c.name)}">${escapeHtml(c.name)}</div>
+          <div class="card-actions">
+            <button class="btn-download" data-dl="${i}">⬇ Descargar</button>
+          </div>
         </div>
       </div>
     `).join('');
 
-    gridEl.querySelectorAll('.card').forEach(el => {
+    // Abrir lightbox al pulsar la imagen
+    gridEl.querySelectorAll('[data-open]').forEach(el => {
       el.addEventListener('click', () => {
-        const idx = parseInt(el.dataset.index, 10);
+        const idx = parseInt(el.dataset.open, 10);
         if (cards[idx]) openLightbox(cards[idx]);
+      });
+    });
+
+    // Botón de descarga individual
+    gridEl.querySelectorAll('[data-dl]').forEach(btn => {
+      btn.addEventListener('click', async ev => {
+        ev.stopPropagation();
+        const idx = parseInt(btn.dataset.dl, 10);
+        if (!cards[idx]) return;
+        await downloadImage(cards[idx], btn);
       });
     });
   }
 
-  /* ---------- Lightbox ---------- */
-  function openLightbox(c) {
-    lightboxImg.src = c.url;
-    lightboxImg.onerror = () => { lightboxImg.onerror = null; lightboxImg.src = c.urlFallback; };
-    lightbox.classList.add('active');
+  /* ============================================================
+     DESCARGAR IMAGEN
+     ============================================================ */
+  async function downloadImage(card, buttonEl) {
+    const originalHTML = buttonEl ? buttonEl.innerHTML : '';
+    if (buttonEl) { buttonEl.disabled = true; buttonEl.innerHTML = '⏳...'; }
+
+    try {
+      const res = await fetch(card.url, { cache: 'no-cache' });
+      if (!res.ok) throw new Error('Error ' + res.status);
+      const blob = await res.blob();
+
+      // Aseguramos el nombre de archivo
+      const fname = card.name || ('QSL_' + Date.now() + '.jpg');
+
+      const blobUrl = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = blobUrl;
+      a.download = fname;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(blobUrl), 3000);
+    } catch (err) {
+      console.warn('[CubaQSL] Error descargando, abriendo en pestaña:', err);
+      window.open(card.url, '_blank', 'noopener');
+    } finally {
+      if (buttonEl) { buttonEl.disabled = false; buttonEl.innerHTML = originalHTML; }
+    }
   }
+
+  /* ============================================================
+     LIGHTBOX
+     ============================================================ */
+  function openLightbox(card) {
+    lightboxCard = card;
+    lightboxImg.src = card.url;
+    lightboxImg.onerror = () => {
+      lightboxImg.onerror = null;
+      lightboxImg.src = card.urlFallback;
+    };
+    lightboxName.textContent = card.name;
+    lightbox.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+
   function closeLightbox() {
     lightbox.classList.remove('active');
     lightboxImg.src = '';
+    lightboxCard = null;
+    document.body.style.overflow = '';
   }
+
   lightbox.addEventListener('click', e => { if (e.target === lightbox) closeLightbox(); });
   lightboxClose.addEventListener('click', closeLightbox);
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
 
-  /* ---------- Búsqueda en vivo ---------- */
+  lightboxDownload.addEventListener('click', async () => {
+    if (!lightboxCard) return;
+    await downloadImage(lightboxCard, lightboxDownload);
+  });
+
+  /* ============================================================
+     BÚSQUEDA EN VIVO
+     ============================================================ */
   let debounce = null;
   searchInput.addEventListener('input', e => {
     clearTimeout(debounce);
     debounce = setTimeout(() => {
-      const q = e.target.value.toUpperCase().trim();
-      if (!q) { statusEl.textContent = `${allCards.length} tarjetas QSL cargadas`; render(allCards); return; }
+      const raw = e.target.value.trim();
+      const q = raw.toUpperCase();
+      if (!q) { showWelcome(); return; }
+
       const filtered = allCards.filter(c => c.searchText.includes(q));
-      statusEl.textContent = `${filtered.length} resultado(s) para "${e.target.value.trim()}"`;
-      render(filtered);
-    }, 150);
+      renderCards(filtered, raw);
+    }, 180);
+  });
+
+  searchInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const raw = e.target.value.trim();
+      const q = raw.toUpperCase();
+      if (!q) return;
+      const filtered = allCards.filter(c => c.searchText.includes(q));
+      renderCards(filtered, raw);
+    }
   });
 
   clearBtn.addEventListener('click', () => {
     searchInput.value = '';
-    statusEl.textContent = `${allCards.length} tarjetas QSL cargadas`;
-    render(allCards);
+    showWelcome();
     searchInput.focus();
   });
 
-  /* ---------- Arrancar ---------- */
-  loadFromGitHub();
+  /* ============================================================
+     AGRADECIMIENTOS
+     ============================================================ */
+  thanksBtn.addEventListener('click', () => {
+    if (thanksPanel.hidden) {
+      thanksPanel.hidden = false;
+      thanksBtn.innerHTML = '<span class="heart">💙</span> Ocultar agradecimientos';
+    } else {
+      thanksPanel.hidden = true;
+      thanksBtn.innerHTML = '<span class="heart">💙</span> Agradecimientos';
+    }
+  });
+
+  /* ============================================================
+     ARRANQUE
+     ============================================================ */
+  gridEl.innerHTML = '<div class="loader">Cargando</div>';
+  loadFileList();
+
 })();
 </script>
 </body>
