@@ -1,1257 +1,1236 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title data-i18n="app.title">QSL Caribe · Buscador de QSLs</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title data-i18n="app.title">QSL Caribe · Buscador de QSLs</title>
 
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet" />
-    <!-- Font Awesome 6 -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
-    <!-- JSZip -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
-    <style>
-        /* ============================================================
-           RESET Y ESTILOS GLOBALES (Mar Caribe)
-           ============================================================ */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+<style>
+/* ============================================================
+   RESET Y GLOBALES
+   ============================================================ */
+*{margin:0;padding:0;box-sizing:border-box}
+[hidden]{display:none !important}
 
-        body {
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 30px;
-            font-family: 'Inter', sans-serif;
-            background: #f4f7fb;
-            background: linear-gradient(160deg, #f0f4f8 0%, #ffffff 100%);
-        }
+body{
+    min-height:100vh;display:flex;justify-content:center;align-items:center;padding:30px;
+    font-family:'Inter',sans-serif;background:linear-gradient(160deg,#f0f4f8 0%,#ffffff 100%);
+}
 
-        .card {
-            position: relative;
-            overflow: hidden;
-            max-width: 1300px;
-            width: 100%;
-            background: #ffffff;
-            border-radius: 32px;
-            padding: 2.5rem 3rem 2rem;
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.06);
-            border: 1px solid rgba(0, 0, 0, 0.03);
-            animation: fadeIn 0.5s ease-out;
-        }
+:root{
+    --caribe:#0077b6;
+    --caribe-light:#00b4d8;
+    --caribe-deep:#006994;
+    --ink:#1a1a2e;
+    --muted:#7a7f8a;
+    --line:#e1e5ea;
+}
 
-        @keyframes fadeIn {
-            0% { opacity: 0; transform: translateY(15px); }
-            100% { opacity: 1; transform: translateY(0); }
-        }
+.card{
+    position:relative;overflow:hidden;max-width:1300px;width:100%;
+    background:#fff;border-radius:32px;padding:2.5rem 3rem 2rem;
+    box-shadow:0 12px 40px rgba(0,0,0,.06);border:1px solid rgba(0,0,0,.03);
+    animation:fadeIn .5s ease-out;
+}
+@keyframes fadeIn{0%{opacity:0;transform:translateY(15px)}100%{opacity:1;transform:translateY(0)}}
 
-        /* ============================================================
-           MARCA DE AGUA "ZMR-CUBA"
-           ============================================================ */
-        .watermark-box {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) rotate(-25deg);
-            font-size: 12rem;
-            font-weight: 900;
-            color: rgba(0, 0, 0, 0.03);
-            pointer-events: none;
-            z-index: 0;
-            font-family: 'Inter', sans-serif;
-            text-transform: uppercase;
-            white-space: nowrap;
-            letter-spacing: 15px;
-            user-select: none;
-            line-height: 1;
-        }
+/* MARCA DE AGUA */
+.watermark-box{
+    position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-25deg);
+    font-size:12rem;font-weight:900;color:rgba(0,0,0,.03);pointer-events:none;z-index:0;
+    text-transform:uppercase;white-space:nowrap;letter-spacing:15px;user-select:none;line-height:1;
+}
+.header-pano-container,.search-section,.result-container,.footer-modern{position:relative;z-index:1}
 
-        .header-pano-container, .search-section, .result-container {
-            position: relative;
-            z-index: 1;
-        }
+/* ============================================================
+   CABECERA
+   ============================================================ */
+.header-pano-container{
+    width:100%;height:220px;border-radius:24px;overflow:hidden;margin-bottom:2rem;
+    display:flex;align-items:center;justify-content:center;position:relative;
+    border:1px solid rgba(255,255,255,.2);box-shadow:0 8px 24px rgba(0,0,0,.04);
+}
+.header-pano-img{
+    position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;
+    filter:brightness(.65);pointer-events:none;
+}
+.header-pano-overlay{
+    position:relative;z-index:1;text-align:center;padding:10px;
+    display:flex;flex-direction:column;align-items:center;gap:.2rem;
+}
+.header-pano-overlay h1{
+    font-weight:900;font-size:4rem;color:#fff;text-shadow:0 6px 20px rgba(0,0,0,.3);
+    letter-spacing:-1px;line-height:1.1;
+}
+.header-pano-overlay .subtitle{
+    font-weight:700;color:#fff;background:rgba(0,119,182,.85);
+    padding:.3rem 1.8rem;border-radius:60px;font-size:1rem;letter-spacing:2px;
+    border:1px solid rgba(255,255,255,.2);
+}
+.header-pano-overlay .sun-icon{
+    font-size:2.2rem;color:#fff;text-shadow:0 4px 20px rgba(0,0,0,.6);
+    animation:pulseGlow 4s ease-in-out infinite;
+}
+@keyframes pulseGlow{0%,100%{transform:scale(1) rotate(0deg)}50%{transform:scale(1.1) rotate(8deg)}}
 
-        /* ============================================================
-           COLORES MAR CARIBE (Cian / Azul Celeste)
-           ============================================================ */
-        :root {
-            --caribe: #0077b6;
-            --caribe-light: #00b4d8;
-            --caribe-deep: #006994;
-        }
+/* ============================================================
+   BUSCADOR
+   ============================================================ */
+.search-section{display:flex;flex-direction:column;align-items:center;gap:.8rem;margin:1rem 0 1.8rem}
+.search-box{display:flex;flex-wrap:wrap;justify-content:center;gap:.8rem;width:100%}
+.search-box input{
+    flex:1 1 300px;padding:.9rem 1.8rem;border:2px solid var(--line);border-radius:60px;
+    background:#f8fafc;font-family:'Inter',sans-serif;font-size:1.1rem;font-weight:700;
+    color:var(--ink);transition:.3s;text-transform:uppercase;letter-spacing:1px;outline:none;
+}
+.search-box input:focus{background:#fff;border-color:var(--caribe);box-shadow:0 0 0 4px rgba(0,119,182,.15)}
+.search-box button{
+    padding:.9rem 2.4rem;border:none;border-radius:60px;background:var(--caribe);color:#fff;
+    font-family:'Inter',sans-serif;font-weight:700;font-size:1.1rem;cursor:pointer;transition:.25s;
+    box-shadow:0 4px 12px rgba(0,119,182,.25);display:inline-flex;align-items:center;gap:10px;
+    text-transform:uppercase;letter-spacing:1px;
+}
+.search-box button:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,119,182,.35);background:var(--caribe-deep)}
+.reset-btn{
+    background:#f8fafc;color:#6c757d;border:2px solid var(--line);padding:.9rem 1.5rem;
+    border-radius:60px;font-weight:700;font-size:1rem;cursor:pointer;transition:.2s;
+    display:inline-flex;align-items:center;gap:8px;
+}
+.reset-btn:hover{background:#e9ecef;color:#333;border-color:#ccc}
 
-        /* CABECERA */
-        .header-pano-container {
-            width: 100%;
-            height: 220px;
-            border-radius: 24px;
-            overflow: hidden;
-            margin-bottom: 2rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 1px solid rgba(255,255,255,0.2);
-            box-shadow: 0 8px 24px rgba(0,0,0,0.04);
-        }
-        .header-pano-img {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            filter: brightness(0.65);
-            pointer-events: none;
-        }
-        .header-pano-overlay {
-            position: relative;
-            z-index: 1;
-            text-align: center;
-            padding: 10px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.2rem;
-        }
-        .header-pano-overlay h1 {
-            font-family: 'Inter', sans-serif;
-            font-weight: 900;
-            font-size: 4rem;
-            color: #ffffff;
-            text-shadow: 0 6px 20px rgba(0,0,0,0.3);
-            letter-spacing: -1px;
-            line-height: 1.1;
-        }
-        .header-pano-overlay .subtitle {
-            font-weight: 700;
-            color: #ffffff;
-            background: rgba(0, 119, 182, 0.85);
-            padding: 0.3rem 1.8rem;
-            border-radius: 60px;
-            font-size: 1rem;
-            letter-spacing: 2px;
-            border: 1px solid rgba(255,255,255,0.2);
-        }
-        .header-pano-overlay .sun-icon {
-            font-size: 2.2rem;
-            color: #ffffff;
-            text-shadow: 0 4px 20px rgba(0,0,0,0.6);
-            animation: pulseGlow 4s ease-in-out infinite;
-        }
-        @keyframes pulseGlow {
-            0%, 100% { transform: scale(1) rotate(0deg); }
-            50% { transform: scale(1.1) rotate(8deg); }
-        }
+.suggestions{
+    list-style:none;background:#fff;border:1px solid var(--line);border-radius:20px;
+    padding:.3rem 0;max-height:220px;overflow-y:auto;width:100%;max-width:420px;
+    display:none;box-shadow:0 8px 24px rgba(0,0,0,.05);
+}
+.suggestions.show{display:block}
+.suggestions li{
+    padding:.6rem 1.5rem;cursor:pointer;font-weight:600;color:#333;transition:.15s;
+    display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid #f0f2f5;
+}
+.suggestions li:last-child{border-bottom:none}
+.suggestions li:hover{background:#f8fafc;color:var(--caribe)}
+.suggestions li .sug-meta{font-weight:500;color:var(--muted);font-size:.8rem}
 
-        /* ============================================================
-           BUSCADOR Y FILTROS
-           ============================================================ */
-        .search-section {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.8rem;
-            margin: 1rem 0 1.8rem;
-        }
-        .search-box {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 0.8rem;
-            width: 100%;
-        }
-        .search-box input {
-            flex: 1 1 300px;
-            padding: 0.9rem 1.8rem;
-            border: 2px solid #e1e5ea;
-            border-radius: 60px;
-            background: #f8fafc;
-            font-family: 'Inter', sans-serif;
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: #1a1a2e;
-            transition: 0.3s;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            outline: none;
-        }
-        .search-box input:focus {
-            background: #ffffff;
-            border-color: var(--caribe);
-            box-shadow: 0 0 0 4px rgba(0, 119, 182, 0.15);
-        }
-        .search-box button {
-            padding: 0.9rem 2.4rem;
-            border: none;
-            border-radius: 60px;
-            background: var(--caribe);
-            color: #fff;
-            font-family: 'Inter', sans-serif;
-            font-weight: 700;
-            font-size: 1.1rem;
-            cursor: pointer;
-            transition: 0.25s;
-            box-shadow: 0 4px 12px rgba(0, 119, 182, 0.25);
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        .search-box button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0, 119, 182, 0.35);
-            background: var(--caribe-deep);
-        }
-        .reset-btn {
-            background: #f8fafc;
-            color: #6c757d;
-            border: 2px solid #e1e5ea;
-            padding: 0.9rem 1.5rem;
-            border-radius: 60px;
-            font-weight: 700;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .reset-btn:hover {
-            background: #e9ecef;
-            color: #333;
-            border-color: #ccc;
-        }
+/* ============================================================
+   HELPER: FLAG COUNTER + IDIOMA
+   ============================================================ */
+.helper{
+    font-size:.85rem;color:var(--muted);background:#f8fafc;padding:.5rem 1.8rem;border-radius:40px;
+    border:1px solid var(--line);display:flex;align-items:center;gap:20px;flex-wrap:wrap;
+    justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.02);
+}
+.helper-text{display:flex;align-items:center;gap:8px}
+.flag-counter-wrapper{
+    display:flex;align-items:center;background:#fff;padding:.2rem .2rem .2rem 1rem;
+    border-radius:30px;border:1px solid #eef2f5;box-shadow:0 2px 6px rgba(0,0,0,.03);transition:.2s;
+}
+.flag-counter-wrapper:hover{border-color:var(--caribe-light);box-shadow:0 4px 12px rgba(0,119,182,.08)}
+.flag-counter-wrapper span{font-weight:700;color:var(--caribe);margin-right:12px;font-size:.9rem;white-space:nowrap}
+.flag-counter-wrapper img{border-radius:30px;height:28px;display:block}
+.language-selector{
+    display:flex;align-items:center;gap:6px;background:#fff;padding:.2rem .8rem .2rem 1rem;
+    border-radius:30px;border:1px solid #eef2f5;box-shadow:0 2px 6px rgba(0,0,0,.03);
+}
+.language-selector select{
+    border:none;background:transparent;font-family:'Inter',sans-serif;font-weight:600;
+    font-size:.9rem;color:var(--ink);outline:none;cursor:pointer;padding:4px 0;
+}
 
-        .suggestions {
-            list-style: none;
-            background: #ffffff;
-            border: 1px solid #e1e5ea;
-            border-radius: 20px;
-            padding: 0.3rem 0;
-            max-height: 200px;
-            overflow-y: auto;
-            width: 100%;
-            max-width: 400px;
-            display: none;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
-        }
-        .suggestions li {
-            padding: 0.6rem 1.5rem;
-            cursor: pointer;
-            font-weight: 600;
-            color: #333;
-            transition: 0.15s;
-            display: flex;
-            justify-content: space-between;
-            border-bottom: 1px solid #f0f2f5;
-        }
-        .suggestions li:hover { background: #f8fafc; color: var(--caribe); }
+/* ============================================================
+   RESULTADOS
+   ============================================================ */
+.result-container{
+    min-height:200px;background:#f8fafc;border-radius:24px;padding:1.5rem 1.5rem;
+    margin:1rem 0 1.8rem;border:1px solid var(--line);
+}
 
-        /* ============================================================
-           NUEVO: ÁREA DE AYUDA CON FLAG COUNTER Y SELECTOR IDIOMA
-           ============================================================ */
-        .helper {
-            font-size: 0.85rem;
-            color: #7a7f8a;
-            background: #f8fafc;
-            padding: 0.5rem 1.8rem;
-            border-radius: 40px;
-            border: 1px solid #e1e5ea;
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            flex-wrap: wrap;
-            justify-content: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
-        }
-        .helper-text {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        /* Flag Counter */
-        .flag-counter-wrapper {
-            display: flex;
-            align-items: center;
-            background: #ffffff;
-            padding: 0.2rem 0.2rem 0.2rem 1rem;
-            border-radius: 30px;
-            border: 1px solid #eef2f5;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.03);
-            transition: 0.2s;
-        }
-        .flag-counter-wrapper:hover {
-            border-color: var(--caribe-light);
-            box-shadow: 0 4px 12px rgba(0, 119, 182, 0.08);
-        }
-        .flag-counter-wrapper span {
-            font-weight: 700;
-            color: var(--caribe);
-            margin-right: 12px;
-            font-size: 0.9rem;
-            white-space: nowrap;
-        }
-        .flag-counter-wrapper img {
-            border-radius: 30px;
-            height: 28px;
-            display: block;
-        }
+/* Barra de estado / carpeta */
+.status-bar{
+    display:flex;flex-wrap:wrap;align-items:center;gap:.6rem;
+    background:#fff;border:1px dashed #d7dee7;border-radius:16px;
+    padding:.55rem .9rem;margin-bottom:1rem;font-size:.85rem;color:#5b6472;
+}
+.status-dot{width:9px;height:9px;border-radius:50%;background:#cbd5e1;flex:none}
+.status-dot.ok{background:#16a34a;box-shadow:0 0 0 4px rgba(22,163,74,.12)}
+.status-dot.warn{background:#f59e0b;box-shadow:0 0 0 4px rgba(245,158,11,.12)}
+.status-spacer{flex:1}
+.btn-soft{
+    display:inline-flex;align-items:center;gap:7px;background:#f8fafc;color:#48505c;
+    border:1px solid var(--line);border-radius:30px;padding:.4rem 1rem;font-family:'Inter',sans-serif;
+    font-weight:700;font-size:.8rem;cursor:pointer;transition:.2s;white-space:nowrap;
+}
+.btn-soft:hover{background:#eef4f9;border-color:var(--caribe-light);color:var(--caribe)}
 
-        /* Selector de idioma */
-        .language-selector {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            background: #ffffff;
-            padding: 0.2rem 0.8rem 0.2rem 1rem;
-            border-radius: 30px;
-            border: 1px solid #eef2f5;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.03);
-        }
-        .language-selector select {
-            border: none;
-            background: transparent;
-            font-family: 'Inter', sans-serif;
-            font-weight: 600;
-            font-size: 0.9rem;
-            color: #1a1a2e;
-            outline: none;
-            cursor: pointer;
-            padding: 4px 0;
-        }
-        .language-selector select option {
-            font-weight: 400;
-        }
+/* Filtros */
+.filters-bar{
+    display:flex;width:100%;justify-content:space-between;align-items:center;flex-wrap:wrap;
+    gap:.8rem;margin-bottom:1.2rem;padding:.6rem 1.2rem;background:#fff;
+    border-radius:20px;border:1px solid var(--line);
+}
+.filter-group{display:flex;gap:.5rem;flex-wrap:wrap}
+.filter-group select{
+    padding:.4rem 1rem;border:1px solid var(--line);border-radius:30px;background:#fff;
+    font-family:'Inter',sans-serif;font-weight:600;color:var(--ink);cursor:pointer;outline:none;font-size:.85rem;
+}
+.filter-group select:focus{border-color:var(--caribe)}
+.view-toggle{display:flex;gap:.3rem;background:#f1f4f8;padding:.25rem;border-radius:30px}
+.view-toggle button{
+    border:none;background:transparent;color:#8b93a1;width:38px;height:34px;border-radius:26px;
+    cursor:pointer;transition:.2s;font-size:.9rem;
+}
+.view-toggle button.active{background:#fff;color:var(--caribe);box-shadow:0 2px 8px rgba(0,0,0,.05)}
 
-        /* ============================================================
-           FILTROS Y VISTAS
-           ============================================================ */
-        .filters-bar {
-            display: none;
-            width: 100%;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 0.8rem;
-            margin-bottom: 1.2rem;
-            padding: 0.6rem 1.2rem;
-            background: #f8fafc;
-            border-radius: 20px;
-            border: 1px solid #e1e5ea;
-        }
-        .filter-group select {
-            padding: 0.4rem 1rem;
-            border: 1px solid #e1e5ea;
-            border-radius: 30px;
-            background: #fff;
-            font-family: 'Inter', sans-serif;
-            font-weight: 600;
-            color: #1a1a2e;
-            cursor: pointer;
-            outline: none;
-        }
-        .filter-group select:focus { border-color: var(--caribe); }
-        .view-toggle button.active {
-            background: #ffffff;
-            color: var(--caribe);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-        }
+/* Acciones */
+.grid-actions{display:flex;justify-content:flex-end;margin-bottom:1rem}
+.download-btn{
+    background:linear-gradient(145deg,var(--caribe),var(--caribe-deep));color:#fff;
+    padding:.6rem 1.8rem;border-radius:60px;font-weight:700;font-size:.9rem;border:none;cursor:pointer;
+    transition:.2s;text-transform:uppercase;text-decoration:none;display:inline-flex;align-items:center;gap:8px;
+}
+.download-btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,119,182,.35)}
+.download-btn:disabled{opacity:.6;cursor:progress;transform:none;box-shadow:none}
 
-        /* RESULTADOS (Grid, Tabla, Detalle, ZIP, etc.) */
-        .result-container {
-            min-height: 200px;
-            background: #f8fafc;
-            border-radius: 24px;
-            padding: 1.8rem 1.5rem;
-            margin: 1rem 0 1.8rem;
-            border: 1px solid #e1e5ea;
-        }
-        .result-container .message {
-            font-size: 1.2rem;
-            color: #6c757d;
-            text-align: center;
-            padding: 1rem;
-        }
-        .result-container .message i {
-            font-size: 2.8rem;
-            display: block;
-            margin-bottom: 0.5rem;
-            color: var(--caribe);
-        }
-        .result-container .message .warm { color: var(--caribe); font-weight: 700; }
+/* Mensajes */
+.message{font-size:1.1rem;color:#6c757d;text-align:center;padding:1.6rem 1rem}
+.message i{font-size:2.8rem;display:block;margin-bottom:.6rem;color:var(--caribe)}
+.message .warm{color:var(--caribe);font-weight:700}
+.message small{display:block;margin-top:.5rem;font-size:.85rem;color:var(--muted);font-weight:500}
 
-        .grid-actions .download-btn, .detail-view .actions .download-btn {
-            background: linear-gradient(145deg, var(--caribe), var(--caribe-deep));
-            color: #fff;
-            padding: 0.6rem 1.8rem;
-            border-radius: 60px;
-            font-weight: 700;
-            font-size: 0.95rem;
-            border: none;
-            cursor: pointer;
-            transition: 0.2s;
-            text-transform: uppercase;
-            text-decoration: none;
-        }
-        .grid-actions .download-btn:hover, .detail-view .actions .download-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0, 119, 182, 0.35);
-        }
+/* Vistas */
+.view{display:none}
+.view.active{display:block}
+.grid-view.active{display:grid}
+.detail-view.active{display:flex}
 
-        .grid-view { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 1.5rem; width: 100%; display: none; }
-        .grid-item { background: #ffffff; border-radius: 20px; padding: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.04); text-align: center; border: 1px solid #eef2f5; cursor: pointer; }
-        .grid-item:hover { transform: translateY(-4px); border-color: var(--caribe); }
-        .grid-item img { width: 100%; height: 140px; object-fit: cover; border-radius: 12px; }
-        .table-view { display: none; width: 100%; border-collapse: collapse; background: #ffffff; border-radius: 16px; overflow: hidden; }
-        .table-view th { background: #f0f2f5; padding: 1rem; text-transform: uppercase; color: #6c757d; }
-        .table-view td { padding: 1rem; border-bottom: 1px solid #f0f2f5; }
-        .table-btn { background: #f8fafc; border: 1px solid #e1e5ea; padding: 0.3rem 1.2rem; border-radius: 30px; font-weight: 700; font-size: 0.8rem; cursor: pointer; transition: 0.2s; }
-        .table-btn.download-btn-row { color: var(--caribe); border-color: var(--caribe); }
-        .table-btn.download-btn-row:hover { background: var(--caribe); color: #fff; }
-        .detail-view { display: none; flex-direction: column; align-items: center; gap: 0.8rem; width: 100%; }
-        .polaroid { background: #ffffff; padding: 16px 16px 50px; border-radius: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.06); border: 1px solid #eef2f5; max-width: 100%; display: inline-block; position: relative; }
-        .polaroid img { max-width: 100%; max-height: 400px; border-radius: 8px; object-fit: contain; }
-        .polaroid .stamp { position: absolute; bottom: 60px; right: 20px; background: rgba(0, 119, 182, 0.12); color: var(--caribe); font-family: 'Playfair Display', serif; font-style: italic; font-size: 1.2rem; padding: 0.1rem 1rem; border-radius: 30px; transform: rotate(12deg); }
-        .footer-modern { margin-top: 1.8rem; text-align: center; font-size: 0.85rem; color: #7a7f8a; border-top: 1px solid #f0f2f5; padding-top: 1.2rem; }
-        .footer-modern .creator { font-weight: 700; font-size: 1.2rem; color: var(--caribe); }
-        .spinner { display: inline-block; width: 40px; height: 40px; border: 4px solid #eef2f5; border-top-color: var(--caribe); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 1rem auto; }
-        @keyframes spin { to { transform: rotate(360deg); } }
+.grid-view{grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:1.5rem;width:100%}
+.grid-item{
+    background:#fff;border-radius:20px;padding:12px;box-shadow:0 4px 12px rgba(0,0,0,.04);
+    text-align:center;border:1px solid #eef2f5;cursor:pointer;transition:.22s;
+}
+.grid-item:hover{transform:translateY(-4px);border-color:var(--caribe);box-shadow:0 10px 24px rgba(0,119,182,.12)}
+.grid-item img{width:100%;height:140px;object-fit:cover;border-radius:12px;display:block;background:#eef2f5}
+.gi-cs{font-weight:900;color:var(--ink);font-size:1rem;margin-top:.6rem;letter-spacing:.5px}
+.gi-name{font-size:.75rem;color:var(--muted);font-weight:600;margin-top:.1rem}
+.gi-chips{display:flex;gap:.3rem;justify-content:center;flex-wrap:wrap;margin-top:.5rem}
+.chip{
+    background:rgba(0,119,182,.08);color:var(--caribe);font-size:.68rem;font-weight:800;
+    padding:.16rem .55rem;border-radius:20px;letter-spacing:.5px;text-transform:uppercase;
+}
 
-        @media (max-width: 600px) {
-            .card { padding: 1.2rem 1rem; }
-            .header-pano-container { height: 160px; }
-            .header-pano-overlay h1 { font-size: 2.6rem; }
-            .flag-counter-wrapper { flex-direction: column; padding: 0.5rem; background: transparent; border: none; box-shadow: none; }
-            .flag-counter-wrapper span { margin: 0 0 6px 0; }
-            .language-selector { padding: 0.2rem 0.6rem; }
-        }
-    </style>
+.table-wrap{overflow-x:auto;border-radius:16px;background:#fff;border:1px solid #eef2f5}
+.table-view{width:100%;border-collapse:collapse;min-width:620px}
+.table-view th{
+    background:#f0f2f5;padding:.9rem 1rem;text-transform:uppercase;color:#6c757d;
+    font-size:.72rem;letter-spacing:1px;text-align:left;
+}
+.table-view td{padding:.8rem 1rem;border-bottom:1px solid #f0f2f5;font-size:.88rem;color:#333}
+.table-view tr:last-child td{border-bottom:none}
+.table-view tbody tr:hover{background:#f8fafc}
+.table-btn{
+    background:#f8fafc;border:1px solid var(--line);padding:.3rem 1rem;border-radius:30px;
+    font-weight:700;font-size:.75rem;cursor:pointer;transition:.2s;margin-right:.3rem;
+}
+.table-btn:hover{background:var(--caribe);color:#fff;border-color:var(--caribe)}
+
+.detail-view{flex-direction:column;align-items:center;gap:1rem;width:100%}
+.polaroid{
+    background:#fff;padding:16px 16px 52px;border-radius:16px;box-shadow:0 8px 24px rgba(0,0,0,.06);
+    border:1px solid #eef2f5;max-width:100%;display:inline-block;position:relative;
+}
+.polaroid img{max-width:100%;max-height:420px;border-radius:8px;object-fit:contain;display:block}
+.polaroid .stamp{
+    position:absolute;bottom:62px;right:20px;background:rgba(0,119,182,.12);color:var(--caribe);
+    font-style:italic;font-size:1.1rem;font-weight:800;padding:.1rem 1rem;border-radius:30px;
+    transform:rotate(12deg);
+}
+.detail-meta{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;max-width:760px}
+.detail-meta .chip{font-size:.78rem;padding:.3rem .9rem}
+.detail-actions{display:flex;gap:.6rem;flex-wrap:wrap;justify-content:center}
+
+/* Footer */
+.footer-modern{
+    margin-top:1.8rem;text-align:center;font-size:.85rem;color:var(--muted);
+    border-top:1px solid #f0f2f5;padding-top:1.2rem;
+}
+.footer-modern .creator{font-weight:700;font-size:1.2rem;color:var(--caribe)}
+
+.spinner{
+    display:inline-block;width:38px;height:38px;border:4px solid #eef2f5;border-top-color:var(--caribe);
+    border-radius:50%;animation:spin .8s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+@media (max-width:600px){
+    .card{padding:1.2rem 1rem}
+    .header-pano-container{height:160px}
+    .header-pano-overlay h1{font-size:2.6rem}
+    .flag-counter-wrapper{flex-direction:column;padding:.5rem;background:transparent;border:none;box-shadow:none}
+    .flag-counter-wrapper span{margin:0 0 6px 0}
+    .language-selector{padding:.2rem .6rem}
+    .search-box button{flex:1 1 100%}
+    .result-container{padding:1rem .8rem}
+}
+</style>
 </head>
 <body>
 
-    <main class="card" role="main">
-        <div class="watermark-box" aria-hidden="true">Cuba</div>
+<main class="card" role="main">
+    <div class="watermark-box" aria-hidden="true">Cuba</div>
 
-        <!-- CABECERA -->
-        <div class="header-pano-container">
-            <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1200&h=400&fit=crop" class="header-pano-img" alt="Panorámica Caribe" />
-            <div class="header-pano-overlay">
-                <span class="sun-icon"><i class="fas fa-sun"></i></span>
-                <h1 data-i18n="header.title">QSL Caribe</h1>
-                <div class="subtitle" data-i18n="header.subtitle">Buscador de QSLs</div>
+    <!-- ================= CABECERA ================= -->
+    <div class="header-pano-container">
+        <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1200&h=400&fit=crop"
+             class="header-pano-img" alt="Panorámica Caribe" />
+        <div class="header-pano-overlay">
+            <span class="sun-icon"><i class="fas fa-sun"></i></span>
+            <h1 data-i18n="header.title">QSL Caribe</h1>
+            <div class="subtitle" data-i18n="header.subtitle">Buscador de QSLs</div>
+        </div>
+    </div>
+
+    <!-- ================= BUSCADOR ================= -->
+    <section class="search-section">
+        <div class="search-box">
+            <input type="text" id="callsignInput" placeholder="Ej. CM7ADV, CO5..." maxlength="20"
+                   autofocus autocomplete="off" spellcheck="false"
+                   data-i18n-placeholder="search.placeholder" />
+            <button id="searchBtn"><i class="fas fa-search"></i> <span data-i18n="search.button">Buscar</span></button>
+            <button id="resetBtn" class="reset-btn"><i class="fas fa-home"></i> <span data-i18n="reset.button">Inicio</span></button>
+        </div>
+
+        <ul class="suggestions" id="suggestionsList"></ul>
+
+        <div class="helper">
+            <span class="helper-text"><i class="fas fa-info-circle"></i> <span data-i18n="helper.text">Escribe el indicativo</span></span>
+            <div class="flag-counter-wrapper">
+                <span data-i18n="helper.visitors">Visitantes</span>
+                <a href="https://info.flagcounter.com/NpPc">
+                    <img src="https://s01.flagcounter.com/count2/NpPc/bg_FFFFFF/txt_000000/border_CCCCCC/columns_8/maxflags_250/viewers_0/labels_0/pageviews_0/flags_0/percent_0/" alt="Flag Counter" border="0" />
+                </a>
+            </div>
+            <div class="language-selector">
+                <i class="fas fa-globe" style="color:var(--caribe)"></i>
+                <select id="languageSelect">
+                    <option value="es">🇪🇸 Español</option>
+                    <option value="en">🇬🇧 English</option>
+                    <option value="zh">🇨🇳 中文</option>
+                    <option value="ja">🇯🇵 日本語</option>
+                    <option value="de">🇩🇪 Deutsch</option>
+                </select>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= RESULTADOS ================= -->
+    <section class="result-container" id="resultContainer">
+
+        <!-- Estado / origen de las imágenes -->
+        <div class="status-bar">
+            <span class="status-dot" id="statusDot"></span>
+            <span id="statusText">—</span>
+            <span class="status-spacer"></span>
+            <button class="btn-soft" id="loadFolderBtn">
+                <i class="fas fa-folder-open"></i> <span data-i18n="actions.loadFolder">Cargar carpeta</span>
+            </button>
+            <button class="btn-soft" id="genIndexBtn" hidden>
+                <i class="fas fa-file-code"></i> <span data-i18n="actions.generateIndex">Generar índice</span>
+            </button>
+        </div>
+
+        <!-- Filtros -->
+        <div class="filters-bar" id="filtersBar" hidden>
+            <div class="filter-group">
+                <select id="bandFilter"><option value="" data-i18n="filters.all_bands">Todas las bandas</option></select>
+                <select id="modeFilter"><option value="" data-i18n="filters.all_modes">Todos los modos</option></select>
+            </div>
+            <div class="view-toggle">
+                <button data-view="grid" id="viewGridBtn" title="Grid"><i class="fas fa-th-large"></i></button>
+                <button data-view="table" id="viewTableBtn" class="active" title="Lista"><i class="fas fa-list"></i></button>
             </div>
         </div>
 
-        <!-- Buscador -->
-        <section class="search-section">
-            <div class="search-box">
-                <input type="text" id="callsignInput" placeholder="Ej. CM7ADV, CO5..." maxlength="12" autofocus data-i18n-placeholder="search.placeholder" />
-                <button id="searchBtn"><i class="fas fa-search"></i> <span data-i18n="search.button">Buscar</span></button>
-                <button id="resetBtn" class="reset-btn"><i class="fas fa-home"></i> <span data-i18n="reset.button">Inicio</span></button>
-            </div>
-            <ul class="suggestions" id="suggestionsList"></ul>
+        <!-- Acciones masivas -->
+        <div class="grid-actions" id="gridActions" hidden>
+            <button class="download-btn" id="downloadAllBtn">
+                <i class="fas fa-file-zipper"></i> <span data-i18n="actions.downloadAll">Descargar ZIP</span>
+            </button>
+        </div>
 
-            <!-- ============================================================
-                 ÁREA HELPER CON FLAG COUNTER Y SELECTOR DE IDIOMA
-                 ============================================================ -->
-            <div class="helper">
-                <span class="helper-text"><i class="fas fa-info-circle"></i> <span data-i18n="helper.text">Escribe el indicativo</span></span>
-                <div class="flag-counter-wrapper">
-                    <span data-i18n="helper.visitors">Visitantes</span>
-                    <a href="https://info.flagcounter.com/NpPc">
-                        <img src="https://s01.flagcounter.com/count2/NpPc/bg_FFFFFF/txt_000000/border_CCCCCC/columns_8/maxflags_250/viewers_0/labels_0/pageviews_0/flags_0/percent_0/" alt="Flag Counter" border="0" />
-                    </a>
-                </div>
-                <!-- Selector de idioma -->
-                <div class="language-selector">
-                    <i class="fas fa-globe" style="color:var(--caribe);"></i>
-                    <select id="languageSelect">
-                        <option value="es">🇪🇸 Español</option>
-                        <option value="en">🇬🇧 English</option>
-                        <option value="zh">🇨🇳 中文</option>
-                        <option value="ja">🇯🇵 日本語</option>
-                        <option value="de">🇩🇪 Deutsch</option>
-                    </select>
-                </div>
-            </div>
-        </section>
+        <!-- Mensaje central -->
+        <div class="message" id="resultMessage">
+            <i class="fas fa-radio"></i>
+            <span data-i18n="message.waiting">Esperando tu búsqueda...</span>
+        </div>
 
-        <!-- Resultados -->
-        <section class="result-container" id="resultContainer">
-            <div class="message" id="resultMessage">
-                <i class="fas fa-radio"></i>
-                <span data-i18n="message.waiting">Esperando tu búsqueda...</span>
-            </div>
+        <!-- Vistas -->
+        <div class="view grid-view" id="gridView"></div>
 
-            <!-- Filtros -->
-            <div class="filters-bar" id="filtersBar">
-                <div class="filter-group">
-                    <select id="bandFilter"><option value="" data-i18n="filters.all_bands">Todas las bandas</option></select>
-                    <select id="modeFilter"><option value="" data-i18n="filters.all_modes">Todos los modos</option></select>
-                </div>
-                <div class="view-toggle">
-                    <button data-view="grid" id="viewGridBtn"><i class="fas fa-th-large"></i></button>
-                    <button class="active" data-view="table" id="viewTableBtn"><i class="fas fa-list"></i></button>
-                </div>
-            </div>
-
-            <div class="grid-actions" id="gridActions">
-                <button id="downloadAllBtn" class="download-btn"><i class="fas fa-file-archive"></i> <span data-i18n="grid.download_zip">Descargar filtradas ZIP</span></button>
-            </div>
-
-            <div class="grid-view" id="gridView" style="display:none;" role="list"></div>
-            <table class="table-view" id="tableView" style="display:none;">
+        <div class="view table-wrap" id="tableView">
+            <table class="table-view">
                 <thead>
                     <tr>
-                        <th data-i18n="table.callsign">Callsign</th>
+                        <th data-i18n="table.callsign">Indicativo</th>
+                        <th data-i18n="table.name">Nombre</th>
                         <th data-i18n="table.band">Banda</th>
                         <th data-i18n="table.mode">Modo</th>
                         <th data-i18n="table.date">Fecha</th>
-                        <th data-i18n="table.action">Acción</th>
+                        <th data-i18n="table.actions">Acciones</th>
                     </tr>
                 </thead>
                 <tbody id="tableBody"></tbody>
             </table>
+        </div>
 
-            <!-- Detalle -->
-            <div class="detail-view" id="detailView">
-                <button class="back-to-grid" id="backToGrid" style="display:none;"><i class="fas fa-arrow-left"></i> <span data-i18n="detail.back">Ver todas</span></button>
-                <figure class="polaroid">
-                    <img id="qslImage" src="" alt="QSL" />
-                    <span class="stamp">QSL</span>
-                </figure>
-                <div class="meta" id="qslMeta"></div>
-                <div class="actions">
-                    <button class="nav-btn" id="prevQslBtn"><i class="fas fa-chevron-left"></i></button>
-                    <a id="downloadLink" class="download-btn" download><i class="fas fa-download"></i> <span data-i18n="detail.download">Descargar</span></a>
-                    <button class="share-btn" id="shareBtn"><i class="fas fa-share-alt"></i> <span data-i18n="detail.share">Compartir</span></button>
-                    <button class="nav-btn" id="nextQslBtn"><i class="fas fa-chevron-right"></i></button>
-                </div>
-                <div class="download-count" id="downloadCount"><i class="fas fa-download"></i> <span data-i18n="detail.downloads">Descargas:</span> 0</div>
+        <div class="view detail-view" id="detailView"></div>
+    </section>
+
+    <footer class="footer-modern">
+        <div class="creator">ZMR Cuba</div>
+        <div data-i18n="footer.text">QSL Caribe — Buscador de tarjetas QSL</div>
+    </footer>
+
+    <!-- Input oculto para seleccionar la carpeta de imágenes -->
+    <input type="file" id="folderInput" webkitdirectory directory multiple hidden />
+</main>
+
+<script>
+(() => {
+'use strict';
+
+/* ============================================================
+   0. CONFIGURACIÓN
+   ============================================================ */
+const IMAGES_DIR = 'imagenes/';                 // Carpeta donde viven las QSL
+const INDEX_URL  = IMAGES_DIR + 'index.json';   // Índice opcional
+const IMG_EXT    = /\.(jpe?g|png|gif|webp|bmp|avif|svg)$/i;
+
+const PLACEHOLDER = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(
+    '<svg xmlns="http://www.w3.org/2000/svg" width="240" height="160">' +
+    '<rect width="240" height="160" fill="#eef2f5"/>' +
+    '<g fill="#9aa7b4" font-family="sans-serif" text-anchor="middle">' +
+    '<text x="120" y="84" font-size="18" font-weight="700">QSL</text>' +
+    '<text x="120" y="106" font-size="11">sin imagen</text></g></svg>'
+);
+
+/* ============================================================
+   1. INTERNACIONALIZACIÓN
+   ============================================================ */
+const I18N = {
+es:{
+    'app.title':'QSL Caribe · Buscador de QSLs',
+    'header.title':'QSL Caribe','header.subtitle':'Buscador de QSLs',
+    'search.placeholder':'Ej. CM7ADV, CO5...','search.button':'Buscar','reset.button':'Inicio',
+    'helper.text':'Escribe el indicativo','helper.visitors':'Visitantes',
+    'message.waiting':'Esperando tu búsqueda...',
+    'message.searching':'Buscando QSLs...',
+    'message.noResults':'Sin resultados',
+    'message.noResultsHint':'No encontramos QSLs para «{q}». Revisa el indicativo o carga la carpeta de imágenes.',
+    'message.noImages':'No hay imágenes cargadas',
+    'message.noImagesHint':'Coloca tus QSL en la carpeta «imagenes/» con un index.json, o pulsa «Cargar carpeta».',
+    'filters.all_bands':'Todas las bandas','filters.all_modes':'Todos los modos',
+    'status.none':'Sin imágenes cargadas',
+    'status.index':'Índice cargado desde imagenes/index.json',
+    'status.folder':'Carpeta local cargada',
+    'status.count':'{n} QSL(s) disponibles',
+    'actions.loadFolder':'Cargar carpeta','actions.generateIndex':'Generar índice',
+    'actions.download':'Descargar','actions.downloadAll':'Descargar ZIP','actions.back':'Volver',
+    'table.callsign':'Indicativo','table.name':'Nombre','table.band':'Banda',
+    'table.mode':'Modo','table.date':'Fecha','table.actions':'Acciones',
+    'footer.text':'QSL Caribe — Buscador de tarjetas QSL'
+},
+en:{
+    'app.title':'QSL Caribe · QSL Finder',
+    'header.title':'QSL Caribe','header.subtitle':'QSL Finder',
+    'search.placeholder':'e.g. CM7ADV, CO5...','search.button':'Search','reset.button':'Home',
+    'helper.text':'Type the callsign','helper.visitors':'Visitors',
+    'message.waiting':'Waiting for your search...',
+    'message.searching':'Searching QSLs...',
+    'message.noResults':'No results',
+    'message.noResultsHint':'No QSLs found for “{q}”. Check the callsign or load the images folder.',
+    'message.noImages':'No images loaded',
+    'message.noImagesHint':'Place your QSLs in the “imagenes/” folder with an index.json, or press “Load folder”.',
+    'filters.all_bands':'All bands','filters.all_modes':'All modes',
+    'status.none':'No images loaded',
+    'status.index':'Index loaded from imagenes/index.json',
+    'status.folder':'Local folder loaded',
+    'status.count':'{n} QSL(s) available',
+    'actions.loadFolder':'Load folder','actions.generateIndex':'Generate index',
+    'actions.download':'Download','actions.downloadAll':'Download ZIP','actions.back':'Back',
+    'table.callsign':'Callsign','table.name':'Name','table.band':'Band',
+    'table.mode':'Mode','table.date':'Date','table.actions':'Actions',
+    'footer.text':'QSL Caribe — QSL card finder'
+},
+zh:{
+    'app.title':'QSL Caribe · QSL 卡片搜索',
+    'header.title':'QSL Caribe','header.subtitle':'QSL 卡片搜索',
+    'search.placeholder':'例如 CM7ADV, CO5...','search.button':'搜索','reset.button':'首页',
+    'helper.text':'输入呼号','helper.visitors':'访客',
+    'message.waiting':'等待您的搜索...',
+    'message.searching':'正在搜索 QSL...',
+    'message.noResults':'没有结果',
+    'message.noResultsHint':'未找到“{q}”的 QSL。请检查呼号或加载图片文件夹。',
+    'message.noImages':'尚未加载图片',
+    'message.noImagesHint':'请将 QSL 放入“imagenes/”文件夹并附 index.json，或点击“加载文件夹”。',
+    'filters.all_bands':'全部波段','filters.all_modes':'全部模式',
+    'status.none':'尚未加载图片',
+    'status.index':'已从 imagenes/index.json 加载索引',
+    'status.folder':'已加载本地文件夹',
+    'status.count':'共 {n} 张 QSL',
+    'actions.loadFolder':'加载文件夹','actions.generateIndex':'生成索引',
+    'actions.download':'下载','actions.downloadAll':'下载 ZIP','actions.back':'返回',
+    'table.callsign':'呼号','table.name':'姓名','table.band':'波段',
+    'table.mode':'模式','table.date':'日期','table.actions':'操作',
+    'footer.text':'QSL Caribe — QSL 卡片搜索器'
+},
+ja:{
+    'app.title':'QSL Caribe · QSL カード検索',
+    'header.title':'QSL Caribe','header.subtitle':'QSL カード検索',
+    'search.placeholder':'例: CM7ADV, CO5...','search.button':'検索','reset.button':'ホーム',
+    'helper.text':'コールサインを入力','helper.visitors':'訪問者',
+    'message.waiting':'検索をお待ちしています...',
+    'message.searching':'QSL を検索中...',
+    'message.noResults':'結果なし',
+    'message.noResultsHint':'「{q}」の QSL が見つかりません。コールサインを確認するか、画像フォルダを読み込んでください。',
+    'message.noImages':'画像が読み込まれていません',
+    'message.noImagesHint':'QSL を「imagenes/」フォルダに index.json と共に置くか、「フォルダを読み込む」を押してください。',
+    'filters.all_bands':'すべてのバンド','filters.all_modes':'すべてのモード',
+    'status.none':'画像が読み込まれていません',
+    'status.index':'imagenes/index.json から読み込み済み',
+    'status.folder':'ローカルフォルダを読み込み済み',
+    'status.count':'{n} 枚の QSL',
+    'actions.loadFolder':'フォルダを読み込む','actions.generateIndex':'インデックス生成',
+    'actions.download':'ダウンロード','actions.downloadAll':'ZIP ダウンロード','actions.back':'戻る',
+    'table.callsign':'コールサイン','table.name':'名前','table.band':'バンド',
+    'table.mode':'モード','table.date':'日付','table.actions':'操作',
+    'footer.text':'QSL Caribe — QSL カード検索ツール'
+},
+de:{
+    'app.title':'QSL Caribe · QSL-Suche',
+    'header.title':'QSL Caribe','header.subtitle':'QSL-Suche',
+    'search.placeholder':'z. B. CM7ADV, CO5...','search.button':'Suchen','reset.button':'Start',
+    'helper.text':'Rufzeichen eingeben','helper.visitors':'Besucher',
+    'message.waiting':'Warte auf deine Suche...',
+    'message.searching':'QSLs werden gesucht...',
+    'message.noResults':'Keine Ergebnisse',
+    'message.noResultsHint':'Keine QSLs für „{q}“ gefunden. Prüfe das Rufzeichen oder lade den Bilderordner.',
+    'message.noImages':'Keine Bilder geladen',
+    'message.noImagesHint':'Lege deine QSLs in den Ordner „imagenes/“ mit index.json oder klicke auf „Ordner laden“.',
+    'filters.all_bands':'Alle Bänder','filters.all_modes':'Alle Modi',
+    'status.none':'Keine Bilder geladen',
+    'status.index':'Index aus imagenes/index.json geladen',
+    'status.folder':'Lokaler Ordner geladen',
+    'status.count':'{n} QSL(s) verfügbar',
+    'actions.loadFolder':'Ordner laden','actions.generateIndex':'Index erzeugen',
+    'actions.download':'Herunterladen','actions.downloadAll':'ZIP herunterladen','actions.back':'Zurück',
+    'table.callsign':'Rufzeichen','table.name':'Name','table.band':'Band',
+    'table.mode':'Modus','table.date':'Datum','table.actions':'Aktionen',
+    'footer.text':'QSL Caribe — QSL-Karten-Suche'
+}
+};
+
+let lang = localStorage.getItem('qsl.lang') || 'es';
+if (!I18N[lang]) lang = 'es';
+
+function t(key, vars) {
+    const dict = I18N[lang] || I18N.es;
+    let s = dict[key] ?? I18N.es[key] ?? key;
+    if (vars) for (const k in vars) s = s.split('{' + k + '}').join(vars[k]);
+    return s;
+}
+
+/* ============================================================
+   2. ESTADO
+   ============================================================ */
+const state = {
+    all: [],          // todas las QSL indexadas
+    results: [],      // resultados de la búsqueda actual
+    query: '',
+    band: '',
+    mode: '',
+    view: 'table',
+    current: null,    // QSL en vista detalle
+    source: 'none'    // 'index' | 'folder' | 'none'
+};
+
+/* ============================================================
+   3. REFERENCIAS DOM
+   ============================================================ */
+const $ = id => document.getElementById(id);
+const input        = $('callsignInput');
+const searchBtn    = $('searchBtn');
+const resetBtn     = $('resetBtn');
+const suggestions  = $('suggestionsList');
+const statusDot    = $('statusDot');
+const statusText   = $('statusText');
+const loadFolderBtn= $('loadFolderBtn');
+const genIndexBtn  = $('genIndexBtn');
+const folderInput  = $('folderInput');
+const filtersBar   = $('filtersBar');
+const bandFilter   = $('bandFilter');
+const modeFilter   = $('modeFilter');
+const gridActions  = $('gridActions');
+const downloadAllBtn = $('downloadAllBtn');
+const resultMessage= $('resultMessage');
+const gridView     = $('gridView');
+const tableView    = $('tableView');
+const tableBody    = $('tableBody');
+const detailView   = $('detailView');
+const viewGridBtn  = $('viewGridBtn');
+const viewTableBtn = $('viewTableBtn');
+const languageSelect = $('languageSelect');
+
+/* ============================================================
+   4. UTILIDADES
+   ============================================================ */
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => (
+    { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]
+));
+
+const norm = s => String(s ?? '').toUpperCase().trim();
+
+/* Extrae un indicativo de un nombre de archivo / texto */
+function extractCallsign(str) {
+    const tokens = norm(str).split(/[^A-Z0-9]+/).filter(Boolean);
+    for (const tk of tokens) {
+        const cand = tk.replace(/-\d+$/, '');          // CM7ADV-2 -> CM7ADV
+        if (/^\d?[A-Z]{1,3}\d[A-Z]{1,4}$/.test(cand) && /\d/.test(cand)) return cand;
+    }
+    return '';
+}
+
+/* Deduce metadatos desde el nombre del archivo */
+function parseFileName(name) {
+    const base = String(name).replace(/\.[^.]+$/, '');
+    const up = base.toUpperCase();
+
+    const bm = up.match(/(?:^|[^0-9])(160|80|60|40|30|20|17|15|12|10|6|2)M(?:[^A-Z]|$)/);
+    const mm = up.match(/(?:^|[^A-Z])(SSB|USB|LSB|CW|FT8|FT4|FT2|RTTY|AM|FM|PSK31|PSK63|JS8|MFSK|DIGI|OLIVIA)(?:[^A-Z]|$)/);
+    const dm = up.match(/\b(20\d{2})[-_.]?(0[1-9]|1[0-2])?[-_.]?(0[1-9]|[12]\d|3[01])?\b/);
+
+    let date = '';
+    if (dm) date = dm[1] + (dm[2] ? '-' + dm[2] : '') + (dm[3] ? '-' + dm[3] : '');
+
+    return {
+        callsign: extractCallsign(base),
+        band: bm ? bm[1] + 'm' : '',
+        mode: mm ? mm[1] : '',
+        date
+    };
+}
+
+/* ============================================================
+   5. CARGA DEL ÍNDICE
+   ============================================================ */
+function normalizeEntry(raw, i) {
+    if (!raw) return null;
+    const rawFile = String(raw.file || raw.filename || raw.src || '');
+    const fileName = rawFile.replace(/^.*[\\/]/, '');
+    if (!fileName) return null;
+
+    const meta = parseFileName(fileName);
+    const url = /^(https?:|blob:|data:)/i.test(rawFile)
+        ? rawFile
+        : IMAGES_DIR + encodeURIComponent(fileName);
+
+    return {
+        id: 'i' + i,
+        fileName,
+        url,
+        callsign: norm(raw.callsign || meta.callsign),
+        name: raw.name || raw.operator || '',
+        band: raw.band || meta.band,
+        mode: norm(raw.mode || meta.mode),
+        date: raw.date || meta.date
+    };
+}
+
+async function loadIndex() {
+    try {
+        const res = await fetch(INDEX_URL, { cache: 'no-cache' });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const data = await res.json();
+        const arr = Array.isArray(data) ? data : (data.items || data.qsls || []);
+        const entries = arr.map(normalizeEntry).filter(Boolean);
+
+        if (!entries.length) throw new Error('índice vacío');
+
+        state.all = entries;
+        state.source = 'index';
+        buildFilterOptions();
+        return true;
+    } catch (err) {
+        console.info('[QSL] No se pudo cargar index.json:', err.message);
+        state.source = 'none';
+        state.all = [];
+        return false;
+    }
+}
+
+/* ============================================================
+   6. CARGA DESDE CARPETA LOCAL
+   ============================================================ */
+function loadFromFolder(fileList) {
+    // liberar URLs anteriores
+    state.all.forEach(e => { if (e._objUrl) URL.revokeObjectURL(e.url); });
+
+    const files = Array.from(fileList).filter(f => IMG_EXT.test(f.name));
+    if (!files.length) {
+        alert(t('message.noImages') + ' — ' + t('message.noImagesHint'));
+        return;
+    }
+
+    state.all = files.map((f, i) => {
+        const meta = parseFileName(f.name);
+        return {
+            id: 'f' + i,
+            fileName: f.name,
+            url: URL.createObjectURL(f),
+            _objUrl: true,
+            file: f,
+            callsign: meta.callsign,
+            name: '',
+            band: meta.band,
+            mode: meta.mode,
+            date: meta.date
+        };
+    }).sort((a, b) =>
+        (a.callsign || '~').localeCompare(b.callsign || '~') ||
+        a.fileName.localeCompare(b.fileName)
+    );
+
+    state.source = 'folder';
+    state.results = [];
+    state.current = null;
+
+    buildFilterOptions();
+    renderStatus();
+    renderResults();
+    genIndexBtn.hidden = false;
+}
+
+/* ============================================================
+   7. FILTROS
+   ============================================================ */
+function bandSort(a, b) {
+    const n = s => parseInt(s, 10) || 0;
+    return n(b) - n(a);
+}
+
+function fillSelect(select, allLabel, values, current) {
+    select.innerHTML = '';
+    const opt0 = document.createElement('option');
+    opt0.value = '';
+    opt0.textContent = allLabel;
+    select.appendChild(opt0);
+    values.forEach(v => {
+        const o = document.createElement('option');
+        o.value = v;
+        o.textContent = v;
+        select.appendChild(o);
+    });
+    select.value = values.includes(current) ? current : '';
+}
+
+function buildFilterOptions() {
+    const bands = [...new Set(state.all.map(e => e.band).filter(Boolean))].sort(bandSort);
+    const modes = [...new Set(state.all.map(e => e.mode).filter(Boolean))].sort();
+
+    fillSelect(bandFilter, t('filters.all_bands'), bands, state.band);
+    fillSelect(modeFilter, t('filters.all_modes'), modes, state.mode);
+
+    state.band = bandFilter.value;
+    state.mode = modeFilter.value;
+}
+
+/* ============================================================
+   8. BÚSQUEDA
+   ============================================================ */
+function scoreEntry(e, q) {
+    const cs = e.callsign || '';
+    const nm = norm(e.name);
+    const fl = norm(e.fileName);
+
+    if (cs && cs === q) return 100;
+    if (cs && cs.startsWith(q)) return 80;
+    if (cs && cs.includes(q)) return 60;
+    if (nm && nm.includes(q)) return 40;
+    if (fl.includes(q)) return 20;
+    return 0;
+}
+
+function doSearch(raw) {
+    const q = norm(raw ?? input.value);
+
+    // limpiar selección de detalle
+    state.current = null;
+    state.query = q;
+
+    if (!q) { state.results = []; renderResults(); return; }
+
+    const scored = [];
+    for (const e of state.all) {
+        const s = scoreEntry(e, q);
+        if (s > 0) scored.push([s, e]);
+    }
+    scored.sort((a, b) =>
+        b[0] - a[0] ||
+        (a[1].callsign || '').localeCompare(b[1].callsign || '') ||
+        a[1].fileName.localeCompare(b[1].fileName)
+    );
+
+    state.results = scored.map(x => x[1]);
+    renderResults();
+}
+
+function getVisible() {
+    return state.results.filter(e =>
+        (!state.band || e.band === state.band) &&
+        (!state.mode || e.mode === state.mode)
+    );
+}
+
+/* ============================================================
+   9. SUGERENCIAS
+   ============================================================ */
+function renderSuggestions() {
+    const q = norm(input.value);
+    if (!q || q.length < 2) { suggestions.classList.remove('show'); suggestions.innerHTML = ''; return; }
+
+    const map = new Map();
+    for (const e of state.all) {
+        if (!e.callsign) continue;
+        if (!e.callsign.includes(q)) continue;
+        if (!map.has(e.callsign)) map.set(e.callsign, 0);
+        map.set(e.callsign, map.get(e.callsign) + 1);
+    }
+    if (!map.size) { suggestions.classList.remove('show'); suggestions.innerHTML = ''; return; }
+
+    const items = [...map.entries()]
+        .sort((a, b) => (b[1] - a[1]) || a[0].localeCompare(b[0]))
+        .slice(0, 6);
+
+    suggestions.innerHTML = items.map(([cs, n]) => `
+        <li data-cs="${esc(cs)}">
+            <span><i class="fas fa-id-badge" style="color:var(--caribe);margin-right:8px"></i>${esc(cs)}</span>
+            <span class="sug-meta">${n}</span>
+        </li>`).join('');
+
+    suggestions.classList.add('show');
+}
+
+/* ============================================================
+   10. RENDER
+   ============================================================ */
+function renderStatus() {
+    const n = state.all.length;
+
+    statusDot.className = 'status-dot';
+    if (state.source === 'none') {
+        statusDot.classList.add('warn');
+        statusText.textContent = t('status.none');
+    } else {
+        statusDot.classList.add('ok');
+        const base = state.source === 'index' ? t('status.index') : t('status.folder');
+        statusText.textContent = base + ' · ' + t('status.count', { n });
+    }
+
+    // botones
+    genIndexBtn.hidden = state.source !== 'folder';
+    filtersBar.hidden = n === 0;
+}
+
+function showMessage(icon, html, hint) {
+    resultMessage.hidden = false;
+    resultMessage.innerHTML =
+        `<i class="fas ${icon}"></i><span>${html}</span>` +
+        (hint ? `<small>${hint}</small>` : '');
+}
+
+function hideViews() {
+    gridView.classList.remove('active');
+    tableView.classList.remove('active');
+    detailView.classList.remove('active');
+    gridActions.hidden = true;
+}
+
+function renderResults() {
+    hideViews();
+
+    /* --- Vista detalle --- */
+    if (state.current) {
+        resultMessage.hidden = true;
+        renderDetail(state.current);
+        detailView.classList.add('active');
+        return;
+    }
+
+    /* --- Sin imágenes cargadas --- */
+    if (!state.all.length) {
+        showMessage('fa-folder-open', t('message.noImages'), t('message.noImagesHint'));
+        return;
+    }
+
+    /* --- Sin búsqueda --- */
+    if (!state.query) {
+        showMessage('fa-radio', t('message.waiting'));
+        return;
+    }
+
+    const visible = getVisible();
+
+    /* --- Sin resultados --- */
+    if (!visible.length) {
+        showMessage('fa-magnifying-glass',
+            `<span class="warm">${esc(state.query)}</span> · ${t('message.noResults')}`,
+            t('message.noResultsHint', { q: esc(state.query) }));
+        return;
+    }
+
+    /* --- Con resultados --- */
+    resultMessage.hidden = true;
+    gridActions.hidden = false;
+    filtersBar.hidden = false;
+
+    if (state.view === 'grid') {
+        renderGrid(visible);
+        gridView.classList.add('active');
+    } else {
+        renderTable(visible);
+        tableView.classList.add('active');
+    }
+}
+
+function renderGrid(list) {
+    gridView.innerHTML = list.map(e => `
+        <div class="grid-item" data-id="${esc(e.id)}">
+            <img src="${esc(e.url)}" alt="${esc(e.callsign || e.fileName)}"
+                 loading="lazy" data-ph="1" />
+            <div class="gi-cs">${esc(e.callsign || '—')}</div>
+            ${e.name ? `<div class="gi-name">${esc(e.name)}</div>` : ''}
+            <div class="gi-chips">
+                ${e.band ? `<span class="chip">${esc(e.band)}</span>` : ''}
+                ${e.mode ? `<span class="chip">${esc(e.mode)}</span>` : ''}
             </div>
-        </section>
+        </div>`).join('');
+}
 
-        <!-- Footer -->
-        <footer class="footer-modern">
-            <div class="creator" data-i18n="footer.creator">✧ FRC-CAMAGUEY-CUBA/CM7ADV- Copyright ✧</div>
-            <div class="collab"><i class="fas fa-handshake"></i> <span data-i18n="footer.collab">CO5ABC &amp; CO5WE</span> <i class="fas fa-heart"></i></div>
-        </footer>
-    </main>
+function renderTable(list) {
+    tableBody.innerHTML = list.map(e => `
+        <tr>
+            <td><strong>${esc(e.callsign || '—')}</strong></td>
+            <td>${esc(e.name || '—')}</td>
+            <td>${e.band ? `<span class="chip">${esc(e.band)}</span>` : '—'}</td>
+            <td>${e.mode ? `<span class="chip">${esc(e.mode)}</span>` : '—'}</td>
+            <td>${esc(e.date || '—')}</td>
+            <td>
+                <button class="table-btn" data-id="${esc(e.id)}">
+                    <i class="fas fa-eye"></i> ${esc(t('actions.download'))}
+                </button>
+            </td>
+        </tr>`).join('');
+}
 
-    <!-- ============================================================
-         JAVASCRIPT (Funcionalidad completa + Traducciones + Carga GitHub)
-         ============================================================ -->
-    <script>
-        (function() {
-            'use strict';
+function renderDetail(e) {
+    detailView.innerHTML = `
+        <div class="polaroid">
+            <img src="${esc(e.url)}" alt="${esc(e.callsign || e.fileName)}" data-ph="1" />
+            <span class="stamp">${esc(e.callsign || 'QSL')}</span>
+        </div>
+        <div class="detail-meta">
+            ${e.callsign ? `<span class="chip"><i class="fas fa-id-badge"></i> ${esc(e.callsign)}</span>` : ''}
+            ${e.name ? `<span class="chip"><i class="fas fa-user"></i> ${esc(e.name)}</span>` : ''}
+            ${e.band ? `<span class="chip"><i class="fas fa-tower-broadcast"></i> ${esc(e.band)}</span>` : ''}
+            ${e.mode ? `<span class="chip"><i class="fas fa-wave-square"></i> ${esc(e.mode)}</span>` : ''}
+            ${e.date ? `<span class="chip"><i class="fas fa-calendar"></i> ${esc(e.date)}</span>` : ''}
+            <span class="chip"><i class="fas fa-file-image"></i> ${esc(e.fileName)}</span>
+        </div>
+        <div class="detail-actions">
+            <button class="download-btn" id="dlOne">
+                <i class="fas fa-download"></i> ${esc(t('actions.download'))}
+            </button>
+            <button class="btn-soft" id="backBtn">
+                <i class="fas fa-arrow-left"></i> ${esc(t('actions.back'))}
+            </button>
+        </div>`;
 
-            // ============================================================
-            // TRADUCCIONES
-            // ============================================================
-            const translations = {
-                es: {
-                    "app.title": "QSL Caribe · Buscador de QSLs",
-                    "header.title": "QSL Caribe",
-                    "header.subtitle": "Buscador de QSLs",
-                    "search.placeholder": "Ej. CM7ADV, CO5...",
-                    "search.button": "Buscar",
-                    "reset.button": "Inicio",
-                    "helper.text": "Escribe el indicativo",
-                    "helper.visitors": "Visitantes",
-                    "message.waiting": "Esperando tu búsqueda...",
-                    "message.enter": "Por favor, ingresa un indicativo válido.",
-                    "message.searching": "Buscando en la biblioteca caribeña...",
-                    "message.no_results": "Aún no tenemos tu QSL en nuestro archivo caribeño. Contacta con los operadores, gracias 73",
-                    "message.no_qsls": "No se encontraron QSLs.",
-                    "filters.all_bands": "Todas las bandas",
-                    "filters.all_modes": "Todos los modos",
-                    "grid.download_zip": "Descargar filtradas ZIP",
-                    "table.callsign": "Callsign",
-                    "table.band": "Banda",
-                    "table.mode": "Modo",
-                    "table.date": "Fecha",
-                    "table.action": "Acción",
-                    "table.view": "Ver",
-                    "detail.back": "Ver todas",
-                    "detail.download": "Descargar",
-                    "detail.share": "Compartir",
-                    "detail.downloads": "Descargas:",
-                    "footer.creator": "✧ FRC-CAMAGUEY-CUBA/CM7ADV- Copyright ✧",
-                    "footer.collab": "CO5ABC & CO5WE"
-                },
-                en: {
-                    "app.title": "QSL Caribbean · QSL Finder",
-                    "header.title": "QSL Caribbean",
-                    "header.subtitle": "QSL Finder",
-                    "search.placeholder": "e.g. CM7ADV, CO5...",
-                    "search.button": "Search",
-                    "reset.button": "Reset",
-                    "helper.text": "Enter callsign",
-                    "helper.visitors": "Visitors",
-                    "message.waiting": "Waiting for your search...",
-                    "message.enter": "Please enter a valid callsign.",
-                    "message.searching": "Searching in the Caribbean library...",
-                    "message.no_results": "We don't have your QSL in our Caribbean archive yet. Contact the operators, thanks 73",
-                    "message.no_qsls": "No QSLs found.",
-                    "filters.all_bands": "All bands",
-                    "filters.all_modes": "All modes",
-                    "grid.download_zip": "Download filtered ZIP",
-                    "table.callsign": "Callsign",
-                    "table.band": "Band",
-                    "table.mode": "Mode",
-                    "table.date": "Date",
-                    "table.action": "Action",
-                    "table.view": "View",
-                    "detail.back": "View all",
-                    "detail.download": "Download",
-                    "detail.share": "Share",
-                    "detail.downloads": "Downloads:",
-                    "footer.creator": "✧ FRC-CAMAGUEY-CUBA/CM7ADV- Copyright ✧",
-                    "footer.collab": "CO5ABC & CO5WE"
-                },
-                zh: {
-                    "app.title": "加勒比QSL · QSL搜索器",
-                    "header.title": "加勒比QSL",
-                    "header.subtitle": "QSL搜索器",
-                    "search.placeholder": "例如 CM7ADV, CO5...",
-                    "search.button": "搜索",
-                    "reset.button": "重置",
-                    "helper.text": "输入呼号",
-                    "helper.visitors": "访客",
-                    "message.waiting": "等待您的搜索...",
-                    "message.enter": "请输入有效的呼号。",
-                    "message.searching": "正在加勒比图书馆中搜索...",
-                    "message.no_results": "我们的加勒比档案中还没有您的QSL。请联系操作员，谢谢 73",
-                    "message.no_qsls": "未找到QSL。",
-                    "filters.all_bands": "所有波段",
-                    "filters.all_modes": "所有模式",
-                    "grid.download_zip": "下载筛选后的ZIP",
-                    "table.callsign": "呼号",
-                    "table.band": "波段",
-                    "table.mode": "模式",
-                    "table.date": "日期",
-                    "table.action": "操作",
-                    "table.view": "查看",
-                    "detail.back": "查看全部",
-                    "detail.download": "下载",
-                    "detail.share": "分享",
-                    "detail.downloads": "下载次数：",
-                    "footer.creator": "✧ FRC-CAMAGUEY-CUBA/CM7ADV- 版权所有 ✧",
-                    "footer.collab": "CO5ABC 与 CO5WE"
-                },
-                ja: {
-                    "app.title": "カリブQSL · QSL検索",
-                    "header.title": "カリブQSL",
-                    "header.subtitle": "QSL検索",
-                    "search.placeholder": "例 CM7ADV, CO5...",
-                    "search.button": "検索",
-                    "reset.button": "リセット",
-                    "helper.text": "コールサインを入力",
-                    "helper.visitors": "訪問者",
-                    "message.waiting": "検索をお待ちください...",
-                    "message.enter": "有効なコールサインを入力してください。",
-                    "message.searching": "カリブのライブラリを検索中...",
-                    "message.no_results": "まだカリブのアーカイブにあなたのQSLがありません。オペレーターに連絡してください、ありがとう 73",
-                    "message.no_qsls": "QSLが見つかりませんでした。",
-                    "filters.all_bands": "すべてのバンド",
-                    "filters.all_modes": "すべてのモード",
-                    "grid.download_zip": "フィルタリングされたZIPをダウンロード",
-                    "table.callsign": "コールサイン",
-                    "table.band": "バンド",
-                    "table.mode": "モード",
-                    "table.date": "日付",
-                    "table.action": "アクション",
-                    "table.view": "表示",
-                    "detail.back": "すべて表示",
-                    "detail.download": "ダウンロード",
-                    "detail.share": "共有",
-                    "detail.downloads": "ダウンロード数：",
-                    "footer.creator": "✧ FRC-CAMAGUEY-CUBA/CM7ADV- 著作権 ✧",
-                    "footer.collab": "CO5ABC & CO5WE"
-                },
-                de: {
-                    "app.title": "QSL Karibik · QSL-Suche",
-                    "header.title": "QSL Karibik",
-                    "header.subtitle": "QSL-Suche",
-                    "search.placeholder": "z.B. CM7ADV, CO5...",
-                    "search.button": "Suchen",
-                    "reset.button": "Zurücksetzen",
-                    "helper.text": "Rufzeichen eingeben",
-                    "helper.visitors": "Besucher",
-                    "message.waiting": "Warten auf Ihre Suche...",
-                    "message.enter": "Bitte geben Sie ein gültiges Rufzeichen ein.",
-                    "message.searching": "Suche in der karibischen Bibliothek...",
-                    "message.no_results": "Wir haben Ihre QSL noch nicht in unserem karibischen Archiv. Kontaktieren Sie die Betreiber, danke 73",
-                    "message.no_qsls": "Keine QSLs gefunden.",
-                    "filters.all_bands": "Alle Bänder",
-                    "filters.all_modes": "Alle Modi",
-                    "grid.download_zip": "Gefilterte ZIP herunterladen",
-                    "table.callsign": "Rufzeichen",
-                    "table.band": "Band",
-                    "table.mode": "Modus",
-                    "table.date": "Datum",
-                    "table.action": "Aktion",
-                    "table.view": "Ansehen",
-                    "detail.back": "Alle anzeigen",
-                    "detail.download": "Herunterladen",
-                    "detail.share": "Teilen",
-                    "detail.downloads": "Downloads:",
-                    "footer.creator": "✧ FRC-CAMAGUEY-CUBA/CM7ADV- Urheberrecht ✧",
-                    "footer.collab": "CO5ABC & CO5WE"
+    $('dlOne').addEventListener('click', () => downloadOne(e));
+    $('backBtn').addEventListener('click', () => {
+        state.current = null;
+        renderResults();
+    });
+}
+
+/* Placeholder de imágenes rotas (delegado) */
+document.addEventListener('error', ev => {
+    const img = ev.target;
+    if (img && img.tagName === 'IMG' && img.dataset.ph === '1') {
+        img.dataset.ph = '0';
+        img.src = PLACEHOLDER;
+    }
+}, true);
+
+/* ============================================================
+   11. DESCARGAS
+   ============================================================ */
+async function getBlob(entry) {
+    if (entry.file) return entry.file;
+    const res = await fetch(entry.url);
+    if (!res.ok) throw new Error('No se pudo leer ' + entry.fileName);
+    return res.blob();
+}
+
+function triggerDownload(url, filename) {
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.rel = 'noopener';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+}
+
+async function downloadOne(entry) {
+    try {
+        if (entry.file) {
+            triggerDownload(entry.url, entry.fileName);
+        } else {
+            const blob = await getBlob(entry);
+            const url = URL.createObjectURL(blob);
+            triggerDownload(url, entry.fileName);
+            setTimeout(() => URL.revokeObjectURL(url), 4000);
+        }
+    } catch (err) {
+        alert('⚠️ ' + err.message);
+    }
+}
+
+async function downloadZip(entries) {
+    if (!entries.length) return;
+
+    const original = downloadAllBtn.innerHTML;
+    downloadAllBtn.disabled = true;
+    downloadAllBtn.innerHTML = '<span class="spinner" style="width:16px;height:16px;border-width:3px"></span> ZIP...';
+
+    try {
+        const zip = new JSZip();
+        const used = new Set();
+
+        for (const e of entries) {
+            try {
+                const blob = await getBlob(e);
+                let fname = e.fileName;
+                let n = 1;
+                while (used.has(fname)) {
+                    fname = e.fileName.replace(/(\.[^.]+)$/, `_${n++}$1`);
                 }
-            };
-
-            // ============================================================
-            // DOM REFS
-            // ============================================================
-            const input = document.getElementById('callsignInput');
-            const searchBtn = document.getElementById('searchBtn');
-            const resetBtn = document.getElementById('resetBtn');
-            const resultMessage = document.getElementById('resultMessage');
-            const gridView = document.getElementById('gridView');
-            const tableView = document.getElementById('tableView');
-            const tableBody = document.getElementById('tableBody');
-            const detailView = document.getElementById('detailView');
-            const qslImage = document.getElementById('qslImage');
-            const qslMeta = document.getElementById('qslMeta');
-            const downloadLink = document.getElementById('downloadLink');
-            const shareBtn = document.getElementById('shareBtn');
-            const downloadCountSpan = document.getElementById('downloadCount');
-            const suggestionsList = document.getElementById('suggestionsList');
-            const backToGridBtn = document.getElementById('backToGrid');
-            const prevBtn = document.getElementById('prevQslBtn');
-            const nextBtn = document.getElementById('nextQslBtn');
-            const gridActions = document.getElementById('gridActions');
-            const downloadAllBtn = document.getElementById('downloadAllBtn');
-            const filtersBar = document.getElementById('filtersBar');
-            const bandFilter = document.getElementById('bandFilter');
-            const modeFilter = document.getElementById('modeFilter');
-            const viewGridBtn = document.getElementById('viewGridBtn');
-            const viewTableBtn = document.getElementById('viewTableBtn');
-            const languageSelect = document.getElementById('languageSelect');
-
-            // ============================================================
-            // ESTADO
-            // ============================================================
-            let fullQsList = [];
-            let filteredQsList = [];
-            let currentQslIndex = 0;
-            let currentCallsign = '';
-            let currentView = 'table';
-            let isSearching = false;
-            let currentLang = 'es';
-
-            // ============================================================
-            // FUNCIONES DE IDIOMA
-            // ============================================================
-            function t(key) {
-                return translations[currentLang] && translations[currentLang][key] ? translations[currentLang][key] : key;
+                used.add(fname);
+                zip.file(fname, blob);
+            } catch (err) {
+                console.warn('[QSL] omitido:', e.fileName, err);
             }
+        }
 
-            function setLanguage(lang) {
-                if (!translations[lang]) lang = 'es';
-                currentLang = lang;
-                localStorage.setItem('qsl_language', lang);
-                languageSelect.value = lang;
-                updateUI();
-                updateCurrentMessage();
-            }
+        const content = await zip.generateAsync({ type: 'blob', compression: 'DEFLATE' });
+        const url = URL.createObjectURL(content);
+        triggerDownload(url, `QSL_${state.query || 'TODAS'}_${Date.now()}.zip`);
+        setTimeout(() => URL.revokeObjectURL(url), 6000);
+    } finally {
+        downloadAllBtn.disabled = false;
+        downloadAllBtn.innerHTML = original;
+    }
+}
 
-            function updateUI() {
-                document.querySelectorAll('[data-i18n]').forEach(el => {
-                    const key = el.getAttribute('data-i18n');
-                    if (key) {
-                        el.textContent = t(key);
-                    }
-                });
-                document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-                    const key = el.getAttribute('data-i18n-placeholder');
-                    if (key) {
-                        el.placeholder = t(key);
-                    }
-                });
-                document.title = t('app.title');
-                if (fullQsList.length > 0) {
-                    populateFilters(fullQsList);
-                    applyFilters();
-                }
-                if (filteredQsList.length > 1) {
-                    downloadAllBtn.innerHTML = `<i class="fas fa-file-archive"></i> ${t('grid.download_zip')} (${filteredQsList.length})`;
-                }
-                if (detailView.style.display !== 'none') {
-                    const displayName = currentCallsign || 'QSL';
-                    const dlCount = getDownloadCount(displayName, currentQslIndex);
-                    downloadCountSpan.innerHTML = `<i class="fas fa-download"></i> ${t('detail.downloads')} ${dlCount}`;
-                }
-            }
+/* Genera un index.json a partir de la carpeta cargada */
+function generateIndex() {
+    const items = state.all.map(e => ({
+        file: e.fileName,
+        callsign: e.callsign || '',
+        name: e.name || '',
+        band: e.band || '',
+        mode: e.mode || '',
+        date: e.date || ''
+    }));
+    const blob = new Blob([JSON.stringify(items, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    triggerDownload(url, 'index.json');
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
+}
 
-            function updateCurrentMessage() {
-                const messageSpan = resultMessage.querySelector('span');
-                if (!messageSpan) return;
-                if (messageSpan.hasAttribute('data-i18n')) {
-                    const keyAttr = messageSpan.getAttribute('data-i18n');
-                    if (keyAttr) {
-                        messageSpan.textContent = t(keyAttr);
-                    }
-                }
-            }
+/* ============================================================
+   12. EVENTOS
+   ============================================================ */
+let debounceId = null;
 
-            // ============================================================
-            // UTILIDADES
-            // ============================================================
-            function normalize(str) { return str.trim().toUpperCase().replace(/[^A-Z0-9]/g, ''); }
-            function getDownloadKey(callsign, index) { return `qsl_dl_${callsign}_${index}`; }
-            function getDownloadCount(callsign, index) { return parseInt(localStorage.getItem(getDownloadKey(callsign, index))) || 0; }
-            function incrementDownloadCount(callsign, index) {
-                const key = getDownloadKey(callsign, index);
-                const current = getDownloadCount(callsign, index);
-                localStorage.setItem(key, current + 1);
-                return current + 1;
-            }
+input.addEventListener('input', () => {
+    renderSuggestions();
+    clearTimeout(debounceId);
+    debounceId = setTimeout(() => doSearch(input.value), 260);
+});
 
-            // ============================================================
-            // CARGA DINÁMICA DESDE GITHUB USANDO API (NUEVO)
-            // ============================================================
-            async function findQSLsFromGitHub(callsign) {
-                const baseRaw = 'https://raw.githubusercontent.com/cl7adv/cl7adv-qsl/main/imagenes/';
-                const apiUrl = 'https://api.github.com/repos/cl7adv/cl7adv-qsl/contents/imagenes';
+input.addEventListener('keydown', ev => {
+    if (ev.key === 'Enter') {
+        ev.preventDefault();
+        suggestions.classList.remove('show');
+        doSearch(input.value);
+    }
+    if (ev.key === 'Escape') {
+        suggestions.classList.remove('show');
+        resetAll();
+    }
+});
 
-                try {
-                    // 1. Intentar obtener la lista de archivos desde la API
-                    const response = await fetch(apiUrl);
-                    if (!response.ok) throw new Error(`API responded with ${response.status}`);
-                    const data = await response.json();
+searchBtn.addEventListener('click', () => {
+    suggestions.classList.remove('show');
+    doSearch(input.value);
+});
 
-                    // data es un array de objetos con propiedades: name, path, download_url, etc.
-                    // Filtramos solo los archivos (no directorios) y que sean imágenes (jpg, jpeg, png, gif)
-                    const files = data.filter(item => item.type === 'file' && /\.(jpe?g|png|gif)$/i.test(item.name));
+resetBtn.addEventListener('click', resetAll);
 
-                    // Ahora buscamos aquellos cuyo nombre contenga el callsign (insensible a mayúsculas)
-                    const lowerCallsign = callsign.toLowerCase();
-                    const matched = files.filter(file => file.name.toLowerCase().includes(lowerCallsign));
+function resetAll() {
+    input.value = '';
+    state.query = '';
+    state.results = [];
+    state.current = null;
+    state.band = '';
+    state.mode = '';
+    bandFilter.value = '';
+    modeFilter.value = '';
+    suggestions.classList.remove('show');
+    suggestions.innerHTML = '';
+    renderResults();
+    input.focus();
+}
 
-                    if (matched.length === 0) {
-                        // Si no encuentra con la API, fallback al método antiguo de adivinación
-                        return fallbackFind(callsign);
-                    }
+/* Sugerencias */
+suggestions.addEventListener('click', ev => {
+    const li = ev.target.closest('li[data-cs]');
+    if (!li) return;
+    input.value = li.dataset.cs;
+    suggestions.classList.remove('show');
+    doSearch(li.dataset.cs);
+});
 
-                    // Construir resultados
-                    const results = matched.map(file => ({
-                        url: baseRaw + file.name, // Usamos raw para la imagen
-                        banda: 'N/A',
-                        modo: 'N/A',
-                        operador: callsign,
-                        fecha: '2026',
-                        // Guardamos el nombre original por si queremos extraer banda/modo después
-                        _filename: file.name
-                    }));
+document.addEventListener('click', ev => {
+    if (!ev.target.closest('.suggestions') && ev.target !== input) {
+        suggestions.classList.remove('show');
+    }
+});
 
-                    // Intentar extraer banda y modo del nombre (opcional)
-                    results.forEach(q => {
-                        const name = q._filename;
-                        // Ejemplo: "CM7ADV-40m-FT8.jpg" -> banda=40m, modo=FT8
-                        const parts = name.replace(/\.[^.]+$/, '').split('-');
-                        if (parts.length >= 3) {
-                            q.banda = parts[1] || 'N/A';
-                            q.modo = parts[2] || 'N/A';
-                        }
-                        delete q._filename; // limpiar
-                    });
+/* Filtros */
+bandFilter.addEventListener('change', () => {
+    state.band = bandFilter.value;
+    state.current = null;
+    renderResults();
+});
+modeFilter.addEventListener('change', () => {
+    state.mode = modeFilter.value;
+    state.current = null;
+    renderResults();
+});
 
-                    return results;
+/* Vistas */
+viewGridBtn.addEventListener('click', () => setView('grid'));
+viewTableBtn.addEventListener('click', () => setView('table'));
 
-                } catch (error) {
-                    console.warn('Error al usar la API de GitHub, usando método de adivinación:', error);
-                    return fallbackFind(callsign);
-                }
-            }
+function setView(v) {
+    state.view = v;
+    viewGridBtn.classList.toggle('active', v === 'grid');
+    viewTableBtn.classList.toggle('active', v === 'table');
+    renderResults();
+}
 
-            // Método de respaldo (adivinación con HEAD)
-            async function fallbackFind(callsign) {
-                const baseUrl = 'https://raw.githubusercontent.com/cl7adv/cl7adv-qsl/main/imagenes/';
-                let results = [];
-                let index = 0;
+/* Delegación: abrir detalle */
+gridView.addEventListener('click', ev => {
+    const item = ev.target.closest('.grid-item[data-id]');
+    if (!item) return;
+    openDetail(item.dataset.id);
+});
 
-                const checkUrl = async (url) => {
-                    try {
-                        const response = await fetch(url, { method: 'HEAD' });
-                        return response.ok;
-                    } catch { return false; }
-                };
+tableBody.addEventListener('click', ev => {
+    const btn = ev.target.closest('button[data-id]');
+    if (!btn) return;
+    openDetail(btn.dataset.id);
+});
 
-                while (index < 10) {
-                    let found = false;
-                    const baseName = index === 0 ? callsign : `${callsign}-${index}`;
-                    const variants = [
-                        `${baseName}.jpg`,
-                        `${baseName.toLowerCase()}.jpg`,
-                        `${baseName}.png`,
-                        `${baseName.toLowerCase()}.png`,
-                        `${baseName}.jpeg`,
-                        `${baseName.toLowerCase()}.jpeg`
-                    ];
-                    for (const fileName of variants) {
-                        const url = baseUrl + fileName;
-                        if (await checkUrl(url)) {
-                            results.push({
-                                url: url,
-                                banda: 'N/A',
-                                modo: 'N/A',
-                                operador: callsign,
-                                fecha: '2026'
-                            });
-                            found = true;
-                            break;
-                        }
-                    }
-                    if (!found && index === 0) break;
-                    index++;
-                }
-                return results;
-            }
+function openDetail(id) {
+    const entry = state.all.find(e => e.id === id) || state.results.find(e => e.id === id);
+    if (!entry) return;
+    state.current = entry;
+    renderResults();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
 
-            // ============================================================
-            // LÓGICA DE BÚSQUEDA
-            // ============================================================
-            async function buscarQSL() {
-                const raw = input.value.trim();
-                const clean = normalize(raw);
-                if (clean === '') {
-                    mostrarMensajeClave('fa-radio', 'message.enter');
-                    return;
-                }
-                if (isSearching) return;
-                isSearching = true;
+/* Descargar ZIP de los visibles */
+downloadAllBtn.addEventListener('click', () => downloadZip(getVisible()));
 
-                resultMessage.style.display = 'block';
-                resultMessage.innerHTML = `<i class="fas fa-spinner fa-spin"></i><span data-i18n="message.searching">${t('message.searching')}</span>`;
-                const span = resultMessage.querySelector('span');
-                if (span) span.setAttribute('data-i18n', 'message.searching');
-                gridView.style.display = 'none';
-                tableView.style.display = 'none';
-                detailView.style.display = 'none';
-                filtersBar.style.display = 'none';
-                gridActions.style.display = 'none';
+/* Carpeta local */
+loadFolderBtn.addEventListener('click', () => folderInput.click());
+folderInput.addEventListener('change', ev => {
+    if (ev.target.files && ev.target.files.length) {
+        loadFromFolder(ev.target.files);
+        ev.target.value = '';
+    }
+});
 
-                let foundQSLs = await findQSLsFromGitHub(clean);
-                if (foundQSLs.length === 0) {
-                    resultMessage.innerHTML = `<i class="fas fa-heart"></i><span data-i18n="message.no_results">${t('message.no_results')}</span>`;
-                    const span = resultMessage.querySelector('span');
-                    if (span) span.setAttribute('data-i18n', 'message.no_results');
-                    isSearching = false;
-                    return;
-                }
-                foundQSLs.forEach(q => q._callsign = clean);
-                mostrarGrid(foundQSLs, clean);
-                isSearching = false;
-            }
+/* Generar índice */
+genIndexBtn.addEventListener('click', generateIndex);
 
-            // ============================================================
-            // FUNCIONES DE RENDER (sin cambios)
-            // ============================================================
-            function mostrarMensajeClave(icono, clave) {
-                resultMessage.style.display = 'block';
-                resultMessage.innerHTML = `<i class="fas ${icono}"></i><span data-i18n="${clave}">${t(clave)}</span>`;
-                gridView.style.display = 'none';
-                tableView.style.display = 'none';
-                detailView.style.display = 'none';
-                filtersBar.style.display = 'none';
-                gridActions.style.display = 'none';
-            }
+/* Idioma */
+languageSelect.value = lang;
+languageSelect.addEventListener('change', () => {
+    lang = languageSelect.value;
+    localStorage.setItem('qsl.lang', lang);
+    applyI18n();
+});
 
-            function mostrarGrid(qsls, callsign) {
-                if (!qsls || qsls.length === 0) {
-                    mostrarMensajeClave('fa-sad-tear', 'message.no_qsls');
-                    return;
-                }
-                resultMessage.style.display = 'none';
-                detailView.style.display = 'none';
-                fullQsList = qsls;
-                currentCallsign = callsign || 'QSL';
-                populateFilters(fullQsList);
-                bandFilter.value = '';
-                modeFilter.value = '';
-                filtersBar.style.display = 'flex';
-                applyFilters();
-            }
+/* ============================================================
+   13. APLICAR IDIOMA
+   ============================================================ */
+function applyI18n() {
+    document.documentElement.lang = lang;
+    document.title = t('app.title');
 
-            function populateFilters(qsls) {
-                const bands = [...new Set(qsls.map(q => q.banda).filter(Boolean))];
-                const modes = [...new Set(qsls.map(q => q.modo).filter(Boolean))];
-                bandFilter.innerHTML = `<option value="" data-i18n="filters.all_bands">${t('filters.all_bands')}</option>`;
-                bands.forEach(b => {
-                    bandFilter.innerHTML += `<option value="${b}">${b}</option>`;
-                });
-                modeFilter.innerHTML = `<option value="" data-i18n="filters.all_modes">${t('filters.all_modes')}</option>`;
-                modes.forEach(m => {
-                    modeFilter.innerHTML += `<option value="${m}">${m}</option>`;
-                });
-                const firstBandOpt = bandFilter.querySelector('option[value=""]');
-                if (firstBandOpt) firstBandOpt.setAttribute('data-i18n', 'filters.all_bands');
-                const firstModeOpt = modeFilter.querySelector('option[value=""]');
-                if (firstModeOpt) firstModeOpt.setAttribute('data-i18n', 'filters.all_modes');
-            }
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        el.textContent = t(el.dataset.i18n);
+    });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        el.placeholder = t(el.dataset.i18nPlaceholder);
+    });
 
-            function applyFilters() {
-                const band = bandFilter.value;
-                const mode = modeFilter.value;
-                filteredQsList = fullQsList.filter(q => {
-                    const matchBand = !band || q.banda === band;
-                    const matchMode = !mode || q.modo === mode;
-                    return matchBand && matchMode;
-                });
-                renderCurrentView();
-                updateZipButtonState();
-            }
+    buildFilterOptions();
+    renderStatus();
+    renderResults();
+}
 
-            function toggleView(view) {
-                currentView = view;
-                viewGridBtn.classList.toggle('active', view === 'grid');
-                viewTableBtn.classList.toggle('active', view === 'table');
-                renderCurrentView();
-            }
+/* ============================================================
+   14. ARRANQUE
+   ============================================================ */
+async function init() {
+    applyI18n();                       // pinta textos base
+    setView('table');
+    const ok = await loadIndex();      // intenta cargar imagenes/index.json
+    if (ok) {
+        buildFilterOptions();
+        renderStatus();
+        showMessage('fa-circle-check',
+            t('status.index'),
+            t('status.count', { n: state.all.length }) + ' — ' + t('helper.text'));
+    } else {
+        renderStatus();
+        renderResults();
+    }
+}
 
-            function renderCurrentView() {
-                if (currentView === 'grid') {
-                    gridView.style.display = 'grid';
-                    tableView.style.display = 'none';
-                    renderGrid();
-                } else {
-                    gridView.style.display = 'none';
-                    tableView.style.display = 'table';
-                    renderTable();
-                }
-            }
+init();
 
-            function renderGrid() {
-                if (!filteredQsList || filteredQsList.length === 0) {
-                    gridView.innerHTML = `<div style="grid-column:1/-1;text-align:center;color:#7a7f8a;padding:20px;">${t('message.no_qsls')}</div>`;
-                    return;
-                }
-                const fragment = document.createDocumentFragment();
-                filteredQsList.forEach((qsl, index) => {
-                    const item = document.createElement('div');
-                    item.className = 'grid-item';
-                    const displayName = qsl._callsign || currentCallsign || 'QSL';
-                    const img = document.createElement('img');
-                    img.dataset.src = qsl.url;
-                    img.alt = `QSL de ${displayName}`;
-                    img.loading = 'lazy';
-                    const callsignDiv = document.createElement('div');
-                    callsignDiv.className = 'callsign';
-                    callsignDiv.textContent = displayName;
-                    const bandaDiv = document.createElement('div');
-                    bandaDiv.className = 'banda';
-                    bandaDiv.textContent = `${qsl.banda || ''} ${qsl.modo || ''}`.trim();
-                    item.appendChild(img);
-                    item.appendChild(callsignDiv);
-                    item.appendChild(bandaDiv);
-                    item.addEventListener('click', () => mostrarDetalle(filteredQsList, index, displayName));
-                    fragment.appendChild(item);
-                });
-                gridView.innerHTML = '';
-                gridView.appendChild(fragment);
-            }
-
-            function renderTable() {
-                if (!filteredQsList || filteredQsList.length === 0) {
-                    tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:#7a7f8a;padding:20px;">${t('message.no_qsls')}</td></tr>`;
-                    return;
-                }
-                let html = '';
-                filteredQsList.forEach((qsl, index) => {
-                    const displayName = qsl._callsign || currentCallsign || 'QSL';
-                    html += `<tr>
-                        <td><strong>${displayName}</strong></td>
-                        <td>${qsl.banda || '-'}</td>
-                        <td>${qsl.modo || '-'}</td>
-                        <td>${qsl.fecha || '-'}</td>
-                        <td>
-                            <div style="display:flex; gap:6px;">
-                                <a href="${qsl.url}" download="QSL_${displayName}.jpg" class="table-btn download-btn-row" title="${t('detail.download')}"><i class="fas fa-download"></i></a>
-                                <button class="table-btn" data-index="${index}">${t('table.view')}</button>
-                            </div>
-                        </td>
-                    </tr>`;
-                });
-                tableBody.innerHTML = html;
-                tableBody.querySelectorAll('.table-btn:not(.download-btn-row)').forEach(btn => {
-                    btn.addEventListener('click', (e) => {
-                        const idx = parseInt(e.target.dataset.index);
-                        const displayName = filteredQsList[idx]._callsign || currentCallsign || 'QSL';
-                        mostrarDetalle(filteredQsList, idx, displayName);
-                    });
-                });
-            }
-
-            function updateZipButtonState() {
-                if (filteredQsList.length > 1) {
-                    gridActions.style.display = 'flex';
-                    downloadAllBtn.innerHTML = `<i class="fas fa-file-archive"></i> ${t('grid.download_zip')} (${filteredQsList.length})`;
-                    downloadAllBtn.disabled = false;
-                    downloadAllBtn.onclick = downloadAllAsZip;
-                } else {
-                    gridActions.style.display = 'none';
-                }
-            }
-
-            function mostrarDetalle(qsls, index, callsign) {
-                if (!qsls || qsls.length === 0 || !qsls[index]) return;
-                const qsl = qsls[index];
-                const displayName = callsign || 'QSL';
-                resultMessage.style.display = 'none';
-                gridView.style.display = 'none';
-                tableView.style.display = 'none';
-                detailView.style.display = 'flex';
-                filtersBar.style.display = 'none';
-                gridActions.style.display = 'none';
-                currentQslIndex = index;
-                currentCallsign = displayName;
-
-                if (qsls.length > 1) {
-                    backToGridBtn.style.display = 'inline-block';
-                    backToGridBtn.innerHTML = `<i class="fas fa-arrow-left"></i> ${t('detail.back')} (${qsls.length})`;
-                } else { backToGridBtn.style.display = 'none'; }
-
-                prevBtn.disabled = (index === 0);
-                nextBtn.disabled = (index === qsls.length - 1);
-                prevBtn.style.display = qsls.length > 1 ? 'inline-flex' : 'none';
-                nextBtn.style.display = qsls.length > 1 ? 'inline-flex' : 'none';
-
-                qslImage.alt = `QSL de ${displayName}`;
-                qslImage.src = '';
-                qslImage.style.opacity = '0';
-                const spinner = document.createElement('div');
-                spinner.className = 'spinner';
-                spinner.id = 'imgSpinner';
-                qslImage.parentNode.insertBefore(spinner, qslImage);
-
-                const img = new Image();
-                img.onload = () => { qslImage.src = img.src; qslImage.style.opacity = '1'; document.getElementById('imgSpinner')?.remove(); };
-                img.onerror = () => { qslImage.alt = 'Error al cargar QSL'; document.getElementById('imgSpinner')?.remove(); };
-                img.src = qsl.url;
-
-                let metaHTML = '';
-                if (qsl.operador) metaHTML += `<span><i class="fas fa-user"></i> ${qsl.operador}</span>`;
-                if (qsl.banda) metaHTML += `<span><i class="fas fa-signal"></i> ${qsl.banda}</span>`;
-                if (qsl.modo) metaHTML += `<span><i class="fas fa-wave-square"></i> ${qsl.modo}</span>`;
-                if (qsl.fecha) metaHTML += `<span><i class="fas fa-calendar-alt"></i> ${qsl.fecha}</span>`;
-                qslMeta.innerHTML = metaHTML || `<span><i class="fas fa-tag"></i> QSL confirmada</span>`;
-
-                const dlCount = getDownloadCount(displayName, index);
-                downloadCountSpan.innerHTML = `<i class="fas fa-download"></i> ${t('detail.downloads')} ${dlCount}`;
-                downloadLink.href = qsl.url;
-                downloadLink.download = `QSL_${displayName}.jpg`;
-                downloadLink.onclick = () => {
-                    downloadCountSpan.innerHTML = `<i class="fas fa-download"></i> ${t('detail.downloads')} ${incrementDownloadCount(displayName, index)}`;
-                };
-                shareBtn.onclick = () => {
-                    const shareUrl = window.location.href.split('?')[0] + `?callsign=${encodeURIComponent(displayName)}`;
-                    if (navigator.share) navigator.share({ title: `QSL de ${displayName}`, url: shareUrl }).catch(() => {});
-                    else navigator.clipboard.writeText(shareUrl).then(() => alert('Enlace copiado: ' + shareUrl)).catch(() => prompt('Copia este enlace:', shareUrl));
-                };
-            }
-
-            async function downloadAllAsZip() {
-                if (!filteredQsList || filteredQsList.length < 2) return;
-                const zip = new JSZip();
-                const folderName = `QSLs_Filtradas_${new Date().toISOString().slice(0,10)}`;
-                const imgFolder = zip.folder(folderName);
-                const btn = downloadAllBtn;
-                const originalText = btn.innerHTML;
-                btn.innerHTML = 'Generando ZIP...';
-                btn.disabled = true;
-                try {
-                    await Promise.all(filteredQsList.map(async (qsl, index) => {
-                        const response = await fetch(qsl.url);
-                        if (!response.ok) throw new Error(`Error al descargar ${qsl.url}`);
-                        const blob = await response.blob();
-                        const displayName = qsl._callsign || currentCallsign || 'QSL';
-                        imgFolder.file(`${displayName}_${qsl.banda || 'mixed'}_${index+1}.jpg`, blob);
-                    }));
-                    const zipBlob = await zip.generateAsync({ type: 'blob' });
-                    const link = document.createElement('a');
-                    link.href = URL.createObjectURL(zipBlob);
-                    link.download = `QSLs_Filtradas_${new Date().toISOString().slice(0,10)}.zip`;
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                    setTimeout(() => URL.revokeObjectURL(link.href), 10000);
-                } catch (error) { alert('⚠️ Error al generar el ZIP: ' + error.message); } 
-                finally { btn.innerHTML = originalText; btn.disabled = false; }
-            }
-
-            // ============================================================
-            // EVENT LISTENERS
-            // ============================================================
-            searchBtn.addEventListener('click', buscarQSL);
-            input.addEventListener('keypress', (e) => { if (e.key === 'Enter') buscarQSL(); });
-            bandFilter.addEventListener('change', applyFilters);
-            modeFilter.addEventListener('change', applyFilters);
-            viewGridBtn.addEventListener('click', () => toggleView('grid'));
-            viewTableBtn.addEventListener('click', () => toggleView('table'));
-
-            resetBtn.addEventListener('click', () => {
-                input.value = '';
-                detailView.style.display = 'none';
-                filtersBar.style.display = 'none';
-                gridActions.style.display = 'none';
-                suggestionsList.style.display = 'none';
-                mostrarMensajeClave('fa-radio', 'message.waiting');
-                input.focus();
-            });
-
-            backToGridBtn.addEventListener('click', () => {
-                if (fullQsList && fullQsList.length > 0) {
-                    detailView.style.display = 'none';
-                    mostrarGrid(fullQsList, currentCallsign);
-                } else { mostrarMensajeClave('fa-radio', 'message.waiting'); }
-            });
-            prevBtn.addEventListener('click', () => {
-                if (currentQslIndex > 0) mostrarDetalle(filteredQsList, currentQslIndex - 1, currentCallsign);
-            });
-            nextBtn.addEventListener('click', () => {
-                if (currentQslIndex < filteredQsList.length - 1) mostrarDetalle(filteredQsList, currentQslIndex + 1, currentCallsign);
-            });
-
-            languageSelect.addEventListener('change', function() {
-                setLanguage(this.value);
-            });
-
-            // ============================================================
-            // CARGA INICIAL
-            // ============================================================
-            window.addEventListener('load', () => {
-                const savedLang = localStorage.getItem('qsl_language');
-                if (savedLang && translations[savedLang]) {
-                    setLanguage(savedLang);
-                } else {
-                    const browserLang = navigator.language || navigator.userLanguage;
-                    const langCode = browserLang.split('-')[0];
-                    if (langCode === 'es') setLanguage('es');
-                    else if (langCode === 'en') setLanguage('en');
-                    else if (langCode === 'zh') setLanguage('zh');
-                    else if (langCode === 'ja') setLanguage('ja');
-                    else if (langCode === 'de') setLanguage('de');
-                    else setLanguage('es');
-                }
-                input.focus();
-
-                const params = new URLSearchParams(window.location.search);
-                const qslParam = params.get('callsign') || params.get('qsl');
-                if (qslParam) {
-                    const key = normalize(qslParam);
-                    input.value = key;
-                    buscarQSL();
-                }
-            });
-
-        })();
-    </script>
+})();
+</script>
 </body>
 </html>
