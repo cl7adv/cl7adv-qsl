@@ -1,323 +1,253 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title data-i18n="app.title">QSL Caribe · Buscador de QSLs</title>
-<!-- Fuentes y estilos (sin cambios) -->
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-
-<style>/* … (los mismos estilos que ya tenías) … */</style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cuba QSL Buscador</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Inter',sans-serif;background:linear-gradient(160deg,#f0f4f8 0%,#fff 100%);min-height:100vh;color:#1a1a2e}
+  header{text-align:center;padding:40px 20px 20px;background:linear-gradient(135deg,#0077b6,#00b4d8);color:#fff;border-radius:0 0 30px 30px;box-shadow:0 10px 30px rgba(0,119,182,.2)}
+  header h1{font-size:2.5rem;font-weight:900;letter-spacing:-1px;margin-bottom:6px}
+  header p{opacity:.9;font-weight:500}
+  .search-container{max-width:900px;margin:-25px auto 30px;padding:0 20px;position:relative;z-index:10}
+  .search-box{background:#fff;border-radius:50px;padding:8px 8px 8px 24px;display:flex;align-items:center;gap:10px;box-shadow:0 8px 24px rgba(0,0,0,.1)}
+  .search-box input{flex:1;border:none;outline:none;font-size:1.1rem;font-family:inherit;font-weight:600;padding:10px 0;text-transform:uppercase;background:transparent;color:#1a1a2e}
+  .search-box input::placeholder{text-transform:none;color:#999;font-weight:400}
+  .search-box button{padding:12px 24px;border:none;border-radius:50px;background:#0077b6;color:#fff;font-family:inherit;font-weight:700;cursor:pointer;transition:.2s}
+  .search-box button:hover{background:#006994}
+  .status{text-align:center;padding:16px 20px;color:#666;font-size:.9rem}
+  .status.error{color:#c00;font-weight:600}
+  .status a{color:#0077b6;font-weight:700}
+  .grid{max-width:1400px;margin:0 auto 40px;padding:0 20px;display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:20px}
+  .card{background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,.06);cursor:pointer;transition:.2s;border:1px solid #eef2f5}
+  .card:hover{transform:translateY(-4px);box-shadow:0 12px 24px rgba(0,119,182,.15);border-color:#00b4d8}
+  .card img{width:100%;height:150px;object-fit:cover;display:block;background:#eef2f5}
+  .card-info{padding:10px 12px}
+  .card-callsign{font-weight:800;color:#0077b6;font-size:.9rem}
+  .card-filename{font-size:.7rem;color:#888;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .empty{grid-column:1 / -1;text-align:center;padding:60px 20px;color:#888;font-size:1.1rem}
+  .loader{grid-column:1 / -1;text-align:center;padding:60px 20px;color:#0077b6;font-weight:600;font-size:1rem}
+  .loader::after{content:'';display:inline-block;width:20px;height:20px;border:3px solid #eef2f5;border-top-color:#0077b6;border-radius:50%;animation:spin .8s linear infinite;margin-left:10px;vertical-align:middle}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .lightbox{position:fixed;inset:0;background:rgba(0,0,0,.92);display:none;align-items:center;justify-content:center;z-index:1000;padding:20px}
+  .lightbox.active{display:flex}
+  .lightbox img{max-width:100%;max-height:100%;border-radius:8px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+  .lightbox-close{position:absolute;top:20px;right:20px;background:rgba(255,255,255,.2);border:none;color:#fff;font-size:2rem;width:50px;height:50px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1}
+  .lightbox-close:hover{background:rgba(255,255,255,.35)}
+  @media (max-width:600px){header h1{font-size:1.8rem}.search-box input{font-size:.95rem}}
+</style>
 </head>
 <body>
-<!-- … (la misma estructura HTML) … -->
-<input type="file" id="folderInput" webkitdirectory directory multiple hidden />
-</main>
+
+<header>
+  <h1>🇨🇺 Cuba QSL Buscador</h1>
+  <p>Busca tarjetas QSL por indicativo o nombre</p>
+</header>
+
+<div class="search-container">
+  <div class="search-box">
+    <input type="text" id="search" placeholder="Escribe un indicativo o nombre (ej: CM7ADV)..." autofocus>
+    <button id="clearBtn">Limpiar</button>
+  </div>
+</div>
+
+<div class="status" id="status">Cargando imágenes...</div>
+<div class="grid" id="grid"><div class="loader">Cargando</div></div>
+
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" id="lightboxClose">×</button>
+  <img id="lightboxImg" src="" alt="QSL">
+</div>
 
 <script>
 (() => {
-'use strict';
+  'use strict';
 
-/* ============================================================
-   0. CONFIGURACIÓN CLAVE
-   ============================================================ */
-const GITHUB_REPO   = 'cl7adv/cl7adv-qsl';
-const GITHUB_BRANCH = 'main';
-const GITHUB_DIR    = 'imagenes';
+  const REPO       = 'cl7adv/cl7adv-qsl';
+  const BRANCH     = 'main';
+  const DIR        = 'imagenes';
+  const API_URL    = `https://api.github.com/repos/${REPO}/contents/${DIR}?ref=${BRANCH}`;
+  const CDN_BASE   = `https://cdn.jsdelivr.net/gh/${REPO}@${BRANCH}/${DIR}/`;
+  const RAW_BASE   = `https://raw.githubusercontent.com/${REPO}/${BRANCH}/${DIR}/`;
+  const IMG_EXT    = /\.(jpe?g|png|gif|webp|bmp|avif)$/i;
+  const CACHE_KEY  = 'cuba-qsl-files-v3';
+  const CACHE_TTL  = 6 * 60 * 60 * 1000; // 6 horas
 
-// jsDelivr (CORS ✔) para las imágenes
-const CDN_BASE = `https://cdn.jsdelivr.net/gh/${GITHUB_REPO}@${GITHUB_BRANCH}/${GITHUB_DIR}/`;
+  const PLACEHOLDER = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(
+    '<svg xmlns="http://www.w3.org/2000/svg" width="200" height="150">' +
+    '<rect width="200" height="150" fill="#eef2f5"/>' +
+    '<text x="100" y="80" font-family="sans-serif" font-size="16" font-weight="700" fill="#9aa7b4" text-anchor="middle">QSL</text>' +
+    '<text x="100" y="100" font-family="sans-serif" font-size="11" fill="#b0bcc9" text-anchor="middle">sin imagen</text></svg>'
+  );
 
-// Índice local (mismo dominio, sin CORS)
-const LOCAL_INDEX_URL = `${GITHUB_DIR}/index.json`;
+  const $ = id => document.getElementById(id);
+  const searchInput  = $('search');
+  const clearBtn     = $('clearBtn');
+  const statusEl     = $('status');
+  const gridEl       = $('grid');
+  const lightbox     = $('lightbox');
+  const lightboxImg  = $('lightboxImg');
+  const lightboxClose= $('lightboxClose');
 
-// Índice de respaldo embebido (se rellena con “Generar índice”)
-let FALLBACK_INDEX = [];   // ← pega aquí el JSON generado
+  let allCards = [];
 
-const IMG_EXT = /\.(jpe?g|png|gif|webp|bmp|avif|svg)$/i;
-const PLACEHOLDER = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(
-    '<svg xmlns="http://www.w3.org/2000/svg" width="240" height="160">' +
-    '<rect width="240" height="160" fill="#eef2f5"/>' +
-    '<g fill="#9aa7b4" font-family="sans-serif" text-anchor="middle">' +
-    '<text x="120" y="84" font-size="18" font-weight="700">QSL</text>' +
-    '<text x="120" y="106" font-size="11">sin imagen</text></g></svg>'
-);
-
-/* ============================================================
-   1. INTERNACIONALIZACIÓN (sin cambios)
-   ============================================================ */
-const I18N = { /* … mismo diccionario … */ };
-let lang = localStorage.getItem('qsl.lang') || 'es';
-if (!I18N[lang]) lang = 'es';
-function t(key, vars) { /* … */ }
-
-/* ============================================================
-   2. ESTADO
-   ============================================================ */
-const state = {
-    all: [], results: [], query: '', band: '', mode: '',
-    view: 'table', current: null, source: 'none'
-};
-
-/* ============================================================
-   3. DOM REFS (sin cambios)
-   ============================================================ */
-// … (los mismos $, input, searchBtn, etc.)
-
-/* ============================================================
-   4. UTILIDADES MEJORADAS
-   ============================================================ */
-const esc = s => String(s ?? '').replace(/[&<>"']/g, c => (
-    { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]
-));
-const norm = s => String(s ?? '').toUpperCase().trim();
-
-/* ▼▼▼  EXTRACCIÓN ROBUSTA DE INDICATIVOS  ▼▼▼ */
-function extractAllCallsigns(str) {
-    // 1) Quitar extensión y pasar a mayúsculas
-    let base = String(str).replace(/\.[^.]+$/, '').toUpperCase();
-
-    // 2) Reemplazar separadores por espacios (paréntesis, guiones, etc.)
-    base = base.replace(/[^A-Z0-9]+/g, ' ');
-
-    // 3) Buscar tokens que parezcan indicativos
-    const tokens = base.split(/\s+/).filter(Boolean);
+  /* ---------- Extractor de indicativos ---------- */
+  function extractCallsigns(filename) {
+    const base = String(filename).replace(/\.[^.]+$/, '').toUpperCase();
+    const tokens = base.split(/[^A-Z0-9]+/).filter(Boolean);
     const found = new Set();
 
     for (const tk of tokens) {
-        // Quitar sufijos tipo "-2", "_P", etc.
-        const clean = tk.replace(/[^A-Z0-9]/g, '');
-
-        // Patrón estándar: 1-2 letras + 1-3 dígitos + 1-4 letras
-        //   ej: CM7ADV, CO5ABC, W1AW, 4N1UBG
-        if (/^\d?[A-Z]{1,2}\d[A-Z]{1,4}$/.test(clean) && /\d/.test(clean)) {
-            found.add(clean);
-        }
-        // También captura indicativos con dígito inicial (ej: 4N1UBG)
-        else if (/^\d[A-Z]{1,2}\d[A-Z]{1,4}$/.test(clean)) {
-            found.add(clean);
-        }
+      // CM7ADV, CO5ABC, W1AW, etc.
+      if (/^[A-Z]{1,2}\d[A-Z]{1,4}$/.test(tk)) { found.add(tk); continue; }
+      // 4N1UBG, 2E0ABC, etc.
+      if (/^\d[A-Z]{1,2}\d[A-Z]{1,4}$/.test(tk)) { found.add(tk); }
     }
 
-    // 4) Si no encontró nada, intentar un patrón más laxo sobre el nombre original
     if (found.size === 0) {
-        const matches = base.match(/\b[A-Z]{1,2}\d[A-Z]{1,4}\b/g);
-        if (matches) matches.forEach(m => found.add(m));
+      const matches = base.match(/[A-Z]{1,2}\d[A-Z]{1,4}/g);
+      if (matches) matches.forEach(m => found.add(m));
     }
-
     return [...found];
-}
+  }
 
-/* Deduce metadatos desde el nombre del archivo */
-function parseFileName(name) {
-    const base = String(name).replace(/\.[^.]+$/, '');
-    const up = base.toUpperCase();
-
-    const bm = up.match(/(?:^|[^0-9])(160|80|60|40|30|20|17|15|12|10|6|2)M(?:[^A-Z]|$)/);
-    const mm = up.match(/(?:^|[^A-Z])(SSB|USB|LSB|CW|FT8|FT4|FT2|RTTY|AM|FM|PSK31|PSK63|JS8|MFSK|DIGI|OLIVIA)(?:[^A-Z]|$)/);
-    const dm = up.match(/\b(20\d{2})[-_.]?(0[1-9]|1[0-2])?[-_.]?(0[1-9]|[12]\d|3[01])?\b/);
-
-    let date = '';
-    if (dm) date = dm[1] + (dm[2] ? '-' + dm[2] : '') + (dm[3] ? '-' + dm[3] : '');
-
+  /* ---------- Construir tarjeta ---------- */
+  function buildCard(file) {
+    const callsigns = extractCallsigns(file.name);
+    const encoded   = encodeURIComponent(file.name);
     return {
-        callsigns: extractAllCallsigns(base),
-        band: bm ? bm[1] + 'm' : '',
-        mode: mm ? mm[1] : '',
-        date
+      name: file.name,
+      url: CDN_BASE + encoded,
+      urlFallback: RAW_BASE + encoded,
+      callsigns,
+      searchText: (file.name + ' ' + callsigns.join(' ')).toUpperCase()
     };
-}
+  }
 
-/* ============================================================
-   5. CARGA DEL ÍNDICE (3 niveles)
-   ============================================================ */
-function normalizeEntry(raw, i) {
-    if (!raw) return null;
-    const rawFile = String(raw.file || raw.filename || raw.src || '');
-    const fileName = rawFile.replace(/^.*[\\/]/, '');
-    if (!fileName) return null;
+  /* ---------- Escapar HTML ---------- */
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+    }[c]));
+  }
 
-    const meta = parseFileName(fileName);
-    const url = CDN_BASE + encodeURIComponent(fileName); // jsDelivr ✔ CORS
-
-    return {
-        id: 'i' + i,
-        fileName,
-        url,
-        callsigns: meta.callsigns,
-        name: raw.name || raw.operator || '',
-        band: raw.band || meta.band,
-        mode: norm(raw.mode || meta.mode),
-        date: raw.date || meta.date
-    };
-}
-
-async function loadIndex() {
-    // 1️⃣  index.json local
+  /* ---------- Cargar desde GitHub ---------- */
+  async function loadFromGitHub() {
+    // 1) Caché
     try {
-        const res = await fetch(LOCAL_INDEX_URL, { cache: 'no-cache' });
-        if (!res.ok) throw new Error('HTTP ' + res.status);
-        const data = await res.json();
-        const arr = Array.isArray(data) ? data : (data.items || data.qsls || []);
-        const entries = arr.map(normalizeEntry).filter(Boolean);
-        if (!entries.length) throw new Error('índice vacío');
-
-        state.all = entries;
-        state.source = 'index';
-        buildFilterOptions();
-        return true;
-    } catch (err) {
-        console.info('[QSL] Sin index.json local:', err.message);
-    }
-
-    // 2️⃣  índice de respaldo embebido
-    if (Array.isArray(FALLBACK_INDEX) && FALLBACK_INDEX.length) {
-        const entries = FALLBACK_INDEX.map(normalizeEntry).filter(Boolean);
-        if (entries.length) {
-            state.all = entries;
-            state.source = 'index';
-            buildFilterOptions();
-            return true;
+      const cached = localStorage.getItem(CACHE_KEY);
+      if (cached) {
+        const { t, data } = JSON.parse(cached);
+        if (Date.now() - t < CACHE_TTL && Array.isArray(data) && data.length) {
+          allCards = data;
+          statusEl.textContent = `${allCards.length} tarjetas QSL cargadas (caché)`;
+          render(allCards);
+          return;
         }
-    }
+      }
+    } catch (e) { /* ignorar */ }
 
-    // 3️⃣  API de GitHub (último recurso, sujeto a límite de 60/h)
+    // 2) API de GitHub
     try {
-        const apiUrl = `https://api.github.com/repos/${GITHUB_REPO}/contents/${GITHUB_DIR}`;
-        const res = await fetch(apiUrl, {
-            headers: { 'Accept': 'application/vnd.github.v3+json' }
-        });
-        if (!res.ok) throw new Error('HTTP ' + res.status + ' (¿límite de API?)');
-        const items = await res.json();
-        const entries = items
-            .filter(it => it.type === 'file' && IMG_EXT.test(it.name))
-            .map((it, idx) => normalizeEntry({ file: it.name }, idx))
-            .filter(Boolean);
+      const res = await fetch(API_URL, { headers: { 'Accept': 'application/vnd.github.v3+json' } });
 
-        if (!entries.length) throw new Error('No hay imágenes');
+      if (!res.ok) {
+        let extra = '';
+        if (res.status === 403) extra = ' (límite de peticiones de GitHub, espera unos minutos)';
+        if (res.status === 404) extra = ' (repositorio o carpeta no encontrada)';
+        throw new Error(`GitHub API ${res.status}${extra}`);
+      }
 
-        state.all = entries;
-        state.source = 'index';
-        buildFilterOptions();
-        return true;
+      const files = await res.json();
+      if (!Array.isArray(files)) throw new Error('Respuesta inesperada de GitHub');
+
+      const imageFiles = files.filter(f => f.type === 'file' && IMG_EXT.test(f.name));
+      if (imageFiles.length === 0) throw new Error('La carpeta imagenes/ está vacía');
+
+      allCards = imageFiles.map(buildCard).sort((a, b) => {
+        const ca = a.callsigns[0] || '~';
+        const cb = b.callsigns[0] || '~';
+        return ca.localeCompare(cb) || a.name.localeCompare(b.name);
+      });
+
+      try { localStorage.setItem(CACHE_KEY, JSON.stringify({ t: Date.now(), data: allCards })); } catch (e) {}
+
+      statusEl.textContent = `${allCards.length} tarjetas QSL cargadas`;
+      render(allCards);
     } catch (err) {
-        console.warn('[QSL] Fallo total al cargar índice:', err.message);
-        state.source = 'none';
-        state.all = [];
-        return false;
+      console.error('[CubaQSL]', err);
+      statusEl.className = 'status error';
+      statusEl.innerHTML = `❌ ${escapeHtml(err.message)} · <a href="#" id="retryLink">Reintentar</a>`;
+      gridEl.innerHTML = '';
+      const rl = document.getElementById('retryLink');
+      if (rl) rl.addEventListener('click', ev => { ev.preventDefault(); statusEl.className = 'status'; statusEl.textContent = 'Cargando...'; loadFromGitHub(); });
     }
-}
+  }
 
-/* ============================================================
-   6. CARGA DESDE CARPETA LOCAL (sin cambios)
-   ============================================================ */
-function loadFromFolder(fileList) { /* … */ }
-
-/* ============================================================
-   7. FILTROS (sin cambios)
-   ============================================================ */
-// …
-
-/* ============================================================
-   8. BÚSQUEDA (adaptada a múltiples indicativos)
-   ============================================================ */
-function scoreEntry(e, q) {
-    const csList = e.callsigns || [];
-    const nm = norm(e.name);
-    const fl = norm(e.fileName);
-
-    for (const cs of csList) {
-        if (cs === q) return 100;
-        if (cs.startsWith(q)) return 80;
-        if (cs.includes(q)) return 60;
+  /* ---------- Render ---------- */
+  function render(cards) {
+    if (cards.length === 0) {
+      gridEl.innerHTML = '<div class="empty">🔍 No se encontraron QSLs</div>';
+      return;
     }
-    if (nm && nm.includes(q)) return 40;
-    if (fl.includes(q)) return 20;
-    return 0;
-}
+    gridEl.innerHTML = cards.map((c, i) => `
+      <div class="card" data-index="${i}">
+        <img src="${escapeHtml(c.url)}" alt="${escapeHtml(c.name)}" loading="lazy"
+             onerror="if(!this.dataset.fb1){this.dataset.fb1=1;this.src='${escapeHtml(c.urlFallback)}'}else{this.onerror=null;this.src='${PLACEHOLDER}'}">
+        <div class="card-info">
+          <div class="card-callsign">${escapeHtml(c.callsigns.join(' · ') || '—')}</div>
+          <div class="card-filename" title="${escapeHtml(c.name)}">${escapeHtml(c.name)}</div>
+        </div>
+      </div>
+    `).join('');
 
-function doSearch(raw) {
-    const q = norm(raw ?? input.value);
-    state.current = null;
-    state.query = q;
+    gridEl.querySelectorAll('.card').forEach(el => {
+      el.addEventListener('click', () => {
+        const idx = parseInt(el.dataset.index, 10);
+        if (cards[idx]) openLightbox(cards[idx]);
+      });
+    });
+  }
 
-    if (!q) { state.results = []; renderResults(); return; }
+  /* ---------- Lightbox ---------- */
+  function openLightbox(c) {
+    lightboxImg.src = c.url;
+    lightboxImg.onerror = () => { lightboxImg.onerror = null; lightboxImg.src = c.urlFallback; };
+    lightbox.classList.add('active');
+  }
+  function closeLightbox() {
+    lightbox.classList.remove('active');
+    lightboxImg.src = '';
+  }
+  lightbox.addEventListener('click', e => { if (e.target === lightbox) closeLightbox(); });
+  lightboxClose.addEventListener('click', closeLightbox);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
 
-    // Feedback visual inmediato
-    showMessage('fa-spinner fa-spin', t('message.searching'));
+  /* ---------- Búsqueda en vivo ---------- */
+  let debounce = null;
+  searchInput.addEventListener('input', e => {
+    clearTimeout(debounce);
+    debounce = setTimeout(() => {
+      const q = e.target.value.toUpperCase().trim();
+      if (!q) { statusEl.textContent = `${allCards.length} tarjetas QSL cargadas`; render(allCards); return; }
+      const filtered = allCards.filter(c => c.searchText.includes(q));
+      statusEl.textContent = `${filtered.length} resultado(s) para "${e.target.value.trim()}"`;
+      render(filtered);
+    }, 150);
+  });
 
-    setTimeout(() => {
-        const scored = [];
-        for (const e of state.all) {
-            const s = scoreEntry(e, q);
-            if (s > 0) scored.push([s, e]);
-        }
-        scored.sort((a, b) =>
-            b[0] - a[0] ||
-            (a[1].callsigns[0] || '').localeCompare(b[1].callsigns[0] || '') ||
-            a[1].fileName.localeCompare(b[1].fileName)
-        );
+  clearBtn.addEventListener('click', () => {
+    searchInput.value = '';
+    statusEl.textContent = `${allCards.length} tarjetas QSL cargadas`;
+    render(allCards);
+    searchInput.focus();
+  });
 
-        state.results = scored.map(x => x[1]);
-        renderResults();
-    }, 80);
-}
-
-function getVisible() { /* … */ }
-
-/* ============================================================
-   9. SUGERENCIAS (adaptadas)
-   ============================================================ */
-function renderSuggestions() { /* … usa e.callsigns … */ }
-
-/* ============================================================
-   10-14. RESTO (render, descargas, eventos, etc.)
-   ============================================================ */
-// …
-
-/* Genera index.json y lo descarga para que lo subas a /imagenes/ */
-function generateIndex() {
-    const items = state.all.map(e => ({
-        file: e.fileName,
-        callsign: (e.callsigns && e.callsigns[0]) || '',
-        name: e.name || '',
-        band: e.band || '',
-        mode: e.mode || '',
-        date: e.date || ''
-    }));
-    const blob = new Blob([JSON.stringify(items, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    triggerDownload(url, 'index.json');
-    setTimeout(() => URL.revokeObjectURL(url), 4000);
-}
-
-/* ============================================================
-   15. ARRANQUE
-   ============================================================ */
-async function init() {
-    applyI18n();
-    setView('table');
-
-    const ok = await loadIndex();
-    if (ok) {
-        buildFilterOptions();
-        renderStatus();
-        showMessage('fa-circle-check',
-            t('status.index'),
-            t('status.count', { n: state.all.length }) + ' — ' + t('helper.text'));
-    } else {
-        renderStatus();
-        showMessage('fa-triangle-exclamation',
-            t('status.none'),
-            'No se pudo cargar ningún índice. Revisa la consola (F12) o usa “Cargar carpeta”.');
-    }
-}
-
-init();
+  /* ---------- Arrancar ---------- */
+  loadFromGitHub();
 })();
 </script>
 </body>
